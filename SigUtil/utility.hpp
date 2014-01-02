@@ -35,144 +35,57 @@
 
 #endif
 
-/* namespace / typedef */
-typedef unsigned long int uint;
-typedef std::shared_ptr< std::string > StrPtr;
-typedef std::shared_ptr< std::string const > C_StrPtr;
-typedef std::shared_ptr< std::wstring > WStrPtr;
-typedef std::shared_ptr< std::wstring const > C_WStrPtr;
+namespace sig{
+
+	/* typedef */
+	typedef unsigned long int uint;
+	typedef std::shared_ptr< std::string > StrPtr;
+	typedef std::shared_ptr< std::string const > C_StrPtr;
+	typedef std::shared_ptr< std::wstring > WStrPtr;
+	typedef std::shared_ptr< std::wstring const > C_WStrPtr;
 
 #ifdef ENABLE_BOOST
 
-template <typename T>
-using maybe = boost::optional<T>;
-//#define maybe boost::optional
-auto const nothing = boost::none;
+	template <typename T>
+	using maybe = boost::optional<T>;
+	//#define maybe boost::optional
+	auto const nothing = boost::none;
 
 #endif
 
-namespace sig{
+#undef max
 #undef min
+
 
 /* メタ関数・メタクラス */
 	struct NullType{};
-
-/* コンテナ */
-
-#ifdef ENABLE_BOOST
-	//動的確保される固定長配列 (構築後のサイズ変更不可)
-	template <class T, class Allocator = std::allocator<T>>
-	class FixedVector
-	{
-	public:
-		typedef T value_type;
-		typedef typename boost::call_traits<T>::param_type		param_type;
-		typedef typename boost::call_traits<T>::reference		reference;
-		typedef typename boost::call_traits<T>::const_reference	const_reference;
-		typedef typename boost::call_traits<T>::value_type		result_type;
-
-		typedef uint size_type;
-
-	private:
-		std::vector<T> _data;
-
-	public:
-		explicit FixedVector(Allocator const& alloc = Allocator()) : _data(alloc){}
-		explicit FixedVector(size_type size, param_type value = T(), Allocator const& alloc = Allocator()) : _data(size, value, alloc){}
-	//	explicit FixedVector(size_type count, T value) : _data(size, value){}
-		template <class InputIter> FixedVector(InputIter first, InputIter last, Allocator const& alloc = Allocator()) : _data(first, last, alloc){}
-		explicit FixedVector(std::vector<T> const& src) : _data(src){}
-		explicit FixedVector(std::vector<T> && src) : _data(move(src)){}
-
-		FixedVector(FixedVector const& src) : _data(src._data){}
-		FixedVector(FixedVector && src) : _data(move(src._data)){}
-		FixedVector(std::initializer_list<T> init, Allocator const& alloc = Allocator()) : _data(init){}
-
-		FixedVector& operator=(FixedVector const& src){
-			*this = FixedVector(src);
-			return *this;
-		}
-		FixedVector& operator=(FixedVector && src){
-			this->_data = move(src._data);
-			return *this;
-		}
-		FixedVector& operator=(std::initializer_list<T> ilist){
-			*this = FixedVector(ilist.begin(), ilist.end());
-			return *this;
-		}
-		FixedVector& operator=(std::vector<T> const& src){
-			this->_data = src;
-			return *this;
-		}
-		FixedVector& operator=(std::vector<T> && src){
-			this->_data = move(src);
-			return *this;
-		}
-		
-		auto begin()->decltype(_data.begin()){ return _data.begin(); }
-		auto begin() const ->decltype(_data.begin()){ return _data.begin(); }
-		auto cbegin() const ->decltype(_data.cbegin()){ return _data.cbegin(); }
-
-		auto end()->decltype(_data.end()){ return _data.end(); }
-		auto end() const ->decltype(_data.end()){ return _data.end(); }
-		auto cend() const ->decltype(_data.cend()){ return _data.cend(); }
-
-		auto rbegin()->decltype(_data.rbegin()){ return _data.rbegin(); }
-		auto rbegin() const ->decltype(_data.rbegin()){ return _data.rbegin(); }
-		auto crbegin() const ->decltype(_data.crbegin()){ return _data.crbegin(); }
-
-		auto rend()->decltype(_data.rend()){ return _data.rend(); }
-		auto rend() const ->decltype(_data.rend()){ return _data.rend(); }
-		auto crend() const ->decltype(_data.crend()){ return _data.crend(); }
-
-		reference at(size_type pos){ return _data.at(pos); }
-		const_reference at(size_type pos) const{ return _data.at(pos); }
-
-		reference operator [](size_type pos){ return _data[pos]; }
-		const_reference operator [](size_type pos) const{ return _data[pos]; }
-
-		reference front(){ return _data.front(); }
-		const_reference front() const{ return _data.front(); }
-
-		reference back(){ return _data.back(); }
-		const_reference back() const{ return _data.back(); }
-
-		bool empty() const{ return _data.empty(); }
-
-		size_type size() const{ return _data.size(); }
-
-		size_type max_size() const{ return _data.max_size; }
-
-		void swap(FixedVector& other){ _data.swap(other); }
-	};
-#endif
 
 /* 関数型プログラミング */
 
 	//[a] -> (a -> r) -> [r]
 	template < class R, class A, template < class T, class = std::allocator<T >> class Container>
-		Container<R> Map(Container<A> const& list, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type)> const& func)
-		{
-			Container<R> result;
+	Container<R> Map(Container<A> const& list, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type)> const& func)
+	{
+		Container<R> result;
 
-			for (auto e : list) result.push_back(func(e));
+		for (auto e : list) result.push_back(func(e));
 
-			return std::move(result);
-		}
+		return std::move(result);
+	}
 
 	//[a] -> [b] -> (a -> b -> r) -> [r]
 	//戻り値の型Rは、明示的に指定する必要あり
 	template < class R, class A, class B, template < class T, class = std::allocator<T>> class Container>
-		Container<R> ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
-		{
-			const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
-			Container<R> result;
+	Container<R> ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
+	{
+		const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
+		Container<R> result;
 
-			uint i = 0;
-			for (auto it1 = list1.begin(), it2 = list2.begin(), end1 = list1.end(), end2 = list2.end(); i < length; ++i, ++it1, ++it2) result.push_back(func(*it1, *it2));
+		uint i = 0;
+		for (auto it1 = list1.begin(), it2 = list2.begin(), end1 = list1.end(), end2 = list2.end(); i < length; ++i, ++it1, ++it2) result.push_back(func(*it1, *it2));
 
-			return std::move(result);
-		}
+		return std::move(result);
+	}
 
 #ifdef ENABLE_BOOST
 	//[a] -> b -> (a -> b -> r) -> [r]
@@ -261,6 +174,22 @@ namespace sig{
 		const auto dmin = std::numeric_limits<std::common_type<T1, T2>::type>::min();
 
 		return std::abs(v1 - v2) < dmin;
+	}
+
+	//小数点以下の桁数取得 (ex: v=1.2300000 -> 2)
+	inline uint Precision(double v)
+	{
+		uint keta = 0;
+		double dv = v - int(v);
+		
+		while (true){
+			if (Equal(dv, 0) || keta >= 15) break;
+			v *= 10;
+			dv = v - int(v);
+			++keta;
+		}
+
+		return keta;
 	}
 
 	//ソート前のindexを保持してソート
@@ -439,21 +368,21 @@ namespace sig{
 	class Histgram{
 		T const _min;
 		T const _max;
-		T const _delta;
-		std::array<uint, BIN_NUM+2> _count;	//[0]: x < min, [BIN_NUM-1]: max <= x
+		double const _delta;
+		std::array<uint, BIN_NUM + 2> _count;	//[0]: x < min, [BIN_NUM-1]: max <= x
 		uint _num;
 
 	public:
 		//要素の範囲を指定
-		Histgram(T min, T max) : _min(min), _max(max), _delta(static_cast<int>((max-min+1)/BIN_NUM)), _num(0){
-			assert(_delta > 0); 
-			for(auto& ct : _count) ct = 0;
+		Histgram(T min, T max) : _min(min), _max(max), _delta(((double) max - min) / BIN_NUM), _num(0){
+			assert(_delta > 0);
+			for (auto& ct : _count) ct = 0;
 		}
 
 		//要素をbinに振り分けてカウント
 		void Count(T value){
 			for (uint i = 0; i < BIN_NUM + 1; ++i){
-				if(value < _delta*i + _min){
+				if (value < _delta*i + _min){
 					++_num;
 					++_count[i];
 					return;
@@ -462,50 +391,66 @@ namespace sig{
 			++_count[BIN_NUM + 1];
 		}
 
-		template <template<class TT, class = std::allocator<TT>> class Container>
-		void Count(Container<T> const& values){
-			for (auto e : values) Count(e);
-		}
+		template < template < class TT, class = std::allocator<TT >> class Container>
+			void Count(Container<T> const& values){
+				for (auto e : values) Count(e);
+			}
 
-		//bin外の要素が存在したか
-		bool IsOverRange() const{ return _count[0] || _count[BIN_NUM+1]; }
+			//bin外の要素が存在したか
+			bool IsOverRange() const{ return _count[0] || _count[BIN_NUM + 1]; }
 
-		//double GetAverage() const{ return std::accumulate(_count.begin(), _count.end(), 0, [](T total, T next){ return total + next; }) / static_cast<double>(_num); }
+			//double GetAverage() const{ return std::accumulate(_count.begin(), _count.end(), 0, [](T total, T next){ return total + next; }) / static_cast<double>(_num); }
 
-		//頻度を取得
-		std::array<uint, BIN_NUM> GetCount() const{
-			std::array<uint, BIN_NUM> tmp;
-			for(uint i=0; i<BIN_NUM; ++i) tmp[i] = _count[i+1];
-			return std::move(tmp);
-		}
+			//頻度を取得
+			std::array<uint, BIN_NUM> GetCount() const{
+				std::array<uint, BIN_NUM> tmp;
+				for (uint i = 0; i < BIN_NUM; ++i) tmp[i] = _count[i + 1];
+				return std::move(tmp);
+			}
 
 #ifdef ENABLE_BOOST
-		//bin番目(0 ～ BIN_NUM-1)の頻度を取得
-		//return -> tuple<頻度, 範囲最小値(以上), 範囲最大値(未満)>
-		maybe<std::tuple<uint,int,int>> GetCount(uint bin) const{ return bin < BIN_NUM ? maybe<std::tuple<uint,int,int>>(std::make_tuple(_count[bin+1], _delta*bin+_min, _delta*(bin+1)+_min)) : nothing; }
+			//bin番目(0 ～ BIN_NUM-1)の頻度を取得
+			//return -> tuple<頻度, 範囲最小値(以上), 範囲最大値(未満)>
+			maybe<std::tuple<uint, int, int>> GetCount(uint bin) const{ return bin < BIN_NUM ? maybe < std::tuple < uint, int, int >> (std::make_tuple(_count[bin + 1], _delta*bin + _min, _delta*(bin + 1) + _min)) : nothing; }
 #else
-		std::tuple<uint,int,int> GetCount(uint bin) const{ return bin < BIN_NUM ? std::make_tuple(_count[bin+1], _delta*bin+_min, _delta*(bin+1)+_min) : throw std::out_of_range("Histgram::Get, bin=" + std::to_string(bin)); }
+			std::tuple<uint,int,int> GetCount(uint bin) const{ return bin < BIN_NUM ? std::make_tuple(_count[bin+1], _delta*bin+_min, _delta*(bin+1)+_min) : throw std::out_of_range("Histgram::Get, bin=" + std::to_string(bin)); }
 #endif
 
-		void Print() const{
-			int const keta = log10(_max) + 1;
-			int const ctketa = log10(*std::max_element(_count.begin(), _count.end())) + 1;
-			T const dbar = _num < 100 ? 1.0 : _num*0.01;
+			void Print() const{
+				auto IsPlus = [](double v){ return v < 0 ? false : true; };
 
-			std::string offset1, offset2;
-			if(keta < 3) offset1.append(3-keta, ' ');
-			else offset2.append(keta-3, ' ');
+				auto IntDigit = [](double v){ return log10(v) + 1; };
 
-			std::cout << "-- Histgram --" << std::endl;
-			for(int i=0; i<BIN_NUM+2; ++i){
-				if (i == 0) std::cout << std::endl << "[-∞," << std::setw(keta) << _delta*i + _min << ")" << offset2 << "：" << std::setw(ctketa) << _count[i] << " ";
-				else if (i == BIN_NUM + 1) std::cout << std::endl << "[" << std::setw(keta) << _delta*(i - 1) + _min << ",+∞)" << offset2 << "：" << std::setw(ctketa) << _count[i] << " ";
-				else std::cout << std::endl << "[" << std::setw(keta) << _delta*(i - 1) + _min << "," << std::setw(keta) << _delta*i + _min << ")" << offset1 << "：" << std::setw(ctketa) << _count[i] << " ";
-				
-				
-				for(int j=1; dbar*j <= _count[i] ; ++j) printf("|");
+				auto Space = [](int num){
+					std::string space;
+					for (int i = 0; i < num; ++i) space.append(" ");
+					return std::move(space);
+				};
+
+				int const rketa = IntDigit(_max);
+				int const disp_precision = rketa > 2 ? 0 : 2-rketa;
+				int const keta = std::max(rketa, std::min((int) Precision(_delta), disp_precision) + 2);
+				int const ctketa = log10(*std::max_element(_count.begin(), _count.end())) + 1;
+				T const dbar = _num < 100 ? 1.0 : _num*0.01;
+
+				/*
+				std::string offset1, offset2;
+				if (keta < 3) offset1.append(2 - keta, ' ');
+				else offset2.append(keta - 3, ' ');*/
+
+				std::cout << "\n-- Histgram --\n";
+				for (int i = 0; i < BIN_NUM + 2; ++i){
+					auto low = _delta*(i - 1) + _min;
+					auto high = _delta*i + _min;
+
+					if (i == 0) std::cout << std::fixed << std::setprecision(disp_precision) << "\n[-∞" << Space(keta-2) << "," << std::setw(keta + 1) << high << ")" << "：" << std::setw(ctketa) << _count[i] << " ";
+					else if (i == BIN_NUM + 1) std::cout << std::fixed << std::setprecision(disp_precision) << "\n[" << std::setw(keta + 1) << low << ",+∞" << Space(keta - 2) << ")" << "：" << std::setw(ctketa) << _count[i] << " ";
+					else std::cout << std::fixed << std::setprecision(disp_precision) << "\n[" << std::setw(keta+1) << low << "," << std::setw(keta+1) << high << ")" << "：" << std::setw(ctketa) << _count[i] << " ";
+					
+					for (int j = 1; dbar*j <= _count[i]; ++j) printf("|");
+				}
+				std::cout << std::resetiosflags(std::ios_base::floatfield) << "\n\n";
 			}
-		}
 	};
 
 /* 修正・補正・追加・削除 */
