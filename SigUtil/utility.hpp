@@ -3,7 +3,7 @@
 
 /* Last Update : 2014 1 1 */
 
-#define ENABLE_BOOST
+#define ENABLE_BOOST 1
 
 #include <windows.h>
 #include <stdio.h>
@@ -18,13 +18,15 @@
 #include <functional>
 #include <algorithm>
 #include <array>
+#include <set>
+#include <map>
 #include <unordered_set>
 #include <unordered_map>
 #include <chrono>
 #include <numeric>
 #include <regex>
 
-#ifdef ENABLE_BOOST
+#if ENABLE_BOOST
 
 #include <boost/optional.hpp>
 #include <boost/format.hpp>
@@ -44,7 +46,7 @@ namespace sig{
 	typedef std::shared_ptr< std::wstring > WStrPtr;
 	typedef std::shared_ptr< std::wstring const > C_WStrPtr;
 
-#ifdef ENABLE_BOOST
+#if ENABLE_BOOST
 
 	template <typename T>
 	using maybe = boost::optional<T>;
@@ -53,24 +55,92 @@ namespace sig{
 
 #endif
 
+
 #undef max
 #undef min
 
 
-/* メタ関数・メタクラス */
+/* ヘルパ関数・ヘルパクラス */
 	struct NullType{};
+
+	extern void* enabler;
+
+	template <class Container, class Sfinae = void> struct ContainerConstructor{ typedef Container type; };
+	template <class Container> struct ContainerConstructor<Container, typename std::enable_if<std::is_array<Container>::value>::type>{ typedef std::array<std::remove_extent<Container>, std::rank<Container>::value> type; };
+	
+	//template <class T, class D = void> struct HasBegin : std::true_type{};
+	//template <class T> struct HasBegin<T, decltype(std::declval<T>().begin())> : std::false_type{};
+
+	//template <class T> constexpr auto HasBegin(int) ->decltype(std::declval<T>().begin()){ return true; }
+	//template <class T> constexpr bool HasBegin(...){ return false; }
+
+	//template <typename T> constexpr auto has_reserve_method(int) -> decltype(std::declval<T>().reserve(0), bool()) { return true; }
+	//template <typename T> constexpr bool has_reserve_method(...) { return false; }
+
+	/*template <typename T> auto Reserve(T& t, size_t n) -> typename std::enable_if<has_reserve_method<T>(0), void>::type {
+		std::cout << "true" << std::endl;
+		t.reserve(n);
+	}
+
+	template <typename T> auto Reserve(T& t, size_t n) -> typename std::enable_if<!has_reserve_method<T>(0), void>::type {
+		std::cout << "false" << std::endl;
+	}*/
+	
+	/*template <typename T, typename std::enable_if<has_reserve_method<T>(0)>::type *& = enabler> void Reserve(T& t, size_t n){
+		std::cout << "true" << std::endl;
+		t.reserve(n);
+	}
+
+	template <typename T, typename std::enable_if<!has_reserve_method<T>(0)>::type *& = enabler> void Reserve(T& t, size_t n) {
+		std::cout << "false" << std::endl;
+	}*/
 
 /* 関数型プログラミング */
 
 	//[a] -> (a -> r) -> [r]
-	template < class R, class A, template < class T, class = std::allocator<T >> class Container>
+	//戻り値の型Rは明示的に指定が必要
+/*	template <class Out, class In, class Func, typename std::enable_if<HasBegin<Out>(0)>::type*& = enabler>
+	Out Map(In const& list, Func func)
+	{
+		Out result;
+		//Reserve(result, list.size());
+		std::transform(std::begin(list), std::end(list), std::inserter(result, std::begin(result)), func);
+		return std::move(result);
+	}
+
+	template <class Out, class In, class Func, typename std::enable_if<!HasBegin<Out>(0)>::type*& = enabler>
+	std::vector<Out> Map(In const& list, Func func)
+	{
+		std::vector<Out> result;
+		//Reserve(result, list.size());
+		std::transform(std::begin(list), std::end(list), std::inserter(result, std::begin(result)), func);
+		return std::move(result);
+	}
+*/
+
+	template <class R, class A, template <class T, class = std::allocator<T>> class Container>
 	Container<R> Map(Container<A> const& list, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type)> const& func)
 	{
 		Container<R> result;
-
-		for (auto e : list) result.push_back(func(e));
-
+		//Reserve(result, list.size());
+		std::transform(list.begin(), list.end(), std::back_inserter(result), func);
 		return std::move(result);
+	}
+	
+	template <class R, class A, std::size_t N, template <class T, size_t N> class Array>
+	Array<R, N> Map(Array<A, N> const& list, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type)> const& func)
+	{
+		Array<R, N> result;
+		std::transform(list.begin(), list.end(), result.begin(), func);
+		return result;
+	}
+
+	template <class R, class A, std::size_t N>
+	std::array<R, N> Map(A const(&list)[N], std::function<typename std::common_type<R>::type(typename std::common_type<A>::type)> const& func)
+	{
+		std::array<R, N> result;
+		std::transform(list, list + N, result.begin(), func);
+		return result;
 	}
 
 	//[a] -> [b] -> (a -> b -> r) -> [r]
@@ -87,7 +157,7 @@ namespace sig{
 		return std::move(result);
 	}
 
-#ifdef ENABLE_BOOST
+#if ENABLE_BOOST
 	//[a] -> b -> (a -> b -> r) -> [r]
 	//戻り値の型Rは、明示的に指定する必要あり
 	template < class R, class A, class B, template < class T, class = std::allocator<T >> class Container>
@@ -233,7 +303,7 @@ namespace sig{
 		}
 	}
 
-#ifdef ENABLE_BOOST
+#if ENABLE_BOOST
 
 	//条件に最適な値とそのIndexを探す.　comp(比較対象値, 暫定最小値)
 	template < class T, class CMP, template < class T, class = std::allocator<T>> class Container >
@@ -295,7 +365,7 @@ namespace sig{
 
 /* 便利アイテム */
 
-#ifdef ENABLE_BOOST
+#if ENABLE_BOOST
 	//パーセント型
 	class Percent
 	{
@@ -408,7 +478,7 @@ namespace sig{
 				return std::move(tmp);
 			}
 
-#ifdef ENABLE_BOOST
+#if ENABLE_BOOST
 			//bin番目(0 ～ BIN_NUM-1)の頻度を取得
 			//return -> tuple<頻度, 範囲最小値(以上), 範囲最大値(未満)>
 			maybe<std::tuple<uint, int, int>> GetCount(uint bin) const{ return bin < BIN_NUM ? maybe < std::tuple < uint, int, int >> (std::make_tuple(_count[bin + 1], _delta*bin + _min, _delta*(bin + 1) + _min)) : nothing; }
@@ -503,7 +573,7 @@ namespace sig{
 			return std::move(removes);
 		}
 	
-		#ifdef ENABLE_BOOST
+		#if ENABLE_BOOST
 		#define Sig_Eraser_ParamType1 typename boost::call_traits<T>::param_type
 		#else
 		#define Sig_Eraser_ParamType1 typename std::common_type<T>::type const&
@@ -567,7 +637,7 @@ namespace sig{
 /* 文字列処理 */
 	namespace String{
 
-	#ifdef ENABLE_BOOST
+	#if ENABLE_BOOST
 
 		//HTML風にタグをエンコード・デコードする
 		//例：　<TAG>text<TAG>
@@ -655,7 +725,7 @@ namespace sig{
 		}
 
 	/*
-	#ifdef ENABLE_BOOST
+	#if ENABLE_BOOST
 
 		//コンテナに格納された全文字列を結合して1つの文字列に(delimiterで区切り指定)
 		template < class T, template < class T, class = std::allocator<T >> class Container >
@@ -736,7 +806,7 @@ namespace sig{
 			return typename Map2Regex<String>::type(RegexEscaper(expression));
 		}
 
-	#ifdef ENABLE_BOOST
+	#if ENABLE_BOOST
 
 		//std::regex_search のラッパ関数。
 		//return -> maybe ? [マッチした箇所の順番][マッチ内の参照の順番. 0は全文, 1以降は参照箇所] : nothing
@@ -994,7 +1064,7 @@ namespace sig{
 			}
 		}
 
-#ifdef ENABLE_BOOST
+#if ENABLE_BOOST
 
 		//指定ディレクトリにあるファイル名を取得
 		//args -> directry_pass: 読み込み先のフォルダパス
@@ -1030,7 +1100,7 @@ namespace sig{
 			}
 		}
 
-#ifdef ENABLE_BOOST
+#if ENABLE_BOOST
 
 		//指定ディレクトリにあるファイル名をフルパスで取得
 		//args -> directry_pass: 読み込み先のフォルダパス
@@ -1204,7 +1274,7 @@ namespace sig{
 				empty_dest.push_back(conv(std::move(line)));
 		}
 
-#ifdef ENABLE_BOOST
+#if ENABLE_BOOST
 
 		//読み込み失敗: return -> maybe == nothing
 		template <class String>
