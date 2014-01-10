@@ -25,6 +25,7 @@
 #include <chrono>
 #include <numeric>
 #include <regex>
+#include <utility>
 
 #if ENABLE_BOOST
 
@@ -38,31 +39,29 @@
 #endif
 
 namespace sig{
+#undef max
+#undef min
 
 	/* typedef */
-	typedef unsigned long int uint;
+	typedef unsigned long uint;
 	typedef std::shared_ptr< std::string > StrPtr;
 	typedef std::shared_ptr< std::string const > C_StrPtr;
 	typedef std::shared_ptr< std::wstring > WStrPtr;
 	typedef std::shared_ptr< std::wstring const > C_WStrPtr;
-
+	
 #if ENABLE_BOOST
 
 	template <typename T>
 	using maybe = boost::optional<T>;
-	//#define maybe boost::optional
+
 	auto const nothing = boost::none;
 
 #endif
 
 
-#undef max
-#undef min
-
-
 /* ヘルパ関数・ヘルパクラス */
 	struct NullType{};
-
+	
 	extern void* enabler;
 
 	template <class Container, class Sfinae = void> struct ContainerConstructor{ typedef Container type; };
@@ -95,6 +94,10 @@ namespace sig{
 		std::cout << "false" << std::endl;
 	}*/
 
+	template <class T> auto Reserve(T& t, size_t n) ->decltype(t.reserve(n), void()){ t.reserve(n); std::cout << "true" << std::endl; }
+	template <class T> void Reserve(T& t, size_t n){ std::cout << "false" << std::endl; }
+}
+
 /* 関数型プログラミング */
 
 	//[a] -> (a -> r) -> [r]
@@ -122,7 +125,7 @@ namespace sig{
 	Container<R> Map(Container<A> const& list, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type)> const& func)
 	{
 		Container<R> result;
-		//Reserve(result, list.size());
+		Reserve(result, list.size());
 		std::transform(list.begin(), list.end(), std::back_inserter(result), func);
 		return std::move(result);
 	}
@@ -215,8 +218,8 @@ namespace sig{
 
 
 	//重複の無い整数乱数を生成
-	template < template < class T, class = std::allocator<T >> class Container = std::vector >
-	Container<int> RandomUniqueNumbers(uint n, int min, int max, bool debug) {
+	template < template < class T, class = std::allocator<T>> class Container = std::vector >
+	Container<int> RandomUniqueNumbers(std::size_t n, int min, int max, bool debug) {
 		std::unordered_set<int> match;
 		Container<int> result;
 		static SimpleRandom<int> Rand(0, max - min, debug);
@@ -279,7 +282,7 @@ namespace sig{
 	}
 
 	//コンテナの要素をシャッフル
-	template <class T, template < class T, class = std::allocator<T >> class Container>
+	template <class T, template < class T_, class = std::allocator<T_>> class Container>
 	void Shuffle(Container<T>& data)
 	{
 		static SimpleRandom<double> myrand(0.0, 1.0, false);
@@ -287,7 +290,7 @@ namespace sig{
 	}
 
 	//2つのコンテナの要素を対応させながらソート
-	template < class T1, class T2, template < class T, class = std::allocator < T >> class Container1, template < class T, class = std::allocator<T >> class Container2>
+	template < class T1, class T2, template < class T_, class = std::allocator<T_>> class Container1, template < class T_, class = std::allocator<T_>> class Container2>
 	void Shuffle(Container1<T1>& data1, Container2<T2>& data2)
 	{
 		uint size = std::min(data1.size(), data2.size());
@@ -327,7 +330,7 @@ namespace sig{
 #endif
 
 	//コンテナへの代入演算 ([a], [b], (a -> b -> a))
-	template < class T1, class T2, template < class T, class = std::allocator<T>> class Container>
+	template < class T1, class T2, template < class T_, class = std::allocator<T_>> class Container>
 		void CompoundAssignment(Container<T1>& list1, Container<T2> const& list2, std::function<typename std::common_type<T1>::type(typename std::common_type<T1>::type, typename std::common_type<T2>::type)> const& op)
 	{
 		const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
@@ -336,14 +339,14 @@ namespace sig{
 	}
 
 	//コンテナへの代入演算 ([a], b, (a -> b -> a))
-	template < class T1, class T2, template < class T, class = std::allocator<T>> class Container>
+	template < class T1, class T2, template < class T_, class = std::allocator<T_>> class Container>
 		void CompoundAssignment(Container<T1>& list1, T2 const& v, std::function<typename std::common_type<T1>::type(typename std::common_type<T1>::type, typename std::common_type<T2>::type)> const& op)
 	{
 		for (uint i = 0, length = list1.size(); i < length; ++i) list1[i] = op(list1[i], v);
 	}
 
 	//値を指定個複製する
-	template < class T, template < class T, class = std::allocator<T >> class Container = std::vector>
+	template < class T, template < class T_, class = std::allocator<T_>> class Container = std::vector>
 		Container<T> Fill(T const& value, uint count)
 	{
 		Container<T> tmp;
@@ -354,7 +357,7 @@ namespace sig{
 
 	//生成関数を通して値を生成する
 	//args -> generator: 生成関数.引数はループindex
-	template < class T, template < class T, class = std::allocator<T >> class Container = std::vector>
+	template < class T, template < class T_, class = std::allocator<T_>> class Container = std::vector>
 		Container<T> Generate(std::function<T(int)> const& generator, uint count)
 	{
 		Container<T> tmp;
@@ -554,7 +557,7 @@ namespace sig{
 		//コンテナの要素から重複したものを削除
 		//args -> list: コンテナ, need_removes: 削除した要素を戻り値で受け取るか, is_sorted: コンテナがソート済みか 
 		//return -> 削除要素
-		template <class T, template<class T, class = std::allocator<T>> class Container>
+		template <class T, template<class T_, class = std::allocator<T_>> class Container>
 		inline Container<T> RemoveDuplicates(Container<T>& list, bool need_removes, bool is_sorted = false)
 		{
 			if (!is_sorted) std::sort(list.begin(), list.end());
@@ -582,7 +585,7 @@ namespace sig{
 		//コンテナから指定要素を1つ削除
 		//args -> list: コンテナ, remove: 削除要素
 		//return -> 削除要素が存在したか
-		template <class T, template<class T, class = std::allocator<T>> class Container >
+		template <class T, template<class T_, class = std::allocator<T_>> class Container >
 		inline bool RemoveOne(Container<T>& list, Sig_Eraser_ParamType1 remove)
 		{
 			for(auto it =list.begin(), end = list.end(); it != end;){
@@ -598,7 +601,7 @@ namespace sig{
 		//コンテナから述語条件を満たす要素を1つ削除
 		//args -> list: コンテナ, remove_pred: 削除判別関数
 		//return -> 削除要素が存在したか
-		template <class Pred, class T, template<class T, class = std::allocator<T>> class Container >
+		template <class Pred, class T, template<class T_, class = std::allocator<T_>> class Container >
 		inline bool RemoveOneIf(Container<T>& list, Pred remove_pred)
 		{
 			for(auto it =list.begin(), end = list.end(); it != end;){
@@ -614,7 +617,7 @@ namespace sig{
 		//コンテナから指定要素を全削除
 		//args -> list: コンテナ, remove: 削除要素
 		//return -> 削除要素が存在したか
-		template < class T, template < class T, class = std::allocator<T >> class Container >
+		template < class T, template < class T_, class = std::allocator<T_>> class Container >
 		inline bool RemoveAll(Container<T>& list, Sig_Eraser_ParamType1 remove)
 		{
 			uint presize = list.size();
@@ -625,7 +628,7 @@ namespace sig{
 		//コンテナから述語条件を満たす要素を全削除
 		//args -> list: コンテナ, remove_pred: 削除判別関数
 		//return -> 削除要素が存在したか
-		template <class Pred, class T, template<class T, class = std::allocator<T>> class Container >
+		template <class Pred, class T, template<class T_, class = std::allocator<T_>> class Container >
 		inline bool RemoveAllIf(Container<T>& list, Pred remove_pred)
 		{
 			uint presize = list.size();
@@ -694,7 +697,7 @@ namespace sig{
 	#endif
 
 		//文字列をある文字を目印に分割する
-		template < class String, template<class T, class Allocator = std::allocator<T>> class Container = std::vector >
+		template < class String, template <class T_, class = std::allocator<T_>> class Container = std::vector >
 		Container<String> Split(String src, typename std::common_type<String>::type const& delim, bool ignore_blank = true)
 		{
 			Container<String> result;
@@ -712,13 +715,13 @@ namespace sig{
 			return std::move(result);
 		}
 
-		template < template<class STRING, class Allocator = std::allocator<STRING>> class Container = std::vector >
+		template < template <class T_, class = std::allocator<T_>> class Container = std::vector >
 		Container<std::string> Split(char const* src, char const* delim)
 		{
 			return Split<std::string, Container>(std::string(src), delim);
 		}
 
-		template < template < class STRING, class Allocator = std::allocator<STRING >> class Container = std::vector >
+		template < template < class T_, class = std::allocator<T_>> class Container = std::vector >
 		Container<std::wstring> Split(wchar_t const* src, wchar_t const* delim)
 		{
 			return Split<std::wstring, Container>(std::wstring(src), delim);
@@ -742,7 +745,7 @@ namespace sig{
 	*/
 	
 		//コンテナに格納された全文字列を結合して1つの文字列に(delimiterで区切り指定)
-		template < class T, template < class T, class = std::allocator<T >> class Container >
+		template < class T, template < class T_, class = std::allocator<T_>> class Container >
 		inline std::string CatStr(Container<T> const& container, std::string delimiter = "")
 		{
 			std::ostringstream ostream;
@@ -754,7 +757,7 @@ namespace sig{
 			return ostream.str();
 		}
 
-		template < class T, template < class T, class = std::allocator<T >> class Container >
+		template < class T, template < class T_, class = std::allocator<T_>> class Container >
 		inline std::wstring CatWStr(Container<T> const& container, std::wstring delimiter = L"")
 		{
 			std::wostringstream ostream;
@@ -886,137 +889,138 @@ namespace sig{
 	}
 	
 /* 集合操作 */
+	namespace Set{
 
-	//vector, list の積集合を求める(要素数は1個). [動作要件：T::operator==()]
-	template <class T, template<class T, class = std::allocator<T>> class Container>
-	Container<T> SetIntersection(Container<T> const& src1, Container<T> const& src2)
-	{
-		Container<T> result;
+		//vector, list の積集合を求める(要素数は1個). [動作要件：T::operator==()]
+		template <class T, template<class T_, class = std::allocator<T_>> class Container>
+		Container<T> SetIntersection(Container<T> const& src1, Container<T> const& src2)
+		{
+			Container<T> result;
 
-		for(T const& e1 : src1){
-			for(T const& e2 : src2){
-				if(e1 == e2 && [&result, &e2]()->bool{
+			for(T const& e1 : src1){
+				for(T const& e2 : src2){
+					if(e1 == e2 && [&result, &e2]()->bool{
+						for(T const& r : result){
+							if(r == e2) return false;
+						}
+						return true;
+					}()){
+						result.push_back(e2);
+					}
+				}
+			}
+			return move(result);
+		}
+
+		//unordered_set の積集合を求める.[動作要件：T::operator==()]
+		template <class T>
+		std::unordered_set<T> SetIntersection(std::unordered_set<T> const& src1, std::unordered_set<T> const& src2)
+		{
+			std::unordered_set<T> result;
+
+			for(T const& e1 : src1){
+				for(T const& e2 : src2){
+					if(e1 == e2) result.insert(e2);
+				}
+			}
+			return move(result);
+		}
+
+		//unordered_map の積集合を求める(bool key ? キーで比較【第1引数の要素を取得】 : 両方一致). [動作要件：K::operator==(), V::operator==()]
+		template <class K, class V>
+		std::unordered_map<K,V> SetIntersection(std::unordered_map<K,V> const& src, std::unordered_map<K,V> const& other, bool const key)
+		{
+			std::unordered_map<K,V> result;
+
+			for(auto const& e : src){
+				for(auto const& o : other){
+					if(key && e.first == o.first) result.insert(e);
+					else if(e == o) result.insert(e);
+				}
+			}
+			return move(result);
+		}
+
+
+		//vector, list の差集合を求める(要素数は1個). [動作要件：T::operator==()]
+		template <class T, template<class T_, class = std::allocator<T_>> class Container>
+		Container<T> SetDifference(Container<T> const& src1, Container<T> const& src2)
+		{
+			Container<T> result, sum(src1);
+			sum.insert(sum.end(), src2.begin(), src2.end());
+
+			auto intersection = SetIntersection(src1, src2);
+
+			for(T const& s : sum){
+				if([&intersection, &s]()->bool{
+					for(T const& i : intersection){
+						if(s == i) return false;
+					}
+					return true;
+				}() && [&result, &s]()->bool{
 					for(T const& r : result){
-						if(r == e2) return false;
+						if(s == r) return false;
+					}
+					return true;
+				}()	){
+					result.push_back(s);
+				}
+			}
+			return move(result);
+		}
+
+		//unordered_set の差集合を求める.[動作要件：T::operator==()]
+		template <class T>
+		std::unordered_set<T> SetDifference(std::unordered_set<T> const& src1, std::unordered_set<T> const& src2)
+		{
+			std::unordered_set<T> result, sum(src1);
+			sum.insert(src2.begin(), src2.end());
+
+			auto intersection = SetIntersection(src1, src2);
+
+			for(T const& s : sum){
+				if([&intersection, &s]()->bool{
+					for(T const& i : intersection){
+						if(s == i) return false;
 					}
 					return true;
 				}()){
-					result.push_back(e2);
+					result.insert(s);
 				}
 			}
+			return move(result);
 		}
-		return move(result);
-	}
 
-	//unordered_set の積集合を求める.[動作要件：T::operator==()]
-	template <class T>
-	std::unordered_set<T> SetIntersection(std::unordered_set<T> const& src1, std::unordered_set<T> const& src2)
-	{
-		std::unordered_set<T> result;
+		//unordered_map の差集合を求める(bool key ? キーで比較 : 両方一致). [動作要件：K::operator==(), V::operator==()]
+		template <class K, class V>
+		std::unordered_map<K,V> SetDifference(std::unordered_map<K,V> const& src1, std::unordered_map<K,V> const& src2, bool const key)
+		{
+			std::unordered_map<K,V> result, sum(src1);
+			sum.insert(src2.begin(), src2.end());
 
-		for(T const& e1 : src1){
-			for(T const& e2 : src2){
-				if(e1 == e2) result.insert(e2);
-			}
-		}
-		return move(result);
-	}
+			auto intersection = SetIntersection(src1, src2, key);
 
-	//unordered_map の積集合を求める(bool key ? キーで比較【第1引数の要素を取得】 : 両方一致). [動作要件：K::operator==(), V::operator==()]
-	template <class K, class V>
-	std::unordered_map<K,V> SetIntersection(std::unordered_map<K,V> const& src, std::unordered_map<K,V> const& other, bool const key)
-	{
-		std::unordered_map<K,V> result;
-
-		for(auto const& e : src){
-			for(auto const& o : other){
-				if(key && e.first == o.first) result.insert(e);
-				else if(e == o) result.insert(e);
-			}
-		}
-		return move(result);
-	}
-
-
-	//vector, list の差集合を求める(要素数は1個). [動作要件：T::operator==()]
-	template <class T, template<class T, class = std::allocator<T>> class Container>
-	Container<T> SetDifference(Container<T> const& src1, Container<T> const& src2)
-	{
-		Container<T> result, sum(src1);
-		sum.insert(sum.end(), src2.begin(), src2.end());
-
-		auto intersection = SetIntersection(src1, src2);
-
-		for(T const& s : sum){
-			if([&intersection, &s]()->bool{
-				for(T const& i : intersection){
-					if(s == i) return false;
+			for(auto const& s : sum){
+				if([&intersection, &s, key]()->bool{
+					for(auto const& i : intersection){
+						if(key && s.first == i.first) return false;
+						else if(!key && s == i) return false;
+					}
+					return true;
+				}()){
+					result.insert(s);
 				}
-				return true;
-			}() && [&result, &s]()->bool{
-				for(T const& r : result){
-					if(s == r) return false;
-				}
-				return true;
-			}()	){
-				result.push_back(s);
 			}
+			return move(result);
 		}
-		return move(result);
+
 	}
-
-	//unordered_set の差集合を求める.[動作要件：T::operator==()]
-	template <class T>
-	std::unordered_set<T> SetDifference(std::unordered_set<T> const& src1, std::unordered_set<T> const& src2)
-	{
-		std::unordered_set<T> result, sum(src1);
-		sum.insert(src2.begin(), src2.end());
-
-		auto intersection = SetIntersection(src1, src2);
-
-		for(T const& s : sum){
-			if([&intersection, &s]()->bool{
-				for(T const& i : intersection){
-					if(s == i) return false;
-				}
-				return true;
-			}()){
-				result.insert(s);
-			}
-		}
-		return move(result);
-	}
-
-	//unordered_map の差集合を求める(bool key ? キーで比較 : 両方一致). [動作要件：K::operator==(), V::operator==()]
-	template <class K, class V>
-	std::unordered_map<K,V> SetDifference(std::unordered_map<K,V> const& src1, std::unordered_map<K,V> const& src2, bool const key)
-	{
-		std::unordered_map<K,V> result, sum(src1);
-		sum.insert(src2.begin(), src2.end());
-
-		auto intersection = SetIntersection(src1, src2, key);
-
-		for(auto const& s : sum){
-			if([&intersection, &s, key]()->bool{
-				for(auto const& i : intersection){
-					if(key && s.first == i.first) return false;
-					else if(!key && s == i) return false;
-				}
-				return true;
-			}()){
-				result.insert(s);
-			}
-		}
-		return move(result);
-	}
-
-
 
 /* 入出力 */
 	namespace File{
 
 		//ディレクトリ・ファイルパスの末尾に'/'or'\\'があるかチェックし、付けるか外すかどうか指定
-		std::wstring DirpassTailModify(std::wstring const& directory_pass, bool const has_slash)
+		inline std::wstring DirpassTailModify(std::wstring const& directory_pass, bool const has_slash)
 		{
 			if(directory_pass.empty()) return directory_pass;
 
@@ -1213,7 +1217,7 @@ namespace sig{
 			}
 
 			std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-			typename OFS_SELECTION<std::decay<String>::type>::fstream ofs(file_pass, open_mode);
+			typename OFS_SELECTION<typename std::decay<String>::type>::fstream ofs(file_pass, open_mode);
 			SaveLine(src, ofs);
 		}
 		template <class String>
@@ -1357,7 +1361,7 @@ namespace sig{
 		std::wcout << text << delimiter;
 	}
 
-	template < class T, template < class T, class Allocator = std::allocator<T >> class Container, typename std::enable_if<!std::is_same<T, std::wstring>::value>::type*& = enabler>
+	template < class T, template < class T_, class = std::allocator<T_>> class Container, typename std::enable_if<!std::is_same<T, std::wstring>::value>::type*& = enabler>
 	inline void Print(Container<T> const& container, char const* const delimiter = "\n")
 	{
 		std::copy(container.begin(), container.end(), std::ostream_iterator<T>(std::cout, delimiter));
