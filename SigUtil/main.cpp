@@ -52,7 +52,13 @@ void MapTest()
 
 int main()
 {
-	TagDealerTest();
+	setlocale(LC_ALL, "Japanese");
+
+	//RegexTest();
+	//TagDealerTest();
+	//SplitTest();
+	//CatStrTest();
+	StrConvertTest();
 
 	return 0;
 }

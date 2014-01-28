@@ -3,43 +3,126 @@
 
 #include "sigutil.hpp"
 #include <string>
-
+#include <regex>
 
 /* 文字列処理関連 */
 
 namespace sig{
+
+	template <class T>
+	struct StringId{};
+	template <>
+	struct StringId<std::string>{ typedef std::string type; };
+	template <>
+	struct StringId<char const*>{ typedef std::string type; };
+	template <>
+	struct StringId<std::wstring>{ typedef std::wstring type; };
+	template <>
+	struct StringId<wchar_t const*>{ typedef std::wstring type; };
+
+	template <class T>
+	using String = typename StringId<typename std::decay<T>::type>::type;
+
+	template <class T>
+	struct Map2Regex{ typedef void type; };
+	template <>
+	struct Map2Regex<std::string>{ typedef std::regex type; };
+	template <>
+	struct Map2Regex<std::wstring>{ typedef std::wregex type; };
+
+	template <class T>
+	struct Map2Smatch{ typedef void type; };
+	template <>
+	struct Map2Smatch<std::string>{ typedef std::smatch type; };
+	template <>
+	struct Map2Smatch<std::wstring>{ typedef std::wsmatch type; };
+
+
+	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
+	inline auto RegexEscaper(std::string const& expression) ->std::string
+	{
+		static const std::regex escape_reg("([(){}\\[\\]|^?$.+*\\\\])");
+		return std::regex_replace(expression, escape_reg, "\\$1");
+	}
+	inline auto RegexEscaper(std::wstring const& expression) ->std::wstring
+	{
+		static const std::wregex escape_reg(L"([(){}\\[\\]|^?$.+*\\\\])");
+		return std::regex_replace(expression, escape_reg, L"\\$1");
+	}
+
+	//自動でエスケープしてstd::regex or std::wregex を返す
+	template <class T>
+	auto RegexMaker(T const& expression) ->typename Map2Regex<String<T>>::type
+	{
+		return typename Map2Regex<String<T>>::type(RegexEscaper(expression));
+	}
+
+
+	//std::regex_search のラッパ関数。
+	//return -> maybe ? [マッチした箇所の順番][マッチ内の参照の順番. 0は全文, 1以降は参照箇所] : nothing
+	//例：
+	//src = "test tes1 tes2"
+	//expression = std::regex("tes(\\d)")
+	//return -> [[tes1, 1], [tes2, 2]]
+	template < class T, template<class T_, class = std::allocator<T_>> class Container = std::vector >
+	auto RegexSearch(T src, typename Map2Regex<String<T>>::type const& expression) ->typename MaybeReturn< Container< Container<String<T>>>>::type
+	{
+		Container<Container<String<T>>> d;
+		typename Map2Smatch<String<T>>::type match;
+		auto tmp = String<T>(src);
+
+		while (std::regex_search(tmp, match, expression)){
+			d.push_back(Container<String<T>>());
+			for (auto const& m : match) d[d.size() - 1].push_back(m);
+			tmp = match.suffix().str();
+		}
+
+		return d.empty() ? Nothing(std::move(d)) : typename MaybeReturn<Container<Container<String<T>>>>::type(std::move(d));
+	}
+
+/*
+	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープしてから処理（推奨）
+	template < class T, template < class T_, class = std::allocator<T_>> class Container = std::vector >
+	auto RegexSearch(T src, T expression) ->typename MaybeReturn< Container< Container<String<T>>>>::type
+	{
+		return RegexSearch(src, RegexMaker(expression));
+	}
+*/
 
 	//HTML風にタグをエンコード・デコードする
 	//例：　<TAG>text<TAG>
 	template <class String>
 	class TagDealer
 	{
-		const String _tel;
-		const String _ter;
+		const String tel_;
+		const String ter_;
 
 	public:
-		TagDealer(String tag_encloser_left, String tag_encloser_right) : _tel(tag_encloser_left), _ter(tag_encloser_right){};
+		TagDealer(String tag_encloser_left, String tag_encloser_right) : tel_(tag_encloser_left), ter_(tag_encloser_right){};
 
 		String Encode(String const& src, String const& tag) const{
-			auto tag_str = _tel + tag + _ter;
+			auto tag_str = tel_ + tag + ter_;
 			return tag_str + src + tag_str;
 		}
-
-		template < template < class T, class Allocator = std::allocator<T>> class Container >
-		String Encode(Container<String> const& src, Container<String> const& tag) const;
-
-		typename MaybeReturn<String>::type Decode(String const& src, String const& tag) const{
-			auto tag_str = _tel + tag + _ter;
-			auto parse = Split(src, tag_str, false);
-			return parse.size() < 2 ? Nothing(EmptyString<String>::value) : typename MaybeReturn<String>::type(parse[1]);
+		
+		auto Decode(String const& src, String const& tag) ->typename MaybeReturn<String>::type const{
+			auto tag_str = tel_ + tag + ter_;
+			auto parse = Split(" " + src, tag_str);
+			return parse.size() < 2 ? Nothing(String()) : typename MaybeReturn<String>::type(parse[1]);
 		}
 
-		template < template < class T, class Allocator = std::allocator<T >> class Container >
-		typename MaybeReturn<Container<String>>::type Decode(String const& src, Container<String> const& tag) const;
+		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+		String Encode(Container<String> const& src, Container<String> const& tag) const;
+
+#if ENABLE_BOOST
+		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+		auto Decode(String const& src, Container<String> const& tag) ->typename MaybeReturn<Container<String>>::type const;
+#endif
 	};
 
+#if ENABLE_BOOST
 	template <class String>
-	template < template < class T, class Allocator = std::allocator<T >> class Container >
+	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
 	{
 		String result;
@@ -51,30 +134,32 @@ namespace sig{
 	}
 
 	template <class String>
-	template < template < class T, class Allocator = std::allocator<T >> class Container >
-	typename MaybeReturn<Container<String>>::type TagDealer<String>::Decode(String const& src, Container<String> const& tag) const
+	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+	auto TagDealer<String>::Decode(String const& src, Container<String> const& tag) ->typename MaybeReturn<Container<String>>::type const
 	{
 		Container<String> result;
 		for (auto const& e : tag){
 			if (auto d = Decode(src, e)) result.push_back(*d);
 		}
-		return result.empty() ? nothing : maybe<Container<String>>(std::move(result));
+		return result.empty() ? Nothing(String()) : typename MaybeReturn<Container<String>>::type(std::move(result));
 	}
+#endif
 
-
-	//文字列をある文字を目印に分割する
+	//文字列(src)をある文字列(delim)を目印に分割する
+	//戻り値のコンテナはデフォルトではvector
+	//例：src="one, 2, 参 ", delim="," -> return vector<string>{"one", " 2", " 参 "}
 	template < class String, template <class T_, class = std::allocator<T_>> class Container = std::vector >
-	Container<String> Split(String src, typename std::common_type<String>::type const& delim, bool ignore_blank = true)
+	auto Split(String src, typename std::common_type<String>::type const& delim) ->Container<typename StringId<String>::type>
 	{
 		Container<String> result;
 		int const mag = delim.size();
 		int cut_at;
 
 		while ((cut_at = src.find(delim)) != src.npos){
-			if (!ignore_blank || cut_at > 0) result.push_back(src.substr(0, cut_at));
+			if (cut_at > 0) result.push_back(src.substr(0, cut_at));
 			src = src.substr(cut_at + mag);
 		}
-		if (!ignore_blank || src.length() > 0){
+		if (src.length() > 0){
 			result.push_back(src);
 		}
 
@@ -82,20 +167,19 @@ namespace sig{
 	}
 
 	template < template <class T_, class = std::allocator<T_>> class Container = std::vector >
-	Container<std::string> Split(char const* src, char const* delim)
+	Container<std::string> Split(char const* const src, char const* const delim)
 	{
-		return Split<std::string, Container>(std::string(src), delim);
+		return Split<std::string, Container>(std::string(src), std::string(delim));
 	}
 
 	template < template < class T_, class = std::allocator<T_>> class Container = std::vector >
-	Container<std::wstring> Split(wchar_t const* src, wchar_t const* delim)
+	Container<std::wstring> Split(wchar_t const* const src, wchar_t const* const delim)
 	{
-		return Split<std::wstring, Container>(std::wstring(src), delim);
+		return Split<std::wstring, Container>(std::wstring(src), std::wstring(delim));
 	}
 
 	/*
-	#if ENABLE_BOOST
-
+#if ENABLE_BOOST
 	//コンテナに格納された全文字列を結合して1つの文字列に(delimiterで区切り指定)
 	template < class T, template < class T, class = std::allocator<T >> class Container >
 	inline std::string CatStr(Container<T> const& container, std::string delimiter = "")
@@ -107,7 +191,7 @@ namespace sig{
 	}
 	return std::move(tmp);
 	}
-	#endif
+#endif
 	*/
 
 	//コンテナに格納された全文字列を結合して1つの文字列に(delimiterで区切り指定)
@@ -128,85 +212,14 @@ namespace sig{
 	{
 		std::wostringstream ostream;
 
-		for (auto const& src : container){
-			ostream << src << delimiter;
+		for (uint i = 0; i < container.size() - 1; ++i){
+			ostream << container[i] << delimiter;
 		}
+		ostream << container[container.size() - 1];
 		return ostream.str();
 	}
 
-	template <class STRING>
-	struct Map2Regex{
-		typedef void type;
-	};
-	template <>
-	struct Map2Regex<std::string>{
-		typedef std::regex type;
-	};
-	template <>
-	struct Map2Regex<std::wstring>{
-		typedef std::wregex type;
-	};
 
-	template <class STRING>
-	struct Map2Smatch{
-		typedef void type;
-	};
-	template <>
-	struct Map2Smatch<std::string>{
-		typedef std::smatch type;
-	};
-	template <>
-	struct Map2Smatch<std::wstring>{
-		typedef std::wsmatch type;
-	};
-
-
-	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
-	template <class String>
-	String RegexEscaper(String expression)
-	{
-		static const std::wregex escape_reg(L"([(){}\\[\\]|^?$.+*\\\\])");
-		return std::regex_replace(expression, escape_reg, L"\\$1");
-	}
-
-	template <class String>
-	typename Map2Regex<String>::type RegexMaker(String const& expression)
-	{
-		return typename Map2Regex<String>::type(RegexEscaper(expression));
-	}
-
-#if ENABLE_BOOST
-
-	//std::regex_search のラッパ関数。
-	//return -> maybe ? [マッチした箇所の順番][マッチ内の参照の順番. 0は全文, 1以降は参照箇所] : nothing
-	//例：
-	//src = "test tes1 tes2"
-	//expression = std::regex("tes(\\d)")
-	//return -> [[tes, 1], [tes, 2]]
-	template < class String, template<class T, class = std::allocator<T>> class Container = std::vector >
-	maybe< Container< Container<String>>> RegexSearch(String src, typename Map2Regex<String>::type expression)
-	{
-		Container<Container<String>> d;
-		maybe<Container<Container<String>>> result(d);
-		typename Map2Smatch<String>::type match;
-
-		while (std::regex_search(src, match, expression)){
-			result->push_back(Container<String>());
-			for (auto const& m : match) (*result)[result->size() - 1].push_back(m);
-			src = match.suffix().str();
-		}
-
-		return result->empty() ? nothing : std::move(result);
-	}
-
-	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープしてから処理（推奨）
-	template < class String, template < class T, class = std::allocator<T >> class Container = std::vector >
-	maybe< Container< Container<String>>> RegexSearch(String src, String expression)
-	{
-		return RegexSearch(src, RegexMaker(expression));
-	}
-
-#endif
 
 	//UTF-16 to Shift-JIS
 	inline std::string WSTRtoSTR(const std::wstring &src)

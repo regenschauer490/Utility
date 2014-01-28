@@ -1,7 +1,7 @@
 #ifndef __SIG_UTIL_H__
 #define __SIG_UTIL_H__
 
-#define ENABLE_BOOST 0
+#define ENABLE_BOOST 1
 
 #include <windows.h>
 #include <stdio.h>
@@ -68,11 +68,6 @@ namespace sig{
 	template <class T> struct MaybeReturn{ typedef T type; };
 	template <class T> T Nothing(T const& default_value){ return default_value; }
 #endif
-
-
-	template <class String> struct EmptyString{};
-	template <> struct EmptyString<std::string>{ static const std::string value; };
-	template <> struct EmptyString<std::wstring>{ static const std::wstring value; };
 
 
 	template <class Container, class Sfinae = void> struct ContainerConstructor{ typedef Container type; };
