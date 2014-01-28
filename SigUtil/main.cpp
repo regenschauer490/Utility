@@ -1,3 +1,8 @@
+#include "lib/string.hpp"
+
+#include "test/string_test.hpp"
+
+/*
 #include "utility.hpp"
 
 #include <array>
@@ -43,24 +48,11 @@ void MapTest()
 #endif
 }
 
+*/
+
 int main()
 {
-	using namespace sig;
-
-	MapTest();
-
-	double d = 1.23;
-	auto k = Precision(d);
-
-
-	SimpleRandom<int> srand(-5, 5, true);
-	Histgram<int, 7> hist(-5, 5);
-	
-	for (uint i = 0; i < 100; ++i){
-		hist.Count(srand());
-	}
-
-	hist.Print();
+	TagDealerTest();
 
 	return 0;
 }
