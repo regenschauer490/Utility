@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utility.hpp"
+#include "lib/utility.hpp"
 
 namespace sig
 {
@@ -23,7 +23,7 @@ namespace sig
 	}
 
 	/* コンテナ */
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 
 	//動的確保される固定長配列 (構築後のサイズ変更不可)
 	template <class T, class Allocator = std::allocator<T>>

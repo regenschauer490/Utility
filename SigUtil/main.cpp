@@ -1,6 +1,8 @@
 #include "lib/string.hpp"
+#include "lib/file.hpp"
 
 #include "test/string_test.hpp"
+#include "test/file_test.hpp"
 
 /*
 #include "utility.hpp"
@@ -15,7 +17,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 #include <boost/array.hpp>
 #endif
 
@@ -42,7 +44,7 @@ void MapTest()
 	auto m4 = sig::Map<int>(ar, [](int v){ return 2*v; });
 	auto m5 = sig::Map<bool>(rar, [](bool v){ return !v; });
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 	boost::array<int, 5> bar{ { 1, 2, 3, 4, 5 } };
 	auto m6 = sig::Map<bool>(bar, [](int v){ return v < 3; });
 #endif
@@ -58,7 +60,10 @@ int main()
 	//TagDealerTest();
 	//SplitTest();
 	//CatStrTest();
-	StrConvertTest();
+	//StrConvertTest();
+
+	//GetFileNamesTest();
+		
 
 	return 0;
 }

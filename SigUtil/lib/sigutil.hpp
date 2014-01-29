@@ -1,14 +1,23 @@
 #ifndef __SIG_UTIL_H__
 #define __SIG_UTIL_H__
 
-#define ENABLE_BOOST 1
+#define SIG_ENABLE_BOOST 1
 
-#include <windows.h>
+#ifdef _WIN32
+#define SIG_WINDOWS_ENV 0
+#elif _WIN64
+#define SIG_WINDOWS_ENV 1
+#else
+#define SIG_WINDOWS_ENV 0
+#endif
+
+#include <string>
+#include <vector>
+
 #include <stdio.h>
 #include <iostream>
 #include <locale>
 #include <fstream>
-#include <sstream>
 #include <iomanip>
 #include <string>
 #include <memory>
@@ -25,7 +34,7 @@
 #include <regex>
 #include <utility>
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 
 #include <boost/optional.hpp>
 #include <boost/format.hpp>
@@ -47,7 +56,7 @@ namespace sig{
 	typedef std::shared_ptr< std::wstring > WStrPtr;
 	typedef std::shared_ptr< std::wstring const > C_WStrPtr;
 	
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 	template <typename T>
 	using maybe = boost::optional<T>;
 
@@ -61,12 +70,12 @@ namespace sig{
 	extern void* enabler;
 
 	//maybeの有効・無効に関係なく記述するためのもの
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 	template <class T> struct MaybeReturn{ typedef maybe<T> type; };
 	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
 #else
 	template <class T> struct MaybeReturn{ typedef T type; };
-	template <class T> T Nothing(T const& default_value){ return default_value; }
+	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
 #endif
 
 
@@ -166,7 +175,7 @@ namespace sig{
 		return std::move(result);
 	}
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 	//[a] -> b -> (a -> b -> r) -> [r]
 	//戻り値の型Rは、明示的に指定する必要あり
 	template < class R, class A, class B, template < class T, class = std::allocator<T >> class Container>
@@ -312,7 +321,7 @@ namespace sig{
 		}
 	}
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 
 	//条件に最適な値とそのIndexを探す.　comp(比較対象値, 暫定最小値)
 	template < class T, class CMP, template < class T, class = std::allocator<T>> class Container >
@@ -374,7 +383,7 @@ namespace sig{
 
 /* 便利アイテム */
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 	//パーセント型
 	class Percent
 	{
@@ -487,7 +496,7 @@ namespace sig{
 				return std::move(tmp);
 			}
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 			//bin番目(0 ～ BIN_NUM-1)の頻度を取得
 			//return -> tuple<頻度, 範囲最小値(以上), 範囲最大値(未満)>
 			maybe<std::tuple<uint, int, int>> GetCount(uint bin) const{ return bin < BIN_NUM ? maybe < std::tuple < uint, int, int >> (std::make_tuple(_count[bin + 1], _delta*bin + _min, _delta*(bin + 1) + _min)) : nothing; }
@@ -582,7 +591,7 @@ namespace sig{
 			return std::move(removes);
 		}
 	
-		#if ENABLE_BOOST
+		#if SIG_ENABLE_BOOST
 		#define Sig_Eraser_ParamType1 typename boost::call_traits<T>::param_type
 		#else
 		#define Sig_Eraser_ParamType1 typename std::common_type<T>::type const&
@@ -770,328 +779,6 @@ namespace sig{
 			return move(result);
 		}
 
-	}
-
-/* 入出力 */
-	namespace File{
-
-		//ディレクトリ・ファイルパスの末尾に'/'or'\\'があるかチェックし、付けるか外すかどうか指定
-		inline std::wstring DirpassTailModify(std::wstring const& directory_pass, bool const has_slash)
-		{
-			if(directory_pass.empty()) return directory_pass;
-
-			auto tail = directory_pass.back();
-
-			if(has_slash){
-				//付ける場合
-				if(tail == '/' || tail == '\\') return directory_pass;
-				else return (directory_pass + L"/");
-			}
-			else{
-				if(tail != '/' && tail != '\\') return directory_pass;
-				else{
-					auto tmp = directory_pass;
-					tmp.pop_back();
-					return tmp;
-				}
-			}
-
-		};
-
-
-		//指定ディレクトリにあるファイル名を取得
-		//args -> empty_dest: 空のコンテナ, directry_pass: 読み込み先のフォルダパス
-		//読み込み失敗: throw(std::invalid_argument)
-		inline void GetFileNames(std::vector<std::wstring>& empty_dest, std::wstring const& directory_pass) throw(std::invalid_argument)
-		{
-			WIN32_FIND_DATA fd;
-			auto pass = DirpassTailModify(directory_pass, true) + L"*.*";
-			auto hFind = FindFirstFile(pass.c_str(), &fd);
-
-			if (hFind == INVALID_HANDLE_VALUE){
-				throw std::invalid_argument("error: invalid directory_pass");
-			}
-			else{
-				do{
-					//フォルダは無視
-					if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && !(fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
-					{
-						empty_dest.push_back(std::wstring(fd.cFileName));
-					}
-				} while (FindNextFile(hFind, &fd));
-
-				FindClose(hFind);
-			}
-		}
-
-#if ENABLE_BOOST
-
-		//指定ディレクトリにあるファイル名を取得
-		//args -> directry_pass: 読み込み先のフォルダパス
-		//読み込み失敗: return -> maybe == nothing
-		inline maybe<std::vector<std::wstring>> GetFileNames(std::wstring const& directory_pass)
-		{
-			std::vector<std::wstring> tmp;
-			try{
-				GetFileNames(tmp, directory_pass);
-			}
-			catch (...){
-				return nothing;
-			}
-			return tmp;
-		}
-
-#endif
-
-		//指定ディレクトリにあるファイル名をフルパスで取得
-		//args -> empty_dest: 空のコンテナ, directry_pass: 読み込み先のフォルダパス 
-		//読み込み失敗: throw(std::invalid_argument)
-		inline void GetFilePasses(std::vector<std::wstring>& empty_dest, std::wstring const& directory_pass) throw(std::invalid_argument)
-		{
-			auto pass = DirpassTailModify(directory_pass, true);
-			std::vector<std::wstring> names;
-			GetFileNames(names, pass);
-
-			try{
-				for (auto const& e : names) empty_dest.push_back(pass + e);
-			}
-			catch (...){
-				throw std::invalid_argument("error: invalid directory_pass");
-			}
-		}
-
-#if ENABLE_BOOST
-
-		//指定ディレクトリにあるファイル名をフルパスで取得
-		//args -> directry_pass: 読み込み先のフォルダパス
-		//読み込み失敗: throw(std::invalid_argument)
-		inline maybe<std::vector<std::wstring>> GetFilePasses(std::wstring const& directory_pass)
-		{
-			std::vector<std::wstring> tmp;
-			try{
-				GetFilePasses(tmp, directory_pass);
-			}
-			catch (...){
-				return nothing;
-			}
-			return tmp;
-		}
-
-#endif
-
-		//for type map
-		template <class FILE_STRING> struct OFS_SELECTION{};
-		template<> struct OFS_SELECTION<char const*>{
-			typedef std::ofstream fstream;
-			typedef std::ostreambuf_iterator<char> fstreambuf_iter;
-		};
-		template<> struct OFS_SELECTION<std::string>{
-			typedef std::ofstream fstream;
-			typedef std::ostreambuf_iterator<char> fstreambuf_iter;
-		};
-		template<> struct OFS_SELECTION<wchar_t const*>{
-			typedef std::wofstream fstream;
-			typedef std::ostreambuf_iterator<wchar_t> fstreambuf_iter;
-		};
-		template<> struct OFS_SELECTION<std::wstring>{
-			typedef std::wofstream fstream;
-			typedef std::ostreambuf_iterator<wchar_t> fstreambuf_iter;
-		};
-
-		template <class FILE_STRING> struct IFS_SELECTION{};
-		template<> struct IFS_SELECTION<std::string>{
-			typedef std::ifstream fstream;
-			typedef std::istreambuf_iterator<char> fstreambuf_iter;
-		};
-		template<> struct IFS_SELECTION<std::wstring>{
-			typedef std::wifstream fstream;
-			typedef std::istreambuf_iterator<wchar_t> fstreambuf_iter;
-		};
-
-		template <class NUM> struct S2NUM_SELECTION{};
-		template <> struct S2NUM_SELECTION<int>{
-			 int operator()(std::string s){ return std::stoi(s); }
-		};
-		template <> struct S2NUM_SELECTION<long>{
-			long operator()(std::string s){ return std::stol(s); }
-		};
-		template <> struct S2NUM_SELECTION<long long>{
-			long long operator()(std::string s){ return std::stoll(s); }
-		};
-		template <> struct S2NUM_SELECTION<unsigned int>{
-			unsigned int operator()(std::string s){ return std::stoul(s); }
-		};
-		template <> struct S2NUM_SELECTION<unsigned long>{
-			unsigned long operator()(std::string s){ return std::stoul(s); }
-		};
-		template <> struct S2NUM_SELECTION<unsigned long long>{
-			unsigned long long operator()(std::string s){ return std::stoull(s); }
-		};
-		template <> struct S2NUM_SELECTION<float>{
-			float operator()(std::string s){ return std::stof(s); }
-		};
-		template <> struct S2NUM_SELECTION<double>{
-			double operator()(std::string s){ return std::stod(s); }
-		};
-		
-		enum class WriteMode{ overwrite, append };
-
-
-		inline void RemakeFile(std::wstring const& file_pass)
-		{
-			std::ofstream ofs(file_pass);
-			ofs << "";
-		}
-
-		//-- Save Text
-
-		template <class String>
-		inline void SaveLine(String const& src, typename OFS_SELECTION<String>::fstream& ofs)
-		{
-			ofs << src << std::endl;
-		}
-
-		template <class String>
-		inline void SaveLine(std::vector<String> const& src, typename OFS_SELECTION<String>::fstream& ofs)
-		{
-			typename OFS_SELECTION<String>::fstreambuf_iter streambuf_iter(ofs);
-			for (auto const& str : src){
-				std::copy(str.begin(), str.end(), streambuf_iter);
-				streambuf_iter = '\n';
-			}
-		}
-
-		//ファイルへ1行ずつ保存
-		//args -> src: 保存対象, file_pass: 保存先のディレクトリとファイル名（フルパス）, open_mode: 上書き(overwrite) or 追記(append)
-		template <class String>
-		inline void SaveLine(String src, std::wstring const& file_pass, WriteMode mode)
-		{
-			static bool first = true;
-			if (first){
-				std::locale::global(std::locale(""));
-				first = false;
-			}
-
-			std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-			typename OFS_SELECTION<typename std::decay<String>::type>::fstream ofs(file_pass, open_mode);
-			SaveLine(src, ofs);
-		}
-		template <class String>
-		inline void SaveLine(std::vector<String> const& src, std::wstring const& file_pass, WriteMode mode)
-		{
-			static bool first = true;
-			if (first){
-				std::locale::global(std::locale(""));
-				first = false;
-			}
-
-			std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-			typename OFS_SELECTION<String>::fstream ofs(file_pass, open_mode);
-			SaveLine(src, ofs);
-		}
-
-		template <class Num>
-		inline void SaveLineNum(std::vector<Num> const& src, std::wstring const& file_pass, WriteMode mode, std::string delimiter = "\n")
-		{
-			SaveLine(String::CatStr(src, delimiter), file_pass, mode);
-		}
-
-
-		//-- Read Text
-
-		template <class R>
-		inline void ReadLine(std::vector<R>& empty_dest, typename IFS_SELECTION<R>::fstream& ifs, std::function< R(typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
-		{
-			typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type line;
-
-			while (ifs && getline(ifs, line)){
-				conv ? empty_dest.push_back(conv(std::move(line))) : empty_dest.push_back(std::move(line));
-			}
-		}
-		
-		template <class R>
-		inline void ReadLine(std::vector<R>& empty_dest, std::wstring const& file_pass, std::function< R(typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
-		{
-			typename IFS_SELECTION<R>::fstream ifs(file_pass);
-			if (!ifs){
-				wprintf(L"file open error: %s \n", file_pass);
-				return;
-			}
-			ReadLine(empty_dest, ifs);
-		}
-
-		template <class Num>
-		inline void ReadLineNum(std::vector<Num>& empty_dest, std::wstring const& file_pass)
-		{
-			typename IFS_SELECTION<std::string>::fstream ifs(file_pass);
-			S2NUM_SELECTION<Num> conv;
-			std::string line;
-			if (!ifs){
-				wprintf(L"file open error: %s \n", file_pass);
-				return;
-			}
-			while (ifs && getline(ifs, line))
-				empty_dest.push_back(conv(std::move(line)));
-		}
-
-#if ENABLE_BOOST
-
-		//読み込み失敗: return -> maybe == nothing
-		template <class String>
-		inline maybe<std::vector<String>> ReadLine(typename IFS_SELECTION<String>::fstream& ifs)
-		{
-			typedef std::vector<String> R;
-			R tmp;
-			ReadLine(tmp, ifs);
-			return tmp.size() ? maybe<R>(std::move(tmp)) : nothing;
-		}
-
-		template <class String>
-		inline maybe<std::vector<String>> ReadLine(std::wstring const& file_pass)
-		{
-			typename IFS_SELECTION<String>::fstream ifs(file_pass);
-			if (!ifs){
-				std::wcout << L"file open error: " << file_pass << std::endl;
-				return nothing;
-			}
-			return ReadLine<String>(ifs);
-		}
-
-		template <class Num>
-		inline maybe<std::vector<Num>> ReadLineNum(std::wstring const& file_pass)
-		{
-			std::vector<Num> tmp;
-			ReadLineNum<Num>(tmp, file_pass);
-			return tmp.size() ? maybe<std::vector<Num>>(std::move(tmp)) : nothing;
-		}
-
-#endif
-
-		//csvで保存
-		template <class Num>
-		inline void SaveCSV(std::vector<std::vector<Num>> const& data, std::vector<std::string> const& row_names, std::vector<std::string> const& col_names, std::wstring const& out_fullpass)
-		{
-			std::ofstream ofs(out_fullpass);
-
-			//first row: field name
-			ofs << ",";
-			for (uint i = 1; i < data[0].size() + 1; ++i){
-				auto name = i-1 < col_names.size() ? col_names[i - 1] : "";
-				ofs << i << ". " << name << ",";
-			}
-			ofs << "\n";
-
-			//first col: field name
-			for (uint j = 0; j < data.size(); ++j){
-				auto name = j < row_names.size() ? row_names[j] : "";
-				ofs << j+1 << ". " << name << ",";
-
-				for (auto e : data[j]){
-					ofs << e << ",";
-				}
-				ofs << "\n";
-			}
-		}
 	}
 
 /*	template < template<class T, class = std::allocator<T>> class Container >

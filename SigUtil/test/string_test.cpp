@@ -1,6 +1,6 @@
 #include "string_test.hpp"
 
-//ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
+//SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 
 void RegexTest()
 {
@@ -18,7 +18,7 @@ void RegexTest()
 	auto matches1 = sig::RegexSearch("test tes1a tes2b", std::regex("tes(\\d)(\\w)"));
 	auto matches2 = sig::RegexSearch("search「? or (lol) must be escaped」", std::regex(escaped1));
 	
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 	for (auto m : *matches1) std::cout << m[0] << "," << m[1] << "," << m[2] << std::endl;
 	//tes1,1,a
 	//tes2,2,b
@@ -46,7 +46,7 @@ void TagDealerTest()
 	auto decoded = tag_dealer.Decode(encoded, "TAG");
 	auto ignored = tag_dealer.Decode(encoded, "HOO");
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 	if (decoded) std::cout << *decoded << std::endl;	//test
 	if (ignored) std::cout << *ignored << std::endl;	//(出力なし)
 #else
@@ -57,7 +57,7 @@ void TagDealerTest()
 	//まとめてエンコード -> <TAG1>str1<TAG1><TAG2>str2<TAG2><TAG3>str3<TAG3>
 	auto encoded_vec = tag_dealer.Encode(std::vector<std::string>{"str1", "str2", "str3"}, std::vector<std::string>{"TAG1", "TAG2", "TAG3"});
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 	//まとめてデコード
 	auto decoded_vec = tag_dealer.Decode(encoded_vec, std::vector<std::string>{"TAG1", "TAG3"});
 
@@ -80,7 +80,7 @@ void SplitTest()
 	//[ 参 ]
 	
 
-	auto split2 = sig::Split(L"https://github.com/regenschauer490/Utility", L"/");
+	auto split2 = sig::Split<std::list>(L"https://github.com/regenschauer490/Utility", L"/");
 	for (auto& s : split2) std::wcout << L"[" << s << L"]" << std::endl;
 	//[https::]
 	//[github.com]
@@ -90,10 +90,10 @@ void SplitTest()
 
 void CatStrTest()
 {
-	auto cat1 = sig::CatStr(std::vector<std::string>{"eins", "zwei", "drei"}, ",");
+	auto cat1 = sig::CatStr(std::vector<std::string>{"eins", "zwei", "drei"});
 	auto cat2 = sig::CatWStr(std::vector<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
 
-	std::cout << cat1 << std::endl;			//eins,zwei,drei
+	std::cout << cat1 << std::endl;			//einszweidrei
 	std::wcout << cat2 << std::endl;		//eins,zwei,drei,
 }
 

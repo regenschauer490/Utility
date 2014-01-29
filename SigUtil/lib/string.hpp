@@ -2,8 +2,9 @@
 #define __SIG_UTIL_STRING__
 
 #include "sigutil.hpp"
-#include <string>
 #include <regex>
+#include <stdlib.h>
+#include <sstream>
 
 /* 文字列処理関連 */
 
@@ -114,13 +115,13 @@ namespace sig{
 		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 		String Encode(Container<String> const& src, Container<String> const& tag) const;
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 		auto Decode(String const& src, Container<String> const& tag) ->typename MaybeReturn<Container<String>>::type const;
 #endif
 	};
 
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 	template <class String>
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
@@ -148,14 +149,14 @@ namespace sig{
 	//文字列(src)をある文字列(delim)を目印に分割する
 	//戻り値のコンテナはデフォルトではvector
 	//例：src="one, 2, 参 ", delim="," -> return vector<string>{"one", " 2", " 参 "}
-	template < class String, template <class T_, class = std::allocator<T_>> class Container = std::vector >
-	auto Split(String src, typename std::common_type<String>::type const& delim) ->Container<typename StringId<String>::type>
+	template <template <class T_, class = std::allocator<T_>> class Container = std::vector,  class String = std::string >
+	auto Split(String src, typename std::common_type<String>::type const& delimiter) ->Container<typename StringId<String>::type>
 	{
 		Container<String> result;
-		int const mag = delim.size();
+		int const mag = delimiter.size();
 		int cut_at;
 
-		while ((cut_at = src.find(delim)) != src.npos){
+		while ((cut_at = src.find(delimiter)) != src.npos){
 			if (cut_at > 0) result.push_back(src.substr(0, cut_at));
 			src = src.substr(cut_at + mag);
 		}
@@ -167,19 +168,19 @@ namespace sig{
 	}
 
 	template < template <class T_, class = std::allocator<T_>> class Container = std::vector >
-	Container<std::string> Split(char const* const src, char const* const delim)
+	Container<std::string> Split(char const* const src, char const* const delimiter)
 	{
-		return Split<std::string, Container>(std::string(src), std::string(delim));
+		return Split<Container>(std::string(src), std::string(delimiter));
 	}
 
 	template < template < class T_, class = std::allocator<T_>> class Container = std::vector >
-	Container<std::wstring> Split(wchar_t const* const src, wchar_t const* const delim)
+	Container<std::wstring> Split(wchar_t const* const src, wchar_t const* const delimiter)
 	{
-		return Split<std::wstring, Container>(std::wstring(src), std::wstring(delim));
+		return Split<Container>(std::wstring(src), std::wstring(delimiter));
 	}
 
 	/*
-#if ENABLE_BOOST
+#if SIG_ENABLE_BOOST
 	//コンテナに格納された全文字列を結合して1つの文字列に(delimiterで区切り指定)
 	template < class T, template < class T, class = std::allocator<T >> class Container >
 	inline std::string CatStr(Container<T> const& container, std::string delimiter = "")
@@ -196,7 +197,7 @@ namespace sig{
 
 	//コンテナに格納された全文字列を結合して1つの文字列に(delimiterで区切り指定)
 	template < class T, template < class T_, class = std::allocator<T_>> class Container >
-	inline std::string CatStr(Container<T> const& container, std::string delimiter = "")
+	inline std::string CatStr(Container<T> const& container, std::string delimiter = std::string())
 	{
 		std::ostringstream ostream;
 
@@ -208,7 +209,7 @@ namespace sig{
 	}
 
 	template < class T, template < class T_, class = std::allocator<T_>> class Container >
-	inline std::wstring CatWStr(Container<T> const& container, std::wstring delimiter = L"")
+	inline std::wstring CatWStr(Container<T> const& container, std::wstring delimiter = std::wstring())
 	{
 		std::wostringstream ostream;
 
@@ -236,9 +237,10 @@ namespace sig{
 		return std::move(dest);
 	}
 
-	inline std::vector<std::string> WSTRtoSTR(std::vector<std::wstring> const& strvec)
+	template < template < class T_, class = std::allocator<T_>> class Container >
+	Container<std::string> WSTRtoSTR(Container<std::wstring> const& strvec)
 	{
-		std::vector<std::string> result;
+		Container<std::string> result;
 		for (auto const& str : strvec) result.push_back(WSTRtoSTR(str));
 		return std::move(result);
 	}
@@ -259,9 +261,10 @@ namespace sig{
 		return std::move(dest);
 	}
 
-	inline std::vector<std::wstring> STRtoWSTR(std::vector<std::string> const& strvec)
+	template < template < class T_, class = std::allocator<T_>> class Container >
+	Container<std::wstring> STRtoWSTR(Container<std::string> const& strvec)
 	{
-		std::vector<std::wstring> result;
+		Container<std::wstring> result;
 		for (auto const& str : strvec) result.push_back(STRtoWSTR(str));
 		return std::move(result);
 	}
