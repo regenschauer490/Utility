@@ -199,6 +199,7 @@ namespace sig{
 	template < class T, template < class T_, class = std::allocator<T_>> class Container >
 	inline std::string CatStr(Container<T> const& container, std::string delimiter = std::string())
 	{
+		if (container.empty()) return std::string();
 		std::ostringstream ostream;
 
 		ostream << *container.begin();
@@ -211,6 +212,7 @@ namespace sig{
 	template < class T, template < class T_, class = std::allocator<T_>> class Container >
 	inline std::wstring CatWStr(Container<T> const& container, std::wstring delimiter = std::wstring())
 	{
+		if (container.empty()) return std::wstring();
 		std::wostringstream ostream;
 
 		ostream << *container.begin();

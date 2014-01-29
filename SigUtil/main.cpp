@@ -59,10 +59,10 @@ int main()
 	//RegexTest();
 	//TagDealerTest();
 	//SplitTest();
-	CatStrTest();
+	//CatStrTest();
 	//StrConvertTest();
 
-	//GetFileNamesTest();
+	GetFileNamesTest();
 		
 
 	return 0;

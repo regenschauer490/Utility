@@ -4,7 +4,7 @@
 #define SIG_ENABLE_BOOST 1
 
 #ifdef _WIN32
-#define SIG_WINDOWS_ENV 0
+#define SIG_WINDOWS_ENV 1
 #elif _WIN64
 #define SIG_WINDOWS_ENV 1
 #else

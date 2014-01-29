@@ -52,7 +52,7 @@ namespace sig{
 
 #if SIG_WINDOWS_ENV
 		WIN32_FIND_DATA fd;
-		auto query = extension.empty() ? L"?*" : L"*." + extension;
+		auto query = extension.empty() ? L"?*" : L"*" + extension;
 		auto pass = DirpassTailModify(directory_pass, true) + query;
 		auto hFind = FindFirstFile(pass.c_str(), &fd);
 
@@ -79,10 +79,9 @@ namespace sig{
 				auto leaf = sig::Split(it->path().wstring(), L"\\").back();
 				if (extension.empty()) result.push_back(leaf);
 				else{
-					auto lsp = Split<std::list>(leaf, L".");
-					lsp.pop_front();
-					auto ext = CatWStr(lsp);
-					if (ext == extension) result.push_back(leaf);
+					auto query = L".*(" + RegexEscaper(extension) + L")";
+					auto ext = RegexSearch(leaf, std::wregex(query));
+					if (ext && (*ext)[0][1] == extension) result.push_back(leaf);
 				}
 			}
 		}
