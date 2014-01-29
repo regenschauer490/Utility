@@ -201,10 +201,10 @@ namespace sig{
 	{
 		std::ostringstream ostream;
 
-		for (uint i = 0; i < container.size() - 1; ++i){
-			ostream << container[i] << delimiter;
+		ostream << *container.begin();
+		for (auto it = ++container.begin(), end = container.end(); it != end; ++it){
+			ostream << delimiter << *it;
 		}
-		ostream << container[container.size() - 1];
 		return ostream.str();
 	}
 
@@ -213,10 +213,10 @@ namespace sig{
 	{
 		std::wostringstream ostream;
 
-		for (uint i = 0; i < container.size() - 1; ++i){
-			ostream << container[i] << delimiter;
+		ostream << *container.begin();
+		for (auto it = ++container.begin(), end = container.end(); it != end; ++it){
+			ostream << delimiter << *it;
 		}
-		ostream << container[container.size() - 1];
 		return ostream.str();
 	}
 

@@ -92,9 +92,14 @@ void CatStrTest()
 {
 	auto cat1 = sig::CatStr(std::vector<std::string>{"eins", "zwei", "drei"});
 	auto cat2 = sig::CatWStr(std::vector<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
+	auto cat3 = sig::CatWStr(std::list<int>{1, 2, 3}, L"\n");
 
 	std::cout << cat1 << std::endl;			//einszweidrei
-	std::wcout << cat2 << std::endl;		//eins,zwei,drei,
+	std::wcout << cat2 << std::endl;		//eins,zwei,drei
+	std::wcout << cat3 << std::endl;
+	//1
+	//2
+	//3
 }
 
 void StrConvertTest()
