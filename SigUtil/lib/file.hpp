@@ -342,6 +342,7 @@ namespace sig{
 
 #endif
 
+	/*
 	//csv‚Å•Û‘¶
 	template <class Num>
 	void SaveCSV(std::vector<std::vector<Num>> const& data, std::vector<std::string> const& row_names, std::vector<std::string> const& col_names, std::wstring const& out_fullpass)
@@ -367,6 +368,7 @@ namespace sig{
 			ofs << "\n";
 		}
 	}
+	*/
 }
 
 #endif
