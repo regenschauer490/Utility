@@ -56,14 +56,14 @@ int main()
 {
 	setlocale(LC_ALL, "Japanese");
 
-	//RegexTest();
+	RegexTest();
 	//TagDealerTest();
 	//SplitTest();
 	//CatStrTest();
 	//StrConvertTest();
 
 	//GetDirectoryNamesTest();
-	FileSaveLoadTest();
+	//FileSaveLoadTest();
 
 	return 0;
 }

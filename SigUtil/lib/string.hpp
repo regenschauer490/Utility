@@ -65,7 +65,7 @@ namespace sig{
 	//src = "test tes1 tes2"
 	//expression = std::regex("tes(\\d)")
 	//return -> [[tes1, 1], [tes2, 2]]
-	template < class T, template<class T_, class = std::allocator<T_>> class Container = std::vector >
+	template <template <class T_, class = std::allocator<T_>> class Container = std::vector, class T = std::string >
 	auto RegexSearch(T src, typename Str2RegexSelector<TString<T>>::type const& expression) ->typename MaybeReturn< Container< Container<TString<T>>>>::type
 	{
 		Container<Container<TString<T>>> d;
@@ -74,7 +74,7 @@ namespace sig{
 
 		while (std::regex_search(tmp, match, expression)){
 			d.push_back(Container<TString<T>>());
-			for (auto const& m : match) d[d.size() - 1].push_back(m);
+			for (auto const& m : match) d.back().push_back(m);
 			tmp = match.suffix().str();
 		}
 

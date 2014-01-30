@@ -4,26 +4,29 @@
 
 void RegexTest()
 {
+	//エスケープ処理した文字列を取得
 	auto escaped1 = sig::RegexEscaper("? or (lol) must be escaped");
 	auto escaped2 = sig::RegexEscaper(L"?とか(笑)はエスケープすべき文字");
 
 	std::cout << escaped1 << std::endl;			//\? or \(lol\) must be escaped
 	std::wcout << escaped2 << std::endl;		//\?とか\(笑\)はエスケープすべき文字
 	
+	//エスケープ処理をしつつ std::regex(or std::wregex)を取得
 	auto reg = sig::RegexMaker(L"(笑)");
 	auto replaced = std::regex_replace(L"てすと(笑)です", reg, L"");
 
 	std::wcout << replaced << std::endl;		//てすとです
 
+	//正規表現で検索
 	auto matches1 = sig::RegexSearch("test tes1a tes2b", std::regex("tes(\\d)(\\w)"));
-	auto matches2 = sig::RegexSearch("search「? or (lol) must be escaped」", std::regex(escaped1));
+	auto matches2 = sig::RegexSearch<std::list>("search「? or (lol) must be escaped」", std::regex(escaped1));
 	
 #if SIG_ENABLE_BOOST
 	for (auto m : *matches1) std::cout << m[0] << "," << m[1] << "," << m[2] << std::endl;
 	//tes1,1,a
 	//tes2,2,b
 
-	for (auto m : *matches2) std::cout << m[0] << std::endl;
+	for (auto m : *matches2) std::cout << m.front() << std::endl;
 	//? or (lol) must be escaped
 #else
 	for (auto m : matches1) std::cout << m[0] << "," << m[1] << "," << m[2] << std::endl;

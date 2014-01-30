@@ -222,7 +222,7 @@ namespace sig{
 		ofs << src << std::endl;
 	}
 
-	template <class String>
+	template <template <class T_, class = std::allocator<T_>> class Container = std::vector, class String = std::string >
 	void SaveLine(std::vector<String> const& src, typename OfsSelector<String>::fstream& ofs)
 	{
 		typename OfsSelector<String>::fstreambuf_iter streambuf_iter(ofs);
@@ -265,10 +265,11 @@ namespace sig{
 	}
 
 	//保存するデータが数値の場合はこちら
+	//デフォルトでは1要素1行で保存（delimiterで変更可）
 	template <class Num>
 	void SaveLineNum(std::vector<Num> const& src, std::wstring const& file_pass, WriteMode mode = WriteMode::overwrite, std::string delimiter = "\n")
 	{
-		SaveLine(String::CatStr(src, delimiter), file_pass, mode);
+		SaveLine(CatStr(src, delimiter), file_pass, mode);
 	}
 
 

@@ -65,6 +65,7 @@ void FileSaveLoadTest()
 	auto fpass1 = pass + L"test.txt";
 	auto fpass2 = pass + L"test2.txt";
 	auto fpass3 = pass + L"test3.txt";
+	auto fpass4 = pass + L"test4.txt";
 
 	std::wcout << fpass1 << std::endl << std::endl;
 
@@ -95,4 +96,9 @@ void FileSaveLoadTest()
 	sig::SaveLine("test write 2", fpass2, sig::WriteMode::append);
 	//全行保存（上書き）
 	sig::SaveLine(blghost_text, fpass3);
+
+	//数値データの保存（上書き、1行ずつ保存）
+	sig::SaveLineNum(std::vector<int>{1, 2, 3, 4, 5}, fpass4);
+	//数値データの保存（追記、カンマ分けで保存）
+	//sig::SaveLineNum(std::list<double>{1, 2, 3, 4, 5}, fpass4);
 }
