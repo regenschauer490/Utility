@@ -64,7 +64,7 @@ void FileSaveLoadTest()
 {
 	auto fpass1 = pass + L"test.txt";
 	auto fpass2 = pass + L"test2.txt";
-	auto fpass3 = pass + L"blghost.txt";
+	auto fpass3 = pass + L"test3.txt";
 
 	std::wcout << fpass1 << std::endl << std::endl;
 
@@ -87,10 +87,12 @@ void FileSaveLoadTest()
 	sig::SaveLine("test write 0", ofs);		//1行保存
 	sig::SaveLine(blghost_text, ofs);		//全行保存
 
+	//以下かんたん保存♪
+
 	//1行保存（上書き）
-	sig::SaveLine("test write 1", fpass2, sig::WriteMode::overwrite);
+	sig::SaveLine("test write 1", fpass2);
 	//1行保存（追記）
 	sig::SaveLine("test write 2", fpass2, sig::WriteMode::append);
 	//全行保存（上書き）
-	sig::SaveLine(blghost_text, fpass3, sig::WriteMode::overwrite);
+	sig::SaveLine(blghost_text, fpass3);
 }

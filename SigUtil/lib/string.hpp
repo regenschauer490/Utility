@@ -25,18 +25,18 @@ namespace sig{
 	using TString = typename StringId<typename std::decay<T>::type>::type;
 
 	template <class T>
-	struct Map2Regex{ typedef void type; };
+	struct Str2RegexSelector{ typedef void type; };
 	template <>
-	struct Map2Regex<std::string>{ typedef std::regex type; };
+	struct Str2RegexSelector<std::string>{ typedef std::regex type; };
 	template <>
-	struct Map2Regex<std::wstring>{ typedef std::wregex type; };
+	struct Str2RegexSelector<std::wstring>{ typedef std::wregex type; };
 
 	template <class T>
-	struct Map2Smatch{ typedef void type; };
+	struct Str2SmatchSelector{ typedef void type; };
 	template <>
-	struct Map2Smatch<std::string>{ typedef std::smatch type; };
+	struct Str2SmatchSelector<std::string>{ typedef std::smatch type; };
 	template <>
-	struct Map2Smatch<std::wstring>{ typedef std::wsmatch type; };
+	struct Str2SmatchSelector<std::wstring>{ typedef std::wsmatch type; };
 
 
 	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
@@ -53,9 +53,9 @@ namespace sig{
 
 	//自動でエスケープしてstd::regex or std::wregex を返す
 	template <class T>
-	auto RegexMaker(T const& expression) ->typename Map2Regex<TString<T>>::type
+	auto RegexMaker(T const& expression) ->typename Str2RegexSelector<TString<T>>::type
 	{
-		return typename Map2Regex<TString<T>>::type(RegexEscaper(expression));
+		return typename Str2RegexSelector<TString<T>>::type(RegexEscaper(expression));
 	}
 
 
@@ -66,10 +66,10 @@ namespace sig{
 	//expression = std::regex("tes(\\d)")
 	//return -> [[tes1, 1], [tes2, 2]]
 	template < class T, template<class T_, class = std::allocator<T_>> class Container = std::vector >
-	auto RegexSearch(T src, typename Map2Regex<TString<T>>::type const& expression) ->typename MaybeReturn< Container< Container<TString<T>>>>::type
+	auto RegexSearch(T src, typename Str2RegexSelector<TString<T>>::type const& expression) ->typename MaybeReturn< Container< Container<TString<T>>>>::type
 	{
 		Container<Container<TString<T>>> d;
-		typename Map2Smatch<TString<T>>::type match;
+		typename Str2SmatchSelector<TString<T>>::type match;
 		auto tmp = TString<T>(src);
 
 		while (std::regex_search(tmp, match, expression)){

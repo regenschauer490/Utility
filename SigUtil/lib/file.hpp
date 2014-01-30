@@ -150,57 +150,57 @@ namespace sig{
 
 
 	//for type map
-	template <class FILE_STRING> struct OFS_SELECTION{};
-	template<> struct OFS_SELECTION<char const*>{
+	template <class FILE_STRING> struct OfsSelector{};
+	template<> struct OfsSelector<char const*>{
 		typedef std::ofstream fstream;
 		typedef std::ostreambuf_iterator<char> fstreambuf_iter;
 	};
-	template<> struct OFS_SELECTION<std::string>{
+	template<> struct OfsSelector<std::string>{
 		typedef std::ofstream fstream;
 		typedef std::ostreambuf_iterator<char> fstreambuf_iter;
 	};
-	template<> struct OFS_SELECTION<wchar_t const*>{
+	template<> struct OfsSelector<wchar_t const*>{
 		typedef std::wofstream fstream;
 		typedef std::ostreambuf_iterator<wchar_t> fstreambuf_iter;
 	};
-	template<> struct OFS_SELECTION<std::wstring>{
+	template<> struct OfsSelector<std::wstring>{
 		typedef std::wofstream fstream;
 		typedef std::ostreambuf_iterator<wchar_t> fstreambuf_iter;
 	};
 
-	template <class FILE_STRING> struct IFS_SELECTION{};
-	template<> struct IFS_SELECTION<std::string>{
+	template <class FILE_STRING> struct IfsSelector{};
+	template<> struct IfsSelector<std::string>{
 		typedef std::ifstream fstream;
 		typedef std::istreambuf_iterator<char> fstreambuf_iter;
 	};
-	template<> struct IFS_SELECTION<std::wstring>{
+	template<> struct IfsSelector<std::wstring>{
 		typedef std::wifstream fstream;
 		typedef std::istreambuf_iterator<wchar_t> fstreambuf_iter;
 	};
 
-	template <class NUM> struct S2NUM_SELECTION{};
-	template <> struct S2NUM_SELECTION<int>{
+	template <class NUM> struct Str2NumSelector{};
+	template <> struct Str2NumSelector<int>{
 		int operator()(std::string s){ return std::stoi(s); }
 	};
-	template <> struct S2NUM_SELECTION<long>{
+	template <> struct Str2NumSelector<long>{
 		long operator()(std::string s){ return std::stol(s); }
 	};
-	template <> struct S2NUM_SELECTION<long long>{
+	template <> struct Str2NumSelector<long long>{
 		long long operator()(std::string s){ return std::stoll(s); }
 	};
-	template <> struct S2NUM_SELECTION<unsigned int>{
+	template <> struct Str2NumSelector<unsigned int>{
 		unsigned int operator()(std::string s){ return std::stoul(s); }
 	};
-	template <> struct S2NUM_SELECTION<unsigned long>{
+	template <> struct Str2NumSelector<unsigned long>{
 		unsigned long operator()(std::string s){ return std::stoul(s); }
 	};
-	template <> struct S2NUM_SELECTION<unsigned long long>{
+	template <> struct Str2NumSelector<unsigned long long>{
 		unsigned long long operator()(std::string s){ return std::stoull(s); }
 	};
-	template <> struct S2NUM_SELECTION<float>{
+	template <> struct Str2NumSelector<float>{
 		float operator()(std::string s){ return std::stof(s); }
 	};
-	template <> struct S2NUM_SELECTION<double>{
+	template <> struct Str2NumSelector<double>{
 		double operator()(std::string s){ return std::stod(s); }
 	};
 
@@ -217,15 +217,15 @@ namespace sig{
 	//-- Save Text
 
 	template <class String>
-	void SaveLine(String const& src, typename OFS_SELECTION<TString<String>>::fstream& ofs)
+	void SaveLine(String const& src, typename OfsSelector<TString<String>>::fstream& ofs)
 	{
 		ofs << src << std::endl;
 	}
 
 	template <class String>
-	void SaveLine(std::vector<String> const& src, typename OFS_SELECTION<String>::fstream& ofs)
+	void SaveLine(std::vector<String> const& src, typename OfsSelector<String>::fstream& ofs)
 	{
-		typename OFS_SELECTION<String>::fstreambuf_iter streambuf_iter(ofs);
+		typename OfsSelector<String>::fstreambuf_iter streambuf_iter(ofs);
 		for (auto const& str : src){
 			std::copy(str.begin(), str.end(), streambuf_iter);
 			streambuf_iter = '\n';
@@ -237,7 +237,7 @@ namespace sig{
 	//file_pass: 保存先のディレクトリとファイル名（フルパス）
 	//open_mode: 上書き(overwrite) or 追記(append)
 	template <class String>
-	void SaveLine(String src, std::wstring const& file_pass, WriteMode mode)
+	void SaveLine(String src, std::wstring const& file_pass, WriteMode mode = WriteMode::overwrite)
 	{
 		static bool first = true;
 		if (first){
@@ -246,12 +246,12 @@ namespace sig{
 		}
 
 		std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-		typename OFS_SELECTION<typename std::decay<String>::type>::fstream ofs(file_pass, open_mode);
+		typename OfsSelector<typename std::decay<String>::type>::fstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
 	//まとめて保存
 	template <class String>
-	void SaveLine(std::vector<String> const& src, std::wstring const& file_pass, WriteMode mode)
+	void SaveLine(std::vector<String> const& src, std::wstring const& file_pass, WriteMode mode = WriteMode::overwrite)
 	{
 		static bool first = true;
 		if (first){
@@ -260,13 +260,13 @@ namespace sig{
 		}
 
 		std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-		typename OFS_SELECTION<String>::fstream ofs(file_pass, open_mode);
+		typename OfsSelector<String>::fstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
 
 	//保存するデータが数値の場合はこちら
 	template <class Num>
-	void SaveLineNum(std::vector<Num> const& src, std::wstring const& file_pass, WriteMode mode, std::string delimiter = "\n")
+	void SaveLineNum(std::vector<Num> const& src, std::wstring const& file_pass, WriteMode mode = WriteMode::overwrite, std::string delimiter = "\n")
 	{
 		SaveLine(String::CatStr(src, delimiter), file_pass, mode);
 	}
@@ -275,9 +275,9 @@ namespace sig{
 	//-- Read Text
 
 	template <class R>
-	void ReadLine(std::vector<R>& empty_dest, typename IFS_SELECTION<R>::fstream& ifs, std::function< R(typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
+	void ReadLine(std::vector<R>& empty_dest, typename IfsSelector<R>::fstream& ifs, std::function< R(typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
 	{
-		typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type line;
+		typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type line;
 
 		while (ifs && getline(ifs, line)){
 			conv ? empty_dest.push_back(conv(std::move(line))) : empty_dest.push_back(std::move(line));
@@ -285,9 +285,9 @@ namespace sig{
 	}
 
 	template <class R>
-	void ReadLine(std::vector<R>& empty_dest, std::wstring const& file_pass, std::function< R(typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
+	void ReadLine(std::vector<R>& empty_dest, std::wstring const& file_pass, std::function< R(typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
 	{
-		typename IFS_SELECTION<R>::fstream ifs(file_pass);
+		typename IfsSelector<R>::fstream ifs(file_pass);
 		if (!ifs){
 			wprintf(L"file open error: %s \n", file_pass);
 			return;
@@ -298,8 +298,8 @@ namespace sig{
 	template <class Num>
 	void ReadLineNum(std::vector<Num>& empty_dest, std::wstring const& file_pass)
 	{
-		typename IFS_SELECTION<std::string>::fstream ifs(file_pass);
-		S2NUM_SELECTION<Num> conv;
+		typename IfsSelector<std::string>::fstream ifs(file_pass);
+		Str2NumSelector<Num> conv;
 		std::string line;
 		if (!ifs){
 			wprintf(L"file open error: %s \n", file_pass);
@@ -313,7 +313,7 @@ namespace sig{
 
 	//読み込み失敗: return -> maybe == nothing
 	template <class String>
-	maybe<std::vector<String>> ReadLine(typename IFS_SELECTION<String>::fstream& ifs)
+	maybe<std::vector<String>> ReadLine(typename IfsSelector<String>::fstream& ifs)
 	{
 		typedef std::vector<String> R;
 		R tmp;
@@ -324,7 +324,7 @@ namespace sig{
 	template <class String>
 	maybe<std::vector<String>> ReadLine(std::wstring const& file_pass)
 	{
-		typename IFS_SELECTION<String>::fstream ifs(file_pass);
+		typename IfsSelector<String>::fstream ifs(file_pass);
 		if (!ifs){
 			std::wcout << L"file open error: " << file_pass << std::endl;
 			return nothing;
