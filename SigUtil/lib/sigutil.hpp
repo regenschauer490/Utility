@@ -255,6 +255,12 @@ namespace sig{
 
 /* •Ö—˜ŠÖ” */
 
+	//xor
+	inline bool BoolXor(bool A, bool B){ return (A && !B) || (!A && B); }
+
+	//A‚ÆB‚Ì^‹Uˆê’v‚Åtrue‚ğ•Ô‚· (Ì !xor)
+	inline bool BoolConsistency(bool A, bool B){ return (A && B) || (!A && !B); }
+
 	//•‚“®¬”“_Œ^‚É‚àg‚¦‚é“™’l”äŠrŠÖ”
 	template <class T1, class T2>
 	bool Equal(T1 v1, T2 v2)

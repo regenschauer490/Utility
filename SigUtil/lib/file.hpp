@@ -43,9 +43,11 @@ namespace sig{
 
 
 	//指定ディレクトリにあるファイル名を取得
-	//args -> directry_pass: 調べたいディレクトリのパス, extension:拡張子指定(オプション)
+	//directry_pass：調べたいディレクトリのパス
+	//hidden_file：true->隠しファイルのみ, false->非隠しファイルのみ (Windows, Linux環境のみ)
+	//extension：拡張子指定(オプション)
 	//読み込み失敗: return -> nothing or empty-vector
-	inline auto GetFileNames(std::wstring const& directory_pass, std::wstring extension = L"") ->MaybeReturn<std::vector<std::wstring>>::type
+	inline auto GetFileNames(std::wstring const& directory_pass, bool hidden_file, std::wstring extension = L"") ->MaybeReturn<std::vector<std::wstring>>::type
 	{
 		typedef std::vector<std::wstring> ResultType;
 		ResultType result;
@@ -61,8 +63,7 @@ namespace sig{
 		}
 		else{
 			do{
-				//フォルダは無視
-				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && !(fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
+				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && BoolConsistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
 				{
 					result.push_back(std::wstring(fd.cFileName));
 				}
@@ -72,10 +73,16 @@ namespace sig{
 			return MaybeReturn<ResultType>::type(std::move(result));
 		}
 #elif SIG_ENABLE_BOOST
+		auto IsHidden = [](fs::path const& p){
+			auto name = p.filename();
+			if (name.c_str()[0] == '.' && name != ".." &&	name != ".") return true;
+			else return false;
+		};
+
 		fs::directory_iterator end;
 		for (fs::directory_iterator it(directory_pass); it != end; ++it)
 		{
-			if (!fs::is_directory(*it)){
+			if (!fs::is_directory(*it) && BoolConsistency(hidden_file, IsHidden(*it))){
 				auto leaf = sig::Split(it->path().wstring(), L"\\").back();
 				if (extension.empty()) result.push_back(leaf);
 				else{
@@ -93,13 +100,17 @@ namespace sig{
 
 
 	//指定ディレクトリにあるフォルダ名を取得
-	//args -> directry_pass: 調べたいディレクトリのパス
+	//directry_pass：調べたいディレクトリのパス
+	//hidden_file：true->隠しファイルのみ, false->非隠しファイルのみ (Windows, Linux環境のみ)
 	//読み込み失敗: return -> nothing or empty-vector
-/*	inline auto GetFolderNames(std::wstring const& directory_pass) ->MaybeReturn<std::vector<std::wstring>>::type
+	inline auto GetFolderNames(std::wstring const& directory_pass, bool hidden_file) ->MaybeReturn<std::vector<std::wstring>>::type
 	{
+		typedef std::vector<std::wstring> ResultType;
+		ResultType result;
+
 #if SIG_WINDOWS_ENV
 		WIN32_FIND_DATA fd;
-		auto pass = DirpassTailModify(directory_pass, true) + L"*." + extension;
+		auto pass = DirpassTailModify(directory_pass, true) + L"*";
 		auto hFind = FindFirstFile(pass.c_str(), &fd);
 
 		if (hFind == INVALID_HANDLE_VALUE){
@@ -107,10 +118,10 @@ namespace sig{
 		}
 		else{
 			do{
-				//フォルダは無視
-				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && !(fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
+				if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && BoolConsistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
 				{
-					result.push_back(std::wstring(fd.cFileName));
+					auto tmp = std::wstring(fd.cFileName);
+					if(tmp != L"." && tmp != L"..") result.push_back(tmp);
 				}
 			} while (FindNextFile(hFind, &fd));
 
@@ -118,15 +129,24 @@ namespace sig{
 			return MaybeReturn<ResultType>::type(std::move(result));
 		}
 #elif SIG_ENABLE_BOOST
+		auto IsHidden = [](fs::path const& p){
+			auto name = p.filename();
+			if (name.c_str()[0] == '.' && name != ".." &&	name != ".") return true;
+			else return false;
+		};
+
 		fs::directory_iterator end;
-		for (fs::directory_iterator it(fs::current_path()); it != end; ++it)
+		for (fs::directory_iterator it(directory_pass); it != end; ++it)
 		{
-			if (!fs::is_directory(*it))	std::cout << it->path() << std::endl;
+			if (fs::is_directory(*it) && BoolConsistency(hidden_file, IsHidden(*it))){
+				result.push_back(sig::Split(it->path().wstring(), L"\\").back());
+			}
 		}
+		return MaybeReturn<ResultType>::type(std::move(result));
 #else
 		static_asseet(false, "this OS is not support. please include boost if any.");
 #endif
-	}*/
+	}
 
 
 	//for type map
@@ -184,10 +204,11 @@ namespace sig{
 		double operator()(std::string s){ return std::stod(s); }
 	};
 
+	//overwrite：上書き, append：末尾追記
 	enum class WriteMode{ overwrite, append };
 
-
-	inline void RemakeFile(std::wstring const& file_pass)
+	//ファイル内容の初期化
+	inline void FileClear(std::wstring const& file_pass)
 	{
 		std::ofstream ofs(file_pass);
 		ofs << "";
@@ -196,13 +217,13 @@ namespace sig{
 	//-- Save Text
 
 	template <class String>
-	inline void SaveLine(String const& src, typename OFS_SELECTION<String>::fstream& ofs)
+	void SaveLine(String const& src, typename OFS_SELECTION<TString<String>>::fstream& ofs)
 	{
 		ofs << src << std::endl;
 	}
 
 	template <class String>
-	inline void SaveLine(std::vector<String> const& src, typename OFS_SELECTION<String>::fstream& ofs)
+	void SaveLine(std::vector<String> const& src, typename OFS_SELECTION<String>::fstream& ofs)
 	{
 		typename OFS_SELECTION<String>::fstreambuf_iter streambuf_iter(ofs);
 		for (auto const& str : src){
@@ -212,9 +233,11 @@ namespace sig{
 	}
 
 	//ファイルへ1行ずつ保存
-	//args -> src: 保存対象, file_pass: 保存先のディレクトリとファイル名（フルパス）, open_mode: 上書き(overwrite) or 追記(append)
+	//src: 保存対象
+	//file_pass: 保存先のディレクトリとファイル名（フルパス）
+	//open_mode: 上書き(overwrite) or 追記(append)
 	template <class String>
-	inline void SaveLine(String src, std::wstring const& file_pass, WriteMode mode)
+	void SaveLine(String src, std::wstring const& file_pass, WriteMode mode)
 	{
 		static bool first = true;
 		if (first){
@@ -226,8 +249,9 @@ namespace sig{
 		typename OFS_SELECTION<typename std::decay<String>::type>::fstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
+	//まとめて保存
 	template <class String>
-	inline void SaveLine(std::vector<String> const& src, std::wstring const& file_pass, WriteMode mode)
+	void SaveLine(std::vector<String> const& src, std::wstring const& file_pass, WriteMode mode)
 	{
 		static bool first = true;
 		if (first){
@@ -240,8 +264,9 @@ namespace sig{
 		SaveLine(src, ofs);
 	}
 
+	//保存するデータが数値の場合はこちら
 	template <class Num>
-	inline void SaveLineNum(std::vector<Num> const& src, std::wstring const& file_pass, WriteMode mode, std::string delimiter = "\n")
+	void SaveLineNum(std::vector<Num> const& src, std::wstring const& file_pass, WriteMode mode, std::string delimiter = "\n")
 	{
 		SaveLine(String::CatStr(src, delimiter), file_pass, mode);
 	}
@@ -250,7 +275,7 @@ namespace sig{
 	//-- Read Text
 
 	template <class R>
-	inline void ReadLine(std::vector<R>& empty_dest, typename IFS_SELECTION<R>::fstream& ifs, std::function< R(typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
+	void ReadLine(std::vector<R>& empty_dest, typename IFS_SELECTION<R>::fstream& ifs, std::function< R(typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
 	{
 		typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type line;
 
@@ -260,7 +285,7 @@ namespace sig{
 	}
 
 	template <class R>
-	inline void ReadLine(std::vector<R>& empty_dest, std::wstring const& file_pass, std::function< R(typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
+	void ReadLine(std::vector<R>& empty_dest, std::wstring const& file_pass, std::function< R(typename std::conditional<std::is_same<typename IFS_SELECTION<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
 	{
 		typename IFS_SELECTION<R>::fstream ifs(file_pass);
 		if (!ifs){
@@ -271,7 +296,7 @@ namespace sig{
 	}
 
 	template <class Num>
-	inline void ReadLineNum(std::vector<Num>& empty_dest, std::wstring const& file_pass)
+	void ReadLineNum(std::vector<Num>& empty_dest, std::wstring const& file_pass)
 	{
 		typename IFS_SELECTION<std::string>::fstream ifs(file_pass);
 		S2NUM_SELECTION<Num> conv;
@@ -288,7 +313,7 @@ namespace sig{
 
 	//読み込み失敗: return -> maybe == nothing
 	template <class String>
-	inline maybe<std::vector<String>> ReadLine(typename IFS_SELECTION<String>::fstream& ifs)
+	maybe<std::vector<String>> ReadLine(typename IFS_SELECTION<String>::fstream& ifs)
 	{
 		typedef std::vector<String> R;
 		R tmp;
@@ -297,7 +322,7 @@ namespace sig{
 	}
 
 	template <class String>
-	inline maybe<std::vector<String>> ReadLine(std::wstring const& file_pass)
+	maybe<std::vector<String>> ReadLine(std::wstring const& file_pass)
 	{
 		typename IFS_SELECTION<String>::fstream ifs(file_pass);
 		if (!ifs){
@@ -308,7 +333,7 @@ namespace sig{
 	}
 
 	template <class Num>
-	inline maybe<std::vector<Num>> ReadLineNum(std::wstring const& file_pass)
+	maybe<std::vector<Num>> ReadLineNum(std::wstring const& file_pass)
 	{
 		std::vector<Num> tmp;
 		ReadLineNum<Num>(tmp, file_pass);
@@ -319,7 +344,7 @@ namespace sig{
 
 	//csvで保存
 	template <class Num>
-	inline void SaveCSV(std::vector<std::vector<Num>> const& data, std::vector<std::string> const& row_names, std::vector<std::string> const& col_names, std::wstring const& out_fullpass)
+	void SaveCSV(std::vector<std::vector<Num>> const& data, std::vector<std::string> const& row_names, std::vector<std::string> const& col_names, std::wstring const& out_fullpass)
 	{
 		std::ofstream ofs(out_fullpass);
 

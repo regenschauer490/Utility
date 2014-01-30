@@ -62,8 +62,8 @@ int main()
 	//CatStrTest();
 	//StrConvertTest();
 
-	GetFileNamesTest();
-		
+	//GetDirectoryNamesTest();
+	FileSaveLoadTest();
 
 	return 0;
 }

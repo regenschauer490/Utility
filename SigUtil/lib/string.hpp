@@ -22,7 +22,7 @@ namespace sig{
 	struct StringId<wchar_t const*>{ typedef std::wstring type; };
 
 	template <class T>
-	using String = typename StringId<typename std::decay<T>::type>::type;
+	using TString = typename StringId<typename std::decay<T>::type>::type;
 
 	template <class T>
 	struct Map2Regex{ typedef void type; };
@@ -53,9 +53,9 @@ namespace sig{
 
 	//自動でエスケープしてstd::regex or std::wregex を返す
 	template <class T>
-	auto RegexMaker(T const& expression) ->typename Map2Regex<String<T>>::type
+	auto RegexMaker(T const& expression) ->typename Map2Regex<TString<T>>::type
 	{
-		return typename Map2Regex<String<T>>::type(RegexEscaper(expression));
+		return typename Map2Regex<TString<T>>::type(RegexEscaper(expression));
 	}
 
 
@@ -66,19 +66,19 @@ namespace sig{
 	//expression = std::regex("tes(\\d)")
 	//return -> [[tes1, 1], [tes2, 2]]
 	template < class T, template<class T_, class = std::allocator<T_>> class Container = std::vector >
-	auto RegexSearch(T src, typename Map2Regex<String<T>>::type const& expression) ->typename MaybeReturn< Container< Container<String<T>>>>::type
+	auto RegexSearch(T src, typename Map2Regex<TString<T>>::type const& expression) ->typename MaybeReturn< Container< Container<TString<T>>>>::type
 	{
-		Container<Container<String<T>>> d;
-		typename Map2Smatch<String<T>>::type match;
-		auto tmp = String<T>(src);
+		Container<Container<TString<T>>> d;
+		typename Map2Smatch<TString<T>>::type match;
+		auto tmp = TString<T>(src);
 
 		while (std::regex_search(tmp, match, expression)){
-			d.push_back(Container<String<T>>());
+			d.push_back(Container<TString<T>>());
 			for (auto const& m : match) d[d.size() - 1].push_back(m);
 			tmp = match.suffix().str();
 		}
 
-		return d.empty() ? Nothing(std::move(d)) : typename MaybeReturn<Container<Container<String<T>>>>::type(std::move(d));
+		return d.empty() ? Nothing(std::move(d)) : typename MaybeReturn<Container<Container<TString<T>>>>::type(std::move(d));
 	}
 
 /*
