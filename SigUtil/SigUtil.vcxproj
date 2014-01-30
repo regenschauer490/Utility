@@ -83,17 +83,17 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="example\file_test.cpp" />
+    <ClCompile Include="example\string_test.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="test\file_test.cpp" />
-    <ClCompile Include="test\string_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="botsu.hpp" />
+    <ClInclude Include="example\file_test.hpp" />
+    <ClInclude Include="example\string_test.hpp" />
     <ClInclude Include="lib\file.hpp" />
     <ClInclude Include="lib\sigutil.hpp" />
     <ClInclude Include="lib\string.hpp" />
-    <ClInclude Include="test\file_test.hpp" />
-    <ClInclude Include="test\string_test.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,8 +1,8 @@
 #include "lib/string.hpp"
 #include "lib/file.hpp"
 
-#include "test/string_test.hpp"
-#include "test/file_test.hpp"
+#include "example/string_test.hpp"
+#include "example/file_test.hpp"
 
 /*
 #include "utility.hpp"
@@ -56,14 +56,14 @@ int main()
 {
 	setlocale(LC_ALL, "Japanese");
 
-	RegexTest();
+	//RegexTest();
 	//TagDealerTest();
 	//SplitTest();
 	//CatStrTest();
 	//StrConvertTest();
 
 	//GetDirectoryNamesTest();
-	//FileSaveLoadTest();
+	FileSaveLoadTest();
 
 	return 0;
 }

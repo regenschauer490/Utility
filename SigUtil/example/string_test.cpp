@@ -33,7 +33,7 @@ void RegexTest()
 	//tes1,1,a
 	//tes2,2,b
 
-	for (auto m : matches2) std::cout << m[0] << std::endl;
+	for (auto m : matches2) std::cout << m.front() << std::endl;
 	//? or (lol) must be escaped
 #endif
 

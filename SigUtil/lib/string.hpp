@@ -121,7 +121,6 @@ namespace sig{
 #endif
 	};
 
-#if SIG_ENABLE_BOOST
 	template <class String>
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
@@ -134,6 +133,7 @@ namespace sig{
 		return result;
 	}
 
+#if SIG_ENABLE_BOOST
 	template <class String>
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 	auto TagDealer<String>::Decode(String const& src, Container<String> const& tag) ->typename MaybeReturn<Container<String>>::type const

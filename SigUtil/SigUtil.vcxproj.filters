@@ -13,10 +13,10 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ヘッダー ファイル\test">
+    <Filter Include="ヘッダー ファイル\example">
       <UniqueIdentifier>{b335a5f9-66e2-4fdf-996a-291c1ec74d34}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\test">
+    <Filter Include="ソース ファイル\example">
       <UniqueIdentifier>{da3541e8-21e4-4577-90d4-4588f86c4cd4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -27,11 +27,11 @@
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="test\string_test.cpp">
-      <Filter>ソース ファイル\test</Filter>
+    <ClCompile Include="example\file_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
     </ClCompile>
-    <ClCompile Include="test\file_test.cpp">
-      <Filter>ソース ファイル\test</Filter>
+    <ClCompile Include="example\string_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -44,14 +44,14 @@
     <ClInclude Include="lib\sigutil.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="test\string_test.hpp">
-      <Filter>ヘッダー ファイル\test</Filter>
-    </ClInclude>
     <ClInclude Include="lib\file.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="test\file_test.hpp">
-      <Filter>ヘッダー ファイル\test</Filter>
+    <ClInclude Include="example\file_test.hpp">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="example\string_test.hpp">
+      <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
