@@ -15,47 +15,49 @@ void GetDirectoryNamesTest()
 	auto hidden_text_file_names = sig::GetFileNames(pass, true, L".txt");
 
 #if SIG_ENABLE_BOOST
+	std::cout << std::endl  << "[all visible files]"<< std::endl;
 	if(file_names){
 		for (auto fn : *file_names) std::wcout << fn << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << std::endl << "[all .txt files]" << std::endl;
 	if(text_file_names){
 		for (auto fn : *text_file_names) std::wcout << fn << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << std::endl << "[all .old.txt files]" << std::endl;
 	if(old_text_file_names){
 		for (auto fn : *old_text_file_names) std::wcout << fn << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << std::endl << "[all hidden files]" << std::endl;
 	if(hidden_text_file_names){
 		for (auto fn : *hidden_text_file_names) std::wcout << fn << std::endl;
 	}
-	std::cout << std::endl;
 #else
+	std::cout << std::endl << "[all visible files]" << std::endl;
 	for (auto fn : file_names) std::wcout << fn << std::endl;
-	std::cout << std::endl;
+	std::cout << std::endl << "[all .txt files]" << std::endl;
 	for (auto fn : text_file_names) std::wcout << fn << std::endl;
-	std::cout << std::endl;
+	std::cout << std::endl << "[all .old.txt files]" << std::endl;
 	for (auto fn : old_text_file_names) std::wcout << fn << std::endl;
-	std::cout << std::endl;
+	std::cout << std::endl << "[all hidden files]" << std::endl;
 	for (auto fn : hidden_text_file_names) std::wcout << fn << std::endl;
-	std::cout << std::endl;
 #endif
 
 	auto folder_names = sig::GetFolderNames(pass, false);
 	auto hidden_folder_names = sig::GetFolderNames(pass, true);
 
 #if SIG_ENABLE_BOOST
+	std::cout << std::endl << "[all visible folders]" << std::endl;
 	if (folder_names){
 		for (auto fn : *folder_names) std::wcout << fn << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << std::endl << "[all hidden folders]" << std::endl;
 	if (hidden_folder_names){
 		for (auto fn : *hidden_folder_names) std::wcout << fn << std::endl;
 	}
 #else
+	std::cout << std::endl << "[all visible folders]" << std::endl;
 	for (auto fn : folder_names) std::wcout << fn << std::endl;
-	std::cout << std::endl;
+	std::cout << std::endl << "[all hidden folders]" << std::endl;
 	for (auto fn : hidden_folder_names) std::wcout << fn << std::endl;
 #endif
 }
