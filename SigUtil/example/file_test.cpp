@@ -66,10 +66,19 @@ void FileSaveLoadTest()
 	auto fpass2 = pass + L"test2.txt";
 	auto fpass3 = pass + L"test3.txt";
 	auto fpass4 = pass + L"test4.txt";
+	auto fpass5 = pass + L"test5.txt";
 
 	std::wcout << fpass1 << std::endl << std::endl;
 
-	std::vector<std::string> blghost_text{
+	std::vector<std::wstring> blghost_text1{
+		L"O.K.",
+		L"CLOSE INITIALIZE SEQUENCE.",
+		L"AND",
+		L"BIGIN TO LOG ON",
+		L"B.L.GHOST STRATEGY RECORDER."
+	};
+
+	std::list<std::string> blghost_text2{
 		"HAIL TO YOU,MY FELLOW.",
 		"I DON'T KNOW YOUR INFERNAL DAYS.",
 		"HOWEVER.",
@@ -79,14 +88,16 @@ void FileSaveLoadTest()
 		"SO,YOUR PAIN IS MINE.",
 		"KEEP YOUR DIGNITY."
 	};
+	
 
 	//既存の内容のクリア
 	sig::FileClear(fpass1);
+	sig::FileClear(fpass5);
 
 	//ofstreamを渡して保存
-	std::ofstream ofs(fpass1, std::ios::out | std::ios::app);
-	sig::SaveLine("test write 0", ofs);		//1行保存
-	sig::SaveLine(blghost_text, ofs);		//全行保存
+	std::wofstream ofs(fpass1, std::ios::out | std::ios::app);
+	sig::SaveLine(L"test write 0", ofs);		//1行保存
+	sig::SaveLine(blghost_text1, ofs);		//全行保存
 	ofs.close();
 
 	//以下 かんたん保存♪
@@ -96,19 +107,21 @@ void FileSaveLoadTest()
 	//1行保存（追記）
 	sig::SaveLine(L"test write 弐", fpass2, sig::WriteMode::append);
 	//全行保存（上書き）
-	sig::SaveLine(blghost_text, fpass3);
+	sig::SaveLine(blghost_text2, fpass3);
 
 	//数値データの保存（上書き、1行ずつ保存）
-	sig::SaveLineNum(std::vector<int>{1, 2, 3, 4, 5}, fpass4);
+	sig::SaveNum(std::vector<int>{1, 2, 3, 4, 5}, fpass4);
 	//数値データの保存（追記、カンマ分けで保存）
-	sig::SaveLineNum(std::list<double>{1.1, 2.2, 3.3}, fpass4, sig::WriteMode::append, ",");
+	sig::SaveNum(std::list<double>{1.1, 2.2, 3.3}, fpass5, sig::WriteMode::append, ",");
 
 
 	//以下 かんたん読み込み♪
 
 #if SIG_ENABLE_BOOST
 	auto test1 = sig::ReadLine<std::string>(fpass1);
-	auto test2 = sig::ReadLine<std::wstring>(fpass2);
+	auto test2 = sig::ReadLine<std::wstring, std::list>(fpass2);
+	auto test_num1 = sig::ReadNum<int>(fpass4);
+	auto test_num2 = sig::ReadNum<double>(fpass5, ",");
 
 	if (test1){
 		for (auto e : *test1) std::cout << e << std::endl;
@@ -117,9 +130,17 @@ void FileSaveLoadTest()
 	if (test2){
 		for (auto e : *test2) std::wcout << e << std::endl;
 	}
+	std::cout << std::endl;
+	if (test_num1){
+		for (auto e : *test_num1) std::wcout << e << std::endl;
+	}
+	std::cout << std::endl;
+	if (test_num2){
+		for (auto e : *test_num2) std::wcout << e << std::endl;
+	}
 #else
 	std::vector<std::string> test1;
-	std::vector<std::wstring> test2;
+	std::list<std::wstring> test2;
 
 	sig::ReadLine(test1, fpass1);
 	sig::ReadLine(test2, fpass2);

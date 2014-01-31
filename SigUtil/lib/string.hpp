@@ -156,6 +156,8 @@ namespace sig{
 		int const mag = delimiter.size();
 		int cut_at;
 
+		if (!mag) return Container<String>{src};
+
 		while ((cut_at = src.find(delimiter)) != src.npos){
 			if (cut_at > 0) result.push_back(src.substr(0, cut_at));
 			src = src.substr(cut_at + mag);

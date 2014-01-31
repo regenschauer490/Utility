@@ -248,7 +248,7 @@ namespace sig{
 		typename OfsSelector<typename std::decay<String>::type>::fstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
-	//まとめて保存
+	//まとめて保存 (シーケンスな動的コンテナのみ対応)
 	template <class String, template <class T_, class = std::allocator<T_>> class Container>
 	void SaveLine(Container<String> const& src, std::wstring const& file_pass, WriteMode mode = WriteMode::overwrite)
 	{
@@ -263,10 +263,10 @@ namespace sig{
 		SaveLine(src, ofs);
 	}
 
-	//保存するデータが数値の場合はこちら
+	//保存するデータが数値の場合
 	//デフォルトでは1要素1行で保存（delimiterで変更可）
 	template <class Num, template <class T_, class = std::allocator<T_>> class Container>
-	void SaveLineNum(Container<Num> const& src, std::wstring const& file_pass, WriteMode mode = WriteMode::overwrite, std::string delimiter = "\n")
+	void SaveNum(Container<Num> const& src, std::wstring const& file_pass, WriteMode mode = WriteMode::overwrite, std::string delimiter = "\n")
 	{
 		SaveLine(CatStr(src, delimiter), file_pass, mode);
 	}
@@ -274,8 +274,8 @@ namespace sig{
 
 	//-- Read Text
 
-	template <class R>
-	void ReadLine(std::vector<R>& empty_dest, typename IfsSelector<R>::fstream& ifs, std::function< R(typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
+	template <class R, template <class T_, class = std::allocator<T_>> class Container = std::vector>
+	void ReadLine(Container<R>& empty_dest, typename IfsSelector<R>::fstream& ifs, std::function< R(typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
 	{
 		typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type line;
 
@@ -284,8 +284,8 @@ namespace sig{
 		}
 	}
 
-	template <class R>
-	void ReadLine(std::vector<R>& empty_dest, std::wstring const& file_pass, std::function< R(typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
+	template <class R, template <class T_, class = std::allocator<T_>> class Container = std::vector>
+	void ReadLine(Container<R>& empty_dest, std::wstring const& file_pass, std::function< R(typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
 	{
 		typename IfsSelector<R>::fstream ifs(file_pass);
 		if (!ifs){
@@ -295,8 +295,8 @@ namespace sig{
 		ReadLine(empty_dest, ifs);
 	}
 
-	template <class Num>
-	void ReadLineNum(std::vector<Num>& empty_dest, std::wstring const& file_pass)
+	template <class Num, template <class T_, class = std::allocator<T_>> class Container = std::vector>
+	void ReadNum(Container<Num>& empty_dest, std::wstring const& file_pass, std::string delimiter = "")
 	{
 		typename IfsSelector<std::string>::fstream ifs(file_pass);
 		Str2NumSelector<Num> conv;
@@ -305,39 +305,41 @@ namespace sig{
 			wprintf(L"file open error: %s \n", file_pass);
 			return;
 		}
-		while (ifs && getline(ifs, line))
-			empty_dest.push_back(conv(std::move(line)));
+		while (ifs && getline(ifs, line)){
+			auto split = Split(line, delimiter);
+			for(auto v : split) empty_dest.push_back(conv(v));
+		}
 	}
 
 #if SIG_ENABLE_BOOST
 
 	//読み込み失敗: return -> maybe == nothing
-	template <class String>
-	maybe<std::vector<String>> ReadLine(typename IfsSelector<String>::fstream& ifs)
+	template <class String, template <class T_, class = std::allocator<T_>> class Container = std::vector>
+	maybe<Container<String>> ReadLine(typename IfsSelector<String>::fstream& ifs)
 	{
-		typedef std::vector<String> R;
+		typedef Container<String> R;
 		R tmp;
 		ReadLine(tmp, ifs);
 		return tmp.size() ? maybe<R>(std::move(tmp)) : nothing;
 	}
 
-	template <class String>
-	maybe<std::vector<String>> ReadLine(std::wstring const& file_pass)
+	template <class String, template <class T_, class = std::allocator<T_>> class Container = std::vector>
+	maybe<Container<String>> ReadLine(std::wstring const& file_pass)
 	{
 		typename IfsSelector<String>::fstream ifs(file_pass);
 		if (!ifs){
 			std::wcout << L"file open error: " << file_pass << std::endl;
 			return nothing;
 		}
-		return ReadLine<String>(ifs);
+		return ReadLine<String, Container>(ifs);
 	}
 
-	template <class Num>
-	maybe<std::vector<Num>> ReadLineNum(std::wstring const& file_pass)
+	template <class Num, template <class T_, class = std::allocator<T_>> class Container = std::vector>
+	maybe<Container<Num>> ReadNum(std::wstring const& file_pass, std::string delimiter = "")
 	{
-		std::vector<Num> tmp;
-		ReadLineNum<Num>(tmp, file_pass);
-		return tmp.size() ? maybe<std::vector<Num>>(std::move(tmp)) : nothing;
+		Container<Num> tmp;
+		ReadNum<Num>(tmp, file_pass, delimiter);
+		return tmp.size() ? maybe<Container<Num>>(std::move(tmp)) : nothing;
 	}
 
 #endif

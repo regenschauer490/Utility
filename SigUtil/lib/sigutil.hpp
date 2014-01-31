@@ -1,7 +1,7 @@
 #ifndef __SIG_UTIL_H__
 #define __SIG_UTIL_H__
 
-#define SIG_ENABLE_BOOST 0
+#define SIG_ENABLE_BOOST 1
 
 #ifdef _WIN32
 #define SIG_WINDOWS_ENV 1
@@ -85,8 +85,8 @@ namespace sig{
 	//template <class T, class D = void> struct HasBegin : std::true_type{};
 	//template <class T> struct HasBegin<T, decltype(std::declval<T>().begin())> : std::false_type{};
 
-	//template <class T> constexpr auto HasBegin(int) ->decltype(std::declval<T>().begin()){ return true; }
-	//template <class T> constexpr bool HasBegin(...){ return false; }
+	template <class T> constexpr auto HasBegin(int) ->decltype(std::declval<T>().begin()){ return true; }
+	template <class T> constexpr bool HasBegin(...){ return false; }
 
 	//template <typename T> constexpr auto has_reserve_method(int) -> decltype(std::declval<T>().reserve(0), bool()) { return true; }
 	//template <typename T> constexpr bool has_reserve_method(...) { return false; }
