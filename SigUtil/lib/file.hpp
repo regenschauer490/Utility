@@ -341,7 +341,6 @@ namespace sig{
 		ReadNum<Num>(tmp, file_pass, delimiter);
 		return tmp.size() ? maybe<Container<Num>>(std::move(tmp)) : nothing;
 	}
-
 #endif
 
 	/*

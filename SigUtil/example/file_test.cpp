@@ -121,7 +121,7 @@ void FileSaveLoadTest()
 	auto test1 = sig::ReadLine<std::string>(fpass1);
 	auto test2 = sig::ReadLine<std::wstring, std::list>(fpass2);
 	auto test_num1 = sig::ReadNum<int>(fpass4);
-	auto test_num2 = sig::ReadNum<double>(fpass5, ",");
+	auto test_num2 = sig::ReadNum<double, std::list>(fpass5, ",");
 
 	if (test1){
 		for (auto e : *test1) std::cout << e << std::endl;
@@ -141,12 +141,20 @@ void FileSaveLoadTest()
 #else
 	std::vector<std::string> test1;
 	std::list<std::wstring> test2;
+	std::vector<int> test_num1;
+	std::list<double> test_num2;
 
 	sig::ReadLine(test1, fpass1);
 	sig::ReadLine(test2, fpass2);
+	sig::ReadNum<int>(test_num1, fpass4);
+	sig::ReadNum<double>(test_num2, fpass5, ",");
 
 	for (auto e : test1) std::cout << e << std::endl;
 	std::cout << std::endl;
 	for (auto e : test2) std::wcout << e << std::endl;
+	std::cout << std::endl;
+	for (auto e : test_num1) std::wcout << e << std::endl;
+	std::cout << std::endl;
+	for (auto e : test_num2) std::wcout << e << std::endl;
 #endif
 }
