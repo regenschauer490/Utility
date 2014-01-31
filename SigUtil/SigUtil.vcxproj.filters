@@ -33,6 +33,9 @@
     <ClCompile Include="example\string_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
+    <ClCompile Include="example\tool_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="botsu.hpp">
@@ -47,10 +50,16 @@
     <ClInclude Include="lib\file.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="example\file_test.hpp">
+    <ClInclude Include="lib\tool.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="example\file_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
-    <ClInclude Include="example\string_test.hpp">
+    <ClInclude Include="example\string_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="example\tool_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
   </ItemGroup>

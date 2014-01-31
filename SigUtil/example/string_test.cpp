@@ -1,4 +1,4 @@
-#include "string_test.hpp"
+#include "string_test.h"
 
 //SIG_ENABLE_BOOST = 1 ‚ÌÛ‚É‚Íboost::optional‚ª—LŒø‚É‚È‚é
 

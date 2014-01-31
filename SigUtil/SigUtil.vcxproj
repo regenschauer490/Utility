@@ -85,15 +85,18 @@
   <ItemGroup>
     <ClCompile Include="example\file_test.cpp" />
     <ClCompile Include="example\string_test.cpp" />
+    <ClCompile Include="example\tool_test.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="botsu.hpp" />
-    <ClInclude Include="example\file_test.hpp" />
-    <ClInclude Include="example\string_test.hpp" />
+    <ClInclude Include="example\file_test.h" />
+    <ClInclude Include="example\string_test.h" />
+    <ClInclude Include="example\tool_test.h" />
     <ClInclude Include="lib\file.hpp" />
     <ClInclude Include="lib\sigutil.hpp" />
     <ClInclude Include="lib\string.hpp" />
+    <ClInclude Include="lib\tool.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

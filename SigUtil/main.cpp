@@ -1,8 +1,9 @@
 #include "lib/string.hpp"
 #include "lib/file.hpp"
 
-#include "example/string_test.hpp"
-#include "example/file_test.hpp"
+#include "example/string_test.h"
+#include "example/file_test.h"
+#include "example/tool_test.h"
 
 /*
 #include "utility.hpp"
@@ -63,7 +64,9 @@ int main()
 	//StrConvertTest();
 
 	//GetDirectoryNamesTest();
-	FileSaveLoadTest();
+	//FileSaveLoadTest();
+
+	TimeWatchTest();
 
 	return 0;
 }
