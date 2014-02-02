@@ -63,10 +63,11 @@ int main()
 	//CatStrTest();
 	//StrConvertTest();
 
-	GetDirectoryNamesTest();
+	//GetDirectoryNamesTest();
 	//FileSaveLoadTest();
 
 	//TimeWatchTest();
+	HistgramTest();
 
 	return 0;
 }

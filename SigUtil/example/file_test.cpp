@@ -3,7 +3,7 @@
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 //処理方法の優先順位は SIG_WINDOWS_ENV(windows.h使用) > SIG_ENABLE_BOOOST(boost::filesystem使用)
 
-auto pass = sig::DirpassTailModify(L"../SigUtil/example/file_test", true);
+auto pass = sig::DirpassTailModify(L"../SigUtil/example/test_file", true);
 
 void GetDirectoryNamesTest()
 {
