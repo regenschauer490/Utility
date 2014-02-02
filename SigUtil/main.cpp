@@ -66,8 +66,9 @@ int main()
 	//GetDirectoryNamesTest();
 	//FileSaveLoadTest();
 
+	RandomTest();
 	//TimeWatchTest();
-	HistgramTest();
+	//HistgramTest();
 
 	return 0;
 }

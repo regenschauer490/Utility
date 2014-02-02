@@ -200,57 +200,6 @@ namespace sig{
 		}
 
 
-/* 乱数 */
-
-	//初期化時に指定した範囲の一様分布乱数を発生させるクラス
-	//デフォルト: 乱数生成器 -> メルセンヌツイスター
-	template <class NumType, class Engine = std::mt19937>
-	class SimpleRandom {
-		Engine _engine;		//乱数生成アルゴリズム 
-		typename std::conditional <
-			std::is_integral<NumType>::value,
-			std::uniform_int_distribution<int>,
-			std::uniform_real_distribution<double>
-		> ::type _dist;		//確率分布
-
-	public:
-		SimpleRandom(NumType min, NumType max, bool debug) : _engine(
-			[debug](){
-				std::random_device rnd;
-				std::vector<uint> v(10);
-				if (debug) std::fill(v.begin(), v.end(), 0);
-				else std::generate(v.begin(), v.end(), std::ref(rnd));
-
-				return Engine(std::seed_seq(v.begin(), v.end()));
-		}()
-			),
-			_dist(min, max){}
-
-		NumType operator()(){
-			return _dist(_engine);
-		}
-	};
-
-
-	//重複の無い整数乱数を生成
-	template < template < class T, class = std::allocator<T>> class Container = std::vector >
-	Container<int> RandomUniqueNumbers(std::size_t n, int min, int max, bool debug) {
-		std::unordered_set<int> match;
-		Container<int> result;
-		static SimpleRandom<int> Rand(0, max - min, debug);
-
-		int r;
-		for (int i = 0; i < n; ++i){
-			do{
-				r = min + Rand();
-			} while (match.find(r) != match.end());
-
-			match.insert(r);
-			result.push_back(r);
-		}
-
-		return std::move(result);
-	}
 
 
 /* 便利関数 */

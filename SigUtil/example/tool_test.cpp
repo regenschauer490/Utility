@@ -6,6 +6,17 @@
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 
+void RandomTest()
+{
+	sig::SimpleRandom<int> rand_maker(-10, 10, true);	//[-10, 10]の一様分布乱数、デバッグモード(シード固定)
+	
+	std::cout << rand_maker() << std::endl;
+
+	auto rints = sig::RandomUniqueNumbers(10, 0, 30, true);	//[0, 30]の一様分布から10個重複無くサンプル
+
+	for (auto v : rints) std::cout << v << std::endl;
+}
+
 void TimeWatchTest()
 {
 	sig::TimeWatch tw;		//計測開始
