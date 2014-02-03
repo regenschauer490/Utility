@@ -235,6 +235,23 @@ namespace sig{
 		return keta;
 	}
 
+	/*
+	template <class T, class D> struct RI{ static const bool value = false; };
+	template <class T> struct RI<T, decltype(std::declval<T>()[0], void())>{ static const bool value = true; };
+
+	template <class T, class D> struct CMPOP{ static const bool value = false; };
+	template <class T> struct CMPOP<T, decltype(std::declval<T::iterator>().operator<, void())>{ static const bool value = true; };
+
+	//至って普通なソートのラッパ
+	template <class Container, typename std::enable_if<RI<Container,void>::value>::type*& = enabler>
+	void Sort(Container& data){
+		std::sort(std::begin(data), std::end(data));
+	}
+	template <class Container, typename std::enable_if<!RI<Container,void>::value && CMPOP<Container,void>::value>::type*& = enabler>
+	void Sort(Container& data){
+		data.sort();
+	}*/
+
 	//ソート前のindexを保持してソート
 	template <class T>
 	std::vector< std::tuple<uint, T> > SortWithIndex(std::vector<T> const& vec, bool const small_to_large)
@@ -397,98 +414,6 @@ namespace sig{
 		if(val<min){ return false; }
 		if(val>max){ return false; }
 		return true;
-	}
-
-	// 削除関連の関数群
-	namespace Eraser{
-
-		#define Sig_Eraser_RemoveDuplicates_Impl(Container) \
-			auto end = std::unique(list.begin(), list.end());\
-			auto removes = need_removes ? Container(end, list.end()) : Container();\
-			list.erase(end, list.end())\
-
-
-		//コンテナの要素から重複したものを削除
-		//args -> list: コンテナ, need_removes: 削除した要素を戻り値で受け取るか, is_sorted: コンテナがソート済みか 
-		//return -> 削除要素
-		template <class T, template<class T_, class = std::allocator<T_>> class Container>
-		inline Container<T> RemoveDuplicates(Container<T>& list, bool need_removes, bool is_sorted = false)
-		{
-			if (!is_sorted) std::sort(list.begin(), list.end());
-
-			Sig_Eraser_RemoveDuplicates_Impl(Container<T>);
-
-			return std::move(removes);
-		}
-		template < class T>
-		inline std::list<T> RemoveDuplicates(std::list<T>& list, bool need_removes, bool is_sorted = false)
-		{
-			if (!is_sorted) list.sort();
-
-			Sig_Eraser_RemoveDuplicates_Impl(std::list<T>);
-
-			return std::move(removes);
-		}
-	
-		#if SIG_ENABLE_BOOST
-		#define Sig_Eraser_ParamType1 typename boost::call_traits<T>::param_type
-		#else
-		#define Sig_Eraser_ParamType1 typename std::common_type<T>::type const&
-		#endif
-
-		//コンテナから指定要素を1つ削除
-		//args -> list: コンテナ, remove: 削除要素
-		//return -> 削除要素が存在したか
-		template <class T, template<class T_, class = std::allocator<T_>> class Container >
-		inline bool RemoveOne(Container<T>& list, Sig_Eraser_ParamType1 remove)
-		{
-			for(auto it =list.begin(), end = list.end(); it != end;){
-				if(*it == remove){
-					list.erase(it);
-					return true;
-				}
-				else ++it;
-			}
-			return false;
-		}
-
-		//コンテナから述語条件を満たす要素を1つ削除
-		//args -> list: コンテナ, remove_pred: 削除判別関数
-		//return -> 削除要素が存在したか
-		template <class Pred, class T, template<class T_, class = std::allocator<T_>> class Container >
-		inline bool RemoveOneIf(Container<T>& list, Pred remove_pred)
-		{
-			for(auto it =list.begin(), end = list.end(); it != end;){
-				if(remove_pred(*it)){
-					list.erase(it);
-					return true;
-				}
-				else ++it;
-			}
-			return false;
-		}
-
-		//コンテナから指定要素を全削除
-		//args -> list: コンテナ, remove: 削除要素
-		//return -> 削除要素が存在したか
-		template < class T, template < class T_, class = std::allocator<T_>> class Container >
-		inline bool RemoveAll(Container<T>& list, Sig_Eraser_ParamType1 remove)
-		{
-			uint presize = list.size();
-			if (!list.empty()) list.erase(std::remove(list.begin(), list.end(), remove), list.end());
-			return presize != list.size();
-		}
-
-		//コンテナから述語条件を満たす要素を全削除
-		//args -> list: コンテナ, remove_pred: 削除判別関数
-		//return -> 削除要素が存在したか
-		template <class Pred, class T, template<class T_, class = std::allocator<T_>> class Container >
-		inline bool RemoveAllIf(Container<T>& list, Pred remove_pred)
-		{
-			uint presize = list.size();
-			if(!list.empty()) list.erase( std::remove_if(list.begin(), list.end(), remove_pred), list.end());
-			return presize != list.size();
-		}
 	}
 
 

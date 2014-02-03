@@ -4,6 +4,7 @@
 #include "example/string_test.h"
 #include "example/file_test.h"
 #include "example/tool_test.h"
+#include "example/eraser_test.h"
 
 /*
 #include "utility.hpp"
@@ -55,7 +56,7 @@ void MapTest()
 
 int main()
 {
-	setlocale(LC_ALL, "Japanese");
+	setlocale(LC_ALL, "Japanese"); decltype(std::declval<std::vector<int>::iterator>().operator<, void())
 
 	//RegexTest();
 	//TagDealerTest();
@@ -66,9 +67,11 @@ int main()
 	//GetDirectoryNamesTest();
 	//FileSaveLoadTest();
 
-	RandomTest();
+	//RandomTest();
 	//TimeWatchTest();
 	//HistgramTest();
+
+	RemoveTest();
 
 	return 0;
 }

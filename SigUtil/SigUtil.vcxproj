@@ -83,6 +83,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="example\eraser_test.cpp" />
     <ClCompile Include="example\file_test.cpp" />
     <ClCompile Include="example\string_test.cpp" />
     <ClCompile Include="example\tool_test.cpp" />
@@ -90,9 +91,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="botsu.hpp" />
+    <ClInclude Include="example\eraser_test.h" />
     <ClInclude Include="example\file_test.h" />
     <ClInclude Include="example\string_test.h" />
     <ClInclude Include="example\tool_test.h" />
+    <ClInclude Include="lib\eraser.hpp" />
     <ClInclude Include="lib\file.hpp" />
     <ClInclude Include="lib\sigutil.hpp" />
     <ClInclude Include="lib\string.hpp" />
