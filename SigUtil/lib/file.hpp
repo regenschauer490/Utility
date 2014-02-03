@@ -46,7 +46,7 @@ namespace sig{
 	//hidden_file：true->隠しファイルのみ, false->非隠しファイルのみ (Windows, Linux環境のみ)
 	//extension：拡張子指定(オプション)
 	//読み込み失敗: return -> nothing or empty-vector
-	inline auto GetFileNames(std::wstring const& directory_pass, bool hidden_file, std::wstring extension = L"") ->MaybeReturn<std::vector<std::wstring>>::type
+	inline auto GetFileNames(std::wstring const& directory_pass, bool hidden_file, std::wstring extension = L"") ->Just<std::vector<std::wstring>>::type
 	{
 		typedef std::vector<std::wstring> ResultType;
 		ResultType result;
@@ -69,7 +69,7 @@ namespace sig{
 			} while (FindNextFile(hFind, &fd));
 
 			FindClose(hFind);
-			return MaybeReturn<ResultType>::type(std::move(result));
+			return Just<ResultType>::type(std::move(result));
 		}
 #elif SIG_ENABLE_BOOST
 		auto IsHidden = [](fs::path const& p){
@@ -91,7 +91,7 @@ namespace sig{
 				}
 			}
 		}
-		return MaybeReturn<ResultType>::type(std::move(result));
+		return Just<ResultType>::type(std::move(result));
 #else
 		static_asseet(false, "this OS is not support. please include boost if any.");
 #endif
@@ -102,7 +102,7 @@ namespace sig{
 	//directry_pass：調べたいディレクトリのパス
 	//hidden_file：true->隠しファイルのみ, false->非隠しファイルのみ (Windows, Linux環境のみ)
 	//読み込み失敗: return -> nothing or empty-vector
-	inline auto GetFolderNames(std::wstring const& directory_pass, bool hidden_file) ->MaybeReturn<std::vector<std::wstring>>::type
+	inline auto GetFolderNames(std::wstring const& directory_pass, bool hidden_file) ->Just<std::vector<std::wstring>>::type
 	{
 		typedef std::vector<std::wstring> ResultType;
 		ResultType result;
@@ -125,7 +125,7 @@ namespace sig{
 			} while (FindNextFile(hFind, &fd));
 
 			FindClose(hFind);
-			return MaybeReturn<ResultType>::type(std::move(result));
+			return Just<ResultType>::type(std::move(result));
 		}
 #elif SIG_ENABLE_BOOST
 		auto IsHidden = [](fs::path const& p){
@@ -141,7 +141,7 @@ namespace sig{
 				result.push_back(sig::Split(it->path().wstring(), L"\\").back());
 			}
 		}
-		return MaybeReturn<ResultType>::type(std::move(result));
+		return Just<ResultType>::type(std::move(result));
 #else
 		static_asseet(false, "this OS is not support. please include boost if any.");
 #endif

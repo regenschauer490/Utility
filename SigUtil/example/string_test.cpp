@@ -58,11 +58,11 @@ void TagDealerTest()
 #endif
 	
 	//まとめてエンコード -> <TAG1>str1<TAG1><TAG2>str2<TAG2><TAG3>str3<TAG3>
-	auto encoded_vec = tag_dealer.Encode(std::vector<std::string>{"str1", "str2", "str3"}, std::vector<std::string>{"TAG1", "TAG2", "TAG3"});
+	auto encoded_vec = tag_dealer.Encode(std::list<std::string>{"str1", "str2", "str3"}, std::list<std::string>{"TAG1", "TAG2", "TAG3"});
 
 #if SIG_ENABLE_BOOST
 	//まとめてデコード
-	auto decoded_vec = tag_dealer.Decode(encoded_vec, std::vector<std::string>{"TAG1", "TAG3"});
+	auto decoded_vec = tag_dealer.Decode(encoded_vec, std::list<std::string>{"TAG1", "TAG3"});
 
 	if (decoded){
 		for (auto s : *decoded_vec) std::cout << s << std::endl;

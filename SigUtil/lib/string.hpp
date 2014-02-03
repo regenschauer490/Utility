@@ -66,7 +66,7 @@ namespace sig{
 	//expression = std::regex("tes(\\d)")
 	//return -> [[tes1, 1], [tes2, 2]]
 	template <template <class T_, class = std::allocator<T_>> class Container = std::vector, class T = std::string >
-	auto RegexSearch(T src, typename Str2RegexSelector<TString<T>>::type const& expression) ->typename MaybeReturn< Container< Container<TString<T>>>>::type
+	auto RegexSearch(T src, typename Str2RegexSelector<TString<T>>::type const& expression) ->typename Just< Container< Container<TString<T>>>>::type
 	{
 		Container<Container<TString<T>>> d;
 		typename Str2SmatchSelector<TString<T>>::type match;
@@ -78,13 +78,13 @@ namespace sig{
 			tmp = match.suffix().str();
 		}
 
-		return d.empty() ? Nothing(std::move(d)) : typename MaybeReturn<Container<Container<TString<T>>>>::type(std::move(d));
+		return d.empty() ? Nothing(std::move(d)) : typename Just<Container<Container<TString<T>>>>::type(std::move(d));
 	}
 
 /*
 	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープしてから処理（推奨）
 	template < class T, template < class T_, class = std::allocator<T_>> class Container = std::vector >
-	auto RegexSearch(T src, T expression) ->typename MaybeReturn< Container< Container<String<T>>>>::type
+	auto RegexSearch(T src, T expression) ->typename Just< Container< Container<String<T>>>>::type
 	{
 		return RegexSearch(src, RegexMaker(expression));
 	}
@@ -106,10 +106,10 @@ namespace sig{
 			return tag_str + src + tag_str;
 		}
 		
-		auto Decode(String const& src, String const& tag) ->typename MaybeReturn<String>::type const{
+		auto Decode(String const& src, String const& tag) ->typename Just<String>::type const{
 			auto tag_str = tel_ + tag + ter_;
 			auto parse = Split(" " + src, tag_str);
-			return parse.size() < 2 ? Nothing(String()) : typename MaybeReturn<String>::type(parse[1]);
+			return parse.size() < 2 ? Nothing(String()) : typename Just<String>::type(parse[1]);
 		}
 
 		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
@@ -117,7 +117,7 @@ namespace sig{
 
 #if SIG_ENABLE_BOOST
 		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-		auto Decode(String const& src, Container<String> const& tag) ->typename MaybeReturn<Container<String>>::type const;
+		auto Decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const;
 #endif
 	};
 
@@ -127,22 +127,20 @@ namespace sig{
 	{
 		String result;
 		auto size = std::min(src.size(), tag.size());
-		for (uint i = 0; i < size; ++i){
-			result += Encode(src[i], tag[i]);
-		}
+		ZipWith<void>(src, tag, [&](Container<String>::value_type s, Container<String>::value_type t){ result += Encode(s, t); });
 		return result;
 	}
 
 #if SIG_ENABLE_BOOST
 	template <class String>
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-	auto TagDealer<String>::Decode(String const& src, Container<String> const& tag) ->typename MaybeReturn<Container<String>>::type const
+	auto TagDealer<String>::Decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const
 	{
 		Container<String> result;
 		for (auto const& e : tag){
 			if (auto d = Decode(src, e)) result.push_back(*d);
 		}
-		return result.empty() ? Nothing(String()) : typename MaybeReturn<Container<String>>::type(std::move(result));
+		return result.empty() ? Nothing(String()) : typename Just<Container<String>>::type(std::move(result));
 	}
 #endif
 

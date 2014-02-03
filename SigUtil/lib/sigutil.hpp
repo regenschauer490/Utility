@@ -71,12 +71,15 @@ namespace sig{
 
 	//maybeの有効・無効に関係なく記述するためのもの
 #if SIG_ENABLE_BOOST
-	template <class T> struct MaybeReturn{ typedef maybe<T> type; };
+	template <class T> struct Just{ typedef maybe<T> type; };
 	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
 #else
-	template <class T> struct MaybeReturn{ typedef T type; };
+	template <class T> struct Just{ typedef T type; };
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
 #endif
+
+	template <class T> struct NullDummy{ typedef T type; };
+	template <> struct NullDummy<void>{ typedef NullType type; };
 
 
 	template <class Container, class Sfinae = void> struct ContainerConstructor{ typedef Container type; };
@@ -163,32 +166,26 @@ namespace sig{
 
 	//[a] -> [b] -> (a -> b -> r) -> [r]
 	//戻り値の型Rは、明示的に指定する必要あり
-	template < class R, class A, class B, template < class T, class = std::allocator<T>> class Container>
+	template < class R, class A, class B, template < class T, class = std::allocator<T>> class Container, typename std::enable_if<!std::is_same<R, void>::value>::type*& = enabler>
 	Container<R> ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
 	{
 		const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
 		Container<R> result;
-
 		uint i = 0;
-		for (auto it1 = list1.begin(), it2 = list2.begin(), end1 = list1.end(), end2 = list2.end(); i < length; ++i, ++it1, ++it2) result.push_back(func(*it1, *it2));
+		for (auto it1 = std::begin(list1), it2 = std::begin(list2), end1 = std::end(list1), end2 = std::end(list2); i < length; ++i, ++it1, ++it2) result.push_back(func(*it1, *it2));
 
 		return std::move(result);
 	}
 
-#if SIG_ENABLE_BOOST
-	//[a] -> b -> (a -> b -> r) -> [r]
-	//戻り値の型Rは、明示的に指定する必要あり
-	template < class R, class A, class B, template < class T, class = std::allocator<T >> class Container>
-		Container<R> ZipWith(Container<A> const& list1, typename boost::call_traits<B>::param_type val, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
+	//[a] -> [b] -> (a -> b -> void) -> void
+	//戻り値の型がvoidの場合
+	template <class R, class A, class B, template < class T, class = std::allocator<T >> class Container, typename std::enable_if<std::is_same<R, void>::value>::type*& = enabler>
+	void ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<void(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
 	{
-		Container<R> result;
-
+		const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
 		uint i = 0;
-		for (auto it1 = list1.begin(), end1 = list1.end(); i < list1.size(); ++i, ++it1) result.push_back(func(*it1, val));
-
-		return std::move(result);
+		for (auto it1 = std::begin(list1), it2 = std::begin(list2), end1 = std::end(list1), end2 = std::end(list2); i < length; ++i, ++it1, ++it2) func(*it1, *it2);
 	}
-#endif
 
 	//[a] -> b -> (a -> common<a,b> -> common<a,b>) -> common<a,b>
 	//std::accumulateとは違い、初期値の型BではなくAとBが暗黙的に変換される型に集約

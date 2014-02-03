@@ -85,9 +85,9 @@ int main()
 
 	//RandomTest();
 	//TimeWatchTest();
-	HistgramTest();
+	//HistgramTest();
 
-	//RemoveTest();
+	RemoveTest();
 
 	return 0;
 }

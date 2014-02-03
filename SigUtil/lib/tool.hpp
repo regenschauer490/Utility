@@ -126,17 +126,17 @@ namespace sig{
 		//指定した区間までのトータル時間(スプリットタイム)を取得
 		//template引数で時間の単位を指定
 		template<class TimeUnit = std::chrono::milliseconds>
-		auto GetSplitTime(uint index) ->typename MaybeReturn<long>::type{
+		auto GetSplitTime(uint index) ->typename Just<long>::type{
 			return index < laps.size()
-				? typename MaybeReturn<long>::type(std::chrono::duration_cast<TimeUnit>(DAccumulate(laps, index+1)).count())
+				? typename Just<long>::type(std::chrono::duration_cast<TimeUnit>(DAccumulate(laps, index+1)).count())
 				: Nothing(-1);
 		}
 
 		//指定した区間の時間(ラップタイム)を取得
 		//template引数で時間の単位を指定
 		template<class TimeUnit = std::chrono::milliseconds>
-		auto GetLapTime(uint index) ->typename MaybeReturn<long>::type{
-			return index < laps.size() ? typename MaybeReturn<long>::type(std::chrono::duration_cast<TimeUnit>(laps[index]).count()) : Nothing(-1);
+		auto GetLapTime(uint index) ->typename Just<long>::type{
+			return index < laps.size() ? typename Just<long>::type(std::chrono::duration_cast<TimeUnit>(laps[index]).count()) : Nothing(-1);
 		}
 	};
 
@@ -236,9 +236,9 @@ namespace sig{
 
 		//bin番目(0 ～ BIN_NUM-1)の頻度を取得
 		//return -> tuple<頻度, 範囲最小値(以上), 範囲最大値(未満)>
-		auto GetCount(uint bin) const -> typename MaybeReturn<std::tuple<uint, int, int>>::type{
+		auto GetCount(uint bin) const -> typename Just<std::tuple<uint, int, int>>::type{
 			return bin < BIN_NUM
-				? typename MaybeReturn<std::tuple<uint, int, int>>::type(std::make_tuple(_count[bin + 1], _delta*bin + _min, _delta*(bin + 1) + _min))
+				? typename Just<std::tuple<uint, int, int>>::type(std::make_tuple(_count[bin + 1], _delta*bin + _min, _delta*(bin + 1) + _min))
 				: Nothing(std::make_tuple(0, 0, 0));
 		}
 		

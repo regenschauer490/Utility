@@ -20,15 +20,19 @@ namespace sig{
 		std::unordered_map<T, bool> rmv;
 		Container result, removed;
 
-		for (auto& v : data){
-			if (!rmv.count(v)){
-				result.push_back(std::move(v));
-				rmv[v] = true;
+		for (auto it = std::begin(data), end = std::end(data); it != end;){
+			if (!rmv.count(*it)){
+				result.push_back(std::move(*it));
+				rmv[*it] = true;
+				++it;
+				continue;
 			}
 			else if(need_removes){
-				removed.push_back(std::move(v));
+				removed.push_back(std::move(*it));
 			}
-			++rmv[v];
+			++rmv[*it];
+			it = data.erase(it);
+			end = data.end();
 		}
 
 		data = std::move(result);

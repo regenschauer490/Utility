@@ -7,7 +7,7 @@ void RemoveTest()
 	std::set<int> data3{{ 1, 5, 3, 3, 0, 4, 0, 1, 3 }};
 
 	auto removed1 = sig::RemoveDuplicates(data1, true);
-	//auto removed2 = sig::RemoveDuplicates(data2, true);
+	auto removed2 = sig::RemoveDuplicates(data2, true);
 	//auto removed3 = sig::RemoveDuplicates(data3, true);
 	
 	for (auto v : data1) std::cout << v << ", ";		//0, 1, 3, 4, 5
