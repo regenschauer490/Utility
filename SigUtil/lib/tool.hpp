@@ -43,7 +43,7 @@ namespace sig{
 	Container<int> RandomUniqueNumbers(std::size_t n, int min, int max, bool debug) {
 		std::unordered_set<int> match;
 		Container<int> result;
-		static SimpleRandom<int> Rand(0, max - min, debug);
+		SimpleRandom<int> Rand(0, max - min, debug);
 
 		int r;
 		for (int i = 0; i < n; ++i){
@@ -217,9 +217,9 @@ namespace sig{
 			++_count[BIN_NUM + 1];
 		}
 
-		template < template < class TT, class = std::allocator<TT >> class Container>
-		void Count(Container<T> const& values){
-			for (auto e : values) Count(e);
+		template <class Container>
+		void Count(Container const& values){
+			for (auto const& e : values) Count(e);
 		}
 
 		//binŠO‚Ì—v‘f‚ª‘¶İ‚µ‚½‚©

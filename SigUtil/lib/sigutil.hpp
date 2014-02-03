@@ -85,8 +85,8 @@ namespace sig{
 	//template <class T, class D = void> struct HasBegin : std::true_type{};
 	//template <class T> struct HasBegin<T, decltype(std::declval<T>().begin())> : std::false_type{};
 
-	template <class T> constexpr auto HasBegin(int) ->decltype(std::declval<T>().begin()){ return true; }
-	template <class T> constexpr bool HasBegin(...){ return false; }
+	//template <class T> constexpr auto HasBegin(int) ->decltype(std::declval<T>().begin()){ return true; }
+	//template <class T> constexpr bool HasBegin(...){ return false; }
 
 	//template <typename T> constexpr auto has_reserve_method(int) -> decltype(std::declval<T>().reserve(0), bool()) { return true; }
 	//template <typename T> constexpr bool has_reserve_method(...) { return false; }
@@ -235,22 +235,23 @@ namespace sig{
 		return keta;
 	}
 
-	/*
-	template <class T, class D> struct RI{ static const bool value = false; };
+#ifndef _MSC_VER
+	template <class T, class D = void> struct RI{ static const bool value = false; };
 	template <class T> struct RI<T, decltype(std::declval<T>()[0], void())>{ static const bool value = true; };
 
-	template <class T, class D> struct CMPOP{ static const bool value = false; };
-	template <class T> struct CMPOP<T, decltype(std::declval<T::iterator>().operator<, void())>{ static const bool value = true; };
+	template <class T, class D = void> struct CMPOP{ static const bool value = false; };
+	template <class T> struct CMPOP<T, decltype(std::declval<T>() < std::declval<T>(), void())>{ static const bool value = true; };
 
 	//至って普通なソートのラッパ
-	template <class Container, typename std::enable_if<RI<Container,void>::value>::type*& = enabler>
+	template <class Container, typename std::enable_if<RI<Container>::value>::type*& = enabler>
 	void Sort(Container& data){
 		std::sort(std::begin(data), std::end(data));
 	}
-	template <class Container, typename std::enable_if<!RI<Container,void>::value && CMPOP<Container,void>::value>::type*& = enabler>
+	template <class Container, typename std::enable_if<!RI<Container>::value && CMPOP<Container>::value>::type*& = enabler>
 	void Sort(Container& data){
 		data.sort();
-	}*/
+	}
+#endif
 
 	//ソート前のindexを保持してソート
 	template <class T>

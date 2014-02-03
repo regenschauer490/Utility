@@ -2,7 +2,7 @@
 #define __SIG_UTIL_ERASER__
 
 #include "sigutil.hpp"
-
+#include <iterator>
 
 /* 削除・フィルタ関連 */
 
@@ -13,18 +13,28 @@ namespace sig{
 	//need_removes: 削除した要素を戻り値で受け取るか
 	//is_sorted: コンテナがソート済みか 
 	//return -> 削除要素
-/*	template <class Container, typename = decltype(std::declval<Container>() < std::declval<Container>(), void())>
-	inline Container<T> RemoveDuplicates(Container<T>& list, bool need_removes, bool is_sorted = false)
-	{
-		if (!is_sorted) ;
-
-		auto end = std::unique(std::begin(data), std::end(data));
-		auto removes = need_removes ? Container(end, std::end(data)) : Container();
-		data.erase(end, std::end(data));
-
-		return std::move(removes);
-	}
 	template <class Container>
+	Container RemoveDuplicates(Container& data, bool need_removes, bool is_sorted = false)
+	{
+		typedef typename Container::value_type T;
+		std::unordered_map<T, bool> rmv;
+		Container result, removed;
+
+		for (auto& v : data){
+			if (!rmv.count(v)){
+				result.push_back(std::move(v));
+				rmv[v] = true;
+			}
+			else if(need_removes){
+				removed.push_back(std::move(v));
+			}
+			++rmv[v];
+		}
+
+		data = std::move(result);
+		return std::move(removed);
+	}
+/*	template <class Container, typename std::enable_if< std::is_same<typename std::iterator_traits<typename Container::iterator>::iterator_category, std::random_access_iterator_tag >::value >::type*& = enabler>
 	Container RemoveDuplicates(Container& data, bool need_removes, bool is_sorted = false)
 	{
 		if (!is_sorted) std::sort(std::begin(data), std::end(data));
@@ -34,7 +44,19 @@ namespace sig{
 		data.erase(end, std::end(data));
 
 		return std::move(removes);
-	}*/
+	}
+	template <class T>
+	std::list<T> RemoveDuplicates(std::list<T>& data, bool need_removes, bool is_sorted = false)
+	{
+		if (!is_sorted) data.sort();
+
+		auto end = std::unique(std::begin(data), std::end(data));
+		auto removes = need_removes ? Container(end, std::end(data)) : Container();
+		data.erase(end, std::end(data));
+
+		return std::move(removes);
+	}
+*/
 
 #if SIG_ENABLE_BOOST
 #define Sig_Eraser_ParamType1 typename boost::call_traits<T>::param_type

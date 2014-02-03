@@ -54,9 +54,25 @@ void MapTest()
 
 */
 
+/*
+void SortTest()
+{
+	std::vector<int> d{ 1, 5, 3, 2 };
+	std::list<int> l{ 1, 5, 3, 2 };
+
+	sig::Sort(d);
+	sig::Sort(l);
+
+	for (auto v : d) std::cout << v << std::endl;
+	for (auto v : l) std::cout << v << std::endl;
+}
+*/
+
 int main()
 {
-	setlocale(LC_ALL, "Japanese"); decltype(std::declval<std::vector<int>::iterator>().operator<, void())
+	setlocale(LC_ALL, "Japanese");
+	decltype(std::declval<std::vector<int>::iterator>().operator<(std::declval<std::vector<int>::iterator>())) a;
+	std::iterator_traits<std::vector<int>::iterator>::iterator_category b;
 
 	//RegexTest();
 	//TagDealerTest();
@@ -69,9 +85,9 @@ int main()
 
 	//RandomTest();
 	//TimeWatchTest();
-	//HistgramTest();
+	HistgramTest();
 
-	RemoveTest();
+	//RemoveTest();
 
 	return 0;
 }
