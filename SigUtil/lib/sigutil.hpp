@@ -34,6 +34,8 @@
 #include <regex>
 #include <utility>
 
+#include "../external/container traits/container_traits.h"
+
 #if SIG_ENABLE_BOOST
 
 #include <boost/optional.hpp>

@@ -1,5 +1,7 @@
 #include "lib/string.hpp"
 #include "lib/file.hpp"
+#include "lib/tool.hpp"
+#include "lib/eraser.hpp"
 
 #include "example/string_test.h"
 #include "example/file_test.h"
@@ -67,6 +69,7 @@ void SortTest()
 	for (auto v : l) std::cout << v << std::endl;
 }
 */
+
 
 int main()
 {

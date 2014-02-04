@@ -19,6 +19,9 @@
     <Filter Include="ソース ファイル\example">
       <UniqueIdentifier>{da3541e8-21e4-4577-90d4-4588f86c4cd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\external">
+      <UniqueIdentifier>{10265700-d179-4782-8ed3-69d373b73052}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -70,6 +73,12 @@
     </ClInclude>
     <ClInclude Include="example\eraser_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="external\container traits\container_traits.h">
+      <Filter>ヘッダー ファイル\external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\container traits\eval.h">
+      <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
