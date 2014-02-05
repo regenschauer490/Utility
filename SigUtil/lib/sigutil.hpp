@@ -83,9 +83,46 @@ namespace sig{
 	template <class T> struct NullDummy{ typedef T type; };
 	template <> struct NullDummy<void>{ typedef NullType type; };
 
+	/*
+#if _MSC_VER > 1800
+	//container_traits‚ÌŠg’£
+	template<class C>
+	struct map_associative_container_traits;
 
-	template <class Container, class Sfinae = void> struct ContainerConstructor{ typedef Container type; };
-	template <class Container> struct ContainerConstructor<Container, typename std::enable_if<std::is_array<Container>::value>::type>{ typedef std::array<std::remove_extent<Container>, std::rank<Container>::value> type; };
+	template<template<class , class, class, class> class C, class K, class T, template<class> class O, class A>
+	struct map_associative_container_traits<C<K, T, O<K>, A>>
+	{
+		using key_type = K;
+
+		using value_type = T;
+
+		using pair_type = std::pair<const K, T>;
+
+		static void add_element(C<K, T, O<K>, A>& c, const pair_type& t)
+		{
+			c.insert(t);
+		}
+
+		static void concat(C<K, T, O<K>, A>& lhs, const C<K, T, O<K>, A>& rhs)
+		{
+			lhs.insert(rhs.begin(), rhs.end());
+		}
+
+		template<class U>
+		using rebind = C<K, U, O<K>, typename A::template rebind<U>::other>;
+	};
+
+	template<class... Args>
+	struct container_traits<std::map<Args...>> : public map_associative_container_traits<std::map<Args...>>
+	{};
+
+	template<class... Args>
+	struct container_traits<std::multimap<Args...>> : public map_associative_container_traits<std::multimap<Args...>>
+	{};
+#endif
+*/
+	//template <class Container, class Sfinae = void> struct ContainerConstructor{ typedef Container type; };
+	//template <class Container> struct ContainerConstructor<Container, typename std::enable_if<std::is_array<Container>::value>::type>{ typedef std::array<std::remove_extent<Container>, std::rank<Container>::value> type; };
 	
 	//template <class T, class D = void> struct HasBegin : std::true_type{};
 	//template <class T> struct HasBegin<T, decltype(std::declval<T>().begin())> : std::false_type{};
@@ -234,7 +271,7 @@ namespace sig{
 		return keta;
 	}
 
-#ifndef _MSC_VER
+#if _MSC_VER > 1800
 	template <class T, class D = void> struct RI{ static const bool value = false; };
 	template <class T> struct RI<T, decltype(std::declval<T>()[0], void())>{ static const bool value = true; };
 
