@@ -2,6 +2,7 @@
 #define __SIG_UTIL_STRING__
 
 #include "sigutil.hpp"
+#include "functional.hpp"
 #include <regex>
 #include <stdlib.h>
 #include <sstream>
@@ -125,10 +126,9 @@ namespace sig{
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
 	{
-		String result;
 		auto size = std::min(src.size(), tag.size());
-		ZipWith<void>(src, tag, [&](Container<String>::value_type s, Container<String>::value_type t){ result += Encode(s, t); });
-		return result;
+		auto calc = ZipWith([&](Container<String>::value_type s, Container<String>::value_type t){ return Encode(s, t); }, src, tag);
+		return std::accumulate(calc.begin(), calc.end(), String(""));
 	}
 
 #if SIG_ENABLE_BOOST

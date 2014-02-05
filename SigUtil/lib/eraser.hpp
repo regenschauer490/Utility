@@ -9,50 +9,51 @@
 namespace sig{
 
 	//コンテナの要素から重複したものを削除
-	//data: コンテナ
+	//container: 処理対象コンテナ
 	//need_removes: 削除した要素を戻り値で受け取るか
 	//return -> 削除要素
-	template <class Container>
-	Container RemoveDuplicates(Container& data, bool need_removes)
+	template <class C>
+	C RemoveDuplicates(C& container, bool need_removes)
 	{
-		using T = typename container_traits<Container>::value_type;
+		using T = typename container_traits<C>::value_type;
 		std::unordered_map<T, bool> rmv;
-		Container result, removed;
+		C result, removed;
 
-		for (auto it = std::begin(data), end = std::end(data); it != end;){
+		for (auto it = std::begin(container), end = std::end(container); it != end;){
 			if (!rmv.count(*it)){
-				container_traits<Container>::add_element(result, std::move(*it));
+				container_traits<C>::add_element(result, std::move(*it));
 				rmv[*it] = true;
 				++it;
 				continue;
 			}
 			else if(need_removes){
-				container_traits<Container>::add_element(removed, std::move(*it));
+				container_traits<C>::add_element(removed, std::move(*it));
 			}
 			++rmv[*it];
-			it = data.erase(it);
-			end = data.end();
+			it = container.erase(it);
+			end = container.end();
 		}
 
-		data = std::move(result);
+		container = std::move(result);
 		return std::move(removed);
 	}
 
 #if SIG_ENABLE_BOOST
-#define Sig_Eraser_ParamType1 typename boost::call_traits<T>::param_type
+#define Sig_Eraser_ParamType1 typename boost::call_traits<typename container_traits<C>::value_type>::param_type
 #else
-#define Sig_Eraser_ParamType1 typename std::common_type<T>::type const&
+#define Sig_Eraser_ParamType1 typename std::common_type<typename container_traits<C>::value_type>::type const&
 #endif
 
 	//コンテナから指定要素を1つ削除
-	//args -> list: コンテナ, remove: 削除要素
+	//container: コンテナ
+	//remove: 削除要素
 	//return -> 削除要素が存在したか
-	template <class T, template<class T_, class = std::allocator<T_>> class Container >
-	inline bool RemoveOne(Container<T>& list, Sig_Eraser_ParamType1 remove)
+	template <class C>
+	bool RemoveOne(C& container, Sig_Eraser_ParamType1 remove)
 	{
-		for (auto it = list.begin(), end = list.end(); it != end;){
+		for (auto it = std::begin(container), end = std::end(container); it != end;){
 			if (*it == remove){
-				list.erase(it);
+				container.erase(it);
 				return true;
 			}
 			else ++it;
@@ -61,14 +62,15 @@ namespace sig{
 	}
 
 	//コンテナから述語条件を満たす要素を1つ削除
-	//args -> list: コンテナ, remove_pred: 削除判別関数
+	//container: コンテナ
+	//remove_pred: 削除判別関数
 	//return -> 削除要素が存在したか
-	template <class Pred, class T, template<class T_, class = std::allocator<T_>> class Container >
-	inline bool RemoveOneIf(Container<T>& list, Pred remove_pred)
+	template <class Pred, class C>
+	bool RemoveOneIf(C& container, Pred remove_pred)
 	{
-		for (auto it = list.begin(), end = list.end(); it != end;){
+		for (auto it = std::begin(container), end = std::end(container); it != end;){
 			if (remove_pred(*it)){
-				list.erase(it);
+				container.erase(it);
 				return true;
 			}
 			else ++it;
@@ -77,25 +79,28 @@ namespace sig{
 	}
 
 	//コンテナから指定要素を全削除
-	//args -> list: コンテナ, remove: 削除要素
+	//container: コンテナ
+	//remove: 削除要素
 	//return -> 削除要素が存在したか
-	template < class T, template < class T_, class = std::allocator<T_>> class Container >
-	inline bool RemoveAll(Container<T>& list, Sig_Eraser_ParamType1 remove)
+	template <class C>
+	bool RemoveAll(C& container, Sig_Eraser_ParamType1 remove)
 	{
-		uint presize = list.size();
-		if (!list.empty()) list.erase(std::remove(list.begin(), list.end(), remove), list.end());
-		return presize != list.size();
+		uint presize = container.size();
+		if (!container.empty()) Erase(container, remove);
+		return presize != container.size();
 	}
 
+
 	//コンテナから述語条件を満たす要素を全削除
-	//args -> list: コンテナ, remove_pred: 削除判別関数
+	//container: コンテナ
+	//remove_pred: 削除判別関数
 	//return -> 削除要素が存在したか
-	template <class Pred, class T, template<class T_, class = std::allocator<T_>> class Container >
-	inline bool RemoveAllIf(Container<T>& list, Pred remove_pred)
+	template <class Pred, class C>
+	bool RemoveAllIf(C& container, Pred remove_pred)
 	{
-		uint presize = list.size();
-		if (!list.empty()) list.erase(std::remove_if(list.begin(), list.end(), remove_pred), list.end());
-		return presize != list.size();
+		uint presize = container.size();
+		if (!container.empty()) EraseIf(container, remove_pred);
+		return presize != container.size();
 	}
 
 }

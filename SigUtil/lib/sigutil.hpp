@@ -34,7 +34,7 @@
 #include <regex>
 #include <utility>
 
-#include "../external/container traits/container_traits.h"
+#include "container_traits_plus.hpp"
 
 #if SIG_ENABLE_BOOST
 
@@ -153,89 +153,6 @@ namespace sig{
 
 	template <class T> auto Reserve(T& t, size_t n) ->decltype(t.reserve(n), void()){ t.reserve(n); std::cout << "true" << std::endl; }
 	template <class T> void Reserve(T& t, size_t n){ std::cout << "false" << std::endl; }
-
-
-/* 関数型プログラミング */
-
-	//[a] -> (a -> r) -> [r]
-	//戻り値の型Rは明示的に指定が必要
-/*	template <class Out, class In, class Func, typename std::enable_if<HasBegin<Out>(0)>::type*& = enabler>
-	Out Map(In const& list, Func func)
-	{
-		Out result;
-		//Reserve(result, list.size());
-		std::transform(std::begin(list), std::end(list), std::inserter(result, std::begin(result)), func);
-		return std::move(result);
-	}
-
-	template <class Out, class In, class Func, typename std::enable_if<!HasBegin<Out>(0)>::type*& = enabler>
-	std::vector<Out> Map(In const& list, Func func)
-	{
-		std::vector<Out> result;
-		//Reserve(result, list.size());
-		std::transform(std::begin(list), std::end(list), std::inserter(result, std::begin(result)), func);
-		return std::move(result);
-	}
-*/
-
-	template <class R, class A, template <class T, class = std::allocator<T>> class Container>
-	Container<R> Map(Container<A> const& list, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type)> const& func)
-	{
-		Container<R> result;
-		Reserve(result, list.size());
-		std::transform(list.begin(), list.end(), std::back_inserter(result), func);
-		return std::move(result);
-	}
-	
-	template <class R, class A, std::size_t N, template <class T, size_t N> class Array>
-	Array<R, N> Map(Array<A, N> const& list, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type)> const& func)
-	{
-		Array<R, N> result;
-		std::transform(list.begin(), list.end(), result.begin(), func);
-		return result;
-	}
-
-	template <class R, class A, std::size_t N>
-	std::array<R, N> Map(A const(&list)[N], std::function<typename std::common_type<R>::type(typename std::common_type<A>::type)> const& func)
-	{
-		std::array<R, N> result;
-		std::transform(list, list + N, result.begin(), func);
-		return result;
-	}
-
-	//[a] -> [b] -> (a -> b -> r) -> [r]
-	//戻り値の型Rは、明示的に指定する必要あり
-	template < class R, class A, class B, template < class T, class = std::allocator<T>> class Container, typename std::enable_if<!std::is_same<R, void>::value>::type*& = enabler>
-	Container<R> ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
-	{
-		const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
-		Container<R> result;
-		uint i = 0;
-		for (auto it1 = std::begin(list1), it2 = std::begin(list2), end1 = std::end(list1), end2 = std::end(list2); i < length; ++i, ++it1, ++it2) result.push_back(func(*it1, *it2));
-
-		return std::move(result);
-	}
-
-	//[a] -> [b] -> (a -> b -> void) -> void
-	//戻り値の型がvoidの場合
-	template <class R, class A, class B, template < class T, class = std::allocator<T >> class Container, typename std::enable_if<std::is_same<R, void>::value>::type*& = enabler>
-	void ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<void(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
-	{
-		const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
-		uint i = 0;
-		for (auto it1 = std::begin(list1), it2 = std::begin(list2), end1 = std::end(list1), end2 = std::end(list2); i < length; ++i, ++it1, ++it2) func(*it1, *it2);
-	}
-
-	//[a] -> b -> (a -> common<a,b> -> common<a,b>) -> common<a,b>
-	//std::accumulateとは違い、初期値の型BではなくAとBが暗黙的に変換される型に集約
-	template < class A, class B, template < class T, class = std::allocator<T>> class Container>
-		typename std::common_type<A, B>::type Accumulate(Container<A> const& list, B init, std::function<typename std::common_type<A>::type(typename std::common_type<A>::type, typename std::common_type<A, B>::type)> const& func){
-			typename std::common_type<A, B>::type result = init;
-			for(auto const& e : list)  result = func(e, result);
-			return result;
-		}
-
-
 
 
 /* 便利関数 */
@@ -369,15 +286,6 @@ namespace sig{
 		for (uint i = 0, length = list1.size(); i < length; ++i) list1[i] = op(list1[i], v);
 	}
 
-	//値を指定個複製する
-	template < class T, template < class T_, class = std::allocator<T_>> class Container = std::vector>
-		Container<T> Fill(T const& value, uint count)
-	{
-		Container<T> tmp;
-		tmp.reserve(count);
-		for (uint i = 0; i < count; ++i) tmp.push_back(value);
-		return std::move(tmp);
-	}
 
 	//生成関数を通して値を生成する
 	//args -> generator: 生成関数.引数はループindex

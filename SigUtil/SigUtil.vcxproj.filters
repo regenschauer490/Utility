@@ -42,6 +42,9 @@
     <ClCompile Include="example\eraser_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
+    <ClCompile Include="example\functional_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="botsu.hpp">
@@ -79,6 +82,15 @@
     </ClInclude>
     <ClInclude Include="external\container traits\eval.h">
       <Filter>ヘッダー ファイル\external</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\container_traits_plus.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\functional.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="example\functional_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

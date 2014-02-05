@@ -2,11 +2,13 @@
 #include "lib/file.hpp"
 #include "lib/tool.hpp"
 #include "lib/eraser.hpp"
+#include "lib/functional.hpp"
 
 #include "example/string_test.h"
 #include "example/file_test.h"
 #include "example/tool_test.h"
 #include "example/eraser_test.h"
+#include "example/functional_test.h"
 
 /*
 #include "utility.hpp"
@@ -90,7 +92,11 @@ int main()
 	//TimeWatchTest();
 	//HistgramTest();
 
-	RemoveTest();
+	//RemoveDuplicateTest();
+	//RemoveTest();
+
+	//MapTest();
+	ZipWithTest();
 
 	return 0;
 }

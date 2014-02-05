@@ -85,6 +85,7 @@
   <ItemGroup>
     <ClCompile Include="example\eraser_test.cpp" />
     <ClCompile Include="example\file_test.cpp" />
+    <ClCompile Include="example\functional_test.cpp" />
     <ClCompile Include="example\string_test.cpp" />
     <ClCompile Include="example\tool_test.cpp" />
     <ClCompile Include="main.cpp" />
@@ -93,12 +94,15 @@
     <ClInclude Include="botsu.hpp" />
     <ClInclude Include="example\eraser_test.h" />
     <ClInclude Include="example\file_test.h" />
+    <ClInclude Include="example\functional_test.h" />
     <ClInclude Include="example\string_test.h" />
     <ClInclude Include="example\tool_test.h" />
     <ClInclude Include="external\container traits\container_traits.h" />
     <ClInclude Include="external\container traits\eval.h" />
+    <ClInclude Include="lib\container_traits_plus.hpp" />
     <ClInclude Include="lib\eraser.hpp" />
     <ClInclude Include="lib\file.hpp" />
+    <ClInclude Include="lib\functional.hpp" />
     <ClInclude Include="lib\sigutil.hpp" />
     <ClInclude Include="lib\string.hpp" />
     <ClInclude Include="lib\tool.hpp" />
