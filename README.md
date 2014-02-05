@@ -19,6 +19,12 @@ boostの併用推奨(主にoptionalのため).　なくても動作はします�
 * ReadLine: お手軽にファイルから1行ずつ読み込み
   * ReadNum: ReadLineの数値版(改行のかわりにデリミタ指定可)
 
+\<functional.hpp>
+* Map: 1引数高階関数　(a -> b) -> [a] -> [b]
+* ZipWith: 2引数高階関数　(a -> b -> c) -> [a] -> [b] -> [c]
+* Fill: 値を複製したコンテナを返す　uint -> a -> [a]
+* Merge: コンテナの結合　[a] -> [b] -> [c]
+
 \<string.hpp> 
 
 
