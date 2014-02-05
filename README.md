@@ -1,4 +1,4 @@
-SigUtil
+SigUtil (現在整理中)
 =======
 自分用C++ユーティリティ(template ライブラリ).   
 boostの併用推奨(主にoptionalのため).　なくても動作はしますが無効値は実装定義.
