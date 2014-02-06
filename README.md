@@ -22,8 +22,13 @@ boostの併用推奨(主にoptionalのため).　なくても動作はします�
 \<functional.hpp>
 * Map: 1引数高階関数　(a -> b) -> [a] -> [b]
 * ZipWith: 2引数高階関数　(a -> b -> c) -> [a] -> [b] -> [c]
+* HigherOrderFunction: n引数高階関数 (上記の一般化)
+* Zip: タプルを作る　[a] -> [b] -> ... -> [(a, b, ...)]
 * Fill: 値を複製したコンテナを返す　uint -> a -> [a]
+* Reverse: コンテナの要素を逆転させたコンテナを返す　[a] -> [a]
 * Merge: コンテナの結合　[a] -> [b] -> [c]
+* Take: コンテナの先頭からn個を取り出したコンテナを返す uint -> [a] -> [a]
+* Drop: コンテナの先頭からn個を削除したコンテナを返す　uint -> [a] -> [a]
 
 \<string.hpp> 
 
