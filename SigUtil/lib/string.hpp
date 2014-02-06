@@ -270,6 +270,138 @@ namespace sig{
 		for (auto const& str : strvec) result.push_back(STRtoWSTR(str));
 		return std::move(result);
 	}
+
+	//全角・半角文字の置換処理を行う
+	class ZenHanReplace{
+		std::unordered_map<wchar_t, wchar_t> _alphabet;			//全角アルファベット -> 半角アルファベット
+		std::unordered_map<wchar_t, wchar_t> _number;			//全角数字 -> 半角数字
+		std::unordered_map<wchar_t, wchar_t> _katakana;			//半角カタカナ -> 全角カタカナ
+		std::unordered_map<std::wstring, wchar_t> _katakana_d;	//(濁音) 半角カタカナ -> 全角カタカナ
+
+	private:
+		ZenHanReplace(){
+			wchar_t zen1[2] = L"Ａ";
+			char han1 = 'A';
+
+			for (uint i = 0; i < 26; ++i, ++zen1[0], ++han1){
+				_alphabet[zen1[0]] = han1;
+			}
+
+			wchar_t zen2 = L'ａ';
+			wchar_t han2 = 'a';
+			for (uint i = 0; i < 26; ++i, ++zen2, ++han2){
+				_alphabet[zen2] = han2;
+			}
+
+			_number[L'０'] = L'0';
+			_number[L'１'] = L'1';
+			_number[L'２'] = L'2';
+			_number[L'３'] = L'3';
+			_number[L'４'] = L'4';
+			_number[L'５'] = L'5';
+			_number[L'６'] = L'6';
+			_number[L'７'] = L'7';
+			_number[L'８'] = L'8';
+			_number[L'９'] = L'9';
+
+			_katakana[L'ｰ'] = L'ー';
+			_katakana[L'ｧ'] = L'ァ';
+			_katakana[L'ｨ'] = L'ィ';
+			_katakana[L'ｩ'] = L'ゥ';
+			_katakana[L'ｪ'] = L'ェ';
+			_katakana[L'ｫ'] = L'ォ';
+			_katakana[L'ｱ'] = L'ア';
+			_katakana[L'ｲ'] = L'イ';
+			_katakana[L'ｳ'] = L'ウ';
+			_katakana[L'ｴ'] = L'エ';
+			_katakana[L'ｵ'] = L'オ';
+
+			wchar_t han3 = L'ｶ';
+			wchar_t zen3 = L'カ';
+			for (uint i = 0; i < 12; ++i, ++han3, zen3 += 2){
+				_katakana[han3] = zen3;
+			}
+			_katakana[L'ｯ'] = L'ッ';
+			_katakana[L'ﾃ'] = L'テ';
+			_katakana[L'ﾄ'] = L'ト';
+			han3 += 2; zen3 += 6;
+			for (uint i = 0; i < 6; ++i, ++han3, ++zen3){
+				_katakana[han3] = zen3;
+			}
+			for (uint i = 0; i < 5; ++i, ++han3, zen3 += 3){
+				_katakana[han3] = zen3;
+			}
+			for (uint i = 0; i < 5; ++i, ++han3, ++zen3){
+				_katakana[han3] = zen3;
+			}
+			_katakana[L'ﾔ'] = L'ヤ';
+			_katakana[L'ｬ'] = L'ャ';
+			_katakana[L'ﾕ'] = L'ユ';
+			_katakana[L'ｭ'] = L'ュ';
+			_katakana[L'ﾖ'] = L'ヨ';
+			_katakana[L'ｮ'] = L'ョ';
+			han3 += 3; zen3 += 6;
+			for (uint i = 0; i < 5; ++i, ++han3, ++zen3){
+				_katakana[han3] = zen3;
+			}
+			_katakana[L'ﾜ'] = L'ワ';
+			_katakana[L'ｦ'] = L'ヲ';
+			_katakana[L'ﾝ'] = L'ン';
+
+
+			wchar_t han4[3] = L"ｶﾞ";
+			wchar_t zen4 = L'ガ';
+			for (uint i = 0; i < 12; ++i, ++han4[0], zen4 += 2){
+				_katakana_d[han4] = zen4;
+			}
+			_katakana_d[L"ﾂﾞ"] = L'ヅ';
+			_katakana_d[L"ﾃﾞ"] = L'デ';
+			_katakana_d[L"ﾄﾞ"] = L'ド';
+			han4[0] += 8; zen4 += 12;
+			for (uint i = 0; i < 5; ++i, ++han4[0], zen4 += 3){
+				_katakana_d[han4] = zen4;
+			}
+			wchar_t han5[3] = L"ﾊﾟ";
+			wchar_t zen5 = L'パ';
+			for (uint i = 0; i < 5; ++i, ++han5[0], zen5 += 3){
+				_katakana_d[han5] = zen5;
+			}
+		}
+
+		ZenHanReplace(const ZenHanReplace&) = delete;
+
+	public:
+		static ZenHanReplace& GetInstance(){
+			static ZenHanReplace instance;
+			return instance;
+		}
+
+		void Alphabet_Zen2Han(std::wstring& sentence) const{
+			for (auto& c : sentence){
+				if (_alphabet.count(c)) c = _alphabet.at(c);
+			}
+		}
+
+		void Number_Zen2Han(std::wstring& sentence) const{
+			for (auto& c : sentence){
+				if (_number.count(c)) c = _number.at(c);
+			}
+		}
+
+		void Katakana_Han2Zen(std::wstring& sentence) const{
+			for (unsigned i = 1; i < sentence.size(); ++i){
+				if (sentence[i] == L'ﾞ'){
+					wchar_t tmp[3] = { sentence[i - 1], sentence[i], L'\0' };
+					auto ttmp = std::wstring(tmp);
+					if (_katakana_d.count(ttmp)) sentence.replace(i - 1, 2, 1, _katakana_d.at(ttmp));
+				}
+			}
+			for (auto& c : sentence){
+				if (_katakana.count(c)) c = _katakana.at(c);
+			}
+		}
+	};
+
 }
 
 

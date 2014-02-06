@@ -89,6 +89,24 @@ void SplitTest()
 	//[github.com]
 	//[regenschauer490]
 	//[Utility]
+
+	auto split3 = sig::Split("10 100  1000", " ");	//デリミタ間に何もなければ無視(  )
+	for (auto& s : split3) std::cout << "[" << s << "]" << std::endl;
+	//[10]
+	//[100]
+	//[1000]
+
+	auto split4 = sig::Split(" ,, ,  ,", ",");		//デリミタ間に何もなければ無視(,,)
+	for (auto& s : split4) std::cout << "[" << s << "]" << std::endl;
+	//[ ]
+	//[ ]
+	//[  ]
+
+	auto split5 = sig::Split("1\n2\n\n4", "\n");	//空行無視
+	for (auto& s : split5) std::cout << "[" << s << "]" << std::endl;
+	//[1]
+	//[2]
+	//[4]
 }
 
 void CatStrTest()

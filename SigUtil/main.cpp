@@ -79,6 +79,7 @@ int main()
 	decltype(std::declval<std::vector<int>::iterator>().operator<(std::declval<std::vector<int>::iterator>())) a;
 	std::iterator_traits<std::vector<int>::iterator>::iterator_category b;
 
+
 	//RegexTest();
 	//TagDealerTest();
 	//SplitTest();
@@ -96,7 +97,8 @@ int main()
 	//RemoveTest();
 
 	//MapTest();
-	ZipWithTest();
+	//ZipWithTest();
+	FunctionalTest();
 
 	return 0;
 }

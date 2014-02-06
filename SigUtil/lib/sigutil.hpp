@@ -52,11 +52,14 @@ namespace sig{
 #undef min
 
 	/* typedef */
-	typedef unsigned long uint;
-	typedef std::shared_ptr< std::string > StrPtr;
-	typedef std::shared_ptr< std::string const > C_StrPtr;
-	typedef std::shared_ptr< std::wstring > WStrPtr;
-	typedef std::shared_ptr< std::wstring const > C_WStrPtr;
+	using uint = unsigned long;
+	using StrPtr = std::shared_ptr< std::string >;
+	using C_StrPtr = std::shared_ptr< std::string const >;
+	using WStrPtr = std::shared_ptr< std::wstring >;
+	using C_WStrPtr = std::shared_ptr< std::wstring const >;
+
+	using std::placeholders::_1;
+	using std::placeholders::_2;
 	
 #if SIG_ENABLE_BOOST
 	template <typename T>

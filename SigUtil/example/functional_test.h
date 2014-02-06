@@ -4,3 +4,4 @@
 
 void MapTest();
 void ZipWithTest();
+void FunctionalTest();
