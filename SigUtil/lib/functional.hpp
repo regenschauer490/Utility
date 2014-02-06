@@ -26,7 +26,7 @@ namespace sig
 		return HigherOrderFunction(func, container1, container2);
 	}
 
-	//ˆê”Ê‰»‚ŠKŠÖ”
+	//nˆø”‚ŠKŠÖ”
 	template <class F, class C1, class... Cs>
 	auto HigherOrderFunction(F const& func, C1 const& container1, Cs const&... containers)
 	{
