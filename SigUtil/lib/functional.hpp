@@ -52,8 +52,8 @@ namespace sig
 	}
 
 
-	//[a] -> [b] -> [(a, b)]
-	//ペアを作る
+	//[a] -> [b] -> ... -> [(a, b, ...)]
+	//タプルを作る
 	template <class... Cs>
 	auto Zip(Cs const&... containers)
 	{
