@@ -6,6 +6,24 @@
 
 namespace sig
 {
+	template<class It>
+	void IncrementIterator(It& iter)
+	{
+		++iter;
+	}
+	template<class It, class... Its>
+	void IncrementIterator(It& iter, Its&... iterators)
+	{
+		++iter;
+		IncrementIterator(iterators...);
+	}
+
+	template<class It>
+	auto DereferenceIterator(It& iter) ->decltype(*iter)
+	{
+		return *iter;
+	}
+
 	template <class C>
 	void Erase(C& container, typename sequence_container_traits<C>::value_type const& t)
 	{

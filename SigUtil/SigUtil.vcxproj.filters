@@ -83,14 +83,14 @@
     <ClInclude Include="external\container traits\eval.h">
       <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
-    <ClInclude Include="lib\container_traits_plus.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="lib\functional.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="example\functional_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\container_helper.hpp">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,23 +4,18 @@
 
 namespace sig
 {
-	//[a] -> (a -> r) -> [r]
-	//戻り値の型Rは明示的に指定が必要
-	template <class OutputContainer, class InputIter, class Functor>
-	OutputContainer Map(InputIter begin, InputIter end, std::size_t size, Functor func)
+
+	/*
+	//[a] -> [b] -> (a -> b -> void) -> void
+	//戻り値の型がvoidの場合
+	template <class R, class A, class B, template < class T, class = std::allocator<T >> class Container, typename std::enable_if<std::is_same<R, void>::value>::type*& = enabler>
+	void ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<void(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
 	{
-		OutputContainer result;
-		if (result.empty()) result.resize(size);
-		std::transform(begin, end, std::begin(result), func);
-		return std::move(result);
+	const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
+	uint i = 0;
+	for (auto it1 = std::begin(list1), it2 = std::begin(list2), end1 = std::end(list1), end2 = std::end(list2); i < length; ++i, ++it1, ++it2) func(*it1, *it2);
 	}
-	template < class R, class A, template < class T, class = std::less<T>, class = std::allocator<T >> class Container>
-	Container<R> Map(Container<A> const& set, std::function<typename std::common_type<R>::type(typename std::common_type<A>::type)> const& func)
-	{
-		Container<R> result;
-		std::transform(set.begin(), set.end(), std::inserter(result, result.begin()), func);
-		return std::move(result);
-	}
+	*/
 
 	/* コンテナ */
 #if SIG_ENABLE_BOOST

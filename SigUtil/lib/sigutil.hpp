@@ -34,7 +34,7 @@
 #include <regex>
 #include <utility>
 
-#include "container_traits_plus.hpp"
+#include "container_helper.hpp"
 
 #if SIG_ENABLE_BOOST
 
@@ -189,6 +189,22 @@ namespace sig{
 		}
 
 		return keta;
+	}
+
+	template <class T>
+	auto Min(T v)
+	{
+		return v;
+	}
+	template <class T1, class T2>
+	auto Min(T1 v1, T2 v2)
+	{
+		return std::min(v1, v2);
+	}
+	template <class T, class... Ts>
+	auto Min(T v1, Ts... vs)
+	{
+		return std::min(v1, Min(vs...));
 	}
 
 #if _MSC_VER > 1800

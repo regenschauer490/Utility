@@ -14,11 +14,7 @@ namespace sig
 	template <class F, class C>
 	auto Map(F const& func, C const& container)
 	{
-		using OutputType = typename container_traits<C>::template rebind<decltype(eval(func, std::declval<typename container_traits<C>::value_type>()))>;
-
-		OutputType result;
-		for (auto const& v : container) container_traits<OutputType>::add_element(result, eval(func, v));
-		return std::move(result);
+		return HigherOrderFunction(func, container);
 	}
 
 
@@ -27,44 +23,43 @@ namespace sig
 	template <class F, class C1, class C2>
 	auto ZipWith(F const& func, C1 const& container1, C2 const& container2)
 	{
+		return HigherOrderFunction(func, container1, container2);
+	}
+
+	//ˆê”Ê‰»‚ŠKŠÖ”
+	template <class F, class C1, class... Cs>
+	auto HigherOrderFunction(F const& func, C1 const& container1, Cs const&... containers)
+	{
 		using OutputType = typename container_traits<C1>::template rebind<decltype(eval(
 			func,
 			std::declval<typename container_traits<C1>::value_type>(),
-			std::declval<typename container_traits<C2>::value_type>()
+			std::declval<typename container_traits<Cs>::value_type>()...
 		))>;
 
 		OutputType result;
-		const uint length = std::min(container1.size(), container2.size());
-		auto it1 = std::begin(container1), end1 = std::end(container1);
-		auto it2 = std::begin(container2), end2 = std::end(container2);
-		for (uint i = 0; i < length; ++i, ++it1, ++it2){
-			container_traits<OutputType>::add_element(result, eval(func, *it1, *it2));
-		}
+		const uint length = Min(container1.size(), containers.size()...);
+		HigherOrderFunctionImpl(length, result, func, std::begin(container1), std::begin(containers)...);
 
 		return std::move(result);
 	}
-/*
-	//[a] -> [b] -> (a -> b -> void) -> void
-	//–ß‚è’l‚ÌŒ^‚ªvoid‚Ìê‡
-	template <class R, class A, class B, template < class T, class = std::allocator<T >> class Container, typename std::enable_if<std::is_same<R, void>::value>::type*& = enabler>
-	void ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<void(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
+
+	template <class OutputType, class F, class... Its>
+	void HigherOrderFunctionImpl(uint loop, OutputType& result, F const& func, Its... iterators)
 	{
-		const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
-		uint i = 0;
-		for (auto it1 = std::begin(list1), it2 = std::begin(list2), end1 = std::end(list1), end2 = std::end(list2); i < length; ++i, ++it1, ++it2) func(*it1, *it2);
+		for (uint i = 0; i < loop; ++i, IncrementIterator(iterators...)){
+			container_traits<OutputType>::add_element(result, eval(func, DereferenceIterator(iterators)...));
+		}
 	}
-*/
+
 
 	//[a] -> [b] -> [(a, b)]
-	//
-	template <class  C1, class C2>
-	auto Zip(C1 const& container1, C2 const& container2)
+	//ƒyƒA‚ğì‚é
+	template <class... Cs>
+	auto Zip(Cs const&... containers)
 	{
-		using R1 = typename container_traits<C1>::value_type;
-		using R2 = typename container_traits<C2>::value_type;
-		return ZipWith([](R1 const& v1, R2 const& v2){
-			return std::make_tuple(v1, v2); 
-		}, container1, container2);
+		return HigherOrderFunction([](typename container_traits<Cs>::value_type const&...  vs){
+			return std::make_tuple(vs...); 
+		}, containers...);
 	}
 
 	//uint -> a -> [a]

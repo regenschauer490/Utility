@@ -78,7 +78,7 @@ int main()
 	setlocale(LC_ALL, "Japanese");
 	decltype(std::declval<std::vector<int>::iterator>().operator<(std::declval<std::vector<int>::iterator>())) a;
 	std::iterator_traits<std::vector<int>::iterator>::iterator_category b;
-
+	std::vector<int> v;
 
 	//RegexTest();
 	//TagDealerTest();
@@ -98,6 +98,7 @@ int main()
 
 	//MapTest();
 	//ZipWithTest();
+	HigherOrederFuncTest();
 	FunctionalTest();
 
 	return 0;

@@ -99,7 +99,7 @@
     <ClInclude Include="example\tool_test.h" />
     <ClInclude Include="external\container traits\container_traits.h" />
     <ClInclude Include="external\container traits\eval.h" />
-    <ClInclude Include="lib\container_traits_plus.hpp" />
+    <ClInclude Include="lib\container_helper.hpp" />
     <ClInclude Include="lib\eraser.hpp" />
     <ClInclude Include="lib\file.hpp" />
     <ClInclude Include="lib\functional.hpp" />
