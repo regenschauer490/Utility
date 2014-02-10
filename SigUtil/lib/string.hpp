@@ -196,32 +196,18 @@ namespace sig{
 	*/
 
 	//コンテナに格納された全文字列を結合して1つの文字列に(delimiterで区切り指定)
-	template < class T, template < class T_, class = std::allocator<T_>> class Container >
-	inline std::string CatStr(Container<T> const& container, std::string delimiter = std::string())
+	template <class C, class T>
+	auto CatStr(C const& container, T delimiter)
 	{
-		if (container.empty()) return std::string();
-		std::ostringstream ostream;
+		typename SStreamSelector<typename container_traits<C>::value_type>::stringstream osstream;
+		if (container.empty()) return osstream.str();
 
-		ostream << *container.begin();
+		osstream << *container.begin();
 		for (auto it = ++container.begin(), end = container.end(); it != end; ++it){
-			ostream << delimiter << *it;
+			osstream << delimiter << *it;
 		}
-		return ostream.str();
+		return osstream.str();
 	}
-
-	template < class T, template < class T_, class = std::allocator<T_>> class Container >
-	inline std::wstring CatWStr(Container<T> const& container, std::wstring delimiter = std::wstring())
-	{
-		if (container.empty()) return std::wstring();
-		std::wostringstream ostream;
-
-		ostream << *container.begin();
-		for (auto it = ++container.begin(), end = container.end(); it != end; ++it){
-			ostream << delimiter << *it;
-		}
-		return ostream.str();
-	}
-
 
 
 	//UTF-16 to Shift-JIS

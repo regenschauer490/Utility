@@ -17,8 +17,6 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <locale>
-#include <fstream>
 #include <iomanip>
 #include <string>
 #include <memory>
@@ -35,6 +33,7 @@
 #include <utility>
 
 #include "container_helper.hpp"
+#include "type_map.hpp"
 
 #if SIG_ENABLE_BOOST
 
@@ -83,8 +82,16 @@ namespace sig{
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
 #endif
 
-	template <class T> struct NullDummy{ typedef T type; };
-	template <> struct NullDummy<void>{ typedef NullType type; };
+#ifdef _WIN32
+	using FileString = std::wstring;
+#elif _WIN64
+	using FileString = std::wstring;
+#else
+	using FileString = std::string;
+#endif
+
+	//template <class T> struct NullDummy{ typedef T type; };
+	//template <> struct NullDummy<void>{ typedef NullType type; };
 
 	/*
 #if _MSC_VER > 1800

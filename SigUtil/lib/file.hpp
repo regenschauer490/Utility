@@ -27,6 +27,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "string.hpp"
 #include "sigutil.hpp"
 
+#include <fstream>
+#include <codecvt>
+#include <locale>
+
 #if SIG_WINDOWS_ENV
 #include <windows.h>
 #endif
@@ -42,7 +46,7 @@ namespace fs = boost::filesystem;
 namespace sig{
 
 	//ディレクトリ・ファイルパスの末尾に'/'or'\'があるかチェックし、付けるか外すかどうか指定
-	inline std::wstring DirpassTailModify(std::wstring const& directory_pass, bool const has_slash)
+	inline std::wstring DirpassTailModify(FileString const& directory_pass, bool const has_slash)
 	{
 		if (directory_pass.empty()) return directory_pass;
 
@@ -69,7 +73,7 @@ namespace sig{
 	//hidden_file：true->隠しファイルのみ, false->非隠しファイルのみ (Windows, Linux環境のみ)
 	//extension：拡張子指定(オプション)
 	//読み込み失敗: return -> nothing or empty-vector
-	inline auto GetFileNames(std::wstring const& directory_pass, bool hidden_file, std::wstring extension = L"") ->Just<std::vector<std::wstring>>::type
+	inline auto GetFileNames(FileString const& directory_pass, bool hidden_file, std::wstring extension = L"") ->Just<std::vector<std::wstring>>::type
 	{
 		typedef std::vector<std::wstring> ResultType;
 		ResultType result;
@@ -125,7 +129,7 @@ namespace sig{
 	//directry_pass：調べたいディレクトリのパス
 	//hidden_file：true->隠しファイルのみ, false->非隠しファイルのみ (Windows, Linux環境のみ)
 	//読み込み失敗: return -> nothing or empty-vector
-	inline auto GetFolderNames(std::wstring const& directory_pass, bool hidden_file) ->Just<std::vector<std::wstring>>::type
+	inline auto GetFolderNames(FileString const& directory_pass, bool hidden_file) ->Just<std::vector<std::wstring>>::type
 	{
 		typedef std::vector<std::wstring> ResultType;
 		ResultType result;
@@ -171,83 +175,29 @@ namespace sig{
 	}
 
 
-	//for type map
-	template <class FILE_STRING> struct OfsSelector{};
-	template<> struct OfsSelector<char const*>{
-		typedef std::ofstream fstream;
-		typedef std::ostreambuf_iterator<char> fstreambuf_iter;
-	};
-	template<> struct OfsSelector<std::string>{
-		typedef std::ofstream fstream;
-		typedef std::ostreambuf_iterator<char> fstreambuf_iter;
-	};
-	template<> struct OfsSelector<wchar_t const*>{
-		typedef std::wofstream fstream;
-		typedef std::ostreambuf_iterator<wchar_t> fstreambuf_iter;
-	};
-	template<> struct OfsSelector<std::wstring>{
-		typedef std::wofstream fstream;
-		typedef std::ostreambuf_iterator<wchar_t> fstreambuf_iter;
-	};
-
-	template <class FILE_STRING> struct IfsSelector{};
-	template<> struct IfsSelector<std::string>{
-		typedef std::ifstream fstream;
-		typedef std::istreambuf_iterator<char> fstreambuf_iter;
-	};
-	template<> struct IfsSelector<std::wstring>{
-		typedef std::wifstream fstream;
-		typedef std::istreambuf_iterator<wchar_t> fstreambuf_iter;
-	};
-
-	template <class NUM> struct Str2NumSelector{};
-	template <> struct Str2NumSelector<int>{
-		int operator()(std::string s){ return std::stoi(s); }
-	};
-	template <> struct Str2NumSelector<long>{
-		long operator()(std::string s){ return std::stol(s); }
-	};
-	template <> struct Str2NumSelector<long long>{
-		long long operator()(std::string s){ return std::stoll(s); }
-	};
-	template <> struct Str2NumSelector<unsigned int>{
-		unsigned int operator()(std::string s){ return std::stoul(s); }
-	};
-	template <> struct Str2NumSelector<unsigned long>{
-		unsigned long operator()(std::string s){ return std::stoul(s); }
-	};
-	template <> struct Str2NumSelector<unsigned long long>{
-		unsigned long long operator()(std::string s){ return std::stoull(s); }
-	};
-	template <> struct Str2NumSelector<float>{
-		float operator()(std::string s){ return std::stof(s); }
-	};
-	template <> struct Str2NumSelector<double>{
-		double operator()(std::string s){ return std::stod(s); }
-	};
-
 	//overwrite：上書き, append：末尾追記
 	enum class WriteMode{ overwrite, append };
 
 	//ファイル内容の初期化
-	inline void FileClear(std::wstring const& file_pass)
+	inline void FileClear(FileString const& file_pass)
 	{
 		std::ofstream ofs(file_pass);
 		ofs << "";
 	}
 
+
 	//-- Save Text
 
-	template <class String>
-	void SaveLine(String const& src, typename OfsSelector<TString<String>>::fstream& ofs)
+	template <class S>
+	void SaveLine(S const& src, typename OfsSelector<TString<S>>::fstream& ofs)
 	{
 		ofs << src << std::endl;
 	}
 
-	template <class String, template <class T_, class = std::allocator<T_>> class Container >
-	void SaveLine(Container<String> const& src, typename OfsSelector<String>::fstream& ofs)
+	template <class C>
+	void SaveLine(C const& src, typename OfsSelector<typename container_traits<C>::value_type>::fstream& ofs)
 	{
-		typename OfsSelector<String>::fstreambuf_iter streambuf_iter(ofs);
+		typename OfsSelector<typename container_traits<C>::value_type>::streambuf_iterator streambuf_iter(ofs);
 		for (auto const& str : src){
 			std::copy(str.begin(), str.end(), streambuf_iter);
 			streambuf_iter = '\n';
@@ -258,8 +208,8 @@ namespace sig{
 	//src: 保存対象
 	//file_pass: 保存先のディレクトリとファイル名（フルパス）
 	//open_mode: 上書き(overwrite) or 追記(append)
-	template <class String>
-	void SaveLine(String src, std::wstring const& file_pass, WriteMode mode = WriteMode::overwrite)
+	template <class S, typename std::enable_if<container_traits<TString<S>>::is_string>::type*& = enabler>
+	void SaveLine(S src, FileString const& file_pass, WriteMode mode = WriteMode::overwrite)
 	{
 		static bool first = true;
 		if (first){
@@ -268,12 +218,12 @@ namespace sig{
 		}
 
 		std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-		typename OfsSelector<typename std::decay<String>::type>::fstream ofs(file_pass, open_mode);
+		typename OfsSelector<TString<S>>::fstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
 	//まとめて保存 (シーケンスな動的コンテナのみ対応)
-	template <class String, template <class T_, class = std::allocator<T_>> class Container>
-	void SaveLine(Container<String> const& src, std::wstring const& file_pass, WriteMode mode = WriteMode::overwrite)
+	template <class C, typename std::enable_if<!container_traits<C>::is_string>::type*& = enabler>
+	void SaveLine(C const& src, FileString const& file_pass, WriteMode mode = WriteMode::overwrite)
 	{
 		static bool first = true;
 		if (first){
@@ -282,14 +232,14 @@ namespace sig{
 		}
 
 		std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-		typename OfsSelector<String>::fstream ofs(file_pass, open_mode);
+		typename OfsSelector<typename container_traits<C>::value_type>::fstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
 
 	//保存するデータが数値の場合
 	//デフォルトでは1要素1行で保存（delimiterで変更可）
-	template <class Num, template <class T_, class = std::allocator<T_>> class Container>
-	void SaveNum(Container<Num> const& src, std::wstring const& file_pass, WriteMode mode = WriteMode::overwrite, std::string delimiter = "\n")
+	template <class C>
+	void SaveNum(C const& src, FileString const& file_pass, WriteMode mode = WriteMode::overwrite, std::string delimiter = "\n")
 	{
 		SaveLine(CatStr(src, delimiter), file_pass, mode);
 	}
@@ -297,74 +247,94 @@ namespace sig{
 
 	//-- Read Text
 
-	template <class R, template <class T_, class = std::allocator<T_>> class Container = std::vector>
-	void ReadLine(Container<R>& empty_dest, typename IfsSelector<R>::fstream& ifs, std::function< R(typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
-	{
-		typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type line;
+	template <class R>
+	using IfsSelector = typename std::conditional<std::is_same<R, std::string>::value, std::ifstream, std::wifstream>::type;
 
-		while (ifs && getline(ifs, line)){
-			conv ? empty_dest.push_back(conv(std::move(line))) : empty_dest.push_back(std::move(line));
+	//conv: 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはReadNumを推奨) string or wstring -> R
+	template <class C, class R = typename container_traits<C>::value_type>
+	void ReadLine(C& empty_dest,
+		IfsSelector<R>& ifs,
+		std::function< R(typename std::conditional<std::is_same<R, std::string>::value, std::string, std::wstring>::type) > const& conv = nullptr)
+	{
+		static_assert(std::is_same<R, typename container_traits<C>::value_type>::value, "error in ReadLine: R and C::value_type don't match");
+
+		typename std::conditional<std::is_same<R, std::string>::value, std::string, std::wstring>::type line;
+
+		static bool first = true;
+		if (first){
+			std::locale::global(std::locale(""));
+			first = false;
+		}
+
+		while (ifs && std::getline(ifs, line)){
+			conv ? container_traits<C>::add_element(empty_dest, conv(std::move(line))) : container_traits<C>::add_element(empty_dest, std::move(line));
 		}
 	}
 
-	template <class R, template <class T_, class = std::allocator<T_>> class Container = std::vector>
-	void ReadLine(Container<R>& empty_dest, std::wstring const& file_pass, std::function< R(typename std::conditional<std::is_same<typename IfsSelector<R>::fstream, std::ifstream>::value, std::string, std::wstring>::type)> const& conv = nullptr)
+	template <class C, class R = typename container_traits<C>::value_type>
+	void ReadLine(C& empty_dest,
+		FileString const& file_pass,
+		std::function< R(typename std::conditional<std::is_same<R, std::string>::value, std::string, std::wstring>::type)> const& conv = nullptr)
 	{
-		typename IfsSelector<R>::fstream ifs(file_pass);
-		if (!ifs){
-			wprintf(L"file open error: %s \n", file_pass);
-			return;
-		}
-		ReadLine(empty_dest, ifs);
-	}
-
-	template <class Num, template <class T_, class = std::allocator<T_>> class Container = std::vector>
-	void ReadNum(Container<Num>& empty_dest, std::wstring const& file_pass, std::string delimiter = "")
-	{
-		typename IfsSelector<std::string>::fstream ifs(file_pass);
-		Str2NumSelector<Num> conv;
-		std::string line;
-		if (!ifs){
-			wprintf(L"file open error: %s \n", file_pass);
-			return;
-		}
-		while (ifs && getline(ifs, line)){
-			auto split = Split(line, delimiter);
-			for(auto v : split) empty_dest.push_back(conv(v));
-		}
-	}
-
-#if SIG_ENABLE_BOOST
-
-	//読み込み失敗: return -> maybe == nothing
-	template <class String, template <class T_, class = std::allocator<T_>> class Container = std::vector>
-	maybe<Container<String>> ReadLine(typename IfsSelector<String>::fstream& ifs)
-	{
-		typedef Container<String> R;
-		R tmp;
-		ReadLine(tmp, ifs);
-		return tmp.size() ? maybe<R>(std::move(tmp)) : nothing;
-	}
-
-	template <class String, template <class T_, class = std::allocator<T_>> class Container = std::vector>
-	maybe<Container<String>> ReadLine(std::wstring const& file_pass)
-	{
-		typename IfsSelector<String>::fstream ifs(file_pass);
+		IfsSelector<R> ifs(file_pass);
 		if (!ifs){
 			std::wcout << L"file open error: " << file_pass << std::endl;
-			return nothing;
+			return;
 		}
-		return ReadLine<String, Container>(ifs);
+		ReadLine(empty_dest, ifs, conv);
 	}
 
-	template <class Num, template <class T_, class = std::allocator<T_>> class Container = std::vector>
-	maybe<Container<Num>> ReadNum(std::wstring const& file_pass, std::string delimiter = "")
+	template <class C, class R = typename container_traits<C>::value_type>
+	void ReadNum(C& empty_dest, FileString const& file_pass, std::string delimiter = "")
 	{
-		Container<Num> tmp;
-		ReadNum<Num>(tmp, file_pass, delimiter);
-		return tmp.size() ? maybe<Container<Num>>(std::move(tmp)) : nothing;
+		static_assert(std::is_same<R, typename container_traits<C>::value_type>::value, "error in ReadNum: R and C::value_type don't match");
+
+		IfsSelector<std::string> ifs(file_pass);
+		std::string line;
+
+		static bool first = true;
+		if (first){
+			std::locale::global(std::locale(""));
+			first = false;
+		}
+
+		if (!ifs){
+			std::wcout << L"file open error: " << file_pass << std::endl;
+			return;
+		}
+		while (ifs && std::getline(ifs, line)){
+			auto split = Split(line, delimiter);
+			for (auto v : split) container_traits<C>::add_element(empty_dest, Str2NumSelector<R>()(v));
+		}
 	}
-#endif
+
+	//読み込み失敗: return -> nothing
+	template <class R, class C = std::vector<R>>
+	auto ReadLine(IfsSelector<R>& ifs) ->typename Just<C>::type
+	{
+		C tmp;
+		ReadLine(tmp, ifs);
+		return tmp.size() ? typename Just<C>::type(std::move(tmp)) : Nothing(std::move(tmp));
+	}
+
+	template <class R, class C = std::vector<R>>
+	auto ReadLine(FileString const& file_pass) ->typename Just<C>::type
+	{
+		IfsSelector<R> ifs(file_pass);
+		if (!ifs){
+			std::wcout << L"file open error: " << file_pass << std::endl;
+			return Nothing(C());
+		}
+		return ReadLine<R, C>(ifs);
+	}
+
+	template <class R, class C = std::vector<R>>
+	auto ReadNum(FileString const& file_pass, std::string delimiter = "") ->typename Just<C>::type
+	{
+		C tmp;
+		ReadNum(tmp, file_pass, delimiter);
+		return tmp.size() ? typename Just<C>::type(std::move(tmp)) : Nothing(std::move(tmp));
+	}
 
 	/*
 	//csvで保存

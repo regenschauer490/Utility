@@ -106,6 +106,7 @@
     <ClInclude Include="lib\sigutil.hpp" />
     <ClInclude Include="lib\string.hpp" />
     <ClInclude Include="lib\tool.hpp" />
+    <ClInclude Include="lib\type_map.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

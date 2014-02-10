@@ -87,7 +87,7 @@ int main()
 	//StrConvertTest();
 
 	//GetDirectoryNamesTest();
-	//FileSaveLoadTest();
+	FileSaveLoadTest();
 
 	//RandomTest();
 	//TimeWatchTest();
@@ -98,8 +98,8 @@ int main()
 
 	//MapTest();
 	//ZipWithTest();
-	HigherOrederFuncTest();
-	FunctionalTest();
+	//HigherOrederFuncTest();
+	//FunctionalTest();
 
 	return 0;
 }

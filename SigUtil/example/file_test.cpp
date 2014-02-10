@@ -112,18 +112,18 @@ void FileSaveLoadTest()
 	sig::SaveLine(blghost_text2, fpass3);
 
 	//数値データの保存（上書き、1行ずつ保存）
-	sig::SaveNum(std::vector<int>{1, 2, 3, 4, 5}, fpass4);
+	sig::SaveNum(std::set<int>{1, 2, 3, 4, 5}, fpass4);
 	//数値データの保存（追記、カンマ分けで保存）
-	sig::SaveNum(std::list<double>{1.1, 2.2, 3.3}, fpass5, sig::WriteMode::append, ",");
+	sig::SaveNum(std::unordered_set<double>{1.1, 2.2, 3.3}, fpass5, sig::WriteMode::append, ",");
 
 
 	//以下 かんたん読み込み♪
 
 #if SIG_ENABLE_BOOST
 	auto test1 = sig::ReadLine<std::string>(fpass1);
-	auto test2 = sig::ReadLine<std::wstring, std::list>(fpass2);
+	auto test2 = sig::ReadLine<std::wstring, std::list<std::wstring>>(fpass2);
 	auto test_num1 = sig::ReadNum<int>(fpass4);
-	auto test_num2 = sig::ReadNum<double, std::list>(fpass5, ",");
+	auto test_num2 = sig::ReadNum<double, std::set<double>>(fpass5, ",");
 
 	if (test1){
 		for (auto e : *test1) std::cout << e << std::endl;
@@ -144,12 +144,12 @@ void FileSaveLoadTest()
 	std::vector<std::string> test1;
 	std::list<std::wstring> test2;
 	std::vector<int> test_num1;
-	std::list<double> test_num2;
+	std::set<double> test_num2;
 
 	sig::ReadLine(test1, fpass1);
 	sig::ReadLine(test2, fpass2);
-	sig::ReadNum<int>(test_num1, fpass4);
-	sig::ReadNum<double>(test_num2, fpass5, ",");
+	sig::ReadNum(test_num1, fpass4);
+	sig::ReadNum(test_num2, fpass5, ",");
 
 	for (auto e : test1) std::cout << e << std::endl;
 	std::cout << std::endl;

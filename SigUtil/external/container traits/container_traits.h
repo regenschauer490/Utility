@@ -26,6 +26,7 @@ template <class C>
 struct container_traits
 {
     // Type value_type
+	// bool is_string
     // void add_element(C&,T)
     // void concat(C&,C)
     // Type rebind<U>
@@ -38,6 +39,8 @@ template<template<class,class> class C, class T, class A>
 struct sequence_container_traits<C<T,A>>
 {
     using value_type = T;
+
+	static const bool is_string = false;
 
     static void add_element(C<T,A>& c, const T& t)
     {
@@ -73,6 +76,8 @@ struct associative_container_traits<C<T,O<T>,A>>
 {
     using value_type = T;
 
+	static const bool is_string = false;
+
     static void add_element(C<T,O<T>,A>& c, const T& t)
     {
         c.insert(t);
@@ -103,6 +108,8 @@ struct hash_container_traits<C<T,H<T>,O<T>,A>>
 {
     using value_type = T;
 
+	static const bool is_string = false;
+
     static void add_element(C<T,H<T>,O<T>,A>& c, const T& t)
     {
         c.insert(t);
@@ -125,11 +132,14 @@ template<class... Args>
 struct container_traits<std::unordered_set<Args...>> : public hash_container_traits<std::unordered_set<Args...>>
 {};
 
+
 // basic_string
 template<class T, template<class> class K, class A>
 struct container_traits<std::basic_string<T,K<T>,A>>
 {
     using value_type = T;
+
+	static const bool is_string = true;
 
     static void add_element(std::basic_string<T,K<T>,A>& c, const T& t)
     {
