@@ -11,35 +11,6 @@
 
 namespace sig{
 
-	template <class T>
-	struct StringId{};
-	template <>
-	struct StringId<std::string>{ typedef std::string type; };
-	template <>
-	struct StringId<char const*>{ typedef std::string type; };
-	template <>
-	struct StringId<std::wstring>{ typedef std::wstring type; };
-	template <>
-	struct StringId<wchar_t const*>{ typedef std::wstring type; };
-
-	template <class T>
-	using TString = typename StringId<typename std::decay<T>::type>::type;
-
-	template <class T>
-	struct Str2RegexSelector{ typedef void type; };
-	template <>
-	struct Str2RegexSelector<std::string>{ typedef std::regex type; };
-	template <>
-	struct Str2RegexSelector<std::wstring>{ typedef std::wregex type; };
-
-	template <class T>
-	struct Str2SmatchSelector{ typedef void type; };
-	template <>
-	struct Str2SmatchSelector<std::string>{ typedef std::smatch type; };
-	template <>
-	struct Str2SmatchSelector<std::wstring>{ typedef std::wsmatch type; };
-
-
 	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
 	inline auto RegexEscaper(std::string const& expression) ->std::string
 	{
@@ -54,9 +25,9 @@ namespace sig{
 
 	//自動でエスケープしてstd::regex or std::wregex を返す
 	template <class T>
-	auto RegexMaker(T const& expression) ->typename Str2RegexSelector<TString<T>>::type
+	auto RegexMaker(T const& expression) ->typename Str2RegexSelector<TString<T>>::regex
 	{
-		return typename Str2RegexSelector<TString<T>>::type(RegexEscaper(expression));
+		return typename Str2RegexSelector<TString<T>>::regex(RegexEscaper(expression));
 	}
 
 
@@ -67,10 +38,10 @@ namespace sig{
 	//expression = std::regex("tes(\\d)")
 	//return -> [[tes1, 1], [tes2, 2]]
 	template <template <class T_, class = std::allocator<T_>> class Container = std::vector, class T = std::string >
-	auto RegexSearch(T src, typename Str2RegexSelector<TString<T>>::type const& expression) ->typename Just< Container< Container<TString<T>>>>::type
+	auto RegexSearch(T src, typename Str2RegexSelector<TString<T>>::regex const& expression) ->typename Just< Container< Container<TString<T>>>>::type
 	{
 		Container<Container<TString<T>>> d;
-		typename Str2SmatchSelector<TString<T>>::type match;
+		typename Str2RegexSelector<TString<T>>::smatch match;
 		auto tmp = TString<T>(src);
 
 		while (std::regex_search(tmp, match, expression)){
@@ -199,7 +170,7 @@ namespace sig{
 	template <class C, class T>
 	auto CatStr(C const& container, T delimiter)
 	{
-		typename SStreamSelector<typename container_traits<C>::value_type>::stringstream osstream;
+		typename SStreamSelector<typename container_traits<C>::value_type>::ostringstream osstream;
 		if (container.empty()) return osstream.str();
 
 		osstream << *container.begin();
@@ -259,10 +230,10 @@ namespace sig{
 
 	//全角・半角文字の置換処理を行う
 	class ZenHanReplace{
-		std::unordered_map<wchar_t, wchar_t> _alphabet;			//全角アルファベット -> 半角アルファベット
-		std::unordered_map<wchar_t, wchar_t> _number;			//全角数字 -> 半角数字
-		std::unordered_map<wchar_t, wchar_t> _katakana;			//半角カタカナ -> 全角カタカナ
-		std::unordered_map<std::wstring, wchar_t> _katakana_d;	//(濁音) 半角カタカナ -> 全角カタカナ
+		std::unordered_map<wchar_t, wchar_t> alphabet_;			//全角アルファベット -> 半角アルファベット
+		std::unordered_map<wchar_t, wchar_t> number_;			//全角数字 -> 半角数字
+		std::unordered_map<wchar_t, wchar_t> katakana_;			//半角カタカナ -> 全角カタカナ
+		std::unordered_map<std::wstring, wchar_t> katakana_d_;	//(濁音) 半角カタカナ -> 全角カタカナ
 
 	private:
 		ZenHanReplace(){
@@ -270,87 +241,87 @@ namespace sig{
 			char han1 = 'A';
 
 			for (uint i = 0; i < 26; ++i, ++zen1[0], ++han1){
-				_alphabet[zen1[0]] = han1;
+				alphabet_[zen1[0]] = han1;
 			}
 
 			wchar_t zen2 = L'ａ';
 			wchar_t han2 = 'a';
 			for (uint i = 0; i < 26; ++i, ++zen2, ++han2){
-				_alphabet[zen2] = han2;
+				alphabet_[zen2] = han2;
 			}
 
-			_number[L'０'] = L'0';
-			_number[L'１'] = L'1';
-			_number[L'２'] = L'2';
-			_number[L'３'] = L'3';
-			_number[L'４'] = L'4';
-			_number[L'５'] = L'5';
-			_number[L'６'] = L'6';
-			_number[L'７'] = L'7';
-			_number[L'８'] = L'8';
-			_number[L'９'] = L'9';
+			number_[L'０'] = L'0';
+			number_[L'１'] = L'1';
+			number_[L'２'] = L'2';
+			number_[L'３'] = L'3';
+			number_[L'４'] = L'4';
+			number_[L'５'] = L'5';
+			number_[L'６'] = L'6';
+			number_[L'７'] = L'7';
+			number_[L'８'] = L'8';
+			number_[L'９'] = L'9';
 
-			_katakana[L'ｰ'] = L'ー';
-			_katakana[L'ｧ'] = L'ァ';
-			_katakana[L'ｨ'] = L'ィ';
-			_katakana[L'ｩ'] = L'ゥ';
-			_katakana[L'ｪ'] = L'ェ';
-			_katakana[L'ｫ'] = L'ォ';
-			_katakana[L'ｱ'] = L'ア';
-			_katakana[L'ｲ'] = L'イ';
-			_katakana[L'ｳ'] = L'ウ';
-			_katakana[L'ｴ'] = L'エ';
-			_katakana[L'ｵ'] = L'オ';
+			katakana_[L'ｰ'] = L'ー';
+			katakana_[L'ｧ'] = L'ァ';
+			katakana_[L'ｨ'] = L'ィ';
+			katakana_[L'ｩ'] = L'ゥ';
+			katakana_[L'ｪ'] = L'ェ';
+			katakana_[L'ｫ'] = L'ォ';
+			katakana_[L'ｱ'] = L'ア';
+			katakana_[L'ｲ'] = L'イ';
+			katakana_[L'ｳ'] = L'ウ';
+			katakana_[L'ｴ'] = L'エ';
+			katakana_[L'ｵ'] = L'オ';
 
 			wchar_t han3 = L'ｶ';
 			wchar_t zen3 = L'カ';
 			for (uint i = 0; i < 12; ++i, ++han3, zen3 += 2){
-				_katakana[han3] = zen3;
+				katakana_[han3] = zen3;
 			}
-			_katakana[L'ｯ'] = L'ッ';
-			_katakana[L'ﾃ'] = L'テ';
-			_katakana[L'ﾄ'] = L'ト';
+			katakana_[L'ｯ'] = L'ッ';
+			katakana_[L'ﾃ'] = L'テ';
+			katakana_[L'ﾄ'] = L'ト';
 			han3 += 2; zen3 += 6;
 			for (uint i = 0; i < 6; ++i, ++han3, ++zen3){
-				_katakana[han3] = zen3;
+				katakana_[han3] = zen3;
 			}
 			for (uint i = 0; i < 5; ++i, ++han3, zen3 += 3){
-				_katakana[han3] = zen3;
+				katakana_[han3] = zen3;
 			}
 			for (uint i = 0; i < 5; ++i, ++han3, ++zen3){
-				_katakana[han3] = zen3;
+				katakana_[han3] = zen3;
 			}
-			_katakana[L'ﾔ'] = L'ヤ';
-			_katakana[L'ｬ'] = L'ャ';
-			_katakana[L'ﾕ'] = L'ユ';
-			_katakana[L'ｭ'] = L'ュ';
-			_katakana[L'ﾖ'] = L'ヨ';
-			_katakana[L'ｮ'] = L'ョ';
+			katakana_[L'ﾔ'] = L'ヤ';
+			katakana_[L'ｬ'] = L'ャ';
+			katakana_[L'ﾕ'] = L'ユ';
+			katakana_[L'ｭ'] = L'ュ';
+			katakana_[L'ﾖ'] = L'ヨ';
+			katakana_[L'ｮ'] = L'ョ';
 			han3 += 3; zen3 += 6;
 			for (uint i = 0; i < 5; ++i, ++han3, ++zen3){
-				_katakana[han3] = zen3;
+				katakana_[han3] = zen3;
 			}
-			_katakana[L'ﾜ'] = L'ワ';
-			_katakana[L'ｦ'] = L'ヲ';
-			_katakana[L'ﾝ'] = L'ン';
+			katakana_[L'ﾜ'] = L'ワ';
+			katakana_[L'ｦ'] = L'ヲ';
+			katakana_[L'ﾝ'] = L'ン';
 
 
 			wchar_t han4[3] = L"ｶﾞ";
 			wchar_t zen4 = L'ガ';
 			for (uint i = 0; i < 12; ++i, ++han4[0], zen4 += 2){
-				_katakana_d[han4] = zen4;
+				katakana_d_[han4] = zen4;
 			}
-			_katakana_d[L"ﾂﾞ"] = L'ヅ';
-			_katakana_d[L"ﾃﾞ"] = L'デ';
-			_katakana_d[L"ﾄﾞ"] = L'ド';
+			katakana_d_[L"ﾂﾞ"] = L'ヅ';
+			katakana_d_[L"ﾃﾞ"] = L'デ';
+			katakana_d_[L"ﾄﾞ"] = L'ド';
 			han4[0] += 8; zen4 += 12;
 			for (uint i = 0; i < 5; ++i, ++han4[0], zen4 += 3){
-				_katakana_d[han4] = zen4;
+				katakana_d_[han4] = zen4;
 			}
 			wchar_t han5[3] = L"ﾊﾟ";
 			wchar_t zen5 = L'パ';
 			for (uint i = 0; i < 5; ++i, ++han5[0], zen5 += 3){
-				_katakana_d[han5] = zen5;
+				katakana_d_[han5] = zen5;
 			}
 		}
 
@@ -364,28 +335,59 @@ namespace sig{
 
 		void Alphabet_Zen2Han(std::wstring& sentence) const{
 			for (auto& c : sentence){
-				if (_alphabet.count(c)) c = _alphabet.at(c);
+				if (alphabet_.count(c)) c = alphabet_.at(c);
+			}
+		}
+		void Alphabet_Han2Zen(std::wstring& sentence) const{
+			for (auto& c : sentence){
+				for (auto const& v : alphabet_){
+					if (v.second == c) c = v.first;
+				}
 			}
 		}
 
 		void Number_Zen2Han(std::wstring& sentence) const{
 			for (auto& c : sentence){
-				if (_number.count(c)) c = _number.at(c);
+				if (number_.count(c)) c = number_.at(c);
+			}
+		}
+		void Number_Han2Zen(std::wstring& sentence) const{
+			for (auto& c : sentence){
+				for (auto const& v : number_){
+					if (v.second == c) c = v.first;
+				}
 			}
 		}
 
 		void Katakana_Han2Zen(std::wstring& sentence) const{
 			for (unsigned i = 1; i < sentence.size(); ++i){
-				if (sentence[i] == L'ﾞ'){
-					wchar_t tmp[3] = { sentence[i - 1], sentence[i], L'\0' };
-					auto ttmp = std::wstring(tmp);
-					if (_katakana_d.count(ttmp)) sentence.replace(i - 1, 2, 1, _katakana_d.at(ttmp));
+				if (sentence[i] == L'ﾞ' || sentence[i] == L'ﾟ'){
+					auto ttmp = std::wstring(sentence.substr(i-1, 2));
+					if (katakana_d_.count(ttmp)){
+						sentence.replace(i - 1, 2, 1, katakana_d_.at(ttmp));
+						--i;
+					}
 				}
 			}
 			for (auto& c : sentence){
-				if (_katakana.count(c)) c = _katakana.at(c);
+				if (katakana_.count(c)) c = katakana_.at(c);
 			}
 		}
+		void Katakana_Zen2Han(std::wstring& sentence) const{
+			for (uint i=0; i<sentence.size(); ++i){
+				for (auto const& v : katakana_d_){
+					if (v.second == sentence[i]){
+						sentence.replace(i, 1, v.first);
+					}
+				}
+			}
+			for (auto& c : sentence){
+				for (auto const& v : katakana_){
+					if (v.second == c) c = v.first;
+				}
+			}
+		}
+
 	};
 
 }

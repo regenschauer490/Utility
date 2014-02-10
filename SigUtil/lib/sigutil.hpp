@@ -1,7 +1,7 @@
 #ifndef __SIG_UTIL_H__
 #define __SIG_UTIL_H__
 
-#define SIG_ENABLE_BOOST 1
+#define SIG_ENABLE_BOOST 0
 
 #ifdef _WIN32
 #define SIG_WINDOWS_ENV 1

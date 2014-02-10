@@ -80,27 +80,28 @@ int main()
 	std::iterator_traits<std::vector<int>::iterator>::iterator_category b;
 	std::vector<int> v;
 
-	//RegexTest();
-	//TagDealerTest();
-	//SplitTest();
-	//CatStrTest();
-	//StrConvertTest();
+	RegexTest();
+	TagDealerTest();
+	SplitTest();
+	CatStrTest();
+	StrConvertTest();
+	ZenHanTest();
 
-	//GetDirectoryNamesTest();
-	//FileSaveLoadTest();
+	GetDirectoryNamesTest();
+	FileSaveLoadTest();
 
-	//RandomTest();
-	//TimeWatchTest();
-	//HistgramTest();
+	RandomTest();
+	TimeWatchTest();
+	HistgramTest();
 	PercentTest();
 
-	//RemoveDuplicateTest();
-	//RemoveTest();
+	RemoveDuplicateTest();
+	RemoveTest();
 
-	//MapTest();
-	//ZipWithTest();
-	//HigherOrederFuncTest();
-	//FunctionalTest();
+	MapTest();
+	ZipWithTest();
+	HigherOrederFuncTest();
+	FunctionalTest();
 
 	return 0;
 }

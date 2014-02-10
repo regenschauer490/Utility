@@ -7,3 +7,4 @@ void TagDealerTest();
 void SplitTest();
 void CatStrTest();
 void StrConvertTest();
+void ZenHanTest();

@@ -189,15 +189,15 @@ namespace sig{
 	//-- Save Text
 
 	template <class S>
-	void SaveLine(S const& src, typename OfsSelector<TString<S>>::fstream& ofs)
+	void SaveLine(S const& src, typename FStreamSelector<TString<S>>::ofstream& ofs)
 	{
 		ofs << src << std::endl;
 	}
 
 	template <class C>
-	void SaveLine(C const& src, typename OfsSelector<typename container_traits<C>::value_type>::fstream& ofs)
+	void SaveLine(C const& src, typename FStreamSelector<typename container_traits<C>::value_type>::ofstream& ofs)
 	{
-		typename OfsSelector<typename container_traits<C>::value_type>::streambuf_iterator streambuf_iter(ofs);
+		typename FStreamSelector<typename container_traits<C>::value_type>::ostreambuf_iterator streambuf_iter(ofs);
 		for (auto const& str : src){
 			std::copy(str.begin(), str.end(), streambuf_iter);
 			streambuf_iter = '\n';
@@ -218,7 +218,7 @@ namespace sig{
 		}
 
 		std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-		typename OfsSelector<TString<S>>::fstream ofs(file_pass, open_mode);
+		typename FStreamSelector<TString<S>>::ofstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
 	//まとめて保存 (シーケンスな動的コンテナのみ対応)
@@ -232,7 +232,7 @@ namespace sig{
 		}
 
 		std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-		typename OfsSelector<typename container_traits<C>::value_type>::fstream ofs(file_pass, open_mode);
+		typename FStreamSelector<typename container_traits<C>::value_type>::ofstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
 
