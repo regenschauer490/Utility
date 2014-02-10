@@ -172,13 +172,27 @@ namespace sig{
 	//A‚ÆB‚Ì^‹Uˆê’v‚Åtrue‚ğ•Ô‚· (Ì !xor)
 	inline bool BoolConsistency(bool A, bool B){ return (A && B) || (!A && !B); }
 
-	//•‚“®¬”“_Œ^‚É‚àg‚¦‚é“™’l”äŠrŠÖ”
+
+	template <class T1, class T2>
+	auto DeltaAbs(T1 v1, T2 v2) ->typename std::common_type<T1, T2>::type
+	{
+		return v1 < v2 ? v2 - v1 : v1 - v2;
+	}
+
+	//•‚“®¬”“_Œ^‚É‚àg‚¦‚é“™’l”äŠr
 	template <class T1, class T2>
 	bool Equal(T1 v1, T2 v2)
 	{
 		const auto dmin = std::numeric_limits<std::common_type<T1, T2>::type>::min();
 
-		return std::abs(v1 - v2) < dmin;
+		return !(DeltaAbs(v1, v2) > dmin);
+	}
+
+	//w’è”ÍˆÍ“à‚ÌŒë·‚ğ‹–‚µ‚½“™’l”äŠr
+	template <class T1, class T2>
+	bool TolerantEqual(T1 v1, T2 v2, typename std::common_type<T1, T2>::type margin)
+	{
+		return margin ? !(DeltaAbs(v1, v2) > margin) : Equal(v1, v2);
 	}
 
 	//¬”“_ˆÈ‰º‚ÌŒ…”æ“¾ (ex: v=1.2300000 -> 2)
