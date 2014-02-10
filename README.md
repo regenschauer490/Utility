@@ -10,6 +10,7 @@ boostの併用推奨(主にoptionalのため).　なくても動作はします�
   * RandomUniqueNumbers: 重複の無い一様分布の整数乱数を生成(値域指定、個数指定)
 * class TimeWatch: 高機能ストップウォッチ(ラップ、スプリット、一時停止、複数保存)
 * class Histgram: ヒストグラム(データ型指定、ビン数指定、値域指定、出力・保存機能)
+* class Percent: パーセント型
 
 \<file.hpp>
 * GetFileNames: 指定ディレクトリにあるファイル名を取得(option:隠しファイル識別、拡張子指定)
