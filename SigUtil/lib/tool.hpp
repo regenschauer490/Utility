@@ -2,7 +2,16 @@
 #define __SIG_UTIL_TOOL__
 
 #include "sigutil.hpp"
+
 #include <chrono>
+#include <fstream>
+
+
+#if SIG_ENABLE_BOOST
+
+#include <boost/serialization/serialization.hpp>
+
+#endif
 
 /* 便利ツール */
 
@@ -245,9 +254,48 @@ namespace sig{
 		void Print() const{ PrintBase(std::cout); }
 
 		//ファイルへ出力
-		void Print(std::wstring const& file_pass) const{ PrintBase(std::ofstream(file_pass)); }
+		void Print(FileString const& file_pass) const{ PrintBase(std::ofstream(file_pass)); }
 	};
 
+	//パーセント型
+	class Percent
+	{
+		int percent_;
+
+	public:
+		explicit Percent(int percent) : percent_(percent){}
+
+		int GetPercent() const{ return percent_; }
+		double GetDouble() const{ return percent_ * 0.01; }
+
+		static Percent const& Unit(){ static const Percent unit(100); return unit; }
+
+		Percent operator=(Percent src){ percent_ = src.percent_; return *this; }
+		Percent operator=(int src){ percent_ = src; return *this; }
+
+		bool operator==(Percent obj) const{ return percent_ == obj.percent_; }
+
+		bool operator!=(Percent obj) const{ return percent_ != obj.percent_; }
+
+#if SIG_ENABLE_BOOST
+	private:
+		friend class boost::serialization::access;
+
+		template <class Archive>
+		void serialize(Archive& ar, unsigned int version)
+		{
+			ar & percent_;
+		}
+
+		template <class Archive>
+		friend void save_construct_data(Archive & ar, Percent const* p, unsigned int version){};
+
+		template <class Archive>
+		friend void load_construct_data(Archive & ar, Percent* p, unsigned int version){
+			::new(p) Percent(0);
+		}
+#endif
+	};
 }
 
 #endif

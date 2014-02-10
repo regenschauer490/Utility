@@ -42,7 +42,6 @@
 #include <boost/call_traits.hpp>
 #include <boost/range.hpp>
 #include <boost/range/algorithm.hpp>
-#include <boost/serialization/serialization.hpp>
 
 #endif
 
@@ -327,43 +326,7 @@ namespace sig{
 /* 便利アイテム */
 
 #if SIG_ENABLE_BOOST
-	//パーセント型
-	class Percent
-	{
-		int _percent;
 
-	public:
-		explicit Percent(int percent) : _percent(percent){}
-
-		int GetPercent() const{ return _percent; }
-		double GetDouble() const{ return _percent * 0.01; }
-
-		static Percent const& Unit(){ static const Percent unit(100); return unit; }
-
-		Percent operator=(Percent src){ _percent = src._percent; return *this; }
-		Percent operator=(int src){ _percent = src; return *this; }
-		
-		bool operator==(Percent obj) const{ return _percent == obj._percent; }
-
-		bool operator!=(Percent obj) const{ return _percent != obj._percent; }
-
-	private:
-		friend class boost::serialization::access;
-
-		template <class Archive>
-		void serialize(Archive& ar, unsigned int version)
-		{
-			ar & _percent;
-		}
-
-		template <class Archive>
-		friend void save_construct_data(Archive & ar, Percent const* p, unsigned int version){};
-
-		template <class Archive>
-		friend void load_construct_data(Archive & ar, Percent* p, unsigned int version){
-			::new(p) Percent(0);
-		}
-	};
 
 #endif
 

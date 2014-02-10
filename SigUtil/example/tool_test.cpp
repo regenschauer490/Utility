@@ -156,3 +156,19 @@ void HistgramTest()
 	[ 1.000,+Åá   )ÅF30 ||||||||||||||||||||||||||||||
 	*/
 }
+
+void PercentTest()
+{
+	sig::Percent pc1(100);
+	sig::Percent pc2(50);
+	sig::Percent pc3(0);
+	sig::Percent pc4(0);
+
+	pc3 = 1;					//copy assignment. pc4 == 1%
+	pc4 = sig::Percent::Unit();	//copy assignment. pc3 == 100%
+
+	std::cout << pc1.GetPercent() << "% = " << pc1.GetDouble() << std::endl;	//100% = 1
+	std::cout << pc2.GetPercent() << "% = " << pc2.GetDouble() << std::endl;	//50% = 0.5
+	std::cout << pc3.GetPercent() << "% = " << pc3.GetDouble() << std::endl;	//1% = 0.01
+	if (pc1 == pc4) std::cout << "sig::Percent::Unit() is 100%" << std::endl;
+}

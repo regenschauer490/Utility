@@ -87,11 +87,12 @@ int main()
 	//StrConvertTest();
 
 	//GetDirectoryNamesTest();
-	FileSaveLoadTest();
+	//FileSaveLoadTest();
 
 	//RandomTest();
 	//TimeWatchTest();
 	//HistgramTest();
+	PercentTest();
 
 	//RemoveDuplicateTest();
 	//RemoveTest();

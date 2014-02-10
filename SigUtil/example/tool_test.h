@@ -5,3 +5,4 @@
 void RandomTest();
 void TimeWatchTest();
 void HistgramTest();
+void PercentTest();
