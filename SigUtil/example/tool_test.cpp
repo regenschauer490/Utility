@@ -47,39 +47,34 @@ void TimeWatchTest()
 	tw.Save();		//‚±‚±‚Ü‚Å‚Ìƒ^ƒCƒ€‚ğ‹L˜^
 
 #if SIG_ENABLE_BOOST
-	std::cout << *tw.GetLapTime(0) << std::endl;	//100
-	std::cout << *tw.GetLapTime(1) << std::endl;	//200
-	std::cout << *tw.GetLapTime(2) << std::endl;	//300
-	std::cout << *tw.GetLapTime(3) << std::endl;	//400
-	assert(!tw.GetLapTime(4));
+	assert(sig::TolerantEqual(*tw.GetLapTime(0), 100, 1));		//100 } 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetLapTime(1), 200, 1));		//200 } 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetLapTime(2), 300, 1));		//300 } 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetLapTime(3), 400, 1));		//400 } 1 (ms)
+	assert(! tw.GetLapTime(4));
 
-	std::cout << *tw.GetSplitTime(0) << std::endl;	//100
-	std::cout << *tw.GetSplitTime(1) << std::endl;	//300
-	std::cout << *tw.GetSplitTime(2) << std::endl;	//600
-	std::cout << *tw.GetSplitTime(3) << std::endl;	//1000
-
-	std::cout << tw.GetTotalTime() << std::endl;	//1000
-	std::cout << tw.GetTotalTime<std::chrono::seconds>() << std::endl;			//1
-	std::cout << tw.GetTotalTime<std::chrono::microseconds>() << std::endl;	//10000037 ¦ŠÂ‹«‚É‚æ‚éŒë·
+	assert(sig::TolerantEqual(*tw.GetSplitTime(0), 100, 1));	//100 } 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetSplitTime(1), 300, 1));	//300 } 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetSplitTime(2), 600, 1));	//600 } 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetSplitTime(3), 1000, 1));	//1000 } 1 (ms)
 #else
-	std::cout << tw.GetLapTime(0) << std::endl;		//100
-	std::cout << tw.GetLapTime(1) << std::endl;		//200
-	std::cout << tw.GetLapTime(2) << std::endl;		//300
-	std::cout << tw.GetLapTime(3) << std::endl;		//400
-	
-	std::cout << tw.GetSplitTime(0) << std::endl;	//100
-	std::cout << tw.GetSplitTime(1) << std::endl;	//300
-	std::cout << tw.GetSplitTime(2) << std::endl;	//600
-	std::cout << tw.GetSplitTime(3) << std::endl;	//1000
+	assert(sig::TolerantEqual(tw.GetLapTime(0), 100, 1));		//100 } 1 (ms)
+	assert(sig::TolerantEqual(tw.GetLapTime(1), 200, 1));		//200 } 1 (ms)
+	assert(sig::TolerantEqual(tw.GetLapTime(2), 300, 1));		//300 } 1 (ms)
+	assert(sig::TolerantEqual(tw.GetLapTime(3), 400, 1));		//400 } 1 (ms)
+	assert(! tw.GetLapTime(4));
 
-	std::cout << tw.GetTotalTime() << std::endl;	//1000
-	std::cout << tw.GetTotalTime<std::chrono::seconds>() << std::endl;			//1
-	std::cout << tw.GetTotalTime<std::chrono::microseconds>() << std::endl;	//10000037 ¦ŠÂ‹«‚É‚æ‚éŒë·
+	assert(sig::TolerantEqual(tw.GetSplitTime(0), 100, 1));		//100 } 1 (ms)
+	assert(sig::TolerantEqual(tw.GetSplitTime(1), 300, 1));		//300 } 1 (ms)
+	assert(sig::TolerantEqual(tw.GetSplitTime(2), 600, 1));		//600 } 1 (ms)
+	assert(sig::TolerantEqual(tw.GetSplitTime(3), 1000, 1));	//1000 } 1 (ms)
 #endif
-
+	assert(sig::TolerantEqual(tw.GetTotalTime(), 1000, 1));				//1000 } 1 (ms)
+	assert(sig::Equal(tw.GetTotalTime<std::chrono::seconds>(), 1));		//1 (s)
+	assert(sig::TolerantEqual(tw.GetTotalTime<std::chrono::microseconds>(), 1000000, 100));	//1000000  } 100 (ƒÊs)
 #else
-#endif
 
+#endif
 }
 
 void HistgramTest()
@@ -109,22 +104,31 @@ void HistgramTest()
 	[ 10,+‡)F1 |
 	*/
 
-	auto count = hist.GetCount();			//0 ` BIN_NUM-1 ‚Ì•p“x‚ğæ“¾
-	std::cout << count[2] << std::endl;		//2@//[ -6, -4)‚ÌŒÂ”
+	auto count = hist.GetCount();		//0 ` BIN_NUM-1 ‚Ì•p“x‚ğæ“¾
+	assert(count[2], 2);				//[ -6, -4)‚ÌŒÂ”
 
 	auto c2 = hist.GetCount(2);
 	auto c100 = hist.GetCount(100);
 
 #if SIG_ENABLE_BOOST
-	if(c2) std::cout << "[" << std::get<1>(*c2) << ", " << std::get<2>(*c2) << "): " << std::get<0>(*c2) << std::endl; //[-6, -4): 2
+	if(c2){
+		assert(std::get<1>(*c2) == -6);
+		assert(std::get<2>(*c2) == -4);
+		assert(std::get<0>(*c2) == 2);
+	}
 	assert(!c100);
 #else
-	std::cout << "[" << std::get<1>(c2) << ", " << std::get<2>(c2) << "): " << std::get<0>(c2) << std::endl;		//[-6, -4): 2
-	std::cout << "[" << std::get<1>(c100) << ", " << std::get<2>(c100) << "): " << std::get<0>(c100) << std::endl;	//[0, 0): 0
+	assert(std::get<1>(c2) == -6);
+	assert(std::get<2>(c2) == -4);
+	assert(std::get<0>(c2) == -2);
+
+	assert(std::get<1>(c100) == 0);
+	assert(std::get<2>(c100) == 0);
+	assert(std::get<0>(c100) == 0);
 #endif
 
-	bool over = hist.IsOverRange();		//‰Šúİ’è‚Ì”ÍˆÍŠO‚Ì’l‚ª‘¶İ‚µ‚½‚©
-	std::cout << "”ÍˆÍŠO‚Ì’l‚ÌŒÂ”F" << over << std::endl;		//”ÍˆÍŠO‚Ì’l‚ÌŒÂ”F1
+	bool over = hist.IsOverRange();	//‰Šúİ’è‚Ì”ÍˆÍŠO‚Ì’l‚ª‘¶İ‚µ‚½‚©
+	assert(over, 1);				//”ÍˆÍŠO‚Ì’l‚ÌŒÂ”F1
 	
 
 	sig::Histgram<double, 15> hist2(0, 1);						//doubleŒ^Aƒrƒ“”15A[0`1j‚Ì”ÍˆÍ‚Ì”’l‚ğWŒv
@@ -167,8 +171,8 @@ void PercentTest()
 	pc3 = 1;					//copy assignment. pc4 == 1%
 	pc4 = sig::Percent::Unit();	//copy assignment. pc3 == 100%
 
-	std::cout << pc1.GetPercent() << "% = " << pc1.GetDouble() << std::endl;	//100% = 1
-	std::cout << pc2.GetPercent() << "% = " << pc2.GetDouble() << std::endl;	//50% = 0.5
-	std::cout << pc3.GetPercent() << "% = " << pc3.GetDouble() << std::endl;	//1% = 0.01
-	if (pc1 == pc4) std::cout << "sig::Percent::Unit() is 100%" << std::endl;
+	assert(pc1.GetPercent() == 100 && pc1.GetDouble() == 1);	//100% = 1
+	assert(pc2.GetPercent() == 50 && pc2.GetDouble() == 0.5);	//50% = 0.5
+	assert(pc3.GetPercent() == 1 && pc3.GetDouble() == 0.01);	//1% = 0.01
+	assert(pc1 == pc4);
 }

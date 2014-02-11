@@ -1,7 +1,7 @@
 #ifndef __SIG_UTIL_H__
 #define __SIG_UTIL_H__
 
-#define SIG_ENABLE_BOOST 0
+#define SIG_ENABLE_BOOST 1
 
 #ifdef _WIN32
 #define SIG_WINDOWS_ENV 1
@@ -183,7 +183,7 @@ namespace sig{
 	template <class T1, class T2>
 	bool Equal(T1 v1, T2 v2)
 	{
-		const auto dmin = std::numeric_limits<std::common_type<T1, T2>::type>::min();
+		const auto dmin = std::numeric_limits<std::common_type<T1, T2>::type>::epsilon();
 
 		return !(DeltaAbs(v1, v2) > dmin);
 	}

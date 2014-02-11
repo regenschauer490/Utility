@@ -78,9 +78,10 @@ int main()
 	setlocale(LC_ALL, "Japanese");
 	decltype(std::declval<std::vector<int>::iterator>().operator<(std::declval<std::vector<int>::iterator>())) a;
 	
-	auto v1 = sig::TolerantEqual(1u, 1.0001, 0.0001);
-	auto v2 = sig::TolerantEqual(1u, 1.001, 0.0001);
-	auto v3 = sig::TolerantEqual(1u, 1, 0.1);
+	auto v1 = sig::Equal(1u, 1.000);
+	auto v2 = sig::Equal(1u, 1.001);
+	auto v3 = sig::Equal(1u, 1);
+
 
 	RegexTest();
 	TagDealerTest();
