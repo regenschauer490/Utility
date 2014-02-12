@@ -5,7 +5,7 @@ void MapTest()
 	std::vector<int> data1{ 1, -3, 5 };
 	std::list<int> data2{ 1, -3, 5 };
 	std::multiset<int, std::greater<int>> data3{ 1, -3, 5 };
-	std::unordered_multiset<int> data4{ 1, -3, 5 };
+	std::unordered_multiset<int> data4{ 1, -3, 5, -7 };
 
 	auto r1 = sig::Map([](int v){ return v * 2; }, data1);
 #if _MSC_VER > 1800
@@ -14,56 +14,16 @@ void MapTest()
 	auto r3 = sig::Map([](int v){ return v / 4.0; }, data3);
 	auto r4 = sig::Map([](int v){ return v < 0; }, data4);
 
-	for (auto v : data1) std::cout << v << ", ";	//1, -3, 5
-	std::cout << std::endl;
-	for (auto v : r1) std::cout << v << ", ";		//2, -6, 10
-	std::cout << std::endl;
+	sig::ZipWith([](int v1, int v2){ assert(v1 * 2 == v2); return 0; }, data1, r1);		//検証
+
 #if _MSC_VER > 1800
 	for (auto v : data2) std::cout << v << ", ";	//1, -3, 5
 	std::cout << std::endl;
 	for (auto v : r2) std::cout << v(2) << ", ";	//1, 1, 0
 #endif
-	std::cout << std::endl;
-	for (auto v : data3) std::cout << v << ", ";	//5, 1, -3
-	std::cout << std::endl;
-	for (auto v : r3) std::cout << v << ", ";		//1.25, 0.25, -0.75, 
-	std::cout << std::endl;
-	for (auto v : data4) std::cout << v << ", ";	//5, 1, -3	//環境依存
-	std::cout << std::endl;
-	for (auto v : r4) std::cout << v << ", ";		//1, 0, 0	//unorderedであるため順不同
-}
+	sig::ZipWith([](int v1, double v2){ assert(v1 / 4.0 == v2); return 0; }, data3, r3);
 
-void ZipWithTest()
-{
-	std::vector<int> data1{ 1, -3, 5 };
-	std::list<int> data2{ 1, -3, 5 };
-	std::multiset<int> data3{ 1, -3, 5 };
-	std::unordered_multiset<int> data4{ 1, -3, 5 };
-
-	auto mask = sig::Merge<std::list<bool>>(std::deque<bool>{false}, sig::Fill(2, true));
-
-	for (auto v : mask) std::cout << v << ", ";		//0, 1, 1
-	std::cout << std::endl;
-
-	auto r12 = sig::ZipWith([](int v1, int v2){ return v1 * v2; }, data1, data2);
-	auto r23 = sig::ZipWith([](int v1, int v2){ return v1 == v2; }, data2, data3);
-	auto r4 = sig::ZipWith([](int v1, bool f){ return f ? v1 : 0; }, data4, mask);
-
-	for (auto v : data1) std::cout << v << ", ";	//1, -3, 5
-	std::cout << std::endl;
-	for (auto v : data2) std::cout << v << ", ";	//1, -3, 5
-	std::cout << std::endl;
-	for (auto v : r12) std::cout << v << ", ";		//1, 9, 25
-	std::cout << std::endl;
-	for (auto v : data3) std::cout << v << ", ";	//-3, 1, 5
-	std::cout << std::endl;
-	for (auto v : r23) std::cout << v << ", ";		//0, 0, 1
-	std::cout << std::endl;
-	for (auto v : data4) std::cout << v << ", ";	//5, 1, -3	//環境依存
-	std::cout << std::endl;
-	for (auto v : r4) std::cout << v << ", ";		//0, 1, -3
-	std::cout << std::endl;
-
+	assert(std::accumulate(data4.begin(), data4.end(), 0, [](int sum, int v1){ return sum + static_cast<int>(v1 < 0); }) == std::accumulate(r4.begin(), r4.end(), 0));
 }
 
 void HigherOrederFuncTest()
@@ -85,65 +45,64 @@ void HigherOrederFuncTest()
 	for (auto v : data5) std::cout << v << ", ";	//a, b, c, d, e	//環境依存
 	std::cout << std::endl << std::endl;
 
+	//0, -6.6, 0, 44
 	auto h123 = sig::HigherOrderFunction([](int i, double d, bool b){ return b ? i * d : 0; }, data1, data2, data3);
+	
+	//-3.300000, b-3, 16.500000, d10
 	auto h12345 = sig::HigherOrderFunction([](int i1, double d, bool b, int i2, std::string s){
 		return b ? s + std::to_string(i1) : std::to_string(i2 * d);
 	}, data1, data2, data3, data4, data5);
 
-	for (auto v : h123) std::cout << v << ", ";		//0, -6.6, 0, 44
-	std::cout << std::endl;
-	for (auto v : h12345) std::cout << v << ", ";	//-3.300000, b-3, 16.500000, d10
-	std::cout << std::endl;
+
+	//forループで処理して検証
+	auto d3it = data3.begin();
+	for (int i = 0, size = sig::Min(data1.size(), data2.size(), data3.size()); i < size; ++i, ++d3it){
+		assert( sig::Equal(h123[i], *d3it ? data1[i] * data2[i] : 0) );
+	}
+
+	d3it = data3.begin();
+	auto d4it = data4.begin();
+	auto d5it = data5.begin();
+	for (int i = 0, size = sig::Min(data1.size(), data2.size(), data3.size(), data4.size(), data5.size()); i < size; ++i, ++d3it, ++d4it, ++d5it){
+		assert( h12345[i] == (*d3it ? *d5it + std::to_string(data1[i]) : std::to_string(*d4it * data2[i])) );
+	}
 }
 
 void FunctionalTest()
 {
 	std::vector<int> data1{ 1, -3, 5, 2, 10 };
 	std::list<int> data2{ 1, -3, 5, 2 };
-	std::multiset<int> data3{ 1, -3, 5, 2, 10 };
+	std::multiset<int, std::less<int>> data3{ 1, -3, 5, 2, 10 };
 	std::unordered_multiset<int> data4{ 1, -3, 5, 2, 10 };
 
-	for (auto v : data1) std::cout << v << ", ";	//1, -3, 5, 2, 10
-	std::cout << std::endl;
-	for (auto v : data2) std::cout << v << ", ";	//1, -3, 5, 2
-	std::cout << std::endl;
-	for (auto v : data3) std::cout << v << ", ";	//-3, 1, 2, 5, 10
-	std::cout << std::endl;
-	for (auto v : data4) std::cout << v << ", ";	//10, 1, 5, -3, 2	//環境依存
-	std::cout << std::endl << std::endl;
-
-
+	//make tuple from containers
 	auto zipped = sig::Zip(data1, data2, data3, data4);
 
-	for (auto v : zipped) std::cout << std::get<0>(v) << ", " << std::get<1>(v) << ", " << std::get<2>(v) << ", " << std::get<3>(v) << std::endl;
-	//1, 1, -3, 1
-	//-3, -3, 1, -3
-	//5, 5, 2, 5
-	//2, 2, 5, 10
-	std::cout << std::endl;
+	sig::HigherOrderFunction([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){
+		assert(std::get<0>(t) == v1 && std::get<1>(t) == v2 && std::get<2>(t) == v3 && std::get<3>(t) == v4); return 0;
+	}, data1, data2, data3, data4, zipped);
 
-
+	//make container filled with same value
 	auto fill = sig::Fill(3, std::string("fill"));
+	for (auto v : fill) assert(v == "fill");
+
+	//make container whose element reversed
 	auto rev = sig::Reverse(data2);
+	sig::ZipWith([](int v1, double v2){ assert(v1 == v2); return 0; }, rev, std::vector<int>{2, 5, -3, 1});
 
-	for (auto v : fill) std::cout << v << ", ";		//fill, fill, fill
-	std::cout << std::endl;
-	for (auto v : rev) std::cout << v << ", ";		//2, 5, -3, 1
-	std::cout << std::endl << std::endl;
-
-
+	//take top n elements
 	auto t1 = sig::Take(2, data1);
 	auto t4 = sig::Take(2, data4);
 
-	for (auto v : t1) std::cout << v << ", ";		//1, -3
-	std::cout << std::endl;
+	sig::ZipWith([](int v1, double v2){ assert(v1 == v2); return 0; }, t1, std::vector<int>{ 1, -3 });
+
 	for (auto v : t4) std::cout << v << ", ";		//1, 10		//unorderedであるため順不同
 	std::cout << std::endl << std::endl;
 
-
+	//drop top n elements
 	auto d2 = sig::Drop(2, data2);
 	auto d3 = sig::Drop(2, data3);
 
-	for (auto v : d3) std::cout << v << ", ";		//2, 5, 10
-	std::cout << std::endl << std::endl;
+	sig::ZipWith([](int v1, double v2){ assert(v1 == v2); return 0; }, d2, std::vector<int>{ 5, 2 });
+	sig::ZipWith([](int v1, double v2){ assert(v1 == v2); return 0; }, d3, std::vector<int>{ 2, 5, 10 });
 }

@@ -1,8 +1,12 @@
 #include "file_test.h"
 #include "../lib/string.hpp"
+#include "../lib/functional.hpp"
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 //処理方法の優先順位は SIG_WINDOWS_ENV(windows.h使用) > SIG_ENABLE_BOOOST(boost::filesystem使用)
+
+using TVec = std::vector<std::string>;
+using TVecw = std::vector<std::wstring>;
 
 auto pass = sig::DirpassTailModify(L"../SigUtil/example/test_file", true);
 
@@ -113,53 +117,54 @@ void FileSaveLoadTest()
 	sig::SaveLine(blghost_text2, fpass3);
 
 	//数値データの保存（上書き、1行ずつ保存）
-	sig::SaveNum(std::set<int>{1, 2, 3, 4, 5}, fpass4);
+	auto set_num = std::set<int, std::less<int>>{1, 2, 3, 4, 5};
+	sig::SaveNum(set_num, fpass4);
+
 	//数値データの保存（追記、カンマ分けで保存）
-	sig::SaveNum(std::unordered_set<double>{1.1, 2.2, 3.3}, fpass5, sig::WriteMode::append, ",");
+	auto uset_num = std::unordered_set<double>{1.1, 2.2, 3.3};
+	sig::SaveNum(uset_num, fpass5, sig::WriteMode::append, ",");
 
 
 	//以下 かんたん読み込み♪
 
 #if SIG_ENABLE_BOOST
-	auto test1 = sig::ReadLine<std::string>(fpass1);
-	auto test2 = sig::ReadLine<std::wstring, std::list<std::wstring>>(fpass2);
-	auto test_num1 = sig::ReadNum<int>(fpass4);
-	auto test_num2 = sig::ReadNum<double, std::set<double>>(fpass5, ",");
+	auto read1 = sig::ReadLine<std::string>(fpass1);
+	auto read2 = sig::ReadLine<std::wstring, std::list<std::wstring>>(fpass2);
+	auto read_num1 = sig::ReadNum<int>(fpass4);
+	auto read_num2 = sig::ReadNum<double, std::set<double>>(fpass5, ",");
 
-	if (test1){
-		auto it = test1->begin(), end = test1->end();
-		assert(*it == "test write 0");
-		for (auto const& e : blghost_text1) assert(*it == sig::WSTRtoSTR(e));
+	if (read1){
+		auto test1 = sig::Merge(TVecw{L"test write 0"}, blghost_text1);
+		sig::ZipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, *read1, test1);
 	}
-	std::cout << std::endl;
-	if (test2){
-		for (auto e : *test2) std::wcout << e << std::endl;
+	if (read2){
+		sig::ZipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, *read2, TVecw{ L"test write 壱", L"test write 弐" });
 	}
-	std::cout << std::endl;
-	if (test_num1){
-		for (auto e : *test_num1) std::wcout << e << std::endl;
+	if (read_num1){
+		sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, *read_num1, set_num);
 	}
-	std::cout << std::endl;
-	if (test_num2){
-		for (auto e : *test_num2) std::wcout << e << std::endl;
+	if (read_num2){
+		//unorderedなのでdouble値の合計で判断
+		assert(std::accumulate(uset_num.begin(), uset_num.end(), 0.0) == std::accumulate(read_num2->begin(), read_num2->end(), 0.0));
 	}
 #else
-	std::vector<std::string> test1;
-	std::list<std::wstring> test2;
-	std::vector<int> test_num1;
-	std::set<double> test_num2;
+	std::vector<std::string> read1;
+	std::list<std::wstring> read2;
+	std::vector<int> read_num1;
+	std::set<double> read_num2;
 
-	sig::ReadLine(test1, fpass1);
-	sig::ReadLine(test2, fpass2);
-	sig::ReadNum(test_num1, fpass4);
-	sig::ReadNum(test_num2, fpass5, ",");
+	sig::ReadLine(read1, fpass1);
+	sig::ReadLine(read2, fpass2);
+	sig::ReadNum(read_num1, fpass4);
+	sig::ReadNum(read_num2, fpass5, ",");
+	
+	auto test1 = sig::Merge(TVecw{L"test write 0"}, blghost_text1);
+	sig::ZipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, read1, test1);
 
-	for (auto e : test1) std::cout << e << std::endl;
-	std::cout << std::endl;
-	for (auto e : test2) std::wcout << e << std::endl;
-	std::cout << std::endl;
-	for (auto e : test_num1) std::wcout << e << std::endl;
-	std::cout << std::endl;
-	for (auto e : test_num2) std::wcout << e << std::endl;
+	sig::ZipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, read2, TVecw{ L"test write 壱", L"test write 弐" });
+
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, read_num1, set_num);
+	
+	assert(std::accumulate(uset_num.begin(), uset_num.end(), 0.0) == std::accumulate(read_num2.begin(), read_num2.end(), 0.0));
 #endif
 }

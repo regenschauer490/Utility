@@ -82,6 +82,9 @@ int main()
 	auto v2 = sig::Equal(1u, 1.001);
 	auto v3 = sig::Equal(1u, 1);
 
+	MapTest();
+	HigherOrederFuncTest();
+	FunctionalTest();
 
 	RegexTest();
 	TagDealerTest();
@@ -93,18 +96,14 @@ int main()
 	GetDirectoryNamesTest();
 	FileSaveLoadTest();
 
+	RemoveDuplicateTest();
+	RemoveTest();
+
 	RandomTest();
 	TimeWatchTest();
 	HistgramTest();
 	PercentTest();
 
-	RemoveDuplicateTest();
-	RemoveTest();
-
-	MapTest();
-	ZipWithTest();
-	HigherOrederFuncTest();
-	FunctionalTest();
 
 	return 0;
 }
