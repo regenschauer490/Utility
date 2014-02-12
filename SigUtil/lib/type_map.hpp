@@ -1,5 +1,5 @@
 #ifndef __SIG_UTIL_TYPEMAP__
-#define __SIG_UTIL_TYPEMAP_
+#define __SIG_UTIL_TYPEMAP__
 
 #include "sigutil.hpp"
 

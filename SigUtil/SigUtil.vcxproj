@@ -103,6 +103,7 @@
     <ClInclude Include="lib\eraser.hpp" />
     <ClInclude Include="lib\file.hpp" />
     <ClInclude Include="lib\functional.hpp" />
+    <ClInclude Include="lib\set.hpp" />
     <ClInclude Include="lib\sigutil.hpp" />
     <ClInclude Include="lib\string.hpp" />
     <ClInclude Include="lib\tool.hpp" />
