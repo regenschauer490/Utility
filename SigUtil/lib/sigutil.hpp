@@ -1,7 +1,7 @@
 #ifndef __SIG_UTIL_H__
 #define __SIG_UTIL_H__
 
-#define SIG_ENABLE_BOOST 0
+#define SIG_ENABLE_BOOST 1
 
 #ifdef _WIN32
 #define SIG_WINDOWS_ENV 1
@@ -249,7 +249,7 @@ namespace sig{
 
 
 /* èWçáëÄçÏ */
-	
+
 /*	template < template<class T, class = std::allocator<T>> class Container >
 	inline void Print(Container<std::string> const& container, char const* const delimiter = "\n")
 	{
@@ -288,4 +288,4 @@ namespace sig{
 
 }
 
-#endif UTILITY
+#endif

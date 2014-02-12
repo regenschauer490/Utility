@@ -1,4 +1,5 @@
 #include "file_test.h"
+#include "../lib/string.hpp"
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 //処理方法の優先順位は SIG_WINDOWS_ENV(windows.h使用) > SIG_ENABLE_BOOOST(boost::filesystem使用)
@@ -126,7 +127,9 @@ void FileSaveLoadTest()
 	auto test_num2 = sig::ReadNum<double, std::set<double>>(fpass5, ",");
 
 	if (test1){
-		for (auto e : *test1) std::cout << e << std::endl;
+		auto it = test1->begin(), end = test1->end();
+		assert(*it == "test write 0");
+		for (auto const& e : blghost_text1) assert(*it == sig::WSTRtoSTR(e));
 	}
 	std::cout << std::endl;
 	if (test2){
