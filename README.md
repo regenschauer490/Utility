@@ -33,6 +33,6 @@ boostの併用推奨(主にoptionalのため).　なくても動作はします�
 
 \<string.hpp> 
 
-\<eraser.hpp>
+\<modify.hpp>
 
-
+\<set.hpp>
