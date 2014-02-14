@@ -78,6 +78,8 @@ void FunctionalTest()
 	//make tuple from containers
 	auto zipped = sig::Zip(data1, data2, data3, data4);
 
+	auto unzipped = sig::UnZip(zipped);
+
 	sig::HigherOrderFunction([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){
 		assert(std::get<0>(t) == v1 && std::get<1>(t) == v2 && std::get<2>(t) == v3 && std::get<3>(t) == v4); return 0;
 	}, data1, data2, data3, data4, zipped);

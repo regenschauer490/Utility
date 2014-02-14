@@ -1,8 +1,13 @@
-#include "eraser_test.h"
+#include "modify_test.h"
 #include "../lib/functional.hpp"
 
 template <class T>
 using TVec = std::vector<T>;
+
+void SortTest()
+{
+
+}
 
 void RemoveDuplicateTest()
 {

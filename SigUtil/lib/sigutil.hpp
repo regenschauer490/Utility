@@ -50,7 +50,7 @@ namespace sig{
 #undef min
 
 	/* typedef */
-	using uint = unsigned long;
+	using uint = std::size_t;
 	using StrPtr = std::shared_ptr< std::string >;
 	using C_StrPtr = std::shared_ptr< std::string const >;
 	using WStrPtr = std::shared_ptr< std::wstring >;
@@ -88,6 +88,16 @@ namespace sig{
 #else
 	using FileString = std::string;
 #endif
+
+	template<uint I = 0, typename Func, typename... Ts>
+	auto ForEach(std::tuple<Ts...> &, Func) ->typename std::enable_if<I == sizeof...(Ts), void>::type{}
+
+	template<uint I = 0, typename Func, typename... Ts>
+	auto ForEach(std::tuple<Ts...>& t, Func f) ->typename std::enable_if<I < sizeof...(Ts), void>::type
+	{
+		f(std::get<I>(t));
+		ForEach<I + 1, Func, Ts...>(t, f);
+	}
 
 	//template <class T> struct NullDummy{ typedef T type; };
 	//template <> struct NullDummy<void>{ typedef NullType type; };

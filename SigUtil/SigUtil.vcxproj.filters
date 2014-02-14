@@ -39,10 +39,10 @@
     <ClCompile Include="example\tool_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
-    <ClCompile Include="example\eraser_test.cpp">
+    <ClCompile Include="example\functional_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
-    <ClCompile Include="example\functional_test.cpp">
+    <ClCompile Include="example\modify_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,12 +71,6 @@
     <ClInclude Include="example\tool_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
-    <ClInclude Include="lib\eraser.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="example\eraser_test.h">
-      <Filter>ヘッダー ファイル\example</Filter>
-    </ClInclude>
     <ClInclude Include="external\container traits\container_traits.h">
       <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
@@ -97,6 +91,12 @@
     </ClInclude>
     <ClInclude Include="lib\set.hpp">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\modify.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="example\modify_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

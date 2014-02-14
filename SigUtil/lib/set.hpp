@@ -4,71 +4,11 @@
 #include "sigutil.hpp"
 #include "tool.hpp"
 
-/* コンテナの要素に対するよく行う操作 */
+/* コンテナの要素に対してよく行う操作 */
 
 namespace sig
 {
 
-#if _MSC_VER > 1800
-	template <class T, class D = void> struct RI{ static const bool value = false; };
-	template <class T> struct RI<T, decltype(std::declval<T>()[0], void())>{ static const bool value = true; };
-
-	template <class T, class D = void> struct CMPOP{ static const bool value = false; };
-	template <class T> struct CMPOP<T, decltype(std::declval<T>() < std::declval<T>(), void())>{ static const bool value = true; };
-
-	//至って普通なソートのラッパ
-	template <class Container, typename std::enable_if<RI<Container>::value>::type*& = enabler>
-	void Sort(Container& data){
-		std::sort(std::begin(data), std::end(data));
-	}
-	template <class Container, typename std::enable_if<!RI<Container>::value && CMPOP<Container>::value>::type*& = enabler>
-	void Sort(Container& data){
-		data.sort();
-	}
-#endif
-
-	//ソート前のindexを保持してソート
-	template <class C>
-	auto SortWithIndex(C const& vec, bool small_to_large)
-	{
-		useing T = typename container_traits<C>::value_type;
-		std::vector< std::tuple<uint, T> > result(vec.size());
-
-		auto it = std::begin(vec);
-		for (uint i = 0; i < vec.size(); ++i, ++it){
-			std::get<0>(result[i]) = i;
-			std::get<1>(result[i]) = *it;
-		}
-		if (small_to_large) std::sort(result.begin(), result.end(), [](std::tuple<uint, T> const& a, std::tuple<uint, T> const& b){ return std::get<1>(a) < std::get<1>(b); });
-		else std::sort(result.begin(), result.end(), [](std::tuple<uint, T> const& a, std::tuple<uint, T> const& b){ return std::get<1>(b) < std::get<1>(a); });
-
-		return std::move(result);
-	}
-
-	//コンテナの要素をシャッフル
-	template <class T, template < class T_, class = std::allocator<T_>> class Container>
-	void Shuffle(Container<T>& data)
-	{
-		static SimpleRandom<double> myrand(0.0, 1.0, false);
-		std::random_shuffle(data.begin(), data.end(), [&](uint max)->uint{ return myrand() * max; });
-	}
-
-	//2つのコンテナの要素を対応させながらソート
-	template < class T1, class T2, template < class T_, class = std::allocator<T_>> class Container1, template < class T_, class = std::allocator<T_>> class Container2>
-	void Shuffle(Container1<T1>& data1, Container2<T2>& data2)
-	{
-		uint size = std::min(data1.size(), data2.size());
-		auto rnum = RandomUniqueNumbers(size, 0, size - 1, false);
-		auto copy1 = std::move(data1);
-		auto copy2 = std::move(data2);
-
-		data1.resize(copy1.size());
-		data2.resize(copy2.size());
-		for (uint i = 0; i<size; ++i){
-			data1[rnum[i]] = std::move(copy1[i]);
-			data2[rnum[i]] = std::move(copy2[i]);
-		}
-	}
 
 
 #if SIG_ENABLE_BOOST

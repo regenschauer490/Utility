@@ -76,13 +76,57 @@ namespace sig
 
 
 	//[a] -> [b] -> ... -> [(a, b, ...)]
-	//タプルを作る
+	//複数のコンテナから、タプルのコンテナを作る
 	template <class... Cs>
 	auto Zip(Cs const&... containers)
 	{
 		return HigherOrderFunction([](typename container_traits<Cs>::value_type const&...  vs){
 			return std::make_tuple(vs...); 
 		}, containers...);
+	}
+
+/*	template <class ...Cs>
+	auto Zip(std::tuple<Cs...> const& t_containers)
+	{
+		return HigherOrderFunction([](typename container_traits<Cs>::value_type const&...  vs){
+			return std::make_tuple(vs...);
+		}, std::get<>(t_containers));
+	}
+*/
+
+	//以下、UnZip用ヘルパ
+	//タプルのコンテナから、指定したコンテナを取り出す
+	template <uint Index, class CT>
+	auto UnZip(CT const& c_tuple)
+	{
+		using T = typename std::tuple_element<Index, typename container_traits<CT>::value_type>::type;
+		using C = std::vector<T>;
+		C result;
+
+		for (auto const& e : c_tuple){
+			container_traits<C>::add_element(result, std::get<Index>(e));
+		}
+		return std::move(result);
+	}
+
+	template<class CT, uint I = 0, typename std::enable_if<I + 1 == std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
+	auto UnZipImpl(CT const& c_tuple)
+	{
+		return std::make_tuple(UnZip<I>(c_tuple));
+	}
+
+	template<class CT, uint I = 0, typename std::enable_if<I + 1 < std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
+	auto UnZipImpl(CT const& c_tuple)
+	{
+		return std::tuple_cat(std::make_tuple(UnZip<I>(c_tuple)), UnZipImpl<CT, I + 1>(c_tuple));
+	}		
+
+	//[(a, b, ...)] -> ([a], [b], ...)
+	//タプルのコンテナから、コンテナのタプルを作る
+	template <class CT>
+	auto UnZip(CT const& c_tuple)
+	{
+		return UnZipImpl(c_tuple);
 	}
 
 	//uint -> a -> [a]

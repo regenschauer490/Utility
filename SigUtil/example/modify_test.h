@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../lib/eraser.hpp"
+#include "../lib/modify.hpp"
 
+void SortTest();
 void RemoveDuplicateTest();
 void RemoveTest();
