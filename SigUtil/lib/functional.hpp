@@ -50,7 +50,7 @@ namespace sig
 
 
 	//[a] -> [b] -> ... -> [(a, b, ...)]
-	//複数のコンテナから、タプルのコンテナを作る
+	//複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
 	template <class... Cs
 #ifndef SIG_MSVC_LT1800
 		, typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
@@ -258,8 +258,8 @@ namespace sig
 		std::sort(std::begin(result), std::end(result), binary_op);
 		return std::move(result);
 	}
-	template <class C, class F, typename std::enable_if<!HasRandomIter<C>::value, void>::type*& = enabler>
-	auto Sort(C const& data, F const& binary_op){
+	template <class F, class C, typename std::enable_if<!HasRandomIter<C>::value, void>::type*& = enabler>
+	auto Sort(F const& binary_op, C const& data){
 		C result = data;
 		result.sort(binary_op);
 		return std::move(result);

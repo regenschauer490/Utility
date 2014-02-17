@@ -78,6 +78,7 @@ namespace sig{
 		const String ter_;
 
 	public:
+		//左右それぞれの囲み文字を指定(ex. left = "<", right= ">")
 		TagDealer(String tag_encloser_left, String tag_encloser_right) : tel_(tag_encloser_left), ter_(tag_encloser_right){};
 
 		String Encode(String const& src, String const& tag) const{
@@ -173,7 +174,7 @@ namespace sig{
 	}
 
 
-	//UTF-16 to Shift-JIS
+	//ワイド文字 -> マルチバイト文字 (ex: Windows環境では UTF-16 -> Shift-JIS)
 	inline std::string WSTRtoSTR(const std::wstring &src)
 	{
 		size_t mbs_size = src.length() * MB_CUR_MAX + 1;
@@ -196,7 +197,7 @@ namespace sig{
 		return std::move(result);
 	}
 
-	//Shift-JIS to UTF-16
+	//マルチバイト文字 -> ワイド文字 (ex: Windows環境では Shift-JIS -> UTF-16)
 	inline std::wstring STRtoWSTR(const std::string &src)
 	{
 		size_t wcs_size = src.length() + 1;
