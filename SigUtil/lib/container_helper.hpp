@@ -1,24 +1,8 @@
 /*
-The MIT License(MIT)
-
 Copyright(c) 2014 Akihiro Nishimura
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files(the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and / or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions :
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+This software is released under the MIT License.
+http://opensource.org/licenses/mit-license.php
 */
 
 #ifndef __SIG_C_TRAITS_H__
@@ -42,10 +26,22 @@ namespace sig
 	}
 
 	template<class It>
-	auto DereferenceIterator(It& iter) ->decltype(*iter)
+	auto DereferenceIterator(It& iter)
 	{
 		return *iter;
 	}
+
+	//variadic templatesで受け取った複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用する
+	template <class C, class F, class... Its>
+	void Iterate(std::size_t loop, C& dest, F const& func, Its... iterators)
+	{
+		for (std::size_t i = 0; i < loop; ++i, IncrementIterator(iterators...)){
+			container_traits<C>::add_element(dest, eval(func, DereferenceIterator(iterators)...));
+		}
+	}
+
+	template <class T, class D = void> struct HasRandomIter{ static const bool value = false; };
+	template <class T> struct HasRandomIter<T, decltype(std::declval<typename T::iterator>()[0], void())>{ static const bool value = true; };
 
 	template <class C>
 	void Erase(C& container, typename sequence_container_traits<C>::value_type const& t)

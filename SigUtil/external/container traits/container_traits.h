@@ -11,7 +11,15 @@
  * from the use of this software.
  */
 
-#pragma once
+/*
+Copyright(c) 2014 Akihiro Nishimura
+
+This software is released under the MIT License.
+http://opensource.org/licenses/mit-license.php
+*/
+
+#ifndef __SIG_CONTAINER_TRAITS__
+#define __SIG_CONTAINER_TRAITS__
 
 #include <deque>
 #include <list>
@@ -25,6 +33,7 @@
 template <class C>
 struct container_traits
 {
+	// bool exist
     // Type value_type
 	// bool is_string
     // void add_element(C&,T)
@@ -38,6 +47,8 @@ struct sequence_container_traits;
 template<template<class,class> class C, class T, class A>
 struct sequence_container_traits<C<T,A>>
 {
+	static const bool exist = true;
+
     using value_type = T;
 
 	static const bool is_string = false;
@@ -74,6 +85,8 @@ struct associative_container_traits;
 template<template<class,class,class> class C, class T, template<class> class O, class A>
 struct associative_container_traits<C<T,O<T>,A>>
 {
+	static const bool exist = true;
+
     using value_type = T;
 
 	static const bool is_string = false;
@@ -106,6 +119,8 @@ struct hash_container_traits;
 template<template<class,class,class,class> class C, class T, template<class> class H, template<class> class O, class A>
 struct hash_container_traits<C<T,H<T>,O<T>,A>>
 {
+	static const bool exist = true;
+
     using value_type = T;
 
 	static const bool is_string = false;
@@ -137,6 +152,8 @@ struct container_traits<std::unordered_set<Args...>> : public hash_container_tra
 template<class T, template<class> class K, class A>
 struct container_traits<std::basic_string<T,K<T>,A>>
 {
+	bool exist = true;
+
     using value_type = T;
 
 	static const bool is_string = true;
@@ -154,3 +171,5 @@ struct container_traits<std::basic_string<T,K<T>,A>>
     template<class U>
     using rebind = std::basic_string<U,K<U>,typename A::template rebind<U>::other>;
 };
+
+#endif

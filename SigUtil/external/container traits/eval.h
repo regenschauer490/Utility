@@ -11,7 +11,8 @@
  * from the use of this software.
  */
 
-#pragma once
+#ifndef __SIG_EVAL__
+#define __SIG_EVAL__
 
 #include <type_traits>
 #include <utility>
@@ -58,3 +59,5 @@ auto eval(R(C::*m), C& c) -> R&
 
 template<class... Args>
 using eval_result_type = decltype(eval(std::declval<Args>()...));
+
+#endif

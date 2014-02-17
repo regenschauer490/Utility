@@ -6,7 +6,31 @@ using TVec = std::vector<T>;
 
 void SortTest()
 {
+	std::vector<int> data1{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
+	std::list<int> data2{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 
+	//ソート前のindexを保持してソート
+	//ex: [30, 50, -10, 0] -> ([-10, 0, 30, 50], [2, 3, 0, 1])
+	auto swi1 = sig::SortWithIndex(data1);	//container<T> -> tuple<container<T>, vector<uint>>
+	auto sorted1 = std::get<0>(swi1);
+	auto original_index1 = std::get<1>(swi1);
+
+	auto test1 = std::make_tuple(TVec<int>{ 0, 0, 1, 1, 3, 3, 3, 4, 5}, TVec<sig::uint>{ 4, 6, 0, 7, 2, 3, 8, 5, 1 });
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, sorted1, std::get<0>(test1));
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, original_index1, std::get<1>(test1));
+
+
+	auto swi2 = sig::SortWithIndex(data2, [](int l, int r){ return l > r; });
+	auto sorted2 = std::get<0>(swi2);
+
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, sorted2, sig::Reverse(std::get<0>(test1)));
+
+
+	//複数のコンテナを対応付けつつシャッフル
+	//ex: c1[1, 2, 3, 4], c2[1, 2, 3, 4] -> c1'[3, 1, 4, 2], c2'[3, 1, 4, 2]
+	sig::Shuffle(data1, data2);
+
+	getchar();
 }
 
 void RemoveDuplicateTest()

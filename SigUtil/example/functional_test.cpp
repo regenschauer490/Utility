@@ -75,28 +75,19 @@ void FunctionalTest()
 	std::multiset<int, std::less<int>> data3{ 1, -3, 5, 2, 10 };
 	std::unordered_multiset<int> data4{ 1, -3, 5, 2, 10 };
 
-	//make tuple from containers
-	auto zipped = sig::Zip(data1, data2, data3, data4);
-
-	auto unzipped = sig::UnZip(zipped);
-
-	sig::HigherOrderFunction([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){
-		assert(std::get<0>(t) == v1 && std::get<1>(t) == v2 && std::get<2>(t) == v3 && std::get<3>(t) == v4); return 0;
-	}, data1, data2, data3, data4, zipped);
-
 	//make container filled with same value
 	auto fill = sig::Fill(3, std::string("fill"));
 	for (auto v : fill) assert(v == "fill");
 
 	//make container whose element reversed
 	auto rev = sig::Reverse(data2);
-	sig::ZipWith([](int v1, double v2){ assert(v1 == v2); return 0; }, rev, std::vector<int>{2, 5, -3, 1});
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, rev, std::vector<int>{2, 5, -3, 1});
 
 	//take top n elements
 	auto t1 = sig::Take(2, data1);
 	auto t4 = sig::Take(2, data4);
 
-	sig::ZipWith([](int v1, double v2){ assert(v1 == v2); return 0; }, t1, std::vector<int>{ 1, -3 });
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, t1, std::vector<int>{ 1, -3 });
 
 	for (auto v : t4) std::cout << v << ", ";		//1, 10		//unordered‚Å‚ ‚é‚½‚ß‡•s“¯
 	std::cout << std::endl << std::endl;
@@ -105,6 +96,54 @@ void FunctionalTest()
 	auto d2 = sig::Drop(2, data2);
 	auto d3 = sig::Drop(2, data3);
 
-	sig::ZipWith([](int v1, double v2){ assert(v1 == v2); return 0; }, d2, std::vector<int>{ 5, 2 });
-	sig::ZipWith([](int v1, double v2){ assert(v1 == v2); return 0; }, d3, std::vector<int>{ 2, 5, 10 });
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, d2, std::vector<int>{ 5, 2 });
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, d3, std::vector<int>{ 2, 5, 10 });
+
+#ifndef SIG_MSVC_LT1800
+	//sort
+	auto sorted1 = sig::Sort(std::less<int>(), data1);
+	auto sorted2 = sig::Sort([](int l, int r){ return std::abs(l) < std::abs(r); }, data2);
+
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, sorted1, std::vector<int>{ -3, 1, 2, 5, 10 });
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, sorted2, std::vector<int>{ 1, 2, -3, 5 });
+#endif
+
+	//zip, unzip test (move and const& ver)
+#ifndef SIG_MSVC_LT1800
+	//move ver
+	auto mdata1 = data1;
+	auto mdata2 = data2;
+	auto mdata3 = data3;
+	auto mdata4 = data4;
+
+	//make tuple from containers (container type equals data1's)
+	auto zipped = sig::Zip(std::move(mdata1), std::move(mdata2), std::move(mdata3), std::move(mdata4));	//std::vector< std::tuple<int, int, int, int>>
+
+	auto unzipped = sig::UnZip(std::move(zipped));		//std::tuple< std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>
+
+	auto rezipped = sig::Zip(std::move(unzipped));		//std::vector< std::tuple<int, int, int, int>>
+
+
+	sig::HigherOrderFunction([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){
+		assert(std::get<0>(t) == v1 && std::get<1>(t) == v2 && std::get<2>(t) == v3 && std::get<3>(t) == v4); return 0;
+	}, data1, data2, data3, data4, zipped);
+#endif
+	
+	//const ver
+	const std::vector<int> cdata1{ 1, -3, 5, 2, 10 };
+	const std::list<int> cdata2{ 1, -3, 5, 2 };
+	const std::multiset<int, std::less<int>> cdata3{ 1, -3, 5, 2, 10 };
+	const std::unordered_multiset<int> cdata4{ 1, -3, 5, 2, 10 };
+
+	const auto czipped = sig::Zip(cdata1, cdata2, cdata3, cdata4);	//std::vector< std::tuple<int, int, int, int>>
+
+	auto cunzipped = sig::UnZip(czipped);		//std::tuple< std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>
+
+#ifndef SIG_MSVC_LT1800
+	auto crezipped = sig::Zip(cunzipped);		//std::vector< std::tuple<int, int, int, int>>
+#endif
+
+	sig::HigherOrderFunction([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){
+		assert(std::get<0>(t) == v1 && std::get<1>(t) == v2 && std::get<2>(t) == v3 && std::get<3>(t) == v4); return 0;
+	}, data1, data2, data3, data4, czipped);
 }

@@ -81,14 +81,16 @@ namespace sig{
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
 #endif
 
-#ifdef _WIN32
+#if SIG_WINDOWS_ENV
 	using FileString = std::wstring;
-#elif _WIN64
-	using FileString = std::wstring;
+#if _MSC_VER <= 1800
+#define SIG_MSVC_LT1800
+#endif
 #else
 	using FileString = std::string;
 #endif
 
+	/*
 	template<uint I = 0, typename Func, typename... Ts>
 	auto ForEach(std::tuple<Ts...> &, Func) ->typename std::enable_if<I == sizeof...(Ts), void>::type{}
 
@@ -97,6 +99,46 @@ namespace sig{
 	{
 		f(std::get<I>(t));
 		ForEach<I + 1, Func, Ts...>(t, f);
+	}*/
+	
+	/*
+	template <class C>
+	auto TestImpl(C c)
+	{
+		container_traits<C>::add_element(c, 1);
+		return std::make_tuple(std::move(c));
+	}
+	template <class C, class... Cs>
+	auto TestImpl(C c, Cs... cs)
+	{
+		container_traits<C>::add_element(c, 1);
+		return std::tuple_cat(std::make_tuple(std::move(c)), TestImpl(cs...));
+	}
+
+	template <class T, size_t... I>
+	auto Test(T const& tuple, std::index_sequence<I...>)
+	{
+		return TestImpl(std::vector<typename std::tuple_element<I, T>::type>{}...);
+	}
+	*/
+
+	
+	template <class B>
+	constexpr B And(B cond){
+		return cond;
+	}
+	template <class Bf, class... Be>
+	constexpr Bf And(Bf cond, Be... conds){
+		return cond && And(conds...);
+	}
+
+	template <class B>
+	constexpr B Or(B cond){
+		return cond;
+	}
+	template <class Bf, class... Be>
+	constexpr Bf Or(Bf cond, Be... conds){
+		return cond || Or(conds...);
 	}
 
 	//template <class T> struct NullDummy{ typedef T type; };
@@ -170,8 +212,8 @@ namespace sig{
 		std::cout << "false" << std::endl;
 	}*/
 
-	template <class T> auto Reserve(T& t, size_t n) ->decltype(t.reserve(n), void()){ t.reserve(n); std::cout << "true" << std::endl; }
-	template <class T> void Reserve(T& t, size_t n){ std::cout << "false" << std::endl; }
+	//template <class T> auto Reserve(T& t, size_t n) ->decltype(t.reserve(n), void()){ t.reserve(n); std::cout << "true" << std::endl; }
+	//template <class T> void Reserve(T& t, size_t n){ std::cout << "false" << std::endl; }
 
 
 /* •Ö—˜ŠÖ” */

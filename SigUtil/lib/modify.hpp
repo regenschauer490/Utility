@@ -1,96 +1,99 @@
 /*
-The MIT License(MIT)
-
 Copyright(c) 2014 Akihiro Nishimura
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files(the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and / or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions :
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+This software is released under the MIT License.
+http://opensource.org/licenses/mit-license.php
 */
 
 #ifndef __SIG_UTIL_ERASER__
 #define __SIG_UTIL_ERASER__
 
 #include "sigutil.hpp"
+#include "tool.hpp"
 #include <iterator>
 
 /* ソート・削除などのコンテナに対する変更操作 */
 
 namespace sig
 {
-#if _MSC_VER > 1800
-	template <class T, class D = void> struct RI{ static const bool value = false; };
-	template <class T> struct RI<T, decltype(std::declval<T>()[0], void())>{ static const bool value = true; };
 
-	template <class T, class D = void> struct CMPOP{ static const bool value = false; };
-	template <class T> struct CMPOP<T, decltype(std::declval<T>() < std::declval<T>(), void())>{ static const bool value = true; };
+#ifndef SIG_MSVC_LT1800
 
-	//至って普通なソートのラッパ
-	template <class Container, typename std::enable_if<RI<Container>::value>::type*& = enabler>
-	void Sort(Container& data){
-		std::sort(std::begin(data), std::end(data));
+	//至って普通なソートのラッパ (シーケンスコンテナのみ対応)
+	//std::sort()が使える場合
+	template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<HasRandomIter<C>::value>::type*& = enabler>
+	void Sort(C& data, F const& binary_op = std::less<typename container_traits<C>::value_type>())
+	{
+		std::sort(std::begin(data), std::end(data), binary_op);
 	}
-	template <class Container, typename std::enable_if<!RI<Container>::value && CMPOP<Container>::value>::type*& = enabler>
-	void Sort(Container& data){
-		data.sort();
+	//メンバ関数にsort()がある場合
+	template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<!HasRandomIter<C>::value>::type*& = enabler>
+	void Sort(C& data, F const& binary_op = std::less<typename container_traits<C>::value_type>())
+	{
+		data.sort(binary_op);
+	}
+#else
+	template <class T, class F = std::less<typename sequence_container_traits<C>::value_type>>
+	void Sort(std::vector<T>& data, F const& binary_op = std::less<T>())
+	{
+		std::sort(std::begin(data), std::end(data), binary_op);
+	}
+	template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<!HasRandomIter<C>::value>::type*& = enabler>
+	void Sort(C& data, F const& binary_op = std::less<typename sequence_container_traits<C>::value_type>())
+	{
+		data.sort(binary_op);
 	}
 #endif
 	
-	//ソート前のindexを保持してソート
+	//ソート前のindexを保持してソート (シーケンスコンテナのみ対応)
 	//ex: [30, 50, -10, 0] -> ([-10, 0, 30, 50], [2, 3, 0, 1])
-	template <class C>
-	auto SortWithIndex(C const& container, bool small_to_large)
+	template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>>
+	auto SortWithIndex(C const& container, F const& binary_op = std::less<typename sequence_container_traits<C>::value_type>())
 	{
-		using T = typename container_traits<C>::value_type;
-		std::tuple<C, std::vector<uint>> result;
+		using Tp = std::tuple<typename sequence_container_traits<C>::value_type, uint>;
+		auto result = Zip(container, ArithSequence(0, 1, container.size()));
 
-		auto it = std::begin(vec);
-		for (uint i = 0; i < vec.size(); ++i, ++it){
-			std::get<0>(result[i]) = i;
-			std::get<1>(result[i]) = *it;
-		}
-		if (small_to_large) std::sort(result.begin(), result.end(), [](std::tuple<uint, T> const& a, std::tuple<uint, T> const& b){ return std::get<1>(a) < std::get<1>(b); });
-		else std::sort(result.begin(), result.end(), [](std::tuple<uint, T> const& a, std::tuple<uint, T> const& b){ return std::get<1>(b) < std::get<1>(a); });
+		Sort(result, [&](Tp const& l, Tp const& r){ return binary_op(std::get<0>(l), std::get<0>(r)); });
 
-		return std::move(result);
+		return UnZip(std::move(result));
 	}
 
 	//コンテナの要素をシャッフル
-	template <class T, template < class T_, class = std::allocator<T_>> class Container>
-	void Shuffle(Container<T>& data)
+	template <class C>
+	void Shuffle(C& container)
 	{
 		static SimpleRandom<double> myrand(0.0, 1.0, false);
-		std::random_shuffle(data.begin(), data.end(), [&](uint max)->uint{ return myrand() * max; });
+		std::random_shuffle(std::begin(container), std::end(container), [&](std::ptrdiff_t max){ return static_cast<std::ptrdiff_t>(myrand() * max); });
 	}
 
-	//2つのコンテナの要素を対応させながらシャッフル
-	template < class T1, class T2, template < class T_, class = std::allocator<T_>> class Container1, template < class T_, class = std::allocator<T_>> class Container2>
-	void Shuffle(Container1<T1>& data1, Container2<T2>& data2)
-	{
-		uint size = std::min(data1.size(), data2.size());
-		auto rnum = RandomUniqueNumbers(size, 0, size - 1, false);
-		auto copy1 = std::move(data1);
-		auto copy2 = std::move(data2);
 
-		data1.resize(copy1.size());
-		data2.resize(copy2.size());
-		for (uint i = 0; i<size; ++i){
-			data1[rnum[i]] = std::move(copy1[i]);
-			data2[rnum[i]] = std::move(copy2[i]);
+	template <class C>
+	void ShuffleImpl(uint loop, C const& seq){}
+
+	template <class C, class It, class... Its>
+	void ShuffleImpl(uint loop, C const& seq, It iter, Its... iters)
+	{
+		auto ori_iter = iter;
+		std::unordered_map<uint, typename It::value_type> map;
+
+		for (uint i=0; i<loop; ++i, ++iter){
+			map[seq[i]] = *iter;
 		}
+		for (uint i = 0; i < loop; ++i, ++ori_iter){
+			*ori_iter = map[i];
+		}
+
+		ShuffleImpl(loop, seq, iters...);
+	}
+
+	//複数のコンテナの要素を対応させながらシャッフル
+	template <class... Cs>
+	void Shuffle(Cs&... containers)
+	{
+		uint size = Min(containers.size()...);
+		auto rseq = RandomUniqueNumbers(size, 0, size - 1, false);
+		
+		ShuffleImpl(size, rseq, std::begin(containers)...);
 	}
 
 
