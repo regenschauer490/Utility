@@ -49,15 +49,20 @@ namespace sig
 		container.erase(std::remove(std::begin(container), std::end(container), t), std::end(container));
 	}
 	template <class C>
-	void EraseIf(C& container, std::function<typename std::common_type<bool>::type(typename sequence_container_traits<C>::value_type)> const& remove_pred)
-	{
-		container.erase(std::remove_if(std::begin(container), std::end(container), remove_pred), std::end(container));
-	}
-
-	template <class C>
 	void Erase(C& container, typename associative_container_traits<C>::value_type const& t)
 	{
 		container.erase(t);
+	}
+	template <class C>
+	void Erase(C& container, typename hash_container_traits<C>::value_type const& t)
+	{
+		container.erase(t);
+	}
+
+	template <class C>
+	void EraseIf(C& container, std::function<typename std::common_type<bool>::type(typename sequence_container_traits<C>::value_type)> const& remove_pred)
+	{
+		container.erase(std::remove_if(std::begin(container), std::end(container), remove_pred), std::end(container));
 	}
 	template <class C>
 	void EraseIf(C& container, std::function<typename std::common_type<bool>::type(typename associative_container_traits<C>::value_type)> const& remove_pred)
@@ -68,12 +73,6 @@ namespace sig
 			}
 			else ++it;
 		}
-	}
-
-	template <class C>
-	void Erase(C& container, typename hash_container_traits<C>::value_type const& t)
-	{
-		container.erase(t);
 	}
 	template <class C>
 	void EraseIf(C& container, std::function<typename std::common_type<bool>::type(typename hash_container_traits<C>::value_type)> const& remove_pred)

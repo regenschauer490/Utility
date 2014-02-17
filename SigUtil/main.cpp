@@ -101,6 +101,7 @@ int main()
 
 	//modify.hpp test
 	SortTest();
+	ShuffleTest();
 	RemoveDuplicateTest();
 	RemoveTest();
 

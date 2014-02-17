@@ -19,7 +19,7 @@ namespace sig
 
 #ifndef SIG_MSVC_LT1800
 
-	//至って普通なソートのラッパ (シーケンスコンテナのみ対応)
+	//標準ソート関数のラッパ (シーケンスコンテナのみ対応)
 	//std::sort()が使える場合
 	template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<HasRandomIter<C>::value>::type*& = enabler>
 	void Sort(C& data, F const& binary_op = std::less<typename container_traits<C>::value_type>())
@@ -45,7 +45,7 @@ namespace sig
 	}
 #endif
 	
-	//ソート前のindexを保持してソート (シーケンスコンテナのみ対応)
+	//ソート前の位置を保持してソート (シーケンスコンテナのみ対応)
 	//ex: [30, 50, -10, 0] -> ([-10, 0, 30, 50], [2, 3, 0, 1])
 	template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>>
 	auto SortWithIndex(C const& container, F const& binary_op = std::less<typename sequence_container_traits<C>::value_type>())
@@ -87,6 +87,7 @@ namespace sig
 	}
 
 	//複数のコンテナの要素を対応させながらシャッフル
+	//ex: c1[1, 2, 3, 4], c2[1, 2, 3, 4] -> c1'[3, 1, 4, 2], c2'[3, 1, 4, 2]
 	template <class... Cs>
 	void Shuffle(Cs&... containers)
 	{

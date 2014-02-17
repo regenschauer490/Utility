@@ -24,13 +24,18 @@ void SortTest()
 	auto sorted2 = std::get<0>(swi2);
 
 	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, sorted2, sig::Reverse(std::get<0>(test1)));
+}
 
+void ShuffleTest()
+{
+	std::vector<int> data1{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
+	std::list<int> data2{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 
 	//複数のコンテナを対応付けつつシャッフル
 	//ex: c1[1, 2, 3, 4], c2[1, 2, 3, 4] -> c1'[3, 1, 4, 2], c2'[3, 1, 4, 2]
 	sig::Shuffle(data1, data2);
 
-	getchar();
+	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data1, data2);
 }
 
 void RemoveDuplicateTest()
