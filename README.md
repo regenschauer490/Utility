@@ -12,13 +12,15 @@ boostの併用推奨(主にoptionalのため).　なくても動作はします�
 * Zip: 複数のコンテナから、タプルのコンテナを作る　[a] -> [b] -> ... -> [(a, b, ...)]
 * Zip: コンテナのタプルから、タプルのコンテナを作る　([a], [b], ...) -> [(a, b, ...)]
 * UnZip: タプルのコンテナから、リストのタプルを作る　[(a, b, ...)] -> ([a], [b], ...)
-* Repeat: 値を複製したコンテナを返す　uint -> a -> [a]
+* Replicate: 値を複製したコンテナを返す　uint -> a -> [a]
 * ArithSequence: 等差数列を作る (初項, 公差, 項数)
 * Reverse: コンテナの要素を逆転させたコンテナを返す　[a] -> [a]
 * Merge: コンテナの結合　[a] -> [b] -> [c]
 * Take: コンテナの先頭からn個を取り出したコンテナを返す uint -> [a] -> [a]
 * Drop: コンテナの先頭からn個を削除したコンテナを返す　uint -> [a] -> [a]
 * Sort: 任意の比較関数でソートしたコンテナを返す　(a -> a -> bool) -> [a] -> [a]
+
+※対応コンテナ：STL (vector, deque, list, set, multiset, unordered\_set, unordered\_multiset)
 
 **\<string.hpp>** 
 * RegexSearch: std::regex_searchのラッパ関数.探索結果を添字アクセスできる形([][])で取得
@@ -41,8 +43,6 @@ boostの併用推奨(主にoptionalのため).　なくても動作はします�
  * RemoveOneIf: 要素のかわりに述語関数で判別
 * RemoveAll: コンテナから指定要素を全削除
  * RemoveAllIf: 要素のかわりに述語関数で判別
-
-**\<set.hpp>**
 
 **\<file.hpp>**
 * GetFileNames: 指定ディレクトリにあるファイル名を取得(option:隠しファイル識別、拡張子指定)
