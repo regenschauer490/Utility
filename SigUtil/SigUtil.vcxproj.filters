@@ -89,14 +89,14 @@
     <ClInclude Include="lib\type_map.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="lib\set.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="lib\modify.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="example\modify_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\others.hpp">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
