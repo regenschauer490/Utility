@@ -179,7 +179,7 @@ namespace sig
 	//uint -> a -> [a]
 	//値を複製したコンテナを返す
 	template <class T, class C = std::vector<T>>
-	C Repeat(uint n, T const& value)
+	C Replicate(uint n, T const& value)
 	{
 		C result;
 		for (uint i = 0; i<n; ++i) container_traits<C>::add_element(result, value);

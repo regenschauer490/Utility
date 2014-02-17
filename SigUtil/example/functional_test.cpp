@@ -76,8 +76,8 @@ void FunctionalTest()
 	std::unordered_multiset<int> data4{ 1, -3, 5, 2, 10 };
 
 	//make container filled with same value
-	auto fill = sig::Fill(3, std::string("fill"));
-	for (auto v : fill) assert(v == "fill");
+	auto rep = sig::Replicate(3, std::string("replicate"));
+	for (auto v : rep) assert(v == "replicate");
 
 	//make container whose element reversed
 	auto rev = sig::Reverse(data2);

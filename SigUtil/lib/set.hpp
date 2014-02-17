@@ -4,12 +4,10 @@
 #include "sigutil.hpp"
 #include "tool.hpp"
 
-/* コンテナの要素に対してよく行う操作 */
+/* 集合操作 */
 
 namespace sig
 {
-
-
 
 #if SIG_ENABLE_BOOST
 
@@ -33,34 +31,6 @@ namespace sig
 	}
 
 #endif
-
-	//コンテナへの代入演算 ([a], [b], (a -> b -> a))
-	template < class T1, class T2, template < class T_, class = std::allocator<T_>> class Container>
-	void CompoundAssignment(Container<T1>& list1, Container<T2> const& list2, std::function<typename std::common_type<T1>::type(typename std::common_type<T1>::type, typename std::common_type<T2>::type)> const& op)
-	{
-		const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
-
-		for (uint i = 0; i < length; ++i) list1[i] = op(list1[i], list2[i]);
-	}
-
-	//コンテナへの代入演算 ([a], b, (a -> b -> a))
-	template < class T1, class T2, template < class T_, class = std::allocator<T_>> class Container>
-	void CompoundAssignment(Container<T1>& list1, T2 const& v, std::function<typename std::common_type<T1>::type(typename std::common_type<T1>::type, typename std::common_type<T2>::type)> const& op)
-	{
-		for (uint i = 0, length = list1.size(); i < length; ++i) list1[i] = op(list1[i], v);
-	}
-
-
-	//生成関数を通して値を生成する
-	//args -> generator: 生成関数.引数はループindex
-	template < class T, template < class T_, class = std::allocator<T_>> class Container = std::vector>
-	Container<T> Generate(std::function<T(int)> const& generator, uint count)
-	{
-		Container<T> tmp;
-		tmp.reserve(count);
-		for (uint i = 0; i < count; ++i) tmp.push_back(generator(i));
-		return std::move(tmp);
-	}
 
 
 	//vector, list の積集合を求める(要素数は1個). [動作要件：T::operator==()]
