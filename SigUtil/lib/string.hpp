@@ -14,23 +14,23 @@ http://opensource.org/licenses/mit-license.php
 #include <stdlib.h>
 #include <sstream>
 
-/* •¶š—ñˆ—ŠÖ˜A */
+/* æ–‡å­—åˆ—å‡¦ç†é–¢é€£ */
 
 namespace sig{
 
-	//expression‚ÉŠÜ‚Ü‚ê‚é•¶š‚ÉŠÖ‚µ‚ÄA³‹K•\Œ»‚Ì“Áê•¶š‚ğƒGƒXƒP[ƒv‚·‚é
+	//expressionã«å«ã¾ã‚Œã‚‹æ–‡å­—ã«é–¢ã—ã¦ã€æ­£è¦è¡¨ç¾ã®ç‰¹æ®Šæ–‡å­—ã‚’ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã™ã‚‹
 	inline auto RegexEscaper(std::string const& expression) ->std::string
 	{
-		static const std::regex escape_reg("([(){}\\[\\]|^?$.+*\\\\])");
-		return std::regex_replace(expression, escape_reg, "\\$1");
+		static const std::regex escape_reg(R"(([(){}\[\]|^?$.+*\]))");
+		return std::regex_replace(expression, escape_reg, std::string(R"(\$1)"));
 	}
 	inline auto RegexEscaper(std::wstring const& expression) ->std::wstring
 	{
-		static const std::wregex escape_reg(L"([(){}\\[\\]|^?$.+*\\\\])");
-		return std::regex_replace(expression, escape_reg, L"\\$1");
+		static const std::wregex escape_reg(LR"(([(){}\[\]|^?$.+*\]))");
+		return std::regex_replace(expression, escape_reg, std::wstring(LR"(\$1"));
 	}
 
-	//©“®‚ÅƒGƒXƒP[ƒv‚µ‚Ästd::regex or std::wregex ‚ğ•Ô‚·
+	//è‡ªå‹•ã§ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã—ã¦std::regex or std::wregex ã‚’è¿”ã™
 	template <class T>
 	auto RegexMaker(T const& expression) ->typename Str2RegexSelector<TString<T>>::regex
 	{
@@ -38,11 +38,11 @@ namespace sig{
 	}
 
 
-	//std::regex_search ‚Ìƒ‰ƒbƒpŠÖ”B
-	//return -> maybe ? [ƒ}ƒbƒ`‚µ‚½‰ÓŠ‚Ì‡”Ô][ƒ}ƒbƒ`“à‚ÌQÆ‚Ì‡”Ô. 0‚Í‘S•¶, 1ˆÈ~‚ÍQÆ‰ÓŠ] : nothing
-	//—áF
+	//std::regex_search ã®ãƒ©ãƒƒãƒ‘é–¢æ•°ã€‚
+	//return -> maybe ? [ãƒãƒƒãƒã—ãŸç®‡æ‰€ã®é †ç•ª][ãƒãƒƒãƒå†…ã®å‚ç…§ã®é †ç•ª. 0ã¯å…¨æ–‡, 1ä»¥é™ã¯å‚ç…§ç®‡æ‰€] : nothing
+	//ä¾‹ï¼š
 	//src = "test tes1 tes2"
-	//expression = std::regex("tes(\\d)")
+	//expression = std::regex("tes(Â¥Â¥d)")
 	//return -> [[tes1, 1], [tes2, 2]]
 	template <template <class T_, class = std::allocator<T_>> class Container = std::vector, class T = std::string >
 	auto RegexSearch(T src, typename Str2RegexSelector<TString<T>>::regex const& expression) ->typename Just< Container< Container<TString<T>>>>::type
@@ -61,7 +61,7 @@ namespace sig{
 	}
 
 /*
-	//expression‚ÉŠÜ‚Ü‚ê‚é•¶š‚ÉŠÖ‚µ‚ÄA³‹K•\Œ»‚Ì“Áê•¶š‚ğƒGƒXƒP[ƒv‚µ‚Ä‚©‚çˆ—i„§j
+	//expressionã«å«ã¾ã‚Œã‚‹æ–‡å­—ã«é–¢ã—ã¦ã€æ­£è¦è¡¨ç¾ã®ç‰¹æ®Šæ–‡å­—ã‚’ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã—ã¦ã‹ã‚‰å‡¦ç†ï¼ˆæ¨å¥¨ï¼‰
 	template < class T, template < class T_, class = std::allocator<T_>> class Container = std::vector >
 	auto RegexSearch(T src, T expression) ->typename Just< Container< Container<String<T>>>>::type
 	{
@@ -69,63 +69,9 @@ namespace sig{
 	}
 */
 
-	//HTML•—‚Éƒ^ƒO‚ğƒGƒ“ƒR[ƒhEƒfƒR[ƒh‚·‚é
-	//—áF@<TAG>text<TAG>
-	template <class String>
-	class TagDealer
-	{
-		const String tel_;
-		const String ter_;
-
-	public:
-		//¶‰E‚»‚ê‚¼‚ê‚ÌˆÍ‚İ•¶š‚ğw’è(ex. left = "<", right= ">")
-		TagDealer(String tag_encloser_left, String tag_encloser_right) : tel_(tag_encloser_left), ter_(tag_encloser_right){};
-
-		String Encode(String const& src, String const& tag) const{
-			auto tag_str = tel_ + tag + ter_;
-			return tag_str + src + tag_str;
-		}
-		
-		auto Decode(String const& src, String const& tag) ->typename Just<String>::type const{
-			auto tag_str = tel_ + tag + ter_;
-			auto parse = Split(" " + src, tag_str);
-			return parse.size() < 2 ? Nothing(String()) : typename Just<String>::type(parse[1]);
-		}
-
-		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-		String Encode(Container<String> const& src, Container<String> const& tag) const;
-
-#if SIG_ENABLE_BOOST
-		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-		auto Decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const;
-#endif
-	};
-
-	template <class String>
-	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
-	{
-		auto size = std::min(src.size(), tag.size());
-		auto calc = ZipWith([&](Container<String>::value_type s, Container<String>::value_type t){ return Encode(s, t); }, src, tag);
-		return std::accumulate(calc.begin(), calc.end(), String(""));
-	}
-
-#if SIG_ENABLE_BOOST
-	template <class String>
-	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-	auto TagDealer<String>::Decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const
-	{
-		Container<String> result;
-		for (auto const& e : tag){
-			if (auto d = Decode(src, e)) result.push_back(*d);
-		}
-		return result.empty() ? Nothing(String()) : typename Just<Container<String>>::type(std::move(result));
-	}
-#endif
-
-	//•¶š—ñ(src)‚ğ‚ ‚é•¶š—ñ(delim)‚ğ–Úˆó‚É•ªŠ„‚·‚é
-	//–ß‚è’l‚ÌƒRƒ“ƒeƒi‚ÍƒfƒtƒHƒ‹ƒg‚Å‚Ívector
-	//—áFsrc="one, 2, Q ", delim="," -> return vector<string>{"one", " 2", " Q "}
+	//æ–‡å­—åˆ—(src)ã‚’ã‚ã‚‹æ–‡å­—åˆ—(delim)ã‚’ç›®å°ã«åˆ†å‰²ã™ã‚‹
+	//æˆ»ã‚Šå€¤ã®ã‚³ãƒ³ãƒ†ãƒŠã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯vector
+	//ä¾‹ï¼šsrc="one, 2, å‚ ", delim="," -> return vector<string>{"one", " 2", " å‚ "}
 	template <template <class T_, class = std::allocator<T_>> class Container = std::vector,  class String = std::string >
 	auto Split(String src, typename std::common_type<String>::type const& delimiter) ->Container<typename StringId<String>::type>
 	{
@@ -159,7 +105,7 @@ namespace sig{
 	}
 
 
-	//ƒRƒ“ƒeƒi‚ÉŠi”[‚³‚ê‚½‘S•¶š—ñ‚ğŒ‹‡‚µ‚Ä1‚Â‚Ì•¶š—ñ‚É(delimiter‚Å‹æØ‚èw’è)
+	//ã‚³ãƒ³ãƒ†ãƒŠã«æ ¼ç´ã•ã‚ŒãŸå…¨æ–‡å­—åˆ—ã‚’çµåˆã—ã¦1ã¤ã®æ–‡å­—åˆ—ã«(delimiterã§åŒºåˆ‡ã‚ŠæŒ‡å®š)
 	template <class C, class T>
 	auto CatStr(C const& container, T delimiter)
 	{
@@ -174,15 +120,18 @@ namespace sig{
 	}
 
 
-	//ƒƒCƒh•¶š -> ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š (ex: WindowsŠÂ‹«‚Å‚Í UTF-16 -> Shift-JIS)
+	//ãƒ¯ã‚¤ãƒ‰æ–‡å­— -> ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­— (ex: Windowsç’°å¢ƒã§ã¯ UTF-16 -> Shift-JIS)
 	inline std::string WSTRtoSTR(const std::wstring &src)
 	{
 		size_t mbs_size = src.length() * MB_CUR_MAX + 1;
-		if (mbs_size < 2 || src == L"\0") return std::string();
+		if (mbs_size < 2 || src == L"Â¥0") return std::string();
 		char *mbs = new char[mbs_size];
+#if SIG_WINDOWS_ENV
 		size_t num;
-
 		wcstombs_s(&num, mbs, mbs_size, src.c_str(), src.length() * MB_CUR_MAX + 1);
+#else
+		wcstombs(mbs, src.c_str(), src.length() * MB_CUR_MAX + 1);
+#endif
 		std::string dest(mbs);
 		delete[] mbs;
 
@@ -197,16 +146,19 @@ namespace sig{
 		return std::move(result);
 	}
 
-	//ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š -> ƒƒCƒh•¶š (ex: WindowsŠÂ‹«‚Å‚Í Shift-JIS -> UTF-16)
+	//ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­— -> ãƒ¯ã‚¤ãƒ‰æ–‡å­— (ex: Windowsç’°å¢ƒã§ã¯ Shift-JIS -> UTF-16)
 	inline std::wstring STRtoWSTR(const std::string &src)
 	{
 		size_t wcs_size = src.length() + 1;
-		if (wcs_size < 2 || src == "\0") return std::wstring();
+		if (wcs_size < 2 || src == "Â¥0") return std::wstring();
 		//std::cout << src << std::endl;
 		wchar_t *wcs = new wchar_t[wcs_size];
+#if SIG_WINDOWS_ENV
 		size_t num;
-
 		mbstowcs_s(&num, wcs, wcs_size, src.c_str(), src.length() + 1);
+#else
+		mbstowcs(wcs, src.c_str(), src.length() + 1);
+#endif
 		std::wstring dest(wcs);
 		delete[] wcs;
 
@@ -221,59 +173,114 @@ namespace sig{
 		return std::move(result);
 	}
 
-	//‘SŠpE”¼Šp•¶š‚Ì’uŠ·ˆ—‚ğs‚¤
+
+	//HTMLé¢¨ã«ã‚¿ã‚°ã‚’ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ãƒ»ãƒ‡ã‚³ãƒ¼ãƒ‰ã™ã‚‹
+	//ä¾‹ï¼šã€€<TAG>text<TAG>
+	template <class String>
+	class TagDealer
+	{
+		const String tel_;
+		const String ter_;
+
+	public:
+		//å·¦å³ãã‚Œãã‚Œã®å›²ã¿æ–‡å­—ã‚’æŒ‡å®š(ex. left = "<", right= ">")
+		TagDealer(String tag_encloser_left, String tag_encloser_right) : tel_(tag_encloser_left), ter_(tag_encloser_right){};
+
+		String Encode(String const& src, String const& tag) const{
+			auto tag_str = tel_ + tag + ter_;
+			return tag_str + src + tag_str;
+		}
+		
+		auto Decode(String const& src, String const& tag) ->typename Just<String>::type const{
+			auto tag_str = tel_ + tag + ter_;
+			auto parse = Split(" " + src, tag_str);
+			return parse.size() < 2 ? Nothing(String()) : typename Just<String>::type(parse[1]);
+		}
+
+		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+		String Encode(Container<String> const& src, Container<String> const& tag) const;
+
+#if SIG_ENABLE_BOOST
+		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+		auto Decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const;
+#endif
+	};
+
+	template <class String>
+	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
+	{
+		auto size = std::min(src.size(), tag.size());
+		auto calc = ZipWith([&](typename Container<String>::value_type s, typename Container<String>::value_type t){ return Encode(s, t); }, src, tag);
+		return std::accumulate(calc.begin(), calc.end(), String(""));
+	}
+
+#if SIG_ENABLE_BOOST
+	template <class String>
+	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+	auto TagDealer<String>::Decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const
+	{
+		Container<String> result;
+		for (auto const& e : tag){
+			if (auto d = Decode(src, e)) result.push_back(*d);
+		}
+		return result.empty() ? Nothing(String()) : typename Just<Container<String>>::type(std::move(result));
+	}
+#endif
+
+	//å…¨è§’ãƒ»åŠè§’æ–‡å­—ã®ç½®æ›å‡¦ç†ã‚’è¡Œã†
 	class ZenHanReplace{
-		std::unordered_map<wchar_t, wchar_t> alphabet_;			//‘SŠpƒAƒ‹ƒtƒ@ƒxƒbƒg -> ”¼ŠpƒAƒ‹ƒtƒ@ƒxƒbƒg
-		std::unordered_map<wchar_t, wchar_t> number_;			//‘SŠp”š -> ”¼Šp”š
-		std::unordered_map<wchar_t, wchar_t> katakana_;			//”¼ŠpƒJƒ^ƒJƒi -> ‘SŠpƒJƒ^ƒJƒi
-		std::unordered_map<std::wstring, wchar_t> katakana_d_;	//(‘÷‰¹) ”¼ŠpƒJƒ^ƒJƒi -> ‘SŠpƒJƒ^ƒJƒi
+		std::unordered_map<wchar_t, wchar_t> alphabet_;			//å…¨è§’ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆ -> åŠè§’ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆ
+		std::unordered_map<wchar_t, wchar_t> number_;			//å…¨è§’æ•°å­— -> åŠè§’æ•°å­—
+		std::unordered_map<wchar_t, wchar_t> katakana_;			//åŠè§’ã‚«ã‚¿ã‚«ãƒŠ -> å…¨è§’ã‚«ã‚¿ã‚«ãƒŠ
+		std::unordered_map<std::wstring, wchar_t> katakana_d_;	//(æ¿éŸ³) åŠè§’ã‚«ã‚¿ã‚«ãƒŠ -> å…¨è§’ã‚«ã‚¿ã‚«ãƒŠ
 
 	private:
 		ZenHanReplace(){
-			wchar_t zen1[2] = L"‚`";
+			wchar_t zen1[2] = L"ï¼¡";
 			char han1 = 'A';
 
 			for (uint i = 0; i < 26; ++i, ++zen1[0], ++han1){
 				alphabet_[zen1[0]] = han1;
 			}
 
-			wchar_t zen2 = L'‚';
+			wchar_t zen2 = L'ï½';
 			wchar_t han2 = 'a';
 			for (uint i = 0; i < 26; ++i, ++zen2, ++han2){
 				alphabet_[zen2] = han2;
 			}
 
-			number_[L'‚O'] = L'0';
-			number_[L'‚P'] = L'1';
-			number_[L'‚Q'] = L'2';
-			number_[L'‚R'] = L'3';
-			number_[L'‚S'] = L'4';
-			number_[L'‚T'] = L'5';
-			number_[L'‚U'] = L'6';
-			number_[L'‚V'] = L'7';
-			number_[L'‚W'] = L'8';
-			number_[L'‚X'] = L'9';
+			number_[L'ï¼'] = L'0';
+			number_[L'ï¼‘'] = L'1';
+			number_[L'ï¼’'] = L'2';
+			number_[L'ï¼“'] = L'3';
+			number_[L'ï¼”'] = L'4';
+			number_[L'ï¼•'] = L'5';
+			number_[L'ï¼–'] = L'6';
+			number_[L'ï¼—'] = L'7';
+			number_[L'ï¼˜'] = L'8';
+			number_[L'ï¼™'] = L'9';
 
-			katakana_[L'°'] = L'[';
-			katakana_[L'§'] = L'ƒ@';
-			katakana_[L'¨'] = L'ƒB';
-			katakana_[L'©'] = L'ƒD';
-			katakana_[L'ª'] = L'ƒF';
-			katakana_[L'«'] = L'ƒH';
-			katakana_[L'±'] = L'ƒA';
-			katakana_[L'²'] = L'ƒC';
-			katakana_[L'³'] = L'ƒE';
-			katakana_[L'´'] = L'ƒG';
-			katakana_[L'µ'] = L'ƒI';
+			katakana_[L'ï½°'] = L'ãƒ¼';
+			katakana_[L'ï½§'] = L'ã‚¡';
+			katakana_[L'ï½¨'] = L'ã‚£';
+			katakana_[L'ï½©'] = L'ã‚¥';
+			katakana_[L'ï½ª'] = L'ã‚§';
+			katakana_[L'ï½«'] = L'ã‚©';
+			katakana_[L'ï½±'] = L'ã‚¢';
+			katakana_[L'ï½²'] = L'ã‚¤';
+			katakana_[L'ï½³'] = L'ã‚¦';
+			katakana_[L'ï½´'] = L'ã‚¨';
+			katakana_[L'ï½µ'] = L'ã‚ª';
 
-			wchar_t han3 = L'¶';
-			wchar_t zen3 = L'ƒJ';
+			wchar_t han3 = L'ï½¶';
+			wchar_t zen3 = L'ã‚«';
 			for (uint i = 0; i < 12; ++i, ++han3, zen3 += 2){
 				katakana_[han3] = zen3;
 			}
-			katakana_[L'¯'] = L'ƒb';
-			katakana_[L'Ã'] = L'ƒe';
-			katakana_[L'Ä'] = L'ƒg';
+			katakana_[L'ï½¯'] = L'ãƒƒ';
+			katakana_[L'ï¾ƒ'] = L'ãƒ†';
+			katakana_[L'ï¾„'] = L'ãƒˆ';
 			han3 += 2; zen3 += 6;
 			for (uint i = 0; i < 6; ++i, ++han3, ++zen3){
 				katakana_[han3] = zen3;
@@ -284,35 +291,35 @@ namespace sig{
 			for (uint i = 0; i < 5; ++i, ++han3, ++zen3){
 				katakana_[han3] = zen3;
 			}
-			katakana_[L'Ô'] = L'ƒ„';
-			katakana_[L'¬'] = L'ƒƒ';
-			katakana_[L'Õ'] = L'ƒ†';
-			katakana_[L'­'] = L'ƒ…';
-			katakana_[L'Ö'] = L'ƒˆ';
-			katakana_[L'®'] = L'ƒ‡';
+			katakana_[L'ï¾”'] = L'ãƒ¤';
+			katakana_[L'ï½¬'] = L'ãƒ£';
+			katakana_[L'ï¾•'] = L'ãƒ¦';
+			katakana_[L'ï½­'] = L'ãƒ¥';
+			katakana_[L'ï¾–'] = L'ãƒ¨';
+			katakana_[L'ï½®'] = L'ãƒ§';
 			han3 += 3; zen3 += 6;
 			for (uint i = 0; i < 5; ++i, ++han3, ++zen3){
 				katakana_[han3] = zen3;
 			}
-			katakana_[L'Ü'] = L'ƒ';
-			katakana_[L'¦'] = L'ƒ’';
-			katakana_[L'İ'] = L'ƒ“';
+			katakana_[L'ï¾œ'] = L'ãƒ¯';
+			katakana_[L'ï½¦'] = L'ãƒ²';
+			katakana_[L'ï¾'] = L'ãƒ³';
 
 
-			wchar_t han4[3] = L"¶Ş";
-			wchar_t zen4 = L'ƒK';
+			wchar_t han4[3] = L"ï½¶ï¾";
+			wchar_t zen4 = L'ã‚¬';
 			for (uint i = 0; i < 12; ++i, ++han4[0], zen4 += 2){
 				katakana_d_[han4] = zen4;
 			}
-			katakana_d_[L"ÂŞ"] = L'ƒd';
-			katakana_d_[L"ÃŞ"] = L'ƒf';
-			katakana_d_[L"ÄŞ"] = L'ƒh';
+			katakana_d_[L"ï¾‚ï¾"] = L'ãƒ…';
+			katakana_d_[L"ï¾ƒï¾"] = L'ãƒ‡';
+			katakana_d_[L"ï¾„ï¾"] = L'ãƒ‰';
 			han4[0] += 8; zen4 += 12;
 			for (uint i = 0; i < 5; ++i, ++han4[0], zen4 += 3){
 				katakana_d_[han4] = zen4;
 			}
-			wchar_t han5[3] = L"Êß";
-			wchar_t zen5 = L'ƒp';
+			wchar_t han5[3] = L"ï¾Šï¾Ÿ";
+			wchar_t zen5 = L'ãƒ‘';
 			for (uint i = 0; i < 5; ++i, ++han5[0], zen5 += 3){
 				katakana_d_[han5] = zen5;
 			}
@@ -354,7 +361,7 @@ namespace sig{
 
 		void Katakana_Han2Zen(std::wstring& sentence) const{
 			for (unsigned i = 1; i < sentence.size(); ++i){
-				if (sentence[i] == L'Ş' || sentence[i] == L'ß'){
+				if (sentence[i] == L'ï¾' || sentence[i] == L'ï¾Ÿ'){
 					auto ttmp = std::wstring(sentence.substr(i-1, 2));
 					if (katakana_d_.count(ttmp)){
 						sentence.replace(i - 1, 2, 1, katakana_d_.at(ttmp));

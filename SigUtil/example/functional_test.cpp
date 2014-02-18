@@ -14,7 +14,7 @@ void MapTest()
 	auto r3 = sig::Map([](int v){ return v / 4.0; }, data3);
 	auto r4 = sig::Map([](int v){ return v < 0; }, data4);
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 * 2 == v2); return 0; }, data1, r1);		//ŒŸØ
+	sig::ZipWith([](int v1, int v2){ assert(v1 * 2 == v2); return 0; }, data1, r1);		//æ¤œè¨¼
 
 #if _MSC_VER > 1800
 	for (auto v : data2) std::cout << v << ", ";	//1, -3, 5
@@ -42,7 +42,7 @@ void HigherOrederFuncTest()
 	std::cout << std::endl;
 	for (auto v : data4) std::cout << v << ", ";	//-3, 1, 5, 10
 	std::cout << std::endl;
-	for (auto v : data5) std::cout << v << ", ";	//a, b, c, d, e	//ŠÂ‹«ˆË‘¶
+	for (auto v : data5) std::cout << v << ", ";	//a, b, c, d, e	//ç’°å¢ƒä¾å­˜
 	std::cout << std::endl << std::endl;
 
 	//0, -6.6, 0, 44
@@ -54,7 +54,7 @@ void HigherOrederFuncTest()
 	}, data1, data2, data3, data4, data5);
 
 
-	//forƒ‹[ƒv‚Åˆ—‚µ‚ÄŒŸØ
+	//forãƒ«ãƒ¼ãƒ—ã§å‡¦ç†ã—ã¦æ¤œè¨¼
 	auto d3it = data3.begin();
 	for (int i = 0, size = sig::Min(data1.size(), data2.size(), data3.size()); i < size; ++i, ++d3it){
 		assert( sig::Equal(h123[i], *d3it ? data1[i] * data2[i] : 0) );
@@ -89,7 +89,7 @@ void FunctionalTest()
 
 	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, t1, std::vector<int>{ 1, -3 });
 
-	for (auto v : t4) std::cout << v << ", ";		//1, 10		//unordered‚Å‚ ‚é‚½‚ß‡•s“¯
+	for (auto v : t4) std::cout << v << ", ";		//1, 10		//unorderedã§ã‚ã‚‹ãŸã‚é †ä¸åŒ
 	std::cout << std::endl << std::endl;
 
 	//drop top n elements
@@ -110,23 +110,22 @@ void FunctionalTest()
 
 	//zip, unzip test (move and const& ver)
 #ifndef SIG_MSVC_LT1800
-	//move ver
+	//move ver (run only sequence container)
 	auto mdata1 = data1;
 	auto mdata2 = data2;
-	auto mdata3 = data3;
-	auto mdata4 = data4;
 
 	//make tuple from containers (container type equals data1's)
-	auto zipped = sig::Zip(std::move(mdata1), std::move(mdata2), std::move(mdata3), std::move(mdata4));	//std::vector< std::tuple<int, int, int, int>>
+	auto zipped = sig::Zip(std::move(mdata1), std::move(mdata2));	//std::vector< std::tuple<int, int, int, int>>
 
 	auto unzipped = sig::UnZip(std::move(zipped));		//std::tuple< std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>
 
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
 	auto rezipped = sig::Zip(std::move(unzipped));		//std::vector< std::tuple<int, int, int, int>>
+#endif
 
-
-	sig::HigherOrderFunction([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){
-		assert(std::get<0>(t) == v1 && std::get<1>(t) == v2 && std::get<2>(t) == v3 && std::get<3>(t) == v4); return 0;
-	}, data1, data2, data3, data4, zipped);
+	sig::HigherOrderFunction([](int v1, int v2, std::tuple<int, int> t){
+		assert(std::get<0>(t) == v1 && std::get<1>(t) == v2); return 0;
+	}, data1, data2, zipped);
 #endif
 	
 	//const ver
@@ -140,7 +139,9 @@ void FunctionalTest()
 	auto cunzipped = sig::UnZip(czipped);		//std::tuple< std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>
 
 #ifndef SIG_MSVC_LT1800
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
 	auto crezipped = sig::Zip(cunzipped);		//std::vector< std::tuple<int, int, int, int>>
+#endif
 #endif
 
 	sig::HigherOrderFunction([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){

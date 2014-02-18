@@ -12,7 +12,7 @@ http://opensource.org/licenses/mit-license.php
 #include "sigutil.hpp"
 
 #include <fstream>
-#include <codecvt>
+//#include <codecvt>
 #include <locale>
 
 #if SIG_WINDOWS_ENV
@@ -25,21 +25,25 @@ http://opensource.org/licenses/mit-license.php
 namespace fs = boost::filesystem;
 #endif
 
-/* “üo—ÍŠÖ˜A */
+/* å…¥å‡ºåŠ›é–¢é€£ */
 
 namespace sig{
 
-	//ƒfƒBƒŒƒNƒgƒŠEƒtƒ@ƒCƒ‹ƒpƒX‚Ì––”ö‚É'/'or'\'‚ª‚ ‚é‚©ƒ`ƒFƒbƒN‚µA•t‚¯‚é‚©ŠO‚·‚©‚Ç‚¤‚©w’è
-	inline std::wstring DirpassTailModify(FileString const& directory_pass, bool const has_slash)
+	//ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ»ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®æœ«å°¾ã«'/'or'\'ãŒã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã—ã€ä»˜ã‘ã‚‹ã‹å¤–ã™ã‹ã©ã†ã‹æŒ‡å®š
+	inline FileString DirpassTailModify(FileString const& directory_pass, bool const has_slash)
 	{
 		if (directory_pass.empty()) return directory_pass;
 
 		auto tail = directory_pass.back();
 
 		if (has_slash){
-			//•t‚¯‚éê‡
+			//ä»˜ã‘ã‚‹å ´åˆ
 			if (tail == '/' || tail == '\\') return directory_pass;
+#if SIG_WINDOWS_ENV
 			else return (directory_pass + L"/");
+#else
+			else return (directory_pass + "/");
+#endif
 		}
 		else{
 			if (tail != '/' && tail != '\\') return directory_pass;
@@ -52,11 +56,11 @@ namespace sig{
 	};
 
 
-	//w’èƒfƒBƒŒƒNƒgƒŠ‚É‚ ‚éƒtƒ@ƒCƒ‹–¼‚ğæ“¾
-	//directry_passF’²‚×‚½‚¢ƒfƒBƒŒƒNƒgƒŠ‚ÌƒpƒX
-	//hidden_fileFtrue->‰B‚µƒtƒ@ƒCƒ‹‚Ì‚İ, false->”ñ‰B‚µƒtƒ@ƒCƒ‹‚Ì‚İ (Windows, LinuxŠÂ‹«‚Ì‚İ)
-	//extensionFŠg’£qw’è(ƒIƒvƒVƒ‡ƒ“)
-	//“Ç‚İ‚İ¸”s: return -> nothing or empty-vector
+	//æŒ‡å®šãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«ã‚ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—
+	//directry_passï¼šèª¿ã¹ãŸã„ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ‘ã‚¹
+	//hidden_fileï¼štrue->éš ã—ãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿, false->ééš ã—ãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿ (Windows, Linuxç’°å¢ƒã®ã¿)
+	//extensionï¼šæ‹¡å¼µå­æŒ‡å®š(ã‚ªãƒ—ã‚·ãƒ§ãƒ³)
+	//èª­ã¿è¾¼ã¿å¤±æ•—: return -> nothing or empty-vector
 	inline auto GetFileNames(FileString const& directory_pass, bool hidden_file, std::wstring extension = L"") ->Just<std::vector<std::wstring>>::type
 	{
 		typedef std::vector<std::wstring> ResultType;
@@ -104,15 +108,16 @@ namespace sig{
 		}
 		return Just<ResultType>::type(std::move(result));
 #else
-		static_asseet(false, "this OS is not support. please include boost if any.");
+		std::cout << "this OS is not support. please include boost if any." << std::endl; 
+		assert(false);
 #endif
 	}
 
 
-	//w’èƒfƒBƒŒƒNƒgƒŠ‚É‚ ‚éƒtƒHƒ‹ƒ_–¼‚ğæ“¾
-	//directry_passF’²‚×‚½‚¢ƒfƒBƒŒƒNƒgƒŠ‚ÌƒpƒX
-	//hidden_fileFtrue->‰B‚µƒtƒ@ƒCƒ‹‚Ì‚İ, false->”ñ‰B‚µƒtƒ@ƒCƒ‹‚Ì‚İ (Windows, LinuxŠÂ‹«‚Ì‚İ)
-	//“Ç‚İ‚İ¸”s: return -> nothing or empty-vector
+	//æŒ‡å®šãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«ã‚ã‚‹ãƒ•ã‚©ãƒ«ãƒ€åã‚’å–å¾—
+	//directry_passï¼šèª¿ã¹ãŸã„ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ‘ã‚¹
+	//hidden_fileï¼štrue->éš ã—ãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿, false->ééš ã—ãƒ•ã‚¡ã‚¤ãƒ«ã®ã¿ (Windows, Linuxç’°å¢ƒã®ã¿)
+	//èª­ã¿è¾¼ã¿å¤±æ•—: return -> nothing or empty-vector
 	inline auto GetFolderNames(FileString const& directory_pass, bool hidden_file) ->Just<std::vector<std::wstring>>::type
 	{
 		typedef std::vector<std::wstring> ResultType;
@@ -154,15 +159,16 @@ namespace sig{
 		}
 		return Just<ResultType>::type(std::move(result));
 #else
-		static_asseet(false, "this OS is not support. please include boost if any.");
+		std::cout << "this OS is not support. please include boost if any." << std::endl; 
+		assert(false);
 #endif
 	}
 
 
-	//overwriteFã‘‚«, appendF––”ö’Ç‹L
+	//overwriteï¼šä¸Šæ›¸ã, appendï¼šæœ«å°¾è¿½è¨˜
 	enum class WriteMode{ overwrite, append };
 
-	//ƒtƒ@ƒCƒ‹“à—e‚Ì‰Šú‰»
+	//ãƒ•ã‚¡ã‚¤ãƒ«å†…å®¹ã®åˆæœŸåŒ–
 	inline void FileClear(FileString const& file_pass)
 	{
 		std::ofstream ofs(file_pass);
@@ -188,10 +194,10 @@ namespace sig{
 		}
 	}
 
-	//ƒtƒ@ƒCƒ‹‚Ö1s‚¸‚Â•Û‘¶
-	//src: •Û‘¶‘ÎÛ
-	//file_pass: •Û‘¶æ‚ÌƒfƒBƒŒƒNƒgƒŠ‚Æƒtƒ@ƒCƒ‹–¼iƒtƒ‹ƒpƒXj
-	//open_mode: ã‘‚«(overwrite) or ’Ç‹L(append)
+	//ãƒ•ã‚¡ã‚¤ãƒ«ã¸1è¡Œãšã¤ä¿å­˜
+	//src: ä¿å­˜å¯¾è±¡
+	//file_pass: ä¿å­˜å…ˆã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¨ãƒ•ã‚¡ã‚¤ãƒ«åï¼ˆãƒ•ãƒ«ãƒ‘ã‚¹ï¼‰
+	//open_mode: ä¸Šæ›¸ã(overwrite) or è¿½è¨˜(append)
 	template <class S, typename std::enable_if<container_traits<TString<S>>::is_string>::type*& = enabler>
 	void SaveLine(S src, FileString const& file_pass, WriteMode mode = WriteMode::overwrite)
 	{
@@ -201,11 +207,11 @@ namespace sig{
 			first = false;
 		}
 
-		std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
+		auto const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
 		typename FStreamSelector<TString<S>>::ofstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
-	//‚Ü‚Æ‚ß‚Ä•Û‘¶ (ƒV[ƒPƒ“ƒX‚È“®“IƒRƒ“ƒeƒi‚Ì‚İ‘Î‰)
+	//ã¾ã¨ã‚ã¦ä¿å­˜ (ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ãªå‹•çš„ã‚³ãƒ³ãƒ†ãƒŠã®ã¿å¯¾å¿œ)
 	template <class C, typename std::enable_if<!container_traits<C>::is_string>::type*& = enabler>
 	void SaveLine(C const& src, FileString const& file_pass, WriteMode mode = WriteMode::overwrite)
 	{
@@ -215,13 +221,13 @@ namespace sig{
 			first = false;
 		}
 
-		std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
+		auto const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
 		typename FStreamSelector<typename container_traits<C>::value_type>::ofstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
 
-	//•Û‘¶‚·‚éƒf[ƒ^‚ª”’l‚Ìê‡
-	//ƒfƒtƒHƒ‹ƒg‚Å‚Í1—v‘f1s‚Å•Û‘¶idelimiter‚Å•ÏX‰Âj
+	//ä¿å­˜ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ãŒæ•°å€¤ã®å ´åˆ
+	//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯1è¦ç´ 1è¡Œã§ä¿å­˜ï¼ˆdelimiterã§å¤‰æ›´å¯ï¼‰
 	template <class C>
 	void SaveNum(C const& src, FileString const& file_pass, WriteMode mode = WriteMode::overwrite, std::string delimiter = "\n")
 	{
@@ -234,7 +240,7 @@ namespace sig{
 	template <class R>
 	using IfsSelector = typename std::conditional<std::is_same<R, std::string>::value, std::ifstream, std::wifstream>::type;
 
-	//conv: “Ç‚İ‚ñ‚¾•¶š—ñ‚©‚ç”CˆÓŒ^R‚Ö‚Ì•ÏŠ·ŠÖ”(•¶š—ñ -> ”’lŒ^‚Ö‚ÍReadNum‚ğ„§) string or wstring -> R
+	//conv: èª­ã¿è¾¼ã‚“ã æ–‡å­—åˆ—ã‹ã‚‰ä»»æ„å‹Rã¸ã®å¤‰æ›é–¢æ•°(æ–‡å­—åˆ— -> æ•°å€¤å‹ã¸ã¯ReadNumã‚’æ¨å¥¨) string or wstring -> R
 	template <class C, class R = typename container_traits<C>::value_type>
 	void ReadLine(C& empty_dest,
 		IfsSelector<R>& ifs,
@@ -262,7 +268,7 @@ namespace sig{
 	{
 		IfsSelector<R> ifs(file_pass);
 		if (!ifs){
-			std::wcout << L"file open error: " << file_pass << std::endl;
+			FileOpenErrorPrint(file_pass);
 			return;
 		}
 		ReadLine(empty_dest, ifs, conv);
@@ -283,7 +289,7 @@ namespace sig{
 		}
 
 		if (!ifs){
-			std::wcout << L"file open error: " << file_pass << std::endl;
+			FileOpenErrorPrint(file_pass);
 			return;
 		}
 		while (ifs && std::getline(ifs, line)){
@@ -292,7 +298,7 @@ namespace sig{
 		}
 	}
 
-	//“Ç‚İ‚İ¸”s: return -> nothing
+	//èª­ã¿è¾¼ã¿å¤±æ•—: return -> nothing
 	template <class R, class C = std::vector<R>>
 	auto ReadLine(IfsSelector<R>& ifs) ->typename Just<C>::type
 	{
@@ -306,7 +312,7 @@ namespace sig{
 	{
 		IfsSelector<R> ifs(file_pass);
 		if (!ifs){
-			std::wcout << L"file open error: " << file_pass << std::endl;
+			FileOpenErrorPrint(file_pass);
 			return Nothing(C());
 		}
 		return ReadLine<R, C>(ifs);
@@ -321,7 +327,7 @@ namespace sig{
 	}
 
 	/*
-	//csv‚Å•Û‘¶
+	//csvã§ä¿å­˜
 	template <class Num>
 	void SaveCSV(std::vector<std::vector<Num>> const& data, std::vector<std::string> const& row_names, std::vector<std::string> const& col_names, std::wstring const& out_fullpass)
 	{

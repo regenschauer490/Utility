@@ -4,74 +4,74 @@
 #include <windows.h>
 #endif
 
-//SIG_ENABLE_BOOST = 1 ‚ÌÛ‚É‚Íboost::optional‚ª—LŒø‚É‚È‚é
+//SIG_ENABLE_BOOST = 1 ã®éš›ã«ã¯boost::optionalãŒæœ‰åŠ¹ã«ãªã‚‹
 
 void RandomTest()
 {
-	sig::SimpleRandom<int> rand_maker(-10, 10, true);	//[-10, 10]‚Ìˆê—l•ª•z—”AƒfƒoƒbƒOƒ‚[ƒh(ƒV[ƒhŒÅ’è)
+	sig::SimpleRandom<int> rand_maker(-10, 10, true);	//[-10, 10]ã®ä¸€æ§˜åˆ†å¸ƒä¹±æ•°ã€ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰(ã‚·ãƒ¼ãƒ‰å›ºå®š)
 	
 	std::cout << rand_maker() << std::endl;
 
-	auto rints = sig::RandomUniqueNumbers(10, 0, 30, true);	//[0, 30]‚Ìˆê—l•ª•z‚©‚ç10ŒÂd•¡–³‚­ƒTƒ“ƒvƒ‹
+	auto rints = sig::RandomUniqueNumbers(10, 0, 30, true);	//[0, 30]ã®ä¸€æ§˜åˆ†å¸ƒã‹ã‚‰10å€‹é‡è¤‡ç„¡ãã‚µãƒ³ãƒ—ãƒ«
 
 	for (auto v : rints) std::cout << v << std::endl;
 }
 
 void TimeWatchTest()
 {
-	sig::TimeWatch tw;		//Œv‘ªŠJn
+	sig::TimeWatch tw;		//è¨ˆæ¸¬é–‹å§‹
 
 #if SIG_WINDOWS_ENV
 	Sleep(100);
 
-	tw.Save();		//‚±‚±‚Ü‚Å‚Ìƒ^ƒCƒ€‚ğ‹L˜^
+	tw.Save();		//ã“ã“ã¾ã§ã®ã‚¿ã‚¤ãƒ ã‚’è¨˜éŒ²
 
 	Sleep(200);
 
-	tw.Save();		//‚±‚±‚Ü‚Å‚Ìƒ^ƒCƒ€‚ğ‹L˜^
+	tw.Save();		//ã“ã“ã¾ã§ã®ã‚¿ã‚¤ãƒ ã‚’è¨˜éŒ²
 
 	Sleep(300);
 
-	tw.Stop();		//ˆê’â~
+	tw.Stop();		//ä¸€æ™‚åœæ­¢
 
 	Sleep(10);
 
-	tw.Save();		//‚±‚±‚Ü‚Å‚Ìƒ^ƒCƒ€‚ğ‹L˜^
+	tw.Save();		//ã“ã“ã¾ã§ã®ã‚¿ã‚¤ãƒ ã‚’è¨˜éŒ²
 
 	Sleep(20);
 
-	tw.ReStart();	//Œv‘ªÄŠJ
+	tw.ReStart();	//è¨ˆæ¸¬å†é–‹
 
 	Sleep(400);
 
-	tw.Save();		//‚±‚±‚Ü‚Å‚Ìƒ^ƒCƒ€‚ğ‹L˜^
+	tw.Save();		//ã“ã“ã¾ã§ã®ã‚¿ã‚¤ãƒ ã‚’è¨˜éŒ²
 
 #if SIG_ENABLE_BOOST
-	assert(sig::TolerantEqual(*tw.GetLapTime(0), 100, 1));		//100 } 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetLapTime(1), 200, 1));		//200 } 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetLapTime(2), 300, 1));		//300 } 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetLapTime(3), 400, 1));		//400 } 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetLapTime(0), 100, 1));		//100 Â± 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetLapTime(1), 200, 1));		//200 Â± 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetLapTime(2), 300, 1));		//300 Â± 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetLapTime(3), 400, 1));		//400 Â± 1 (ms)
 	assert(! tw.GetLapTime(4));
 
-	assert(sig::TolerantEqual(*tw.GetSplitTime(0), 100, 1));	//100 } 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetSplitTime(1), 300, 1));	//300 } 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetSplitTime(2), 600, 1));	//600 } 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetSplitTime(3), 1000, 1));	//1000 } 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetSplitTime(0), 100, 1));	//100 Â± 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetSplitTime(1), 300, 1));	//300 Â± 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetSplitTime(2), 600, 1));	//600 Â± 1 (ms)
+	assert(sig::TolerantEqual(*tw.GetSplitTime(3), 1000, 1));	//1000 Â± 1 (ms)
 #else
-	assert(sig::TolerantEqual(tw.GetLapTime(0), 100, 1));		//100 } 1 (ms)
-	assert(sig::TolerantEqual(tw.GetLapTime(1), 200, 1));		//200 } 1 (ms)
-	assert(sig::TolerantEqual(tw.GetLapTime(2), 300, 1));		//300 } 1 (ms)
-	assert(sig::TolerantEqual(tw.GetLapTime(3), 400, 1));		//400 } 1 (ms)
+	assert(sig::TolerantEqual(tw.GetLapTime(0), 100, 1));		//100 Â± 1 (ms)
+	assert(sig::TolerantEqual(tw.GetLapTime(1), 200, 1));		//200 Â± 1 (ms)
+	assert(sig::TolerantEqual(tw.GetLapTime(2), 300, 1));		//300 Â± 1 (ms)
+	assert(sig::TolerantEqual(tw.GetLapTime(3), 400, 1));		//400 Â± 1 (ms)
 	assert(! tw.GetLapTime(4));
 
-	assert(sig::TolerantEqual(tw.GetSplitTime(0), 100, 1));		//100 } 1 (ms)
-	assert(sig::TolerantEqual(tw.GetSplitTime(1), 300, 1));		//300 } 1 (ms)
-	assert(sig::TolerantEqual(tw.GetSplitTime(2), 600, 1));		//600 } 1 (ms)
-	assert(sig::TolerantEqual(tw.GetSplitTime(3), 1000, 1));	//1000 } 1 (ms)
+	assert(sig::TolerantEqual(tw.GetSplitTime(0), 100, 1));		//100 Â± 1 (ms)
+	assert(sig::TolerantEqual(tw.GetSplitTime(1), 300, 1));		//300 Â± 1 (ms)
+	assert(sig::TolerantEqual(tw.GetSplitTime(2), 600, 1));		//600 Â± 1 (ms)
+	assert(sig::TolerantEqual(tw.GetSplitTime(3), 1000, 1));	//1000 Â± 1 (ms)
 #endif
-	assert(sig::TolerantEqual(tw.GetTotalTime(), 1000, 1));				//1000 } 1 (ms)
+	assert(sig::TolerantEqual(tw.GetTotalTime(), 1000, 1));				//1000 Â± 1 (ms)
 	assert(sig::Equal(tw.GetTotalTime<std::chrono::seconds>(), 1));		//1 (s)
-	assert(sig::TolerantEqual(tw.GetTotalTime<std::chrono::microseconds>(), 1000000, 100));	//1000000  } 100 (ƒÊs)
+	assert(sig::TolerantEqual(tw.GetTotalTime<std::chrono::microseconds>(), 1000000, 100));	//1000000  Â± 100 (Î¼s)
 #else
 
 #endif
@@ -79,33 +79,42 @@ void TimeWatchTest()
 
 void HistgramTest()
 {
+#if SIG_WINDOWS_ENV
+	auto file1 = L"./example/test_file/histgram1.txt";
+	auto file2 = L"./example/test_file/histgram2.txt";
+#else
+	auto file1 = "./example/test_file/histgram1.txt";
+	auto file2 = "./example/test_file/histgram2.txt";
+#endif
+
 	std::vector<int> data1{-100, -10, -6, -5, -1, 0, 3, 5, 5, 6, 6, 6, 7, 9, 10};
 
-	sig::Histgram<int, 10> hist(-10, 10);	//intŒ^Aƒrƒ“”10A[-10`10j‚Ì”ÍˆÍ‚Ì”’l‚ğWŒv
+	sig::Histgram<int, 10> hist(-10, 10);	//intå‹ã€ãƒ“ãƒ³æ•°10ã€[-10ï½10ï¼‰ã®ç¯„å›²ã®æ•°å€¤ã‚’é›†è¨ˆ
 
 	hist.Count(data1);
 
-	hist.Print();					//ƒRƒ“ƒ\[ƒ‹‚Öo—Í
-	hist.Print(L"./example/test_file/histgram1.txt");	//ƒtƒ@ƒCƒ‹‚Öo—Í
+	hist.Print();						//ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã¸å‡ºåŠ›
+	hist.Print(file1);	//ãƒ•ã‚¡ã‚¤ãƒ«ã¸å‡ºåŠ›
+
 	/*
 	-- Histgram --
 
-	[-‡,-10)F0
-	[-10, -8)F1 |
-	[ -8, -6)F0
-	[ -6, -4)F2 ||
-	[ -4, -2)F0
-	[ -2,  0)F1 |
-	[  0,  2)F1 |
-	[  2,  4)F1 |
-	[  4,  6)F2 ||
-	[  6,  8)F4 ||||
-	[  8, 10)F1 |
-	[ 10,+‡)F1 |
+	[-âˆ,-10)ï¼š0
+	[-10, -8)ï¼š1 |
+	[ -8, -6)ï¼š0
+	[ -6, -4)ï¼š2 ||
+	[ -4, -2)ï¼š0
+	[ -2,  0)ï¼š1 |
+	[  0,  2)ï¼š1 |
+	[  2,  4)ï¼š1 |
+	[  4,  6)ï¼š2 ||
+	[  6,  8)ï¼š4 ||||
+	[  8, 10)ï¼š1 |
+	[ 10,+âˆ)ï¼š1 |
 	*/
 
-	auto count = hist.GetCount();		//0 ` BIN_NUM-1 ‚Ì•p“x‚ğæ“¾
-	assert(count[2], 2);				//[ -6, -4)‚ÌŒÂ”
+	auto count = hist.GetCount();		//0 ï½ BIN_NUM-1 ã®é »åº¦ã‚’å–å¾—
+	assert(count[2] == 2);				//[ -6, -4)ã®å€‹æ•°
 
 	auto c2 = hist.GetCount(2);
 	auto c100 = hist.GetCount(100);
@@ -120,44 +129,44 @@ void HistgramTest()
 #else
 	assert(std::get<1>(c2) == -6);
 	assert(std::get<2>(c2) == -4);
-	assert(std::get<0>(c2) == -2);
+	assert(std::get<0>(c2) == 2);
 
 	assert(std::get<1>(c100) == 0);
 	assert(std::get<2>(c100) == 0);
 	assert(std::get<0>(c100) == 0);
 #endif
 
-	bool over = hist.IsOverRange();	//‰Šúİ’è‚Ì”ÍˆÍŠO‚Ì’l‚ª‘¶İ‚µ‚½‚©
-	assert(over, 1);				//”ÍˆÍŠO‚Ì’l‚ÌŒÂ”F1
+	bool over = hist.IsOverRange();	//åˆæœŸè¨­å®šã®ç¯„å›²å¤–ã®å€¤ãŒå­˜åœ¨ã—ãŸã‹
+	assert(over == 1);				//ç¯„å›²å¤–ã®å€¤ã®å€‹æ•°ï¼š1
 	
 
-	sig::Histgram<double, 15> hist2(0, 1);						//doubleŒ^Aƒrƒ“”15A[0`1j‚Ì”ÍˆÍ‚Ì”’l‚ğWŒv
-	auto rand_maker = sig::SimpleRandom<double>(0, 1.5, true);	//[0, 1.5]‚Ìˆê—l•ª•z—”AƒfƒoƒbƒOƒ‚[ƒh(ƒV[ƒhŒÅ’è)
+	sig::Histgram<double, 15> hist2(0, 1);						//doubleå‹ã€ãƒ“ãƒ³æ•°15ã€[0ï½1ï¼‰ã®ç¯„å›²ã®æ•°å€¤ã‚’é›†è¨ˆ
+	auto rand_maker = sig::SimpleRandom<double>(0, 1.5, true);	//[0, 1.5]ã®ä¸€æ§˜åˆ†å¸ƒä¹±æ•°ã€ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰(ã‚·ãƒ¼ãƒ‰å›ºå®š)
 	
 	for (int i = 0; i<100; ++i) hist2.Count(rand_maker());
 
 	hist2.Print();
-	hist2.Print(L"./example/test_file/histgram2.txt");
+	hist2.Print(file2);
 	/*
 	-- Histgram --
 
-	[-‡   , 0.000)F 0
-	[ 0.000, 0.067)F 6 ||||||
-	[ 0.067, 0.133)F 6 ||||||
-	[ 0.133, 0.200)F 5 |||||
-	[ 0.200, 0.267)F 6 ||||||
-	[ 0.267, 0.333)F 4 ||||
-	[ 0.333, 0.400)F 5 |||||
-	[ 0.400, 0.467)F 2 ||
-	[ 0.467, 0.533)F11 |||||||||||
-	[ 0.533, 0.600)F 2 ||
-	[ 0.600, 0.667)F 3 |||
-	[ 0.667, 0.733)F 5 |||||
-	[ 0.733, 0.800)F 3 |||
-	[ 0.800, 0.867)F 4 ||||
-	[ 0.867, 0.933)F 7 |||||||
-	[ 0.933, 1.000)F 1 |
-	[ 1.000,+‡   )F30 ||||||||||||||||||||||||||||||
+	[-âˆ   , 0.000)ï¼š 0
+	[ 0.000, 0.067)ï¼š 6 ||||||
+	[ 0.067, 0.133)ï¼š 6 ||||||
+	[ 0.133, 0.200)ï¼š 5 |||||
+	[ 0.200, 0.267)ï¼š 6 ||||||
+	[ 0.267, 0.333)ï¼š 4 ||||
+	[ 0.333, 0.400)ï¼š 5 |||||
+	[ 0.400, 0.467)ï¼š 2 ||
+	[ 0.467, 0.533)ï¼š11 |||||||||||
+	[ 0.533, 0.600)ï¼š 2 ||
+	[ 0.600, 0.667)ï¼š 3 |||
+	[ 0.667, 0.733)ï¼š 5 |||||
+	[ 0.733, 0.800)ï¼š 3 |||
+	[ 0.800, 0.867)ï¼š 4 ||||
+	[ 0.867, 0.933)ï¼š 7 |||||||
+	[ 0.933, 1.000)ï¼š 1 |
+	[ 1.000,+âˆ   )ï¼š30 ||||||||||||||||||||||||||||||
 	*/
 }
 

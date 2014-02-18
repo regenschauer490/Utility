@@ -74,9 +74,13 @@ namespace sig{
 	template <>
 	struct StringId<std::string>{ typedef std::string type; };
 	template <>
+	struct StringId<char*>{ typedef std::string type; };
+	template <>
 	struct StringId<char const*>{ typedef std::string type; };
 	template <>
 	struct StringId<std::wstring>{ typedef std::wstring type; };
+	template <>
+	struct StringId<wchar_t*>{ typedef std::wstring type; };
 	template <>
 	struct StringId<wchar_t const*>{ typedef std::wstring type; };
 

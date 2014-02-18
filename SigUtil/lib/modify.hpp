@@ -9,24 +9,25 @@ http://opensource.org/licenses/mit-license.php
 #define __SIG_UTIL_ERASER__
 
 #include "sigutil.hpp"
+#include "functional.hpp"
 #include "tool.hpp"
 #include <iterator>
 
-/* ƒ\[ƒgEíœ‚È‚Ç‚ÌƒRƒ“ƒeƒi‚É‘Î‚·‚é•ÏX‘€ì */
+/* ã‚½ãƒ¼ãƒˆãƒ»å‰Šé™¤ãªã©ã®ã‚³ãƒ³ãƒ†ãƒŠã«å¯¾ã™ã‚‹å¤‰æ›´æ“ä½œ */
 
 namespace sig
 {
 
 #ifndef SIG_MSVC_LT1800
 
-	//•W€ƒ\[ƒgŠÖ”‚Ìƒ‰ƒbƒp (ƒV[ƒPƒ“ƒXƒRƒ“ƒeƒi‚Ì‚İ‘Î‰)
-	//std::sort()‚ªg‚¦‚éê‡
+	//æ¨™æº–ã‚½ãƒ¼ãƒˆé–¢æ•°ã®ãƒ©ãƒƒãƒ‘ (ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚³ãƒ³ãƒ†ãƒŠã®ã¿å¯¾å¿œ)
+	//std::sort()ãŒä½¿ãˆã‚‹å ´åˆ
 	template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<HasRandomIter<C>::value>::type*& = enabler>
 	void Sort(C& data, F const& binary_op = std::less<typename container_traits<C>::value_type>())
 	{
 		std::sort(std::begin(data), std::end(data), binary_op);
 	}
-	//ƒƒ“ƒoŠÖ”‚Ésort()‚ª‚ ‚éê‡
+	//ãƒ¡ãƒ³ãƒé–¢æ•°ã«sort()ãŒã‚ã‚‹å ´åˆ
 	template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<!HasRandomIter<C>::value>::type*& = enabler>
 	void Sort(C& data, F const& binary_op = std::less<typename container_traits<C>::value_type>())
 	{
@@ -45,7 +46,7 @@ namespace sig
 	}
 #endif
 	
-	//ƒ\[ƒg‘O‚ÌˆÊ’u‚ğ•Û‚µ‚Äƒ\[ƒg (ƒV[ƒPƒ“ƒXƒRƒ“ƒeƒi‚Ì‚İ‘Î‰)
+	//ã‚½ãƒ¼ãƒˆå‰ã®ä½ç½®ã‚’ä¿æŒã—ã¦ã‚½ãƒ¼ãƒˆ (ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚³ãƒ³ãƒ†ãƒŠã®ã¿å¯¾å¿œ)
 	//ex: [30, 50, -10, 0] -> ([-10, 0, 30, 50], [2, 3, 0, 1])
 	template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>>
 	auto SortWithIndex(C const& container, F const& binary_op = std::less<typename sequence_container_traits<C>::value_type>())
@@ -58,7 +59,7 @@ namespace sig
 		return UnZip(std::move(result));
 	}
 
-	//ƒRƒ“ƒeƒi‚Ì—v‘f‚ğƒVƒƒƒbƒtƒ‹
+	//ã‚³ãƒ³ãƒ†ãƒŠã®è¦ç´ ã‚’ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 	template <class C>
 	void Shuffle(C& container)
 	{
@@ -86,7 +87,7 @@ namespace sig
 		ShuffleImpl(loop, seq, iters...);
 	}
 
-	//•¡”‚ÌƒRƒ“ƒeƒi‚Ì—v‘f‚ğ‘Î‰‚³‚¹‚È‚ª‚çƒVƒƒƒbƒtƒ‹
+	//è¤‡æ•°ã®ã‚³ãƒ³ãƒ†ãƒŠã®è¦ç´ ã‚’å¯¾å¿œã•ã›ãªãŒã‚‰ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 	//ex: c1[1, 2, 3, 4], c2[1, 2, 3, 4] -> c1'[3, 1, 4, 2], c2'[3, 1, 4, 2]
 	template <class... Cs>
 	void Shuffle(Cs&... containers)
@@ -98,10 +99,10 @@ namespace sig
 	}
 
 
-	//ƒRƒ“ƒeƒi‚Ì—v‘f‚©‚çd•¡‚µ‚½‚à‚Ì‚ğíœ
-	//container: ˆ—‘ÎÛƒRƒ“ƒeƒi
-	//need_removes: íœ‚µ‚½—v‘f‚ğ–ß‚è’l‚Åó‚¯æ‚é‚©
-	//return -> íœ—v‘f
+	//ã‚³ãƒ³ãƒ†ãƒŠã®è¦ç´ ã‹ã‚‰é‡è¤‡ã—ãŸã‚‚ã®ã‚’å‰Šé™¤
+	//container: å‡¦ç†å¯¾è±¡ã‚³ãƒ³ãƒ†ãƒŠ
+	//need_removes: å‰Šé™¤ã—ãŸè¦ç´ ã‚’æˆ»ã‚Šå€¤ã§å—ã‘å–ã‚‹ã‹
+	//return -> å‰Šé™¤è¦ç´ 
 	template <class C>
 	C RemoveDuplicates(C& container, bool need_removes)
 	{
@@ -134,10 +135,10 @@ namespace sig
 #define Sig_Eraser_ParamType1 typename std::common_type<typename container_traits<C>::value_type>::type const&
 #endif
 
-	//ƒRƒ“ƒeƒi‚©‚çw’è—v‘f‚ğ1‚Âíœ
-	//container: ƒRƒ“ƒeƒi
-	//remove: íœ—v‘f
-	//return -> íœ—v‘f‚ª‘¶İ‚µ‚½‚©
+	//ã‚³ãƒ³ãƒ†ãƒŠã‹ã‚‰æŒ‡å®šè¦ç´ ã‚’1ã¤å‰Šé™¤
+	//container: ã‚³ãƒ³ãƒ†ãƒŠ
+	//remove: å‰Šé™¤è¦ç´ 
+	//return -> å‰Šé™¤è¦ç´ ãŒå­˜åœ¨ã—ãŸã‹
 	template <class C>
 	bool RemoveOne(C& container, Sig_Eraser_ParamType1 remove)
 	{
@@ -151,10 +152,10 @@ namespace sig
 		return false;
 	}
 
-	//ƒRƒ“ƒeƒi‚©‚çqŒêğŒ‚ğ–‚½‚·—v‘f‚ğ1‚Âíœ
-	//container: ƒRƒ“ƒeƒi
-	//remove_pred: íœ”»•ÊŠÖ”
-	//return -> íœ—v‘f‚ª‘¶İ‚µ‚½‚©
+	//ã‚³ãƒ³ãƒ†ãƒŠã‹ã‚‰è¿°èªæ¡ä»¶ã‚’æº€ãŸã™è¦ç´ ã‚’1ã¤å‰Šé™¤
+	//container: ã‚³ãƒ³ãƒ†ãƒŠ
+	//remove_pred: å‰Šé™¤åˆ¤åˆ¥é–¢æ•°
+	//return -> å‰Šé™¤è¦ç´ ãŒå­˜åœ¨ã—ãŸã‹
 	template <class Pred, class C>
 	bool RemoveOneIf(C& container, Pred remove_pred)
 	{
@@ -168,10 +169,10 @@ namespace sig
 		return false;
 	}
 
-	//ƒRƒ“ƒeƒi‚©‚çw’è—v‘f‚ğ‘Síœ
-	//container: ƒRƒ“ƒeƒi
-	//remove: íœ—v‘f
-	//return -> íœ—v‘f‚ª‘¶İ‚µ‚½‚©
+	//ã‚³ãƒ³ãƒ†ãƒŠã‹ã‚‰æŒ‡å®šè¦ç´ ã‚’å…¨å‰Šé™¤
+	//container: ã‚³ãƒ³ãƒ†ãƒŠ
+	//remove: å‰Šé™¤è¦ç´ 
+	//return -> å‰Šé™¤è¦ç´ ãŒå­˜åœ¨ã—ãŸã‹
 	template <class C>
 	bool RemoveAll(C& container, Sig_Eraser_ParamType1 remove)
 	{
@@ -181,10 +182,10 @@ namespace sig
 	}
 
 
-	//ƒRƒ“ƒeƒi‚©‚çqŒêğŒ‚ğ–‚½‚·—v‘f‚ğ‘Síœ
-	//container: ƒRƒ“ƒeƒi
-	//remove_pred: íœ”»•ÊŠÖ”
-	//return -> íœ—v‘f‚ª‘¶İ‚µ‚½‚©
+	//ã‚³ãƒ³ãƒ†ãƒŠã‹ã‚‰è¿°èªæ¡ä»¶ã‚’æº€ãŸã™è¦ç´ ã‚’å…¨å‰Šé™¤
+	//container: ã‚³ãƒ³ãƒ†ãƒŠ
+	//remove_pred: å‰Šé™¤åˆ¤åˆ¥é–¢æ•°
+	//return -> å‰Šé™¤è¦ç´ ãŒå­˜åœ¨ã—ãŸã‹
 	template <class Pred, class C>
 	bool RemoveAllIf(C& container, Pred remove_pred)
 	{
@@ -193,8 +194,8 @@ namespace sig
 		return presize != container.size();
 	}
 
-
-	//ƒRƒ“ƒeƒi‚Ö‚Ì‘ã“ü‰‰Z ([a], [b], (a -> b -> a))
+/*
+	//ã‚³ãƒ³ãƒ†ãƒŠã¸ã®ä»£å…¥æ¼”ç®— ([a], [b], (a -> b -> a))
 	template < class T1, class T2, template < class T_, class = std::allocator<T_>> class Container>
 	void CompoundAssignment(Container<T1>& list1, Container<T2> const& list2, std::function<typename std::common_type<T1>::type(typename std::common_type<T1>::type, typename std::common_type<T2>::type)> const& op)
 	{
@@ -203,24 +204,13 @@ namespace sig
 		for (uint i = 0; i < length; ++i) list1[i] = op(list1[i], list2[i]);
 	}
 
-	//ƒRƒ“ƒeƒi‚Ö‚Ì‘ã“ü‰‰Z ([a], b, (a -> b -> a))
+	//ã‚³ãƒ³ãƒ†ãƒŠã¸ã®ä»£å…¥æ¼”ç®— ([a], b, (a -> b -> a))
 	template < class T1, class T2, template < class T_, class = std::allocator<T_>> class Container>
 	void CompoundAssignment(Container<T1>& list1, T2 const& v, std::function<typename std::common_type<T1>::type(typename std::common_type<T1>::type, typename std::common_type<T2>::type)> const& op)
 	{
 		for (uint i = 0, length = list1.size(); i < length; ++i) list1[i] = op(list1[i], v);
 	}
-
-
-	//¶¬ŠÖ”‚ğ’Ê‚µ‚Ä’l‚ğ¶¬‚·‚é
-	//args -> generator: ¶¬ŠÖ”.ˆø”‚Íƒ‹[ƒvindex
-	template < class T, template < class T_, class = std::allocator<T_>> class Container = std::vector>
-	Container<T> Generate(std::function<T(int)> const& generator, uint count)
-	{
-		Container<T> tmp;
-		tmp.reserve(count);
-		for (uint i = 0; i < count; ++i) tmp.push_back(generator(i));
-		return std::move(tmp);
-	}
+*/
 }
 
 #endif

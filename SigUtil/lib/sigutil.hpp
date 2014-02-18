@@ -1,7 +1,7 @@
 #ifndef __SIG_UTIL_H__
 #define __SIG_UTIL_H__
 
-#define SIG_ENABLE_BOOST 1
+#define SIG_ENABLE_BOOST 0
 
 #ifdef _WIN32
 #define SIG_WINDOWS_ENV 1
@@ -67,12 +67,12 @@ namespace sig{
 #endif
 
 
-/* ƒwƒ‹ƒpŠÖ”Eƒwƒ‹ƒpƒNƒ‰ƒX */
+/* ãƒ˜ãƒ«ãƒ‘é–¢æ•°ãƒ»ãƒ˜ãƒ«ãƒ‘ã‚¯ãƒ©ã‚¹ */
 	struct NullType{};
 	
 	extern void* enabler;
 
-	//maybe‚Ì—LŒøE–³Œø‚ÉŠÖŒW‚È‚­‹Lq‚·‚é‚½‚ß‚Ì‚à‚Ì
+	//maybeã®æœ‰åŠ¹ãƒ»ç„¡åŠ¹ã«é–¢ä¿‚ãªãè¨˜è¿°ã™ã‚‹ãŸã‚ã®ã‚‚ã®
 #if SIG_ENABLE_BOOST
 	template <class T> struct Just{ typedef maybe<T> type; };
 	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
@@ -83,11 +83,13 @@ namespace sig{
 
 #if SIG_WINDOWS_ENV
 	using FileString = std::wstring;
+	inline void FileOpenErrorPrint(FileString const& pass){ std::wcout << L"file open error: " << pass << std::endl; }
 #if _MSC_VER <= 1800
 #define SIG_MSVC_LT1800
 #endif
 #else
 	using FileString = std::string;
+	inline void FileOpenErrorPrint(FileString const& pass){ std::cout << "file open error: " << pass << std::endl; }
 #endif
 
 	/*
@@ -146,7 +148,7 @@ namespace sig{
 
 	/*
 #if _MSC_VER > 1800
-	//container_traits‚ÌŠg’£
+	//container_traitsã®æ‹¡å¼µ
 	template<class C>
 	struct map_associative_container_traits;
 
@@ -216,12 +218,12 @@ namespace sig{
 	//template <class T> void Reserve(T& t, size_t n){ std::cout << "false" << std::endl; }
 
 
-/* •Ö—˜ŠÖ” */
+/* ä¾¿åˆ©é–¢æ•° */
 
 	//xor
 	inline bool BoolXor(bool A, bool B){ return (A && !B) || (!A && B); }
 
-	//A‚ÆB‚Ì^‹Uˆê’v‚Åtrue‚ğ•Ô‚· (Ì !xor)
+	//Aã¨Bã®çœŸå½ä¸€è‡´ã§trueã‚’è¿”ã™ (â‡” !xor)
 	inline bool BoolConsistency(bool A, bool B){ return (A && B) || (!A && !B); }
 
 
@@ -231,7 +233,7 @@ namespace sig{
 		return v1 < v2 ? v2 - v1 : v1 - v2;
 	}
 
-	//•‚“®¬”“_Œ^‚É‚àg‚¦‚é“™’l”äŠr
+	//æµ®å‹•å°æ•°ç‚¹å‹ã«ã‚‚ä½¿ãˆã‚‹ç­‰å€¤æ¯”è¼ƒ
 	template <class T1, class T2>
 	bool Equal(T1 v1, T2 v2)
 	{
@@ -240,14 +242,14 @@ namespace sig{
 		return !(DeltaAbs(v1, v2) > dmin);
 	}
 
-	//w’è”ÍˆÍ“à‚ÌŒë·‚ğ‹–‚µ‚½“™’l”äŠr
+	//æŒ‡å®šç¯„å›²å†…ã®èª¤å·®ã‚’è¨±ã—ãŸç­‰å€¤æ¯”è¼ƒ
 	template <class T1, class T2>
 	bool TolerantEqual(T1 v1, T2 v2, typename std::common_type<T1, T2>::type margin)
 	{
 		return margin ? !(DeltaAbs(v1, v2) > margin) : Equal(v1, v2);
 	}
 
-	//¬”“_ˆÈ‰º‚ÌŒ…”æ“¾ (ex: v=1.2300000 -> 2)
+	//å°æ•°ç‚¹ä»¥ä¸‹ã®æ¡æ•°å–å¾— (ex: v=1.2300000 -> 2)
 	inline uint Precision(double v)
 	{
 		uint keta = 0;
@@ -280,9 +282,9 @@ namespace sig{
 	}
 
 
-/* C³E•â³E’Ç‰ÁEíœ */
+/* ä¿®æ­£ãƒ»è£œæ­£ãƒ»è¿½åŠ ãƒ»å‰Šé™¤ */
 
-	//”ÍˆÍƒ`ƒFƒbƒN‚Æ©“®C³
+	//ç¯„å›²ãƒã‚§ãƒƒã‚¯ã¨è‡ªå‹•ä¿®æ­£
 	template <class T, class U>
 	inline bool ModifyRange(T& val, U const& min, U const& max)
 	{
@@ -300,7 +302,7 @@ namespace sig{
 	}
 
 
-/* W‡‘€ì */
+/* é›†åˆæ“ä½œ */
 
 /*	template < template<class T, class = std::allocator<T>> class Container >
 	inline void Print(Container<std::string> const& container, char const* const delimiter = "\n")
@@ -325,19 +327,17 @@ namespace sig{
 		std::wcout << text << delimiter;
 	}
 
-	template < class T, template < class T_, class = std::allocator<T_>> class Container, typename std::enable_if<!std::is_same<T, std::wstring>::value>::type*& = enabler>
+	template < class T, template <class...> class Container, typename std::enable_if<!std::is_same<T, std::wstring>::value>::type*& = enabler>
 	inline void Print(Container<T> const& container, char const* const delimiter = "\n")
 	{
 		std::copy(container.begin(), container.end(), std::ostream_iterator<T>(std::cout, delimiter));
 	}
 
-	template<template<class ...> class Container>
+	template<template<class...> class Container>
 	inline void Print(Container<std::wstring> const& container, wchar_t const* const delimiter = L"\n")
 	{
 		std::copy(container.begin(), container.end(), std::ostream_iterator<std::wstring>(std::wcout, delimiter));
 	}
-
-
 }
 
 #endif
