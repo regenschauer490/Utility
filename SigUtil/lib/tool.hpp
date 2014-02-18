@@ -20,20 +20,20 @@ http://opensource.org/licenses/mit-license.php
 
 #endif
 
-/* •Ö—˜ƒc[ƒ‹ */
+/* ä¾¿åˆ©ãƒ„ãƒ¼ãƒ« */
 
 namespace sig{
 
-	//‰Šú‰»‚Éw’è‚µ‚½”ÍˆÍ‚Ìˆê—l•ª•z—”‚ğ”­¶‚³‚¹‚éƒNƒ‰ƒX
-	//ƒfƒtƒHƒ‹ƒg: —”¶¬Ší -> ƒƒ‹ƒZƒ“ƒkƒcƒCƒXƒ^[
+	//åˆæœŸåŒ–æ™‚ã«æŒ‡å®šã—ãŸç¯„å›²ã®ä¸€æ§˜åˆ†å¸ƒä¹±æ•°ã‚’ç™ºç”Ÿã•ã›ã‚‹ã‚¯ãƒ©ã‚¹
+	//ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ: ä¹±æ•°ç”Ÿæˆå™¨ -> ãƒ¡ãƒ«ã‚»ãƒ³ãƒŒãƒ„ã‚¤ã‚¹ã‚¿ãƒ¼
 	template <class NumType, class Engine = std::mt19937>
 	class SimpleRandom {
-		Engine _engine;		//—”¶¬ƒAƒ‹ƒSƒŠƒYƒ€ 
+		Engine _engine;		//ä¹±æ•°ç”Ÿæˆã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ  
 		typename std::conditional <
 			std::is_integral<NumType>::value,
 			std::uniform_int_distribution<int>,
 			std::uniform_real_distribution<double>
-		> ::type _dist;		//Šm—¦•ª•z
+		> ::type _dist;		//ç¢ºç‡åˆ†å¸ƒ
 
 	public:
 		SimpleRandom(NumType min, NumType max, bool debug) : _engine(
@@ -54,7 +54,7 @@ namespace sig{
 	};
 
 
-	//d•¡‚Ì–³‚¢ˆê—l•ª•z‚Ì®”—”‚ğ¶¬
+	//é‡è¤‡ã®ç„¡ã„ä¸€æ§˜åˆ†å¸ƒã®æ•´æ•°ä¹±æ•°ã‚’ç”Ÿæˆ
 	template < template < class T, class = std::allocator<T>> class Container = std::vector >
 	Container<int> RandomUniqueNumbers(std::size_t n, int min, int max, bool debug) {
 		std::unordered_set<int> match;
@@ -74,7 +74,7 @@ namespace sig{
 		return std::move(result);
 	}
 
-	//ƒ^ƒCƒ€ƒEƒHƒbƒ`
+	//ã‚¿ã‚¤ãƒ ã‚¦ã‚©ãƒƒãƒ
 	class TimeWatch{
 		typedef std::chrono::system_clock::time_point Time;
 		typedef decltype(std::declval<Time>() - std::declval<Time>()) Duration;
@@ -103,19 +103,19 @@ namespace sig{
 			is_run = true;
 		}
 
-		//‰Šú‰»‚µ‚Ä’â~
+		//åˆæœŸåŒ–ã—ã¦åœæ­¢
 		void Reset(){
 			Init();
 			is_run = false;
 		}
 
-		//’â~
+		//åœæ­¢
 		void Stop(){
 			if (is_run)	cache.push_back(std::chrono::system_clock::now() - st);
 			is_run = false;
 		}
 		
-		//’â~‰ğœ
+		//åœæ­¢è§£é™¤
 		void ReStart(){
 			st = std::chrono::system_clock::now();
 			is_run = true;
@@ -132,15 +132,15 @@ namespace sig{
 			cache.clear();
 		}
 
-		//ƒg[ƒ^ƒ‹‚ÌŠÔ‚ğæ“¾
-		//templateˆø”‚ÅŠÔ‚Ì’PˆÊ‚ğw’è
+		//ãƒˆãƒ¼ã‚¿ãƒ«ã®æ™‚é–“ã‚’å–å¾—
+		//templateå¼•æ•°ã§æ™‚é–“ã®å˜ä½ã‚’æŒ‡å®š
 		template<class TimeUnit = std::chrono::milliseconds>
 		long GetTotalTime(){
 			return std::chrono::duration_cast<TimeUnit>(DAccumulate(laps, laps.size())).count();
 		}
 
-		//w’è‚µ‚½‹æŠÔ‚Ü‚Å‚Ìƒg[ƒ^ƒ‹ŠÔ(ƒXƒvƒŠƒbƒgƒ^ƒCƒ€)‚ğæ“¾
-		//templateˆø”‚ÅŠÔ‚Ì’PˆÊ‚ğw’è
+		//æŒ‡å®šã—ãŸåŒºé–“ã¾ã§ã®ãƒˆãƒ¼ã‚¿ãƒ«æ™‚é–“(ã‚¹ãƒ—ãƒªãƒƒãƒˆã‚¿ã‚¤ãƒ )ã‚’å–å¾—
+		//templateå¼•æ•°ã§æ™‚é–“ã®å˜ä½ã‚’æŒ‡å®š
 		template<class TimeUnit = std::chrono::milliseconds>
 		auto GetSplitTime(uint index) ->typename Just<long>::type{
 			return index < laps.size()
@@ -148,16 +148,16 @@ namespace sig{
 				: Nothing(-1);
 		}
 
-		//w’è‚µ‚½‹æŠÔ‚ÌŠÔ(ƒ‰ƒbƒvƒ^ƒCƒ€)‚ğæ“¾
-		//templateˆø”‚ÅŠÔ‚Ì’PˆÊ‚ğw’è
+		//æŒ‡å®šã—ãŸåŒºé–“ã®æ™‚é–“(ãƒ©ãƒƒãƒ—ã‚¿ã‚¤ãƒ )ã‚’å–å¾—
+		//templateå¼•æ•°ã§æ™‚é–“ã®å˜ä½ã‚’æŒ‡å®š
 		template<class TimeUnit = std::chrono::milliseconds>
 		auto GetLapTime(uint index) ->typename Just<long>::type{
 			return index < laps.size() ? typename Just<long>::type(std::chrono::duration_cast<TimeUnit>(laps[index]).count()) : Nothing(-1);
 		}
 	};
 
-	//ƒqƒXƒgƒOƒ‰ƒ€
-	//template <—v‘f‚ÌŒ^, “x”>
+	//ãƒ’ã‚¹ãƒˆã‚°ãƒ©ãƒ 
+	//template <è¦ç´ ã®å‹, åº¦æ•°>
 	template <class T, size_t BIN_NUM>
 	class Histgram{
 		T const _min;
@@ -205,9 +205,9 @@ namespace sig{
 				auto low = _delta*(i - 1) + _min;
 				auto high = _delta*i + _min;
 
-				if (i == 0) ofs << std::fixed << std::setprecision(disp_precision) << "\n[-‡" << Space(keta - 2) << "," << std::setw(keta + 1) << high << ")" << "F" << std::setw(ctketa) << _count[i] << " ";
-				else if (i == BIN_NUM + 1) ofs << std::fixed << std::setprecision(disp_precision) << "\n[" << std::setw(keta + 1) << low << ",+‡" << Space(keta - 2) << ")" << "F" << std::setw(ctketa) << _count[i] << " ";
-				else ofs << std::fixed << std::setprecision(disp_precision) << "\n[" << std::setw(keta + 1) << low << "," << std::setw(keta + 1) << high << ")" << "F" << std::setw(ctketa) << _count[i] << " ";
+				if (i == 0) ofs << std::fixed << std::setprecision(disp_precision) << "\n[-âˆ" << Space(keta - 2) << "," << std::setw(keta + 1) << high << ")" << "ï¼š" << std::setw(ctketa) << _count[i] << " ";
+				else if (i == BIN_NUM + 1) ofs << std::fixed << std::setprecision(disp_precision) << "\n[" << std::setw(keta + 1) << low << ",+âˆ" << Space(keta - 2) << ")" << "ï¼š" << std::setw(ctketa) << _count[i] << " ";
+				else ofs << std::fixed << std::setprecision(disp_precision) << "\n[" << std::setw(keta + 1) << low << "," << std::setw(keta + 1) << high << ")" << "ï¼š" << std::setw(ctketa) << _count[i] << " ";
 
 				for (int j = 1; dbar*j <= _count[i]; ++j) ofs << "|";
 			}
@@ -215,13 +215,13 @@ namespace sig{
 		}
 
 	public:
-		//—v‘f‚Ì”ÍˆÍ‚ğw’è
+		//è¦ç´ ã®ç¯„å›²ã‚’æŒ‡å®š
 		Histgram(T min, T max) : _min(min), _max(max), _delta(((double) max - min) / BIN_NUM), _num(0){
 			assert(_delta > 0);
 			for (auto& ct : _count) ct = 0;
 		}
 
-		//—v‘f‚ğbin‚ÉU‚è•ª‚¯‚ÄƒJƒEƒ“ƒg
+		//è¦ç´ ã‚’binã«æŒ¯ã‚Šåˆ†ã‘ã¦ã‚«ã‚¦ãƒ³ãƒˆ
 		void Count(T value){
 			for (uint i = 0; i < BIN_NUM + 1; ++i){
 				if (value < _delta*i + _min){
@@ -238,20 +238,20 @@ namespace sig{
 			for (auto const& e : values) Count(e);
 		}
 
-		//binŠO‚Ì—v‘f‚ª‘¶İ‚µ‚½‚©
+		//binå¤–ã®è¦ç´ ãŒå­˜åœ¨ã—ãŸã‹
 		bool IsOverRange() const{ return _count[0] || _count[BIN_NUM + 1]; }
 
 		//double GetAverage() const{ return std::accumulate(_count.begin(), _count.end(), 0, [](T total, T next){ return total + next; }) / static_cast<double>(_num); }
 
-		//•p“x‚ğæ“¾
+		//é »åº¦ã‚’å–å¾—
 		auto GetCount() const -> std::array<uint, BIN_NUM>{
 			std::array<uint, BIN_NUM> tmp;
 			for (uint i = 0; i < BIN_NUM; ++i) tmp[i] = _count[i + 1];
 			return std::move(tmp);
 		}
 
-		//bin”Ô–Ú(0 ` BIN_NUM-1)‚Ì•p“x‚ğæ“¾
-		//return -> tuple<•p“x, ”ÍˆÍÅ¬’l(ˆÈã), ”ÍˆÍÅ‘å’l(–¢–)>
+		//binç•ªç›®(0 ï½ BIN_NUM-1)ã®é »åº¦ã‚’å–å¾—
+		//return -> tuple<é »åº¦, ç¯„å›²æœ€å°å€¤(ä»¥ä¸Š), ç¯„å›²æœ€å¤§å€¤(æœªæº€)>
 		auto GetCount(uint bin) const -> typename Just<std::tuple<uint, int, int>>::type{
 			return bin < BIN_NUM
 				? typename Just<std::tuple<uint, int, int>>::type(std::make_tuple(_count[bin + 1], _delta*bin + _min, _delta*(bin + 1) + _min))
@@ -260,11 +260,11 @@ namespace sig{
 		
 		void Print() const{ PrintBase(std::cout); }
 
-		//ƒtƒ@ƒCƒ‹‚Öo—Í
+		//ãƒ•ã‚¡ã‚¤ãƒ«ã¸å‡ºåŠ›
 		void Print(FileString const& file_pass) const{ PrintBase(std::ofstream(file_pass)); }
 	};
 
-	//ƒp[ƒZƒ“ƒgŒ^
+	//ãƒ‘ãƒ¼ã‚»ãƒ³ãƒˆå‹
 	class Percent
 	{
 		int percent_;

@@ -10,11 +10,11 @@ http://opensource.org/licenses/mit-license.php
 
 #include "sigutil.hpp"
 
-/* ŠÖ”Œ^ƒvƒƒOƒ‰ƒ~ƒ“ƒO ƒTƒ|[ƒg */
+/* é–¢æ•°åž‹ãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚° ã‚µãƒãƒ¼ãƒˆ */
 
 namespace sig
 {
-	//nˆø”‚ŠKŠÖ”
+	//nå¼•æ•°é«˜éšŽé–¢æ•°
 	template <class F, class C1, class... Cs>
 	auto HigherOrderFunction(F const& func, C1 const& container1, Cs const&... containers)
 	{
@@ -32,7 +32,7 @@ namespace sig
 	}
 
 	//(a -> b) -> [a] -> [b]
-	//1ˆø”‚ŠKŠÖ”
+	//1å¼•æ•°é«˜éšŽé–¢æ•°
 	template <class F, class C>
 	auto Map(F const& func, C const& container)
 	{
@@ -41,7 +41,7 @@ namespace sig
 
 
 	//(a -> b -> c) -> [a] -> [b] -> [c]
-	//2ˆø”‚ŠKŠÖ”
+	//2å¼•æ•°é«˜éšŽé–¢æ•°
 	template <class F, class C1, class C2>
 	auto ZipWith(F const& func, C1 const& container1, C2 const& container2)
 	{
@@ -50,7 +50,7 @@ namespace sig
 
 
 	//[a] -> [b] -> ... -> [(a, b, ...)]
-	//•¡”‚ÌƒRƒ“ƒeƒi‚©‚çAƒ^ƒvƒ‹‚ÌƒRƒ“ƒeƒi‚ðì‚é (‘æ1ˆø”‚ÌƒRƒ“ƒeƒi‚ª–ß‚è’l‚ÌƒRƒ“ƒeƒi‚Æ‚È‚é)
+	//è¤‡æ•°ã®ã‚³ãƒ³ãƒ†ãƒŠã‹ã‚‰ã€ã‚¿ãƒ—ãƒ«ã®ã‚³ãƒ³ãƒ†ãƒŠã‚’ä½œã‚‹ (ç¬¬1å¼•æ•°ã®ã‚³ãƒ³ãƒ†ãƒŠãŒæˆ»ã‚Šå€¤ã®ã‚³ãƒ³ãƒ†ãƒŠã¨ãªã‚‹)
 	template <class... Cs
 #ifndef SIG_MSVC_LT1800
 		, typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
@@ -98,7 +98,7 @@ namespace sig
 	}
 
 	//([a], [b], ...) -> [(a, b, ...)]
-	//ƒRƒ“ƒeƒi‚Ìƒ^ƒvƒ‹‚©‚çAƒ^ƒvƒ‹‚ÌƒRƒ“ƒeƒi‚ðì‚é
+	//ã‚³ãƒ³ãƒ†ãƒŠã®ã‚¿ãƒ—ãƒ«ã‹ã‚‰ã€ã‚¿ãƒ—ãƒ«ã®ã‚³ãƒ³ãƒ†ãƒŠã‚’ä½œã‚‹
 	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>>
 	auto Zip(std::tuple<Cs...> const& t_containers)
 	{
@@ -113,7 +113,7 @@ namespace sig
 #endif
 
 	//[(a, b, ...)] -> [a0]
-	//ƒ^ƒvƒ‹‚ÌƒRƒ“ƒeƒi‚©‚çAŽw’è‚µ‚½ƒRƒ“ƒeƒi‚ðŽæ‚èo‚·
+	//ã‚¿ãƒ—ãƒ«ã®ã‚³ãƒ³ãƒ†ãƒŠã‹ã‚‰ã€æŒ‡å®šã—ãŸã‚³ãƒ³ãƒ†ãƒŠã‚’å–ã‚Šå‡ºã™
 	template <size_t Index, class CT>
 	auto UnZip(CT const& c_tuple)
 	{
@@ -163,7 +163,7 @@ namespace sig
 	}
 
 	//[(a, b, ...)] -> ([a], [b], ...)
-	//ƒ^ƒvƒ‹‚ÌƒRƒ“ƒeƒi‚©‚çAƒRƒ“ƒeƒi‚Ìƒ^ƒvƒ‹‚ðì‚é
+	//ã‚¿ãƒ—ãƒ«ã®ã‚³ãƒ³ãƒ†ãƒŠã‹ã‚‰ã€ã‚³ãƒ³ãƒ†ãƒŠã®ã‚¿ãƒ—ãƒ«ã‚’ä½œã‚‹
 	template <class CT>
 	auto UnZip(CT const& c_tuple)
 	{
@@ -177,7 +177,7 @@ namespace sig
 	}
 
 	//uint -> a -> [a]
-	//’l‚ð•¡»‚µ‚½ƒRƒ“ƒeƒi‚ð•Ô‚·
+	//å€¤ã‚’è¤‡è£½ã—ãŸã‚³ãƒ³ãƒ†ãƒŠã‚’è¿”ã™
 	template <class T, class C = std::vector<T>>
 	C Replicate(uint n, T const& value)
 	{
@@ -195,7 +195,7 @@ namespace sig
 	}
 
 	//[a] -> [a]
-	//ƒRƒ“ƒeƒi‚Ì—v‘f‚ð‹t“]‚³‚¹‚½ƒRƒ“ƒeƒi‚ð•Ô‚·
+	//ã‚³ãƒ³ãƒ†ãƒŠã®è¦ç´ ã‚’é€†è»¢ã•ã›ãŸã‚³ãƒ³ãƒ†ãƒŠã‚’è¿”ã™
 	template <class C>
 	C Reverse(C const& container)
 	{
@@ -205,7 +205,7 @@ namespace sig
 	}
 
 	//[a] -> [a] -> [a]
-	//ƒRƒ“ƒeƒi‚ÌŒ‹‡
+	//ã‚³ãƒ³ãƒ†ãƒŠã®çµåˆ
 	template <class C>
 	C Merge(C const& container1, C const& container2)
 	{
@@ -215,7 +215,7 @@ namespace sig
 	}
 
 	//[a] -> [b] -> [c]
-	//ƒRƒ“ƒeƒi‚ÌŒ‹‡
+	//ã‚³ãƒ³ãƒ†ãƒŠã®çµåˆ
 	template <class C, class C1, class C2>
 	C Merge(C1 const& container1, C2 const& container2)
 	{
@@ -226,7 +226,7 @@ namespace sig
 	}
 
 	//uint -> [a] -> [a]
-	//ƒRƒ“ƒeƒi‚Ìæ“ª‚©‚çnŒÂ‚ðŽæ‚èo‚µ‚½ƒRƒ“ƒeƒi‚ð•Ô‚· (‡˜‚Ì–³‚¢ƒRƒ“ƒeƒi‚Å‚ÍŽÀ‘•ˆË‘¶)
+	//ã‚³ãƒ³ãƒ†ãƒŠã®å…ˆé ­ã‹ã‚‰nå€‹ã‚’å–ã‚Šå‡ºã—ãŸã‚³ãƒ³ãƒ†ãƒŠã‚’è¿”ã™ (é †åºã®ç„¡ã„ã‚³ãƒ³ãƒ†ãƒŠã§ã¯å®Ÿè£…ä¾å­˜)
 	template <class C>
 	C Take(uint n, C const& container)
 	{
@@ -237,7 +237,7 @@ namespace sig
 	}
 
 	//uint -> [a] -> [a]
-	//ƒRƒ“ƒeƒi‚Ìæ“ª‚©‚çnŒÂ‚ðíœ‚µ‚½ƒRƒ“ƒeƒi‚ð•Ô‚· (‡˜‚Ì–³‚¢ƒRƒ“ƒeƒi‚Å‚ÍŽÀ‘•ˆË‘¶)
+	//ã‚³ãƒ³ãƒ†ãƒŠã®å…ˆé ­ã‹ã‚‰nå€‹ã‚’å‰Šé™¤ã—ãŸã‚³ãƒ³ãƒ†ãƒŠã‚’è¿”ã™ (é †åºã®ç„¡ã„ã‚³ãƒ³ãƒ†ãƒŠã§ã¯å®Ÿè£…ä¾å­˜)
 	template <class C>
 	C Drop(uint n, C const& container)
 	{
@@ -251,7 +251,7 @@ namespace sig
 
 #ifndef SIG_MSVC_LT1800
 	//(a -> a -> bool) -> [a] -> [a]
-	//”äŠrŠÖ”‚ðŽw’è‚µ‚Äƒ\[ƒg
+	//æ¯”è¼ƒé–¢æ•°ã‚’æŒ‡å®šã—ã¦ã‚½ãƒ¼ãƒˆ
 	template <class F, class C, typename std::enable_if<HasRandomIter<C>::value, void>::type*& = enabler>
 	auto Sort(F const& binary_op, C const& data){
 		C result = data;

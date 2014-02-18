@@ -1,6 +1,6 @@
 #include "string_test.h"
 
-//SIG_ENABLE_BOOST = 1 ‚ÌÛ‚É‚Íboost::optional‚ª—LŒø‚É‚È‚é
+//SIG_ENABLE_BOOST = 1 ã®éš›ã«ã¯boost::optionalãŒæœ‰åŠ¹ã«ãªã‚‹
 
 using TVec = std::vector<std::string>;
 using TVecw = std::vector<std::wstring>;
@@ -8,24 +8,24 @@ using TVec2 = std::vector<std::vector<std::string>>;
 
 void RegexTest()
 {
-	//ƒGƒXƒP[ƒvˆ—‚µ‚½•¶š—ñ‚ğæ“¾
+	//ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—å‡¦ç†ã—ãŸæ–‡å­—åˆ—ã‚’å–å¾—
 	auto escaped1 = sig::RegexEscaper("? or (lol) must be escaped");
-	auto escaped2 = sig::RegexEscaper(L"?‚Æ‚©(Î)‚ÍƒGƒXƒP[ƒv‚·‚×‚«•¶š");
+	auto escaped2 = sig::RegexEscaper(L"?ã¨ã‹(ç¬‘)ã¯ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã™ã¹ãæ–‡å­—");
 
 	auto test1 = R"(\? or \(lol\) must be escaped)";	assert(escaped1 == test1);
-	auto test2 = LR"(\?‚Æ‚©\(Î\)‚ÍƒGƒXƒP[ƒv‚·‚×‚«•¶š)";	assert(escaped2 == test2);
+	auto test2 = LR"(\?ã¨ã‹\(ç¬‘\)ã¯ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã™ã¹ãæ–‡å­—)";	assert(escaped2 == test2);
 	
 
-	//ƒGƒXƒP[ƒvˆ—‚ğ‚µ‚Â‚Â std::regex(or std::wregex)‚ğæ“¾
-	auto reg = sig::RegexMaker(L"(Î)");
-	auto replaced = std::regex_replace(L"‚Ä‚·‚Æ(Î)‚Å‚·", reg, L"");
+	//ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—å‡¦ç†ã‚’ã—ã¤ã¤ std::regex(or std::wregex)ã‚’å–å¾—
+	auto reg = sig::RegexMaker(L"(ç¬‘)");
+	auto replaced = std::regex_replace(L"ã¦ã™ã¨(ç¬‘)ã§ã™", reg, L"");
 
-	assert(replaced == L"‚Ä‚·‚Æ‚Å‚·");
+	assert(replaced == L"ã¦ã™ã¨ã§ã™");
 
 
-	//³‹K•\Œ»‚ÅŒŸõ
+	//æ­£è¦è¡¨ç¾ã§æ¤œç´¢
 	auto matches1 = sig::RegexSearch("test tes1a tes2b", std::regex("tes(\\d)(\\w)"));
-	auto matches2 = sig::RegexSearch<std::list>("searchu? or (lol) must be escapedv", std::regex(escaped1));
+	auto matches2 = sig::RegexSearch<std::list>("searchã€Œ? or (lol) must be escapedã€", std::regex(escaped1));
 	
 	TVec2 test3 = { { "tes1a", "1", "a" }, { "tes2b", "2", "b" } };
 	auto test4 = "? or (lol) must be escaped";
@@ -73,14 +73,14 @@ void TagDealerTest()
 	assert(ignored == "");
 #endif
 	
-	//‚Ü‚Æ‚ß‚ÄƒGƒ“ƒR[ƒh
+	//ã¾ã¨ã‚ã¦ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰
 	//encoded_vec = "<TAG1>str1<TAG1><TAG2>str2<TAG2><TAG3>str3<TAG3>"
 	auto encoded_vec = tag_dealer.Encode(std::list<std::string>{"str1", "str2", "str3"}, std::list<std::string>{"TAG1", "TAG2", "TAG3"});
 
 	TVec test{ "str1", "str3" };
 
 #if SIG_ENABLE_BOOST
-	//‚Ü‚Æ‚ß‚ÄƒfƒR[ƒh
+	//ã¾ã¨ã‚ã¦ãƒ‡ã‚³ãƒ¼ãƒ‰
 	auto decoded_vec = tag_dealer.Decode(encoded_vec, std::deque<std::string>{"TAG1", "TAG3"});
 
 	if (decoded){
@@ -91,21 +91,21 @@ void TagDealerTest()
 
 void SplitTest()
 {
-	std::string str{ "one, 2, Q "};
-	//,‚ğƒfƒŠƒ~ƒ^‚Æ‚µ‚Ä•ªŠ„
+	std::string str{ "one, 2, å‚ "};
+	//,ã‚’ãƒ‡ãƒªãƒŸã‚¿ã¨ã—ã¦åˆ†å‰²
 	auto split1 = sig::Split(str, ",");
 
-	TVec test1{ "one", " 2", " Q " };
+	TVec test1{ "one", " 2", " å‚ " };
 	for (int i = 0; i<split1.size(); ++i) assert(split1[i] == test1[i]);
 
-	//ƒRƒ“ƒeƒi(ƒV[ƒPƒ“ƒXŒÀ’è)‚Ì–¾¦“Iw’è‚à‰Â
+	//ã‚³ãƒ³ãƒ†ãƒŠ(ã‚·ãƒ¼ã‚±ãƒ³ã‚¹é™å®š)ã®æ˜ç¤ºçš„æŒ‡å®šã‚‚å¯
 	auto split2 = sig::Split<std::list>(L"https://github.com/regenschauer490/Utility", L"/");
 
 	TVecw test2{ L"https:", L"github.com", L"regenschauer490", L"Utility" };
 	auto sp2it = split2.begin();
 	for (int i = 0; i<split2.size(); ++i, ++sp2it) assert(*sp2it == test2[i]);
 
-	//ƒfƒŠƒ~ƒ^ŠÔ‚É‰½‚à‚È‚¯‚ê‚Î–³‹
+	//ãƒ‡ãƒªãƒŸã‚¿é–“ã«ä½•ã‚‚ãªã‘ã‚Œã°ç„¡è¦–
 	auto split3 = sig::Split("10 100  1000", " ");	
 	auto split4 = sig::Split(" ,, ,  ,", ",");
 
@@ -119,7 +119,7 @@ void SplitTest()
 
 4
 )";
-	//s–ˆ‚É•ªŠ„i‹ós–³‹j
+	//è¡Œæ¯ã«åˆ†å‰²ï¼ˆç©ºè¡Œç„¡è¦–ï¼‰
 	auto split5 = sig::Split(sentence, "\n");
 	TVec test5 = { "1", "2", "4" };
 	for (int i = 0; i<split5.size(); ++i) assert(split5[i] == test5[i]);
@@ -127,7 +127,7 @@ void SplitTest()
 
 void CatStrTest()
 {
-	//•¶š—ñ‚ÌŒ‹‡
+	//æ–‡å­—åˆ—ã®çµåˆ
 	auto cat1 = sig::CatStr(std::vector<std::string>{"eins", "zwei", "drei"}, "");
 	auto cat2 = sig::CatStr(std::list<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
 	auto cat3 = sig::CatStr(std::set<int>{1, 2, 3}, "\n");
@@ -139,44 +139,44 @@ void CatStrTest()
 
 void StrConvertTest()
 {
-	//ƒ}ƒ‹ƒ`•¶š <-> ƒƒCƒh•¶š •ÏŠ·
-	auto wstr = sig::STRtoWSTR("test‚Ä‚·‚Æ");
-	auto str = sig::WSTRtoSTR(L"test‚Ä‚·‚Æ");
+	//ãƒãƒ«ãƒæ–‡å­— <-> ãƒ¯ã‚¤ãƒ‰æ–‡å­— å¤‰æ›
+	auto wstr = sig::STRtoWSTR("testã¦ã™ã¨");
+	auto str = sig::WSTRtoSTR(L"testã¦ã™ã¨");
 
-	assert(wstr == L"test‚Ä‚·‚Æ");
-	assert(str == "test‚Ä‚·‚Æ");
+	assert(wstr == L"testã¦ã™ã¨");
+	assert(str == "testã¦ã™ã¨");
 
-	//‚Ü‚Æ‚ß‚Ä•ÏŠ·
-	auto wstr_vec = sig::STRtoWSTR(std::vector<std::string>{"ˆë", "“ó", "Q"});
-	TVecw test{ L"ˆë", L"“ó", L"Q" };
+	//ã¾ã¨ã‚ã¦å¤‰æ›
+	auto wstr_vec = sig::STRtoWSTR(std::vector<std::string>{"å£±", "å¼", "å‚"});
+	TVecw test{ L"å£±", L"å¼", L"å‚" };
 	for (int i = 0; i<wstr_vec.size(); ++i) assert(wstr_vec[i] == test[i]);
 }
 
 void ZenHanTest()
 {
-	//‘SŠp <-> ”¼Šp •ÏŠ·ƒNƒ‰ƒX
+	//å…¨è§’ <-> åŠè§’ å¤‰æ›ã‚¯ãƒ©ã‚¹
 	auto& replacer = sig::ZenHanReplace::GetInstance();
 
-	std::wstring sentence1 = L"‚`B‚bƒA²ƒE‚P2‚RƒM¶ŞÍßƒ|";
+	std::wstring sentence1 = L"ï¼¡Bï¼£ã‚¢ï½²ã‚¦ï¼‘2ï¼“ã‚®ï½¶ï¾ï¾ï¾Ÿãƒ";
 
 	replacer.Alphabet_Zen2Han(sentence1);
-	assert(sentence1 == L"ABCƒA²ƒE‚P2‚RƒM¶ŞÍßƒ|");
+	assert(sentence1 == L"ABCã‚¢ï½²ã‚¦ï¼‘2ï¼“ã‚®ï½¶ï¾ï¾ï¾Ÿãƒ");
 
 	replacer.Katakana_Zen2Han(sentence1);
-	assert(sentence1 == L"ABC±²³‚P2‚R·Ş¶ŞÍßÎß");
+	assert(sentence1 == L"ABCï½±ï½²ï½³ï¼‘2ï¼“ï½·ï¾ï½¶ï¾ï¾ï¾Ÿï¾ï¾Ÿ");
 
 	replacer.Number_Zen2Han(sentence1);
-	assert(sentence1 == L"ABC±²³123·Ş¶ŞÍßÎß");
+	assert(sentence1 == L"ABCï½±ï½²ï½³123ï½·ï¾ï½¶ï¾ï¾ï¾Ÿï¾ï¾Ÿ");
 
 
-	std::wstring sentence2 = L"‚`B‚bƒA²ƒE‚P2‚RƒM¶ŞÍßƒ|";
+	std::wstring sentence2 = L"ï¼¡Bï¼£ã‚¢ï½²ã‚¦ï¼‘2ï¼“ã‚®ï½¶ï¾ï¾ï¾Ÿãƒ";
 
 	replacer.Alphabet_Han2Zen(sentence2);
-	assert(sentence2 == L"‚`‚a‚bƒA²ƒE‚P2‚RƒM¶ŞÍßƒ|");
+	assert(sentence2 == L"ï¼¡ï¼¢ï¼£ã‚¢ï½²ã‚¦ï¼‘2ï¼“ã‚®ï½¶ï¾ï¾ï¾Ÿãƒ");
 
 	replacer.Katakana_Han2Zen(sentence2);
-	assert(sentence2 == L"‚`‚a‚bƒAƒCƒE‚P2‚RƒMƒKƒyƒ|");
+	assert(sentence2 == L"ï¼¡ï¼¢ï¼£ã‚¢ã‚¤ã‚¦ï¼‘2ï¼“ã‚®ã‚¬ãƒšãƒ");
 
 	replacer.Number_Han2Zen(sentence2);
-	assert(sentence2 == L"‚`‚a‚bƒAƒCƒE‚P‚Q‚RƒMƒKƒyƒ|");
+	assert(sentence2 == L"ï¼¡ï¼¢ï¼£ã‚¢ã‚¤ã‚¦ï¼‘ï¼’ï¼“ã‚®ã‚¬ãƒšãƒ");
 }

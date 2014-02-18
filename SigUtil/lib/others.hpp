@@ -4,14 +4,14 @@
 #include "sigutil.hpp"
 #include "tool.hpp"
 
-/* W‡‘€ì */
+/* é›†åˆæ“ä½œ */
 
 namespace sig
 {
 
 #if SIG_ENABLE_BOOST
 
-	//ğŒ‚ÉÅ“K‚È’l‚Æ‚»‚ÌIndex‚ğ’T‚·.@comp(”äŠr‘ÎÛ’l, b’èÅ¬’l)
+	//æ¡ä»¶ã«æœ€é©ãªå€¤ã¨ãã®Indexã‚’æ¢ã™.ã€€comp(æ¯”è¼ƒå¯¾è±¡å€¤, æš«å®šæœ€å°å€¤)
 	template < class T, class CMP, template < class T, class = std::allocator<T>> class Container >
 	maybe<std::tuple<T, uint>> SearchIndex(Container<T> const& src, CMP comp)
 	{

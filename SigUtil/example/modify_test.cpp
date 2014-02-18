@@ -9,7 +9,7 @@ void SortTest()
 	std::vector<int> data1{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 	std::list<int> data2{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 
-	//ƒ\[ƒg‘O‚Ìindex‚ğ•Û‚µ‚Äƒ\[ƒg
+	//ã‚½ãƒ¼ãƒˆå‰ã®indexã‚’ä¿æŒã—ã¦ã‚½ãƒ¼ãƒˆ
 	//ex: [30, 50, -10, 0] -> ([-10, 0, 30, 50], [2, 3, 0, 1])
 	auto swi1 = sig::SortWithIndex(data1);	//container<T> -> tuple<container<T>, vector<uint>>
 	auto sorted1 = std::get<0>(swi1);
@@ -31,7 +31,7 @@ void ShuffleTest()
 	std::vector<int> data1{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 	std::list<int> data2{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 
-	//•¡”‚ÌƒRƒ“ƒeƒi‚ğ‘Î‰•t‚¯‚Â‚ÂƒVƒƒƒbƒtƒ‹
+	//è¤‡æ•°ã®ã‚³ãƒ³ãƒ†ãƒŠã‚’å¯¾å¿œä»˜ã‘ã¤ã¤ã‚·ãƒ£ãƒƒãƒ•ãƒ«
 	//ex: c1[1, 2, 3, 4], c2[1, 2, 3, 4] -> c1'[3, 1, 4, 2], c2'[3, 1, 4, 2]
 	sig::Shuffle(data1, data2);
 
@@ -83,7 +83,7 @@ void RemoveTest()
 	std::multiset<int, std::greater<int>> data3{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 	std::unordered_multiset<int> data4{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 
-	//íœ—v‘f‚ª‚ ‚ê‚Î1, –³‚¯‚ê‚Î0‚ğ•Ô‚·
+	//å‰Šé™¤è¦ç´ ãŒã‚ã‚Œã°1, ç„¡ã‘ã‚Œã°0ã‚’è¿”ã™
 	assert( sig::RemoveOne(data1, 3) );
 	assert( sig::RemoveOneIf(data2, [](int v){ return v == 3; }) );
 	assert( sig::RemoveOne(data3, 3) );
@@ -99,7 +99,7 @@ void RemoveTest()
 	assert(std::accumulate(data4.begin(), data4.end(), 0.0) == std::accumulate(testd4.begin(), testd4.end(), 0.0));
 
 
-	//íœ—v‘f‚ª‚ ‚ê‚Î1, –³‚¯‚ê‚Î0‚ğ•Ô‚·
+	//å‰Šé™¤è¦ç´ ãŒã‚ã‚Œã°1, ç„¡ã‘ã‚Œã°0ã‚’è¿”ã™
 	assert( sig::RemoveAll(data1, 3) );
 	assert( sig::RemoveAllIf(data2, [](int v){ return v == 3; }) );
 	assert( sig::RemoveAll(data3, 3) );

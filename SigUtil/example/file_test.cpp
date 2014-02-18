@@ -2,8 +2,8 @@
 #include "../lib/string.hpp"
 #include "../lib/functional.hpp"
 
-//SIG_ENABLE_BOOST = 1 ‚ÌÛ‚É‚Íboost::optional‚ª—LŒø‚É‚È‚é
-//ˆ—•û–@‚Ì—Dæ‡ˆÊ‚Í SIG_WINDOWS_ENV(windows.hg—p) > SIG_ENABLE_BOOOST(boost::filesystemg—p)
+//SIG_ENABLE_BOOST = 1 ã®éš›ã«ã¯boost::optionalãŒæœ‰åŠ¹ã«ãªã‚‹
+//å‡¦ç†æ–¹æ³•ã®å„ªå…ˆé †ä½ã¯ SIG_WINDOWS_ENV(windows.hä½¿ç”¨) > SIG_ENABLE_BOOOST(boost::filesystemä½¿ç”¨)
 
 using TVec = std::vector<std::string>;
 using TVecw = std::vector<std::wstring>;
@@ -97,35 +97,35 @@ void FileSaveLoadTest()
 	};
 	
 
-	//Šù‘¶‚Ì“à—e‚ÌƒNƒŠƒA
+	//æ—¢å­˜ã®å†…å®¹ã®ã‚¯ãƒªã‚¢
 	sig::FileClear(fpass1);
 	sig::FileClear(fpass5);
 
-	//ofstream‚ğ“n‚µ‚Ä•Û‘¶
+	//ofstreamã‚’æ¸¡ã—ã¦ä¿å­˜
 	std::wofstream ofs(fpass1, std::ios::out | std::ios::app);
-	sig::SaveLine(L"test write 0", ofs);		//1s•Û‘¶
-	sig::SaveLine(blghost_text1, ofs);		//‘Ss•Û‘¶
+	sig::SaveLine(L"test write 0", ofs);		//1è¡Œä¿å­˜
+	sig::SaveLine(blghost_text1, ofs);		//å…¨è¡Œä¿å­˜
 	ofs.close();
 
-	//ˆÈ‰º ‚©‚ñ‚½‚ñ•Û‘¶ô
+	//ä»¥ä¸‹ ã‹ã‚“ãŸã‚“ä¿å­˜â™ª
 
-	//1s•Û‘¶iã‘‚«j
-	sig::SaveLine(L"test write ˆë", fpass2);
-	//1s•Û‘¶i’Ç‹Lj
-	sig::SaveLine(L"test write “ó", fpass2, sig::WriteMode::append);
-	//‘Ss•Û‘¶iã‘‚«j
+	//1è¡Œä¿å­˜ï¼ˆä¸Šæ›¸ãï¼‰
+	sig::SaveLine(L"test write å£±", fpass2);
+	//1è¡Œä¿å­˜ï¼ˆè¿½è¨˜ï¼‰
+	sig::SaveLine(L"test write å¼", fpass2, sig::WriteMode::append);
+	//å…¨è¡Œä¿å­˜ï¼ˆä¸Šæ›¸ãï¼‰
 	sig::SaveLine(blghost_text2, fpass3);
 
-	//”’lƒf[ƒ^‚Ì•Û‘¶iã‘‚«A1s‚¸‚Â•Û‘¶j
+	//æ•°å€¤ãƒ‡ãƒ¼ã‚¿ã®ä¿å­˜ï¼ˆä¸Šæ›¸ãã€1è¡Œãšã¤ä¿å­˜ï¼‰
 	auto set_num = std::set<int, std::less<int>>{1, 2, 3, 4, 5};
 	sig::SaveNum(set_num, fpass4);
 
-	//”’lƒf[ƒ^‚Ì•Û‘¶i’Ç‹LAƒJƒ“ƒ}•ª‚¯‚Å•Û‘¶j
+	//æ•°å€¤ãƒ‡ãƒ¼ã‚¿ã®ä¿å­˜ï¼ˆè¿½è¨˜ã€ã‚«ãƒ³ãƒåˆ†ã‘ã§ä¿å­˜ï¼‰
 	auto uset_num = std::unordered_set<double>{1.1, 2.2, 3.3};
 	sig::SaveNum(uset_num, fpass5, sig::WriteMode::append, ",");
 
 
-	//ˆÈ‰º ‚©‚ñ‚½‚ñ“Ç‚İ‚İô
+	//ä»¥ä¸‹ ã‹ã‚“ãŸã‚“èª­ã¿è¾¼ã¿â™ª
 
 #if SIG_ENABLE_BOOST
 	auto read1 = sig::ReadLine<std::string>(fpass1);
@@ -138,13 +138,13 @@ void FileSaveLoadTest()
 		sig::ZipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, *read1, test1);
 	}
 	if (read2){
-		sig::ZipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, *read2, TVecw{ L"test write ˆë", L"test write “ó" });
+		sig::ZipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, *read2, TVecw{ L"test write å£±", L"test write å¼" });
 	}
 	if (read_num1){
 		sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, *read_num1, set_num);
 	}
 	if (read_num2){
-		//unordered‚È‚Ì‚Ådouble’l‚Ì‡Œv‚Å”»’f
+		//unorderedãªã®ã§doubleå€¤ã®åˆè¨ˆã§åˆ¤æ–­
 		assert(std::accumulate(uset_num.begin(), uset_num.end(), 0.0) == std::accumulate(read_num2->begin(), read_num2->end(), 0.0));
 	}
 #else
@@ -161,7 +161,7 @@ void FileSaveLoadTest()
 	auto test1 = sig::Merge(TVecw{L"test write 0"}, blghost_text1);
 	sig::ZipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, read1, test1);
 
-	sig::ZipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, read2, TVecw{ L"test write ˆë", L"test write “ó" });
+	sig::ZipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, read2, TVecw{ L"test write å£±", L"test write å¼" });
 
 	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, read_num1, set_num);
 	

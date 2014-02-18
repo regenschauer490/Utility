@@ -31,7 +31,7 @@ namespace sig
 		return *iter;
 	}
 
-	//variadic templates�Ŏ󂯎���������̃C�e���[�^�ɑ΂��āAloop�񐔂����J��Ԃ��f���t�@�����X+�֐��K�p����
+	//variadic templatesで受け取った複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用する
 	template <class C, class F, class... Its>
 	void Iterate(std::size_t loop, C& dest, F const& func, Its... iterators)
 	{

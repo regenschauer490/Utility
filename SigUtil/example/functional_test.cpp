@@ -14,7 +14,7 @@ void MapTest()
 	auto r3 = sig::Map([](int v){ return v / 4.0; }, data3);
 	auto r4 = sig::Map([](int v){ return v < 0; }, data4);
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 * 2 == v2); return 0; }, data1, r1);		//ŒŸØ
+	sig::ZipWith([](int v1, int v2){ assert(v1 * 2 == v2); return 0; }, data1, r1);		//æ¤œè¨¼
 
 #if _MSC_VER > 1800
 	for (auto v : data2) std::cout << v << ", ";	//1, -3, 5
@@ -42,7 +42,7 @@ void HigherOrederFuncTest()
 	std::cout << std::endl;
 	for (auto v : data4) std::cout << v << ", ";	//-3, 1, 5, 10
 	std::cout << std::endl;
-	for (auto v : data5) std::cout << v << ", ";	//a, b, c, d, e	//ŠÂ‹«ˆË‘¶
+	for (auto v : data5) std::cout << v << ", ";	//a, b, c, d, e	//ç’°å¢ƒä¾å­˜
 	std::cout << std::endl << std::endl;
 
 	//0, -6.6, 0, 44
@@ -54,7 +54,7 @@ void HigherOrederFuncTest()
 	}, data1, data2, data3, data4, data5);
 
 
-	//forƒ‹[ƒv‚Åˆ—‚µ‚ÄŒŸØ
+	//forãƒ«ãƒ¼ãƒ—ã§å‡¦ç†ã—ã¦æ¤œè¨¼
 	auto d3it = data3.begin();
 	for (int i = 0, size = sig::Min(data1.size(), data2.size(), data3.size()); i < size; ++i, ++d3it){
 		assert( sig::Equal(h123[i], *d3it ? data1[i] * data2[i] : 0) );
@@ -89,7 +89,7 @@ void FunctionalTest()
 
 	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, t1, std::vector<int>{ 1, -3 });
 
-	for (auto v : t4) std::cout << v << ", ";		//1, 10		//unordered‚Å‚ ‚é‚½‚ß‡•s“¯
+	for (auto v : t4) std::cout << v << ", ";		//1, 10		//unorderedã§ã‚ã‚‹ãŸã‚é †ä¸åŒ
 	std::cout << std::endl << std::endl;
 
 	//drop top n elements
