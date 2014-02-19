@@ -9,6 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define __SIG_UTIL_ERASER__
 
 #include "sigutil.hpp"
+#include "functional.hpp"
 #include "tool.hpp"
 #include <iterator>
 
@@ -193,7 +194,7 @@ namespace sig
 		return presize != container.size();
 	}
 
-
+/*
 	//コンテナへの代入演算 ([a], [b], (a -> b -> a))
 	template < class T1, class T2, template < class T_, class = std::allocator<T_>> class Container>
 	void CompoundAssignment(Container<T1>& list1, Container<T2> const& list2, std::function<typename std::common_type<T1>::type(typename std::common_type<T1>::type, typename std::common_type<T2>::type)> const& op)
@@ -209,18 +210,7 @@ namespace sig
 	{
 		for (uint i = 0, length = list1.size(); i < length; ++i) list1[i] = op(list1[i], v);
 	}
-
-
-	//生成関数を通して値を生成する
-	//args -> generator: 生成関数.引数はループindex
-	template < class T, template < class T_, class = std::allocator<T_>> class Container = std::vector>
-	Container<T> Generate(std::function<T(int)> const& generator, uint count)
-	{
-		Container<T> tmp;
-		tmp.reserve(count);
-		for (uint i = 0; i < count; ++i) tmp.push_back(generator(i));
-		return std::move(tmp);
-	}
+*/
 }
 
 #endif

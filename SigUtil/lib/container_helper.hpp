@@ -13,6 +13,8 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
+	extern void* enabler;
+
 	template<class It>
 	void IncrementIterator(It& iter)
 	{
@@ -59,13 +61,13 @@ namespace sig
 		container.erase(t);
 	}
 
-	template <class C>
-	void EraseIf(C& container, std::function<typename std::common_type<bool>::type(typename sequence_container_traits<C>::value_type)> const& remove_pred)
+	template <class C, class F, typename std::enable_if<sequence_container_traits<C>::exist>::type*& = enabler>
+	void EraseIf(C& container, F const& remove_pred)
 	{
 		container.erase(std::remove_if(std::begin(container), std::end(container), remove_pred), std::end(container));
 	}
-	template <class C>
-	void EraseIf(C& container, std::function<typename std::common_type<bool>::type(typename associative_container_traits<C>::value_type)> const& remove_pred)
+	template <class C, class F, typename std::enable_if<associative_container_traits<C>::exist>::type*& = enabler>
+	void EraseIf(C& container, F const& remove_pred)
 	{
 		for (auto it = std::begin(container), end = std::end(container); it != end;){
 			if (remove_pred(*it)){
@@ -74,8 +76,8 @@ namespace sig
 			else ++it;
 		}
 	}
-	template <class C>
-	void EraseIf(C& container, std::function<typename std::common_type<bool>::type(typename hash_container_traits<C>::value_type)> const& remove_pred)
+	template <class C, class F, typename std::enable_if<hash_container_traits<C>::exist>::type*& = enabler>
+	void EraseIf(C& container, F const& remove_pred)
 	{
 		for (auto it = std::begin(container), end = std::end(container); it != end;){
 			if (remove_pred(*it)){

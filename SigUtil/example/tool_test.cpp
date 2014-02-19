@@ -1,6 +1,6 @@
 #include "tool_test.h"
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 #include <windows.h>
 #endif
 
@@ -21,7 +21,7 @@ void TimeWatchTest()
 {
 	sig::TimeWatch tw;		//計測開始
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 	Sleep(100);
 
 	tw.Save();		//ここまでのタイムを記録
@@ -62,7 +62,7 @@ void TimeWatchTest()
 	assert(sig::TolerantEqual(tw.GetLapTime(1), 200, 1));		//200 ± 1 (ms)
 	assert(sig::TolerantEqual(tw.GetLapTime(2), 300, 1));		//300 ± 1 (ms)
 	assert(sig::TolerantEqual(tw.GetLapTime(3), 400, 1));		//400 ± 1 (ms)
-	assert(! tw.GetLapTime(4));
+	assert(tw.GetLapTime(4) == -1);
 
 	assert(sig::TolerantEqual(tw.GetSplitTime(0), 100, 1));		//100 ± 1 (ms)
 	assert(sig::TolerantEqual(tw.GetSplitTime(1), 300, 1));		//300 ± 1 (ms)
@@ -79,14 +79,23 @@ void TimeWatchTest()
 
 void HistgramTest()
 {
+#if SIG_MSVC_ENV
+	auto file1 = L"./example/test_file/histgram1.txt";
+	auto file2 = L"./example/test_file/histgram2.txt";
+#else
+	auto file1 = "./example/test_file/histgram1.txt";
+	auto file2 = "./example/test_file/histgram2.txt";
+#endif
+
 	std::vector<int> data1{-100, -10, -6, -5, -1, 0, 3, 5, 5, 6, 6, 6, 7, 9, 10};
 
 	sig::Histgram<int, 10> hist(-10, 10);	//int型、ビン数10、[-10～10）の範囲の数値を集計
 
 	hist.Count(data1);
 
-	hist.Print();					//コンソールへ出力
-	hist.Print(L"./example/test_file/histgram1.txt");	//ファイルへ出力
+	hist.Print();						//コンソールへ出力
+	hist.Print(file1);	//ファイルへ出力
+
 	/*
 	-- Histgram --
 
@@ -105,7 +114,7 @@ void HistgramTest()
 	*/
 
 	auto count = hist.GetCount();		//0 ～ BIN_NUM-1 の頻度を取得
-	assert(count[2], 2);				//[ -6, -4)の個数
+	assert(count[2] == 2);				//[ -6, -4)の個数
 
 	auto c2 = hist.GetCount(2);
 	auto c100 = hist.GetCount(100);
@@ -120,7 +129,7 @@ void HistgramTest()
 #else
 	assert(std::get<1>(c2) == -6);
 	assert(std::get<2>(c2) == -4);
-	assert(std::get<0>(c2) == -2);
+	assert(std::get<0>(c2) == 2);
 
 	assert(std::get<1>(c100) == 0);
 	assert(std::get<2>(c100) == 0);
@@ -128,7 +137,7 @@ void HistgramTest()
 #endif
 
 	bool over = hist.IsOverRange();	//初期設定の範囲外の値が存在したか
-	assert(over, 1);				//範囲外の値の個数：1
+	assert(over == 1);				//範囲外の値の個数：1
 	
 
 	sig::Histgram<double, 15> hist2(0, 1);						//double型、ビン数15、[0～1）の範囲の数値を集計
@@ -137,7 +146,7 @@ void HistgramTest()
 	for (int i = 0; i<100; ++i) hist2.Count(rand_maker());
 
 	hist2.Print();
-	hist2.Print(L"./example/test_file/histgram2.txt");
+	hist2.Print(file2);
 	/*
 	-- Histgram --
 

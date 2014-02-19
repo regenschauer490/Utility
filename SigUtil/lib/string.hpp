@@ -9,25 +9,28 @@ http://opensource.org/licenses/mit-license.php
 #define __SIG_UTIL_STRING__
 
 #include "sigutil.hpp"
+#include "type_map.hpp"
 #include "functional.hpp"
 #include <regex>
 #include <stdlib.h>
 #include <sstream>
 
+
 /* 文字列処理関連 */
 
 namespace sig{
 
+#if SIG_MSVC_ENV
 	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
 	inline auto RegexEscaper(std::string const& expression) ->std::string
 	{
-		static const std::regex escape_reg("([(){}\\[\\]|^?$.+*\\\\])");
-		return std::regex_replace(expression, escape_reg, "\\$1");
+		static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
+		return SIG_RegexReplace(expression, escape_reg, std::string(R"(\$1)"));
 	}
 	inline auto RegexEscaper(std::wstring const& expression) ->std::wstring
 	{
-		static const std::wregex escape_reg(L"([(){}\\[\\]|^?$.+*\\\\])");
-		return std::regex_replace(expression, escape_reg, L"\\$1");
+		static const SIG_WRegex escape_reg(LR"(([(){}\[\]|^?$.+*\\]))");
+		return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\$1)"));
 	}
 
 	//自動でエスケープしてstd::regex or std::wregex を返す
@@ -36,7 +39,7 @@ namespace sig{
 	{
 		return typename Str2RegexSelector<TString<T>>::regex(RegexEscaper(expression));
 	}
-
+#endif
 
 	//std::regex_search のラッパ関数。
 	//return -> maybe ? [マッチした箇所の順番][マッチ内の参照の順番. 0は全文, 1以降は参照箇所] : nothing
@@ -51,7 +54,7 @@ namespace sig{
 		typename Str2RegexSelector<TString<T>>::smatch match;
 		auto tmp = TString<T>(src);
 
-		while (std::regex_search(tmp, match, expression)){
+		while (SIG_RegexSearch(tmp, match, expression)){
 			d.push_back(Container<TString<T>>());
 			for (auto const& m : match) d.back().push_back(m);
 			tmp = match.suffix().str();
@@ -68,60 +71,6 @@ namespace sig{
 		return RegexSearch(src, RegexMaker(expression));
 	}
 */
-
-	//HTML風にタグをエンコード・デコードする
-	//例：　<TAG>text<TAG>
-	template <class String>
-	class TagDealer
-	{
-		const String tel_;
-		const String ter_;
-
-	public:
-		//左右それぞれの囲み文字を指定(ex. left = "<", right= ">")
-		TagDealer(String tag_encloser_left, String tag_encloser_right) : tel_(tag_encloser_left), ter_(tag_encloser_right){};
-
-		String Encode(String const& src, String const& tag) const{
-			auto tag_str = tel_ + tag + ter_;
-			return tag_str + src + tag_str;
-		}
-		
-		auto Decode(String const& src, String const& tag) ->typename Just<String>::type const{
-			auto tag_str = tel_ + tag + ter_;
-			auto parse = Split(" " + src, tag_str);
-			return parse.size() < 2 ? Nothing(String()) : typename Just<String>::type(parse[1]);
-		}
-
-		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-		String Encode(Container<String> const& src, Container<String> const& tag) const;
-
-#if SIG_ENABLE_BOOST
-		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-		auto Decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const;
-#endif
-	};
-
-	template <class String>
-	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
-	{
-		auto size = std::min(src.size(), tag.size());
-		auto calc = ZipWith([&](Container<String>::value_type s, Container<String>::value_type t){ return Encode(s, t); }, src, tag);
-		return std::accumulate(calc.begin(), calc.end(), String(""));
-	}
-
-#if SIG_ENABLE_BOOST
-	template <class String>
-	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-	auto TagDealer<String>::Decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const
-	{
-		Container<String> result;
-		for (auto const& e : tag){
-			if (auto d = Decode(src, e)) result.push_back(*d);
-		}
-		return result.empty() ? Nothing(String()) : typename Just<Container<String>>::type(std::move(result));
-	}
-#endif
 
 	//文字列(src)をある文字列(delim)を目印に分割する
 	//戻り値のコンテナはデフォルトではvector
@@ -180,9 +129,12 @@ namespace sig{
 		size_t mbs_size = src.length() * MB_CUR_MAX + 1;
 		if (mbs_size < 2 || src == L"\0") return std::string();
 		char *mbs = new char[mbs_size];
+#if SIG_MSVC_ENV
 		size_t num;
-
 		wcstombs_s(&num, mbs, mbs_size, src.c_str(), src.length() * MB_CUR_MAX + 1);
+#else
+		wcstombs(mbs, src.c_str(), src.length() * MB_CUR_MAX + 1);
+#endif
 		std::string dest(mbs);
 		delete[] mbs;
 
@@ -204,9 +156,12 @@ namespace sig{
 		if (wcs_size < 2 || src == "\0") return std::wstring();
 		//std::cout << src << std::endl;
 		wchar_t *wcs = new wchar_t[wcs_size];
+#if SIG_MSVC_ENV
 		size_t num;
-
 		mbstowcs_s(&num, wcs, wcs_size, src.c_str(), src.length() + 1);
+#else
+		mbstowcs(wcs, src.c_str(), src.length() + 1);
+#endif
 		std::wstring dest(wcs);
 		delete[] wcs;
 
@@ -220,6 +175,61 @@ namespace sig{
 		for (auto const& str : strvec) result.push_back(STRtoWSTR(str));
 		return std::move(result);
 	}
+
+
+	//HTML風にタグをエンコード・デコードする
+	//例：　<TAG>text<TAG>
+	template <class String>
+	class TagDealer
+	{
+		const String tel_;
+		const String ter_;
+
+	public:
+		//左右それぞれの囲み文字を指定(ex. left = "<", right= ">")
+		TagDealer(String tag_encloser_left, String tag_encloser_right) : tel_(tag_encloser_left), ter_(tag_encloser_right){};
+
+		String Encode(String const& src, String const& tag) const{
+			auto tag_str = tel_ + tag + ter_;
+			return tag_str + src + tag_str;
+		}
+
+		auto Decode(String const& src, String const& tag) ->typename Just<String>::type const{
+			auto tag_str = tel_ + tag + ter_;
+			auto parse = Split(" " + src, tag_str);
+			return parse.size() < 2 ? Nothing(String()) : typename Just<String>::type(parse[1]);
+		}
+
+		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+		String Encode(Container<String> const& src, Container<String> const& tag) const;
+
+#if SIG_ENABLE_BOOST
+		template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+		auto Decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const;
+#endif
+	};
+
+	template <class String>
+	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
+	{
+		auto size = std::min(src.size(), tag.size());
+		auto calc = ZipWith([&](typename Container<String>::value_type s, typename Container<String>::value_type t){ return Encode(s, t); }, src, tag);
+		return std::accumulate(calc.begin(), calc.end(), String(""));
+	}
+
+#if SIG_ENABLE_BOOST
+	template <class String>
+	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
+	auto TagDealer<String>::Decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const
+	{
+		Container<String> result;
+		for (auto const& e : tag){
+			if (auto d = Decode(src, e)) result.push_back(*d);
+		}
+		return result.empty() ? Nothing(String()) : typename Just<Container<String>>::type(std::move(result));
+	}
+#endif
 
 	//全角・半角文字の置換処理を行う
 	class ZenHanReplace{

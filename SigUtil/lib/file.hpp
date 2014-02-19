@@ -12,10 +12,10 @@ http://opensource.org/licenses/mit-license.php
 #include "sigutil.hpp"
 
 #include <fstream>
-#include <codecvt>
+//#include <codecvt>
 #include <locale>
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 #include <windows.h>
 #endif
 
@@ -30,7 +30,7 @@ namespace fs = boost::filesystem;
 namespace sig{
 
 	//ディレクトリ・ファイルパスの末尾に'/'or'\'があるかチェックし、付けるか外すかどうか指定
-	inline std::wstring DirpassTailModify(FileString const& directory_pass, bool const has_slash)
+	inline FileString DirpassTailModify(FileString const& directory_pass, bool const has_slash)
 	{
 		if (directory_pass.empty()) return directory_pass;
 
@@ -39,7 +39,11 @@ namespace sig{
 		if (has_slash){
 			//付ける場合
 			if (tail == '/' || tail == '\\') return directory_pass;
+#if SIG_MSVC_ENV
 			else return (directory_pass + L"/");
+#else
+			else return (directory_pass + "/");
+#endif
 		}
 		else{
 			if (tail != '/' && tail != '\\') return directory_pass;
@@ -62,7 +66,7 @@ namespace sig{
 		typedef std::vector<std::wstring> ResultType;
 		ResultType result;
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 		WIN32_FIND_DATA fd;
 		auto query = extension.empty() ? L"?*" : L"*" + extension;
 		auto pass = DirpassTailModify(directory_pass, true) + query;
@@ -104,7 +108,8 @@ namespace sig{
 		}
 		return Just<ResultType>::type(std::move(result));
 #else
-		static_asseet(false, "this OS is not support. please include boost if any.");
+		std::cout << "this OS is not support. please include boost if any." << std::endl; 
+		assert(false);
 #endif
 	}
 
@@ -118,7 +123,7 @@ namespace sig{
 		typedef std::vector<std::wstring> ResultType;
 		ResultType result;
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 		WIN32_FIND_DATA fd;
 		auto pass = DirpassTailModify(directory_pass, true) + L"*";
 		auto hFind = FindFirstFile(pass.c_str(), &fd);
@@ -154,7 +159,8 @@ namespace sig{
 		}
 		return Just<ResultType>::type(std::move(result));
 #else
-		static_asseet(false, "this OS is not support. please include boost if any.");
+		std::cout << "this OS is not support. please include boost if any." << std::endl; 
+		assert(false);
 #endif
 	}
 
@@ -201,7 +207,7 @@ namespace sig{
 			first = false;
 		}
 
-		std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
+		auto const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
 		typename FStreamSelector<TString<S>>::ofstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
@@ -215,7 +221,7 @@ namespace sig{
 			first = false;
 		}
 
-		std::ios::open_mode const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
+		auto const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
 		typename FStreamSelector<typename container_traits<C>::value_type>::ofstream ofs(file_pass, open_mode);
 		SaveLine(src, ofs);
 	}
@@ -262,7 +268,7 @@ namespace sig{
 	{
 		IfsSelector<R> ifs(file_pass);
 		if (!ifs){
-			std::wcout << L"file open error: " << file_pass << std::endl;
+			FileOpenErrorPrint(file_pass);
 			return;
 		}
 		ReadLine(empty_dest, ifs, conv);
@@ -283,7 +289,7 @@ namespace sig{
 		}
 
 		if (!ifs){
-			std::wcout << L"file open error: " << file_pass << std::endl;
+			FileOpenErrorPrint(file_pass);
 			return;
 		}
 		while (ifs && std::getline(ifs, line)){
@@ -306,7 +312,7 @@ namespace sig{
 	{
 		IfsSelector<R> ifs(file_pass);
 		if (!ifs){
-			std::wcout << L"file open error: " << file_pass << std::endl;
+			FileOpenErrorPrint(file_pass);
 			return Nothing(C());
 		}
 		return ReadLine<R, C>(ifs);

@@ -6,8 +6,12 @@ using TVec = std::vector<std::string>;
 using TVecw = std::vector<std::wstring>;
 using TVec2 = std::vector<std::vector<std::string>>;
 
+using sig::uint;
+using sig::SIG_Regex;
+
 void RegexTest()
 {
+#if SIG_MSVC_ENV
 	//エスケープ処理した文字列を取得
 	auto escaped1 = sig::RegexEscaper("? or (lol) must be escaped");
 	auto escaped2 = sig::RegexEscaper(L"?とか(笑)はエスケープすべき文字");
@@ -18,21 +22,23 @@ void RegexTest()
 
 	//エスケープ処理をしつつ std::regex(or std::wregex)を取得
 	auto reg = sig::RegexMaker(L"(笑)");
-	auto replaced = std::regex_replace(L"てすと(笑)です", reg, L"");
+	auto replaced = SIG_RegexReplace(std::wstring(L"てすと(笑)です"), reg, std::wstring(L""));
 
 	assert(replaced == L"てすとです");
-
+#else
+	auto escaped1 = R"(? or (lol) must be escaped)";
+#endif
 
 	//正規表現で検索
-	auto matches1 = sig::RegexSearch("test tes1a tes2b", std::regex("tes(\\d)(\\w)"));
-	auto matches2 = sig::RegexSearch<std::list>("search「? or (lol) must be escaped」", std::regex(escaped1));
+	auto matches1 = sig::RegexSearch("test tes1a tes2b", SIG_Regex("tes(\\d)(\\w)"));
+	auto matches2 = sig::RegexSearch<std::list>("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
 	
 	TVec2 test3 = { { "tes1a", "1", "a" }, { "tes2b", "2", "b" } };
 	auto test4 = "? or (lol) must be escaped";
 
 #if SIG_ENABLE_BOOST
-	for (int i=0; i < matches1->size(); ++i){
-		for (int j = 0; j < (*matches1)[i].size(); ++j){
+	for (uint i=0; i < matches1->size(); ++i){
+		for (uint j = 0; j < (*matches1)[i].size(); ++j){
 			assert((*matches1)[i][j] == test3[i][j]);
 		}
 	}
@@ -41,8 +47,8 @@ void RegexTest()
 		assert( m.front() == test4);
 	}
 #else
-	for (int i=0; i < matches1.size(); ++i){
-		for (int j = 0; j < matches1[i].size(); ++j){
+	for (uint i=0; i < matches1.size(); ++i){
+		for (uint j = 0; j < matches1[i].size(); ++j){
 			assert(matches1[i][j] == test3[i][j]);
 		}
 	}
@@ -84,7 +90,7 @@ void TagDealerTest()
 	auto decoded_vec = tag_dealer.Decode(encoded_vec, std::deque<std::string>{"TAG1", "TAG3"});
 
 	if (decoded){
-		for (int i=0; i< decoded_vec->size(); ++i) assert((*decoded_vec)[i] == test[i]);
+		for (uint i=0; i< decoded_vec->size(); ++i) assert((*decoded_vec)[i] == test[i]);
 	}
 #endif
 }
@@ -96,23 +102,23 @@ void SplitTest()
 	auto split1 = sig::Split(str, ",");
 
 	TVec test1{ "one", " 2", " 参 " };
-	for (int i = 0; i<split1.size(); ++i) assert(split1[i] == test1[i]);
+	for (uint i = 0; i<split1.size(); ++i) assert(split1[i] == test1[i]);
 
 	//コンテナ(シーケンス限定)の明示的指定も可
 	auto split2 = sig::Split<std::list>(L"https://github.com/regenschauer490/Utility", L"/");
 
 	TVecw test2{ L"https:", L"github.com", L"regenschauer490", L"Utility" };
 	auto sp2it = split2.begin();
-	for (int i = 0; i<split2.size(); ++i, ++sp2it) assert(*sp2it == test2[i]);
+	for (uint i = 0; i<split2.size(); ++i, ++sp2it) assert(*sp2it == test2[i]);
 
 	//デリミタ間に何もなければ無視
 	auto split3 = sig::Split("10 100  1000", " ");	
 	auto split4 = sig::Split(" ,, ,  ,", ",");
 
 	TVec test3{ "10", "100", "1000"};
-	for (int i = 0; i<split3.size(); ++i) assert(split3[i] == test3[i]);
+	for (uint i = 0; i<split3.size(); ++i) assert(split3[i] == test3[i]);
 	TVec test4{ " ", " ", "  " };
-	for (int i = 0; i<split4.size(); ++i) assert(split4[i] == test4[i]);
+	for (uint i = 0; i<split4.size(); ++i) assert(split4[i] == test4[i]);
 
 	auto sentence = R"(1
 2
@@ -122,7 +128,7 @@ void SplitTest()
 	//行毎に分割（空行無視）
 	auto split5 = sig::Split(sentence, "\n");
 	TVec test5 = { "1", "2", "4" };
-	for (int i = 0; i<split5.size(); ++i) assert(split5[i] == test5[i]);
+	for (uint i = 0; i<split5.size(); ++i) assert(split5[i] == test5[i]);
 }
 
 void CatStrTest()
@@ -149,7 +155,7 @@ void StrConvertTest()
 	//まとめて変換
 	auto wstr_vec = sig::STRtoWSTR(std::vector<std::string>{"壱", "弐", "参"});
 	TVecw test{ L"壱", L"弐", L"参" };
-	for (int i = 0; i<wstr_vec.size(); ++i) assert(wstr_vec[i] == test[i]);
+	for (uint i = 0; i<wstr_vec.size(); ++i) assert(wstr_vec[i] == test[i]);
 }
 
 void ZenHanTest()

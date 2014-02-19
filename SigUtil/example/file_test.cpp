@@ -3,16 +3,22 @@
 #include "../lib/functional.hpp"
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
-//処理方法の優先順位は SIG_WINDOWS_ENV(windows.h使用) > SIG_ENABLE_BOOOST(boost::filesystem使用)
+//処理方法の優先順位は SIG_MSVC_ENV(windows.h使用) > SIG_ENABLE_BOOOST(boost::filesystem使用)
 
 using TVec = std::vector<std::string>;
 using TVecw = std::vector<std::wstring>;
 
-auto pass = sig::DirpassTailModify(L"../SigUtil/example/test_file", true);
+#if SIG_MSVC_ENV
+	auto raw_pass = L"../SigUtil/example/test_file";
+#else
+	auto raw_pass = "../SigUtil/example/test_file";
+#endif
 
 void GetDirectoryNamesTest()
 {
-	std::wcout << pass << std::endl << std::endl;
+	auto pass = sig::DirpassTailModify(raw_pass, true);
+
+#if SIG_MSVC_ENV || SIG_ENABLE_BOOST
 
 	auto file_names = sig::GetFileNames(pass, false);
 	auto text_file_names = sig::GetFileNames(pass, false, L".txt");
@@ -65,10 +71,16 @@ void GetDirectoryNamesTest()
 	std::cout << std::endl << "[all hidden folders]" << std::endl;
 	for (auto fn : hidden_folder_names) std::wcout << fn << std::endl;
 #endif
+#else
+	std::cout << "this OS is not support. please include boost if any." << std::endl; 
+#endif
 }
 
 void FileSaveLoadTest()
 {
+	auto pass = sig::DirpassTailModify(raw_pass, true);
+
+#if SIG_MSVC_ENV
 	auto fpass1 = pass + L"test.txt";
 	auto fpass2 = pass + L"test2.txt";
 	auto fpass3 = pass + L"test3.txt";
@@ -76,6 +88,16 @@ void FileSaveLoadTest()
 	auto fpass5 = pass + L"test5.txt";
 
 	std::wcout << fpass1 << std::endl << std::endl;
+#else
+	auto fpass1 = pass + "test.txt";
+	auto fpass2 = pass + "test2.txt";
+	auto fpass3 = pass + "test3.txt";
+	auto fpass4 = pass + "test4.txt";
+	auto fpass5 = pass + "test5.txt";
+
+	std::cout << fpass1 << std::endl << std::endl;
+#endif
+
 
 	std::vector<std::wstring> blghost_text1{
 		L"O.K.",

@@ -110,23 +110,22 @@ void FunctionalTest()
 
 	//zip, unzip test (move and const& ver)
 #ifndef SIG_MSVC_LT1800
-	//move ver
+	//move ver (run only sequence container)
 	auto mdata1 = data1;
 	auto mdata2 = data2;
-	auto mdata3 = data3;
-	auto mdata4 = data4;
 
 	//make tuple from containers (container type equals data1's)
-	auto zipped = sig::Zip(std::move(mdata1), std::move(mdata2), std::move(mdata3), std::move(mdata4));	//std::vector< std::tuple<int, int, int, int>>
+	auto zipped = sig::Zip(std::move(mdata1), std::move(mdata2));	//std::vector< std::tuple<int, int, int, int>>
 
 	auto unzipped = sig::UnZip(std::move(zipped));		//std::tuple< std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>
 
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
 	auto rezipped = sig::Zip(std::move(unzipped));		//std::vector< std::tuple<int, int, int, int>>
+#endif
 
-
-	sig::HigherOrderFunction([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){
-		assert(std::get<0>(t) == v1 && std::get<1>(t) == v2 && std::get<2>(t) == v3 && std::get<3>(t) == v4); return 0;
-	}, data1, data2, data3, data4, zipped);
+	sig::HigherOrderFunction([](int v1, int v2, std::tuple<int, int> t){
+		assert(std::get<0>(t) == v1 && std::get<1>(t) == v2); return 0;
+	}, data1, data2, zipped);
 #endif
 	
 	//const ver
@@ -140,7 +139,9 @@ void FunctionalTest()
 	auto cunzipped = sig::UnZip(czipped);		//std::tuple< std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>
 
 #ifndef SIG_MSVC_LT1800
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
 	auto crezipped = sig::Zip(cunzipped);		//std::vector< std::tuple<int, int, int, int>>
+#endif
 #endif
 
 	sig::HigherOrderFunction([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){

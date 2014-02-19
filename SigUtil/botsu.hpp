@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "lib/utility.hpp"
 
@@ -7,7 +7,7 @@ namespace sig
 
 	/*
 	//[a] -> [b] -> (a -> b -> void) -> void
-	//–ß‚è’l‚ÌŒ^‚ªvoid‚Ìê‡
+	//æˆ»ã‚Šå€¤ã®å‹ãŒvoidã®å ´åˆ
 	template <class R, class A, class B, template < class T, class = std::allocator<T >> class Container, typename std::enable_if<std::is_same<R, void>::value>::type*& = enabler>
 	void ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<void(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
 	{
@@ -17,10 +17,10 @@ namespace sig
 	}
 	*/
 
-	/* ƒRƒ“ƒeƒi */
+	/* ã‚³ãƒ³ãƒ†ãƒŠ */
 #if SIG_ENABLE_BOOST
 
-	//“®“IŠm•Û‚³‚ê‚éŒÅ’è’·”z—ñ (\’zŒã‚ÌƒTƒCƒY•ÏX•s‰Â)
+	//å‹•çš„ç¢ºä¿ã•ã‚Œã‚‹å›ºå®šé•·é…åˆ— (æ§‹ç¯‰å¾Œã®ã‚µã‚¤ã‚ºå¤‰æ›´ä¸å¯)
 	template <class T, class Allocator = std::allocator<T>>
 	class FixedVector
 	{
@@ -108,7 +108,7 @@ namespace sig
 #endif
 
 	/*
-	//vector, list ‚ÌÏW‡‚ğ‹‚ß‚é(—v‘f”‚Í1ŒÂ). [“®ì—vŒFT::operator==()]
+	//vector, list ã®ç©é›†åˆã‚’æ±‚ã‚ã‚‹(è¦ç´ æ•°ã¯1å€‹). [å‹•ä½œè¦ä»¶ï¼šT::operator==()]
 	template <class T, template<class T_, class = std::allocator<T_>> class Container>
 	Container<T> SetIntersection(Container<T> const& src1, Container<T> const& src2)
 	{
@@ -129,7 +129,7 @@ namespace sig
 	return move(result);
 	}
 
-	//unordered_set ‚ÌÏW‡‚ğ‹‚ß‚é.[“®ì—vŒFT::operator==()]
+	//unordered_set ã®ç©é›†åˆã‚’æ±‚ã‚ã‚‹.[å‹•ä½œè¦ä»¶ï¼šT::operator==()]
 	template <class T>
 	std::unordered_set<T> SetIntersection(std::unordered_set<T> const& src1, std::unordered_set<T> const& src2)
 	{
@@ -143,7 +143,7 @@ namespace sig
 	return move(result);
 	}
 
-	//unordered_map ‚ÌÏW‡‚ğ‹‚ß‚é(bool key ? ƒL[‚Å”äŠry‘æ1ˆø”‚Ì—v‘f‚ğæ“¾z : —¼•ûˆê’v). [“®ì—vŒFK::operator==(), V::operator==()]
+	//unordered_map ã®ç©é›†åˆã‚’æ±‚ã‚ã‚‹(bool key ? ã‚­ãƒ¼ã§æ¯”è¼ƒã€ç¬¬1å¼•æ•°ã®è¦ç´ ã‚’å–å¾—ã€‘ : ä¸¡æ–¹ä¸€è‡´). [å‹•ä½œè¦ä»¶ï¼šK::operator==(), V::operator==()]
 	template <class K, class V>
 	std::unordered_map<K, V> SetIntersection(std::unordered_map<K, V> const& src, std::unordered_map<K, V> const& other, bool const key)
 	{
@@ -159,7 +159,7 @@ namespace sig
 	}
 
 
-	//vector, list ‚Ì·W‡‚ğ‹‚ß‚é(—v‘f”‚Í1ŒÂ). [“®ì—vŒFT::operator==()]
+	//vector, list ã®å·®é›†åˆã‚’æ±‚ã‚ã‚‹(è¦ç´ æ•°ã¯1å€‹). [å‹•ä½œè¦ä»¶ï¼šT::operator==()]
 	template <class T, template<class T_, class = std::allocator<T_>> class Container>
 	Container<T> SetDifference(Container<T> const& src1, Container<T> const& src2)
 	{
@@ -186,7 +186,7 @@ namespace sig
 	return move(result);
 	}
 
-	//unordered_set ‚Ì·W‡‚ğ‹‚ß‚é.[“®ì—vŒFT::operator==()]
+	//unordered_set ã®å·®é›†åˆã‚’æ±‚ã‚ã‚‹.[å‹•ä½œè¦ä»¶ï¼šT::operator==()]
 	template <class T>
 	std::unordered_set<T> SetDifference(std::unordered_set<T> const& src1, std::unordered_set<T> const& src2)
 	{
@@ -208,7 +208,7 @@ namespace sig
 	return move(result);
 	}
 
-	//unordered_map ‚Ì·W‡‚ğ‹‚ß‚é(bool key ? ƒL[‚Å”äŠr : —¼•ûˆê’v). [“®ì—vŒFK::operator==(), V::operator==()]
+	//unordered_map ã®å·®é›†åˆã‚’æ±‚ã‚ã‚‹(bool key ? ã‚­ãƒ¼ã§æ¯”è¼ƒ : ä¸¡æ–¹ä¸€è‡´). [å‹•ä½œè¦ä»¶ï¼šK::operator==(), V::operator==()]
 	template <class K, class V>
 	std::unordered_map<K, V> SetDifference(std::unordered_map<K, V> const& src1, std::unordered_map<K, V> const& src2, bool const key)
 	{

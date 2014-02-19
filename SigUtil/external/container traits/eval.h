@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013, Daniel Park
  * All rights reserved.
  *

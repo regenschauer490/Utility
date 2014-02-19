@@ -9,6 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define __SIG_UTIL_FUNCTIONAL__
 
 #include "sigutil.hpp"
+#include "container_helper.hpp"
 
 /* 関数型プログラミング サポート */
 
@@ -86,6 +87,7 @@ namespace sig
 		return std::move(result);
 	}
 
+#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
 	template <class TC, size_t... I>
 	auto ZipImpl(TC const& t_containers, std::index_sequence<I...>)
 	{
@@ -99,17 +101,18 @@ namespace sig
 
 	//([a], [b], ...) -> [(a, b, ...)]
 	//コンテナのタプルから、タプルのコンテナを作る
-	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>>
+	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>
 	auto Zip(std::tuple<Cs...> const& t_containers)
 	{
 		return ZipImpl(t_containers, Indices());
 	}
 
-	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>>
+	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>
 	auto Zip(std::tuple<Cs...>&& t_containers)
 	{
 		return ZipImpl(std::move(t_containers), Indices());
 	}
+#endif
 #endif
 
 	//[(a, b, ...)] -> [a0]

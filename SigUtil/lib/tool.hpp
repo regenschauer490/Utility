@@ -28,28 +28,29 @@ namespace sig{
 	//デフォルト: 乱数生成器 -> メルセンヌツイスター
 	template <class NumType, class Engine = std::mt19937>
 	class SimpleRandom {
-		Engine _engine;		//乱数生成アルゴリズム 
+		Engine engine_;		//乱数生成アルゴリズム 
 		typename std::conditional <
 			std::is_integral<NumType>::value,
 			std::uniform_int_distribution<int>,
 			std::uniform_real_distribution<double>
-		> ::type _dist;		//確率分布
+		> ::type dist_;		//確率分布
 
 	public:
-		SimpleRandom(NumType min, NumType max, bool debug) : _engine(
+		SimpleRandom(NumType min, NumType max, bool debug) : engine_(
 			[debug](){
 			std::random_device rnd;
-			std::vector<uint> v(10);
+			std::vector<unsigned long> v(10);
 			if (debug) std::fill(v.begin(), v.end(), 0);
 			else std::generate(v.begin(), v.end(), std::ref(rnd));
+			std::seed_seq seq(v.begin(), v.end());
 
-			return Engine(std::seed_seq(v.begin(), v.end()));
+			return Engine{seq};
 		}()
 			),
-			_dist(min, max){}
+			dist_(min, max){}
 
 		NumType operator()(){
-			return _dist(_engine);
+			return dist_(engine_);
 		}
 	};
 
@@ -186,7 +187,7 @@ namespace sig{
 			};
 
 			int const rketa = IntDigit(_max);
-			int const disp_precision = typename std::conditional<std::is_integral<T>::value, std::true_type, std::false_type>::type::value
+			int const disp_precision = typename std::conditional<std::is_integral<T>::value, std::true_type, std::false_type>::type{}
 				? 0
 				: IntDigit(_delta) > 1
 					? 0
@@ -255,13 +256,16 @@ namespace sig{
 		auto GetCount(uint bin) const -> typename Just<std::tuple<uint, int, int>>::type{
 			return bin < BIN_NUM
 				? typename Just<std::tuple<uint, int, int>>::type(std::make_tuple(_count[bin + 1], _delta*bin + _min, _delta*(bin + 1) + _min))
-				: Nothing(std::make_tuple(0, 0, 0));
+				: Nothing(std::make_tuple(0u, 0, 0));
 		}
 		
 		void Print() const{ PrintBase(std::cout); }
 
 		//ファイルへ出力
-		void Print(FileString const& file_pass) const{ PrintBase(std::ofstream(file_pass)); }
+		void Print(FileString const& file_pass) const{
+			std::ofstream ofs(file_pass);
+			PrintBase(ofs);
+		}
 	};
 
 	//パーセント型
