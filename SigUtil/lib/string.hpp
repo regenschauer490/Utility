@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright(c) 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
@@ -9,25 +9,28 @@ http://opensource.org/licenses/mit-license.php
 #define __SIG_UTIL_STRING__
 
 #include "sigutil.hpp"
+#include "type_map.hpp"
 #include "functional.hpp"
 #include <regex>
 #include <stdlib.h>
 #include <sstream>
 
+
 /* 文字列処理関連 */
 
 namespace sig{
 
+#if SIG_MSVC_ENV
 	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
 	inline auto RegexEscaper(std::string const& expression) ->std::string
 	{
-		static const std::regex escape_reg(R"(([(){}\[\]|^?$.+*\]))");
-		return std::regex_replace(expression, escape_reg, std::string(R"(\$1)"));
+		static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
+		return SIG_RegexReplace(expression, escape_reg, std::string(R"(\$1)"));
 	}
 	inline auto RegexEscaper(std::wstring const& expression) ->std::wstring
 	{
-		static const std::wregex escape_reg(LR"(([(){}\[\]|^?$.+*\]))");
-		return std::regex_replace(expression, escape_reg, std::wstring(LR"(\$1"));
+		static const SIG_WRegex escape_reg(LR"(([(){}\[\]|^?$.+*\\]))");
+		return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\$1)"));
 	}
 
 	//自動でエスケープしてstd::regex or std::wregex を返す
@@ -36,13 +39,13 @@ namespace sig{
 	{
 		return typename Str2RegexSelector<TString<T>>::regex(RegexEscaper(expression));
 	}
-
+#endif
 
 	//std::regex_search のラッパ関数。
 	//return -> maybe ? [マッチした箇所の順番][マッチ内の参照の順番. 0は全文, 1以降は参照箇所] : nothing
 	//例：
 	//src = "test tes1 tes2"
-	//expression = std::regex("tes(¥¥d)")
+	//expression = std::regex("tes(\\d)")
 	//return -> [[tes1, 1], [tes2, 2]]
 	template <template <class T_, class = std::allocator<T_>> class Container = std::vector, class T = std::string >
 	auto RegexSearch(T src, typename Str2RegexSelector<TString<T>>::regex const& expression) ->typename Just< Container< Container<TString<T>>>>::type
@@ -51,7 +54,7 @@ namespace sig{
 		typename Str2RegexSelector<TString<T>>::smatch match;
 		auto tmp = TString<T>(src);
 
-		while (std::regex_search(tmp, match, expression)){
+		while (SIG_RegexSearch(tmp, match, expression)){
 			d.push_back(Container<TString<T>>());
 			for (auto const& m : match) d.back().push_back(m);
 			tmp = match.suffix().str();
@@ -124,9 +127,9 @@ namespace sig{
 	inline std::string WSTRtoSTR(const std::wstring &src)
 	{
 		size_t mbs_size = src.length() * MB_CUR_MAX + 1;
-		if (mbs_size < 2 || src == L"¥0") return std::string();
+		if (mbs_size < 2 || src == L"\0") return std::string();
 		char *mbs = new char[mbs_size];
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 		size_t num;
 		wcstombs_s(&num, mbs, mbs_size, src.c_str(), src.length() * MB_CUR_MAX + 1);
 #else
@@ -150,10 +153,10 @@ namespace sig{
 	inline std::wstring STRtoWSTR(const std::string &src)
 	{
 		size_t wcs_size = src.length() + 1;
-		if (wcs_size < 2 || src == "¥0") return std::wstring();
+		if (wcs_size < 2 || src == "\0") return std::wstring();
 		//std::cout << src << std::endl;
 		wchar_t *wcs = new wchar_t[wcs_size];
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 		size_t num;
 		mbstowcs_s(&num, wcs, wcs_size, src.c_str(), src.length() + 1);
 #else

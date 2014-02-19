@@ -1,4 +1,4 @@
-#include "string_test.h"
+﻿#include "string_test.h"
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 
@@ -7,9 +7,11 @@ using TVecw = std::vector<std::wstring>;
 using TVec2 = std::vector<std::vector<std::string>>;
 
 using sig::uint;
+using sig::SIG_Regex;
 
 void RegexTest()
 {
+#if SIG_MSVC_ENV
 	//エスケープ処理した文字列を取得
 	auto escaped1 = sig::RegexEscaper("? or (lol) must be escaped");
 	auto escaped2 = sig::RegexEscaper(L"?とか(笑)はエスケープすべき文字");
@@ -20,14 +22,16 @@ void RegexTest()
 
 	//エスケープ処理をしつつ std::regex(or std::wregex)を取得
 	auto reg = sig::RegexMaker(L"(笑)");
-	auto replaced = std::regex_replace(std::wstring(L"てすと(笑)です"), reg, std::wstring(L""));
+	auto replaced = SIG_RegexReplace(std::wstring(L"てすと(笑)です"), reg, std::wstring(L""));
 
 	assert(replaced == L"てすとです");
-
+#else
+	auto escaped1 = R"(? or (lol) must be escaped)";
+#endif
 
 	//正規表現で検索
-	auto matches1 = sig::RegexSearch("test tes1a tes2b", std::regex("tes(\\d)(\\w)"));
-	auto matches2 = sig::RegexSearch<std::list>("search「? or (lol) must be escaped」", std::regex(escaped1));
+	auto matches1 = sig::RegexSearch("test tes1a tes2b", SIG_Regex("tes(\\d)(\\w)"));
+	auto matches2 = sig::RegexSearch<std::list>("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
 
 	TVec2 test3 = { { "tes1a", "1", "a" }, { "tes2b", "2", "b" } };
 	auto test4 = "? or (lol) must be escaped";

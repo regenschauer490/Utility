@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright(c) 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
@@ -39,12 +39,12 @@ namespace sig{
 		SimpleRandom(NumType min, NumType max, bool debug) : engine_(
 			[debug](){
 			std::random_device rnd;
-			std::vector<uint> v(10);
+			std::vector<unsigned long> v(10);
 			if (debug) std::fill(v.begin(), v.end(), 0);
 			else std::generate(v.begin(), v.end(), std::ref(rnd));
-			auto seq = std::seed_seq(v.begin(), v.end());
+			std::seed_seq seq(v.begin(), v.end());
 
-			return Engine(seq);
+			return Engine{seq};
 		}()
 			),
 			dist_(min, max){}

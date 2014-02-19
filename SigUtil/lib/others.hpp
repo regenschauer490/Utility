@@ -1,4 +1,4 @@
-#ifndef __SIG_UTIL_SET__
+﻿#ifndef __SIG_UTIL_SET__
 #define __SIG_UTIL_SET__
 
 #include "sigutil.hpp"
@@ -33,6 +33,27 @@ namespace sig
 #endif
 
 
+	inline void Print(std::string const& text, char const* const delimiter = "\n")
+	{
+		std::cout << text << delimiter;
+	}
+
+	inline void Print(std::wstring const& text, wchar_t const* const delimiter = L"\n")
+	{
+		std::wcout << text << delimiter;
+	}
+
+	template < class T, template <class...> class Container, typename std::enable_if<!std::is_same<T, std::wstring>::value>::type*& = enabler>
+	inline void Print(Container<T> const& container, char const* const delimiter = "\n")
+	{
+		std::copy(container.begin(), container.end(), std::ostream_iterator<T>(std::cout, delimiter));
+	}
+
+	template<template<class...> class Container>
+	inline void Print(Container<std::wstring> const& container, wchar_t const* const delimiter = L"\n")
+	{
+		std::copy(container.begin(), container.end(), std::ostream_iterator<std::wstring>(std::wcout, delimiter));
+	}
 }
 
 #endif

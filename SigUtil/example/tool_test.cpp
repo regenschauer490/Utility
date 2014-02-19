@@ -1,6 +1,6 @@
-#include "tool_test.h"
+﻿#include "tool_test.h"
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 #include <windows.h>
 #endif
 
@@ -21,7 +21,7 @@ void TimeWatchTest()
 {
 	sig::TimeWatch tw;		//計測開始
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 	Sleep(100);
 
 	tw.Save();		//ここまでのタイムを記録
@@ -62,7 +62,7 @@ void TimeWatchTest()
 	assert(sig::TolerantEqual(tw.GetLapTime(1), 200, 1));		//200 ± 1 (ms)
 	assert(sig::TolerantEqual(tw.GetLapTime(2), 300, 1));		//300 ± 1 (ms)
 	assert(sig::TolerantEqual(tw.GetLapTime(3), 400, 1));		//400 ± 1 (ms)
-	assert(! tw.GetLapTime(4));
+	assert(tw.GetLapTime(4) == -1);
 
 	assert(sig::TolerantEqual(tw.GetSplitTime(0), 100, 1));		//100 ± 1 (ms)
 	assert(sig::TolerantEqual(tw.GetSplitTime(1), 300, 1));		//300 ± 1 (ms)
@@ -79,7 +79,7 @@ void TimeWatchTest()
 
 void HistgramTest()
 {
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 	auto file1 = L"./example/test_file/histgram1.txt";
 	auto file2 = L"./example/test_file/histgram2.txt";
 #else

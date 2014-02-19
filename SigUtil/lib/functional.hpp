@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright(c) 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
@@ -9,6 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define __SIG_UTIL_FUNCTIONAL__
 
 #include "sigutil.hpp"
+#include "container_helper.hpp"
 
 /* 関数型プログラミング サポート */
 

@@ -1,4 +1,4 @@
-#include "lib/string.hpp"
+﻿#include "lib/string.hpp"
 #include "lib/file.hpp"
 #include "lib/tool.hpp"
 #include "lib/modify.hpp"
@@ -43,7 +43,6 @@ int main()
 	TimeWatchTest();
 	HistgramTest();
 	PercentTest();
-
 
 	return 0;
 }

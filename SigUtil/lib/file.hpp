@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright(c) 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
@@ -15,7 +15,7 @@ http://opensource.org/licenses/mit-license.php
 //#include <codecvt>
 #include <locale>
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 #include <windows.h>
 #endif
 
@@ -39,7 +39,7 @@ namespace sig{
 		if (has_slash){
 			//付ける場合
 			if (tail == '/' || tail == '\\') return directory_pass;
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 			else return (directory_pass + L"/");
 #else
 			else return (directory_pass + "/");
@@ -66,7 +66,7 @@ namespace sig{
 		typedef std::vector<std::wstring> ResultType;
 		ResultType result;
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 		WIN32_FIND_DATA fd;
 		auto query = extension.empty() ? L"?*" : L"*" + extension;
 		auto pass = DirpassTailModify(directory_pass, true) + query;
@@ -123,7 +123,7 @@ namespace sig{
 		typedef std::vector<std::wstring> ResultType;
 		ResultType result;
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 		WIN32_FIND_DATA fd;
 		auto pass = DirpassTailModify(directory_pass, true) + L"*";
 		auto hFind = FindFirstFile(pass.c_str(), &fd);

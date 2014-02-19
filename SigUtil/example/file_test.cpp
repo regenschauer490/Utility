@@ -1,14 +1,14 @@
-#include "file_test.h"
+﻿#include "file_test.h"
 #include "../lib/string.hpp"
 #include "../lib/functional.hpp"
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
-//処理方法の優先順位は SIG_WINDOWS_ENV(windows.h使用) > SIG_ENABLE_BOOOST(boost::filesystem使用)
+//処理方法の優先順位は SIG_MSVC_ENV(windows.h使用) > SIG_ENABLE_BOOOST(boost::filesystem使用)
 
 using TVec = std::vector<std::string>;
 using TVecw = std::vector<std::wstring>;
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 	auto raw_pass = L"../SigUtil/example/test_file";
 #else
 	auto raw_pass = "../SigUtil/example/test_file";
@@ -18,7 +18,7 @@ void GetDirectoryNamesTest()
 {
 	auto pass = sig::DirpassTailModify(raw_pass, true);
 
-#if SIG_WINDOWS_ENV || SIG_ENABLE_BOOST
+#if SIG_MSVC_ENV || SIG_ENABLE_BOOST
 
 	auto file_names = sig::GetFileNames(pass, false);
 	auto text_file_names = sig::GetFileNames(pass, false, L".txt");
@@ -80,7 +80,7 @@ void FileSaveLoadTest()
 {
 	auto pass = sig::DirpassTailModify(raw_pass, true);
 
-#if SIG_WINDOWS_ENV
+#if SIG_MSVC_ENV
 	auto fpass1 = pass + L"test.txt";
 	auto fpass2 = pass + L"test2.txt";
 	auto fpass3 = pass + L"test3.txt";

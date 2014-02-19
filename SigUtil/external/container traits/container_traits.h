@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013, Daniel Park
  * All rights reserved.
  *
@@ -34,11 +34,11 @@ template <class C>
 struct container_traits
 {
 	// bool exist
-    // Type value_type
+	// Type value_type
 	// bool is_string
-    // void add_element(C&,T)
-    // void concat(C&,C)
-    // Type rebind<U>
+	// void add_element(C&,T)
+	// void concat(C&,C)
+	// Type rebind<U>
 };
 
 template<class C>

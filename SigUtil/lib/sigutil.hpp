@@ -1,14 +1,14 @@
-#ifndef __SIG_UTIL_H__
+﻿#ifndef __SIG_UTIL_H__
 #define __SIG_UTIL_H__
 
-#define SIG_ENABLE_BOOST 0
+#define SIG_ENABLE_BOOST 1
 
 #ifdef _WIN32
-#define SIG_WINDOWS_ENV 1
+#define SIG_MSVC_ENV 1
 #elif _WIN64
-#define SIG_WINDOWS_ENV 1
+#define SIG_MSVC_ENV 1
 #else
-#define SIG_WINDOWS_ENV 0
+#define SIG_MSVC_ENV 0
 #endif
 
 #include <assert.h>
@@ -32,16 +32,17 @@
 #include <regex>
 #include <utility>
 
-#include "container_helper.hpp"
-#include "type_map.hpp"
+//#include "container_helper.hpp"
+//#include "type_map.hpp"
 
 #if SIG_ENABLE_BOOST
 
 #include <boost/optional.hpp>
-#include <boost/format.hpp>
+#include "boost/regex.hpp"
 #include <boost/call_traits.hpp>
-#include <boost/range.hpp>
-#include <boost/range/algorithm.hpp>
+//#include <boost/format.hpp>
+//#include <boost/range.hpp>
+//#include <boost/range/algorithm.hpp>
 
 #endif
 
@@ -72,7 +73,7 @@ namespace sig{
 	
 	extern void* enabler;
 
-	//maybeの有効・無効に関係なく記述するためのもの
+//maybeの有効・無効に関係なく記述するための処理
 #if SIG_ENABLE_BOOST
 	template <class T> struct Just{ typedef maybe<T> type; };
 	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
@@ -81,7 +82,8 @@ namespace sig{
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
 #endif
 
-#if SIG_WINDOWS_ENV
+//ファイルパスの文字型の指定
+#if SIG_MSVC_ENV
 	using FileString = std::wstring;
 	inline void FileOpenErrorPrint(FileString const& pass){ std::wcout << L"file open error: " << pass << std::endl; }
 #if _MSC_VER <= 1800
@@ -90,6 +92,23 @@ namespace sig{
 #else
 	using FileString = std::string;
 	inline void FileOpenErrorPrint(FileString const& pass){ std::cout << "file open error: " << pass << std::endl; }
+#endif
+
+//正規表現ライブラリの指定 (gcc標準はバグが多いため避ける)
+#if !SIG_MSVC_ENV && SIG_ENABLE_BOOST
+using SIG_Regex = boost::regex;
+using SIG_WRegex = boost::wregex;
+using SIG_SMatch = boost::smatch;
+using SIG_WSMatch = boost::wsmatch;
+#define SIG_RegexSearch boost::regex_search
+#define SIG_RegexReplace boost::regex_replace
+#else
+using SIG_Regex = std::regex;
+using SIG_WRegex = std::wregex;
+using SIG_SMatch = std::smatch;
+using SIG_WSMatch = std::wsmatch;
+#define SIG_RegexSearch std::regex_search
+#define SIG_RegexReplace std::regex_replace
 #endif
 
 	/*
@@ -299,44 +318,6 @@ namespace sig{
 		if(val<min){ return false; }
 		if(val>max){ return false; }
 		return true;
-	}
-
-
-/* 集合操作 */
-
-/*	template < template<class T, class = std::allocator<T>> class Container >
-	inline void Print(Container<std::string> const& container, char const* const delimiter = "\n")
-	{
-		std::copy(container.begin(), container.end(), std::ostream_iterator<std::string>(std::cout, delimiter));
-	}
-
-	template < template<class T, class = std::allocator<T>> class Container >
-	inline void Print(Container<std::wstring> const& container, wchar_t const* const delimiter = L"\n")
-	{
-		std::copy(container.begin(), container.end(), std::ostream_iterator<std::wstring>(std::wcout, delimiter));
-	}
-*/
-
-	inline void Print(std::string const& text, char const* const delimiter = "\n")
-	{
-		std::cout << text << delimiter;
-	}
-
-	inline void Print(std::wstring const& text, wchar_t const* const delimiter = L"\n")
-	{
-		std::wcout << text << delimiter;
-	}
-
-	template < class T, template <class...> class Container, typename std::enable_if<!std::is_same<T, std::wstring>::value>::type*& = enabler>
-	inline void Print(Container<T> const& container, char const* const delimiter = "\n")
-	{
-		std::copy(container.begin(), container.end(), std::ostream_iterator<T>(std::cout, delimiter));
-	}
-
-	template<template<class...> class Container>
-	inline void Print(Container<std::wstring> const& container, wchar_t const* const delimiter = L"\n")
-	{
-		std::copy(container.begin(), container.end(), std::ostream_iterator<std::wstring>(std::wcout, delimiter));
 	}
 }
 

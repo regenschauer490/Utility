@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright(c) 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
@@ -93,13 +93,13 @@ namespace sig{
 	struct Str2RegexSelector{};
 	template <>
 	struct Str2RegexSelector<std::string>{
-		typedef std::regex regex;
-		typedef std::smatch smatch;
+		typedef SIG_Regex regex;
+		typedef SIG_SMatch smatch;
 	};
 	template <>
 	struct Str2RegexSelector<std::wstring>{
-		typedef std::wregex regex; 
-		typedef std::wsmatch smatch;
+		typedef SIG_WRegex regex;
+		typedef SIG_WSMatch smatch;
 	};
 }
 #endif
