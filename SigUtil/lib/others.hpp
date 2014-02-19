@@ -1,4 +1,4 @@
-#ifndef __SIG_UTIL_SET__
+﻿#ifndef __SIG_UTIL_SET__
 #define __SIG_UTIL_SET__
 
 #include "sigutil.hpp"

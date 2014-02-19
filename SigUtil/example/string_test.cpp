@@ -1,4 +1,4 @@
-#include "string_test.h"
+﻿#include "string_test.h"
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 

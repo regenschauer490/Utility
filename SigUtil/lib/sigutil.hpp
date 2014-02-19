@@ -1,4 +1,4 @@
-#ifndef __SIG_UTIL_H__
+﻿#ifndef __SIG_UTIL_H__
 #define __SIG_UTIL_H__
 
 #define SIG_ENABLE_BOOST 1
