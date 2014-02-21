@@ -1,5 +1,5 @@
-﻿#ifndef __SIG_UTIL_H__
-#define __SIG_UTIL_H__
+﻿#ifndef SIG_UTILUTIL_H_HPP
+#define SIG_UTILUTIL_H_HPP
 
 #define SIG_ENABLE_BOOST 1
 

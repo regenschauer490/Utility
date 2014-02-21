@@ -18,8 +18,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef __SIG_CONTAINER_TRAITS__
-#define __SIG_CONTAINER_TRAITS__
+#ifndef SIG_CONTAINER_TRAITS_H
+#define SIG_CONTAINER_TRAITS_H
 
 #include <deque>
 #include <list>

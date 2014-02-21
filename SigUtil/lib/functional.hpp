@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef __SIG_UTIL_FUNCTIONAL__
-#define __SIG_UTIL_FUNCTIONAL__
+#ifndef SIG_UTILUTIL_FUNCTIONAL_HPP
+#define SIG_UTILUTIL_FUNCTIONAL_HPP
 
 #include "sigutil.hpp"
 #include "container_helper.hpp"
