@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef __SIG_UTIL_TYPEMAP__
-#define __SIG_UTIL_TYPEMAP__
+#ifndef _SIG_UTILUTIL_TYPEMAP_HPP
+#define _SIG_UTILUTIL_TYPEMAP_HPP
 
 #include "sigutil.hpp"
 

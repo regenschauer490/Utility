@@ -11,8 +11,8 @@
  * from the use of this software.
  */
 
-#ifndef __SIG_EVAL__
-#define __SIG_EVAL__
+#ifndef SIG_EVAL_H
+#define SIG_EVAL_H
 
 #include <type_traits>
 #include <utility>

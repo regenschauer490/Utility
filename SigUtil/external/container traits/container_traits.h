@@ -18,8 +18,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef __SIG_CONTAINER_TRAITS__
-#define __SIG_CONTAINER_TRAITS__
+#ifndef SIG_CONTAINER_TRAITS_H
+#define SIG_CONTAINER_TRAITS_H
 
 #include <deque>
 #include <list>
@@ -34,11 +34,11 @@ template <class C>
 struct container_traits
 {
 	// bool exist
-	// Type value_type
+    // Type value_type
 	// bool is_string
-	// void add_element(C&,T)
-	// void concat(C&,C)
-	// Type rebind<U>
+    // void add_element(C&,T)
+    // void concat(C&,C)
+    // Type rebind<U>
 };
 
 template<class C>

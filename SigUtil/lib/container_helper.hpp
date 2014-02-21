@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef __SIG_C_TRAITS_H__
-#define __SIG_C_TRAITS_H__
+#ifndef SIG_UTILCONTAINER_TRAITS_H
+#define SIG_UTILCONTAINER_TRAITS_H
 
 
 #include "../external/container traits/container_traits.h"

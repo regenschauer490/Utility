@@ -32,7 +32,7 @@ void RegexTest()
 	//正規表現で検索
 	auto matches1 = sig::RegexSearch("test tes1a tes2b", SIG_Regex("tes(\\d)(\\w)"));
 	auto matches2 = sig::RegexSearch<std::list>("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
-
+	
 	TVec2 test3 = { { "tes1a", "1", "a" }, { "tes2b", "2", "b" } };
 	auto test4 = "? or (lol) must be escaped";
 

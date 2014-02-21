@@ -1,4 +1,4 @@
-﻿#include "tool_test.h"
+#include "tool_test.h"
 
 #if SIG_MSVC_ENV
 #include <windows.h>

@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef __SIG_UTIL_STRING__
-#define __SIG_UTIL_STRING__
+#ifndef SIG_UTILUTIL_STRING_HPP
+#define SIG_UTILUTIL_STRING_HPP
 
 #include "sigutil.hpp"
 #include "type_map.hpp"
@@ -193,7 +193,7 @@ namespace sig{
 			auto tag_str = tel_ + tag + ter_;
 			return tag_str + src + tag_str;
 		}
-		
+
 		auto Decode(String const& src, String const& tag) ->typename Just<String>::type const{
 			auto tag_str = tel_ + tag + ter_;
 			auto parse = Split(" " + src, tag_str);
