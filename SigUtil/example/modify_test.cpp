@@ -28,8 +28,11 @@ void SortTest()
 
 void ShuffleTest()
 {
+	std::deque<int> data0{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 	std::vector<int> data1{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 	std::list<int> data2{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
+
+	sig::Shuffle(data0);
 
 	//複数のコンテナを対応付けつつシャッフル
 	//ex: c1[1, 2, 3, 4], c2[1, 2, 3, 4] -> c1'[3, 1, 4, 2], c2'[3, 1, 4, 2]
