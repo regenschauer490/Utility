@@ -12,7 +12,6 @@ http://opensource.org/licenses/mit-license.php
 #include "sigutil.hpp"
 
 #include <fstream>
-//#include <codecvt>
 #include <locale>
 
 #if SIG_MSVC_ENV

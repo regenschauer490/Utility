@@ -15,6 +15,11 @@ http://opensource.org/licenses/mit-license.php
 #include <stdlib.h>
 #include <sstream>
 
+#if SIG_MSVC_ENV
+#include <windows.h>
+#endif
+
+#include <codecvt>
 
 /* 文字列処理関連 */
 
@@ -124,7 +129,7 @@ namespace sig{
 
 
 	//ワイド文字 -> マルチバイト文字 (ex: Windows環境では UTF-16 -> Shift-JIS)
-	inline std::string WSTRtoSTR(const std::wstring &src)
+	inline std::string WSTRtoSTR(std::wstring const& src)
 	{
 		size_t mbs_size = src.length() * MB_CUR_MAX + 1;
 		if (mbs_size < 2 || src == L"\0") return std::string();
@@ -150,11 +155,10 @@ namespace sig{
 	}
 
 	//マルチバイト文字 -> ワイド文字 (ex: Windows環境では Shift-JIS -> UTF-16)
-	inline std::wstring STRtoWSTR(const std::string &src)
+	inline std::wstring STRtoWSTR(std::string const& src)
 	{
 		size_t wcs_size = src.length() + 1;
 		if (wcs_size < 2 || src == "\0") return std::wstring();
-		//std::cout << src << std::endl;
 		wchar_t *wcs = new wchar_t[wcs_size];
 #if SIG_MSVC_ENV
 		size_t num;
@@ -176,6 +180,16 @@ namespace sig{
 		return std::move(result);
 	}
 
+#if SIG_MSVC_ENV
+	// ShiftJIS -> UTF-16
+	inline std::u16string SJIStoUTF16(std::string const& src)
+	{
+		const int dest_size = ::MultiByteToWideChar(CP_ACP, 0, src.c_str(), -1, NULL, 0);
+
+		wchar_t* buf = new wchar_t[dest_size];
+		::MultiByteToWideChar(CP_ACP, 0, (LPCSTR) pSource, -1, (LPWSTR)buffUtf16, nSize);
+	}
+#endif
 
 	//HTML風にタグをエンコード・デコードする
 	//例：　<TAG>text<TAG>
