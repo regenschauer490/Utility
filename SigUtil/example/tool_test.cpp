@@ -119,7 +119,7 @@ void HistgramTest()
 	auto c2 = hist.GetCount(2);
 	auto c100 = hist.GetCount(100);
 
-#if SIG_ENABLE_BOOST
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	if(c2){
 		assert(std::get<1>(*c2) == -6);
 		assert(std::get<2>(*c2) == -4);

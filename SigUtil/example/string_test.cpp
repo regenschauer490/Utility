@@ -1,4 +1,5 @@
 ﻿#include "string_test.h"
+#include "../lib/file.hpp"
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 
@@ -31,32 +32,19 @@ void RegexTest()
 
 	//正規表現で検索
 	auto matches1 = sig::RegexSearch("test tes1a tes2b", SIG_Regex("tes(\\d)(\\w)"));
-	auto matches2 = sig::RegexSearch<std::list>("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
+	auto matches2 = sig::RegexSearch("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
 	
 	TVec2 test3 = { { "tes1a", "1", "a" }, { "tes2b", "2", "b" } };
 	auto test4 = "? or (lol) must be escaped";
 
-#if SIG_ENABLE_BOOST
-	for (uint i=0; i < matches1->size(); ++i){
-		for (uint j = 0; j < (*matches1)[i].size(); ++j){
-			assert((*matches1)[i][j] == test3[i][j]);
+	for (uint i=0; i < sig::FromJust(matches1).size(); ++i){
+		for (uint j = 0; j < sig::FromJust(matches1)[i].size(); ++j){
+			assert(sig::FromJust(matches1)[i][j] == test3[i][j]);
 		}
 	}
-
-	for (auto m : *matches2){
+	for (auto m : sig::FromJust(matches2)){
 		assert( m.front() == test4);
 	}
-#else
-	for (uint i=0; i < matches1.size(); ++i){
-		for (uint j = 0; j < matches1[i].size(); ++j){
-			assert(matches1[i][j] == test3[i][j]);
-		}
-	}
-
-	for (auto m : matches2){
-		assert( m.front() == test4);
-	}
-#endif
 
 }
 
@@ -71,11 +59,10 @@ void TagDealerTest()
 	auto decoded = tag_dealer.Decode(encoded, "TAG");
 	auto ignored = tag_dealer.Decode(encoded, "HOO");
 
-#if SIG_ENABLE_BOOST
-	if (decoded) assert(*decoded == "test");
+	assert(sig::FromJust(decoded) == "test");
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	if (ignored) assert(false);				//ignored == nothing
 #else
-	assert(decoded == "test");
 	assert(ignored == "");
 #endif
 	
@@ -85,7 +72,7 @@ void TagDealerTest()
 
 	TVec test{ "str1", "str3" };
 
-#if SIG_ENABLE_BOOST
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	//まとめてデコード
 	auto decoded_vec = tag_dealer.Decode(encoded_vec, std::deque<std::string>{"TAG1", "TAG3"});
 
@@ -145,17 +132,43 @@ void CatStrTest()
 
 void StrConvertTest()
 {
-	//マルチ文字 <-> ワイド文字 変換
-	auto wstr = sig::STRtoWSTR("testてすと");
-	auto str = sig::WSTRtoSTR(L"testてすと");
+	const auto sjis = sig::FromJust( sig::ReadLine<std::string>(L"../SigUtil/example/test_file/shift_jis.txt"));
+	const auto utf8 = sig::FromJust( sig::ReadLine<std::string>(L"../SigUtil/example/test_file/utf8.txt"));
 
-	assert(wstr == L"testてすと");
-	assert(str == "testてすと");
+	//マルチ文字 <-> ワイド文字 変換
+	std::wstring	wstr = sig::STRtoWSTR(sjis[1]);
+	std::string		str = sig::WSTRtoSTR(wstr);
+
+	assert(str == sjis[1]);
 
 	//まとめて変換
-	auto wstr_vec = sig::STRtoWSTR(std::vector<std::string>{"壱", "弐", "参"});
-	TVecw test{ L"壱", L"弐", L"参" };
-	for (uint i = 0; i<wstr_vec.size(); ++i) assert(wstr_vec[i] == test[i]);
+	auto wstr_vec = sig::STRtoWSTR(sjis);
+
+#if SIG_MSVC_ENV	//windows + VisualStudio環境
+
+	//Shift-JIS <-> UTF-8
+	std::string	utf8_from_sjis = sig::SJIStoUTF8(sjis[1]);
+	std::string	sjis_from_utf8 = sig::UTF8toSJIS(utf8[1]);
+
+	assert(utf8_from_sjis == utf8[1]);
+	assert(sjis_from_utf8 == sjis[1]);
+
+	//Shift-Jis <-> UTF-16
+	std::u16string	utf16_from_sjis = sig::SJIStoUTF16(sjis[1]);
+	std::string		sjis_from_utf16 = sig::UTF16toSJIS(utf16_from_sjis);
+
+	assert(sjis_from_utf16 == sjis[1]);
+
+	//UTF-8 <-> UTF-16
+	std::u16string	utf16_from_utf8 = sig::UTF8toUTF16(utf8[1]);
+	std::string		utf8_from_utf16 = sig::UTF16toUTF8(utf16_from_utf8);
+
+	assert(utf8_from_utf16 == utf8[1]);
+
+	assert(utf16_from_utf8 == utf16_from_sjis);
+	
+#else
+#endif
 }
 
 void ZenHanTest()

@@ -21,6 +21,8 @@ http://opensource.org/licenses/mit-license.php
 
 #include <codecvt>
 
+#include "tool.hpp"
+
 /* 文字列処理関連 */
 
 namespace sig{
@@ -39,10 +41,10 @@ namespace sig{
 	}
 
 	//自動でエスケープしてstd::regex or std::wregex を返す
-	template <class T>
-	auto RegexMaker(T const& expression) ->typename Str2RegexSelector<TString<T>>::regex
+	template <class S>
+	auto RegexMaker(S const& expression) ->typename Str2RegexSelector<TString<S>>::regex
 	{
-		return typename Str2RegexSelector<TString<T>>::regex(RegexEscaper(expression));
+		return typename Str2RegexSelector<TString<S>>::regex(RegexEscaper(expression));
 	}
 #endif
 
@@ -52,20 +54,21 @@ namespace sig{
 	//src = "test tes1 tes2"
 	//expression = std::regex("tes(\\d)")
 	//return -> [[tes1, 1], [tes2, 2]]
-	template <template <class T_, class = std::allocator<T_>> class Container = std::vector, class T = std::string >
-	auto RegexSearch(T src, typename Str2RegexSelector<TString<T>>::regex const& expression) ->typename Just< Container< Container<TString<T>>>>::type
+	template <class S>
+	auto RegexSearch(S src, typename Str2RegexSelector<TString<S>>::regex const& expression) ->typename Just<std::vector<std::vector<TString<S>>>>::type
 	{
-		Container<Container<TString<T>>> d;
-		typename Str2RegexSelector<TString<T>>::smatch match;
-		auto tmp = TString<T>(src);
+		using R = std::vector<std::vector<TString<S>>>;
+		R d;
+		typename Str2RegexSelector<TString<S>>::smatch match;
+		auto tmp = TString<S>(src);
 
 		while (SIG_RegexSearch(tmp, match, expression)){
-			d.push_back(Container<TString<T>>());
+			d.push_back(std::vector<TString<S>>());
 			for (auto const& m : match) d.back().push_back(m);
 			tmp = match.suffix().str();
 		}
 
-		return d.empty() ? Nothing(std::move(d)) : typename Just<Container<Container<TString<T>>>>::type(std::move(d));
+		return d.empty() ? Nothing(std::move(d)) : typename Just<R>::type(std::move(d));
 	}
 
 /*
@@ -78,16 +81,16 @@ namespace sig{
 */
 
 	//文字列(src)をある文字列(delim)を目印に分割する
-	//戻り値のコンテナはデフォルトではvector
+	//戻り値のコンテナはデフォルトではvector (listやdeque等のシーケンスコンテナならOK)
 	//例：src="one, 2, 参 ", delim="," -> return vector<string>{"one", " 2", " 参 "}
-	template <template <class T_, class = std::allocator<T_>> class Container = std::vector,  class String = std::string >
-	auto Split(String src, typename std::common_type<String>::type const& delimiter) ->Container<typename StringId<String>::type>
+	template <template <class T_, class = std::allocator<T_>> class CSeq = std::vector, class S = std::string >
+	auto Split(S src, typename std::common_type<S>::type const& delimiter) ->CSeq<typename StringId<S>::type>
 	{
-		Container<String> result;
+		CSeq<S> result;
 		int const mag = delimiter.size();
 		int cut_at;
 
-		if (!mag) return Container<String>{src};
+		if (!mag) return CSeq<S>{src};
 
 		while ((cut_at = src.find(delimiter)) != src.npos){
 			if (cut_at > 0) result.push_back(src.substr(0, cut_at));
@@ -100,16 +103,16 @@ namespace sig{
 		return std::move(result);
 	}
 
-	template < template <class T_, class = std::allocator<T_>> class Container = std::vector >
-	Container<std::string> Split(char const* const src, char const* const delimiter)
+	template < template <class T_, class = std::allocator<T_>> class CSeq = std::vector >
+	CSeq<std::string> Split(char const* const src, char const* const delimiter)
 	{
-		return Split<Container>(std::string(src), std::string(delimiter));
+		return Split<CSeq>(std::string(src), std::string(delimiter));
 	}
 
-	template < template < class T_, class = std::allocator<T_>> class Container = std::vector >
-	Container<std::wstring> Split(wchar_t const* const src, wchar_t const* const delimiter)
+	template < template < class T_, class = std::allocator<T_>> class CSeq = std::vector >
+	CSeq<std::wstring> Split(wchar_t const* const src, wchar_t const* const delimiter)
 	{
-		return Split<Container>(std::wstring(src), std::wstring(delimiter));
+		return Split<CSeq>(std::wstring(src), std::wstring(delimiter));
 	}
 
 
@@ -129,67 +132,143 @@ namespace sig{
 
 
 	//ワイド文字 -> マルチバイト文字 (ex: Windows環境では UTF-16 -> Shift-JIS)
-	inline std::string WSTRtoSTR(std::wstring const& src)
+	inline auto WSTRtoSTR(std::wstring const& src) ->std::string //Just<std::string>::type
 	{
 		size_t mbs_size = src.length() * MB_CUR_MAX + 1;
 		if (mbs_size < 2 || src == L"\0") return std::string();
 		char *mbs = new char[mbs_size];
 #if SIG_MSVC_ENV
 		size_t num;
-		wcstombs_s(&num, mbs, mbs_size, src.c_str(), src.length() * MB_CUR_MAX + 1);
+		int is_error = wcstombs_s(&num, mbs, mbs_size, src.c_str(), src.length() * MB_CUR_MAX + 1);
 #else
-		wcstombs(mbs, src.c_str(), src.length() * MB_CUR_MAX + 1);
+		int is_error = wcstombs(mbs, src.c_str(), src.length() * MB_CUR_MAX + 1);
 #endif
 		std::string dest(mbs);
 		delete[] mbs;
 
-		return std::move(dest);
+		return is_error ? std::string() : std::move(dest); //is_error ? Nothing(dest) : Just<std::string>::type(std::move(dest));
 	}
 
-	template < template < class T_, class = std::allocator<T_>> class Container >
-	Container<std::string> WSTRtoSTR(Container<std::wstring> const& strvec)
+	template <class C, typename std::enable_if<std::is_same<typename container_traits<C>::value_type, std::wstring>::value>::type*& = enabler>
+	auto WSTRtoSTR(C const& strvec)
 	{
-		Container<std::string> result;
-		for (auto const& str : strvec) result.push_back(WSTRtoSTR(str));
+		using R = container_traits<C>::container_type<std::string>;
+		R result;
+		for (auto const& str : strvec){
+			std::string r = WSTRtoSTR(str);
+			if (!r.empty()) container_traits<R>::add_element(result, std::move(r));
+			//result.push_back(FromJust(WSTRtoSTR(str)));
+		}
 		return std::move(result);
 	}
 
 	//マルチバイト文字 -> ワイド文字 (ex: Windows環境では Shift-JIS -> UTF-16)
-	inline std::wstring STRtoWSTR(std::string const& src)
+	inline auto STRtoWSTR(std::string const& src) ->std::wstring //Just<std::wstring>::type
 	{
 		size_t wcs_size = src.length() + 1;
 		if (wcs_size < 2 || src == "\0") return std::wstring();
 		wchar_t *wcs = new wchar_t[wcs_size];
 #if SIG_MSVC_ENV
 		size_t num;
-		mbstowcs_s(&num, wcs, wcs_size, src.c_str(), src.length() + 1);
+		int is_error = mbstowcs_s(&num, wcs, wcs_size, src.c_str(), src.length() + 1);
 #else
-		mbstowcs(wcs, src.c_str(), src.length() + 1);
+		int is_error = mbstowcs(wcs, src.c_str(), src.length() + 1);
 #endif
 		std::wstring dest(wcs);
 		delete[] wcs;
+		return is_error ? std::wstring() : std::move(dest); //is_error ? Nothing(dest) : Just<std::wstring>::type(std::move(dest));
+	}
 
+	template <class C, typename std::enable_if<std::is_same<typename container_traits<C>::value_type, std::string>::value>::type*& = enabler>
+	auto STRtoWSTR(C const& strvec)
+	{
+		using R = container_traits<C>::container_type<std::wstring>;
+		R result;
+		for (auto const& str : strvec){
+			std::wstring r = STRtoWSTR(str);
+			if (!r.empty()) container_traits<R>::add_element(result, std::move(r));
+			//result.push_back(FromJust(STRtoWSTR(str)));
+		}
+		return std::move(result);
+	}
+
+
+	// UTF-8 -> UTF-16
+	inline auto UTF8toUTF16(std::string const& src) ->std::u16string
+	{
+		std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+		std::u16string dest = convert.from_bytes(src);
 		return std::move(dest);
 	}
 
-	template < template < class T_, class = std::allocator<T_>> class Container >
-	Container<std::wstring> STRtoWSTR(Container<std::string> const& strvec)
+	// UTF-16 -> UTF-8
+	inline auto UTF16toUTF8(std::u16string const& src) ->std::string
 	{
-		Container<std::wstring> result;
-		for (auto const& str : strvec) result.push_back(STRtoWSTR(str));
-		return std::move(result);
+		std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+		std::string dest = convert.to_bytes(src);
+		return std::move(dest);
+	}
+
+	// UTF-8 -> UTF-32
+	inline auto UTF8toUTF32(std::string const& src) ->std::u32string
+	{
+		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
+		std::u32string dest = utf32conv.from_bytes(src);
+		return std::move(dest);
+	}
+
+	// UTF-32 -> UTF-8
+	inline auto UTF32toUTF8(std::u32string const& src) ->std::string
+	{
+		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
+		std::string dest = utf32conv.to_bytes(src);
+		return std::move(dest);
 	}
 
 #if SIG_MSVC_ENV
 	// ShiftJIS -> UTF-16
-	inline std::u16string SJIStoUTF16(std::string const& src)
+	inline auto SJIStoUTF16(std::string const& src) ->std::u16string //Just<std::u16string>::type
 	{
 		const int dest_size = ::MultiByteToWideChar(CP_ACP, 0, src.c_str(), -1, NULL, 0);
+		BYTE* buf = new BYTE[dest_size * 2 + 2];
 
-		wchar_t* buf = new wchar_t[dest_size];
-		::MultiByteToWideChar(CP_ACP, 0, (LPCSTR) pSource, -1, (LPWSTR)buffUtf16, nSize);
+		bool is_succeed = ::MultiByteToWideChar(CP_ACP, 0, src.c_str(), -1, reinterpret_cast<LPWSTR>(buf), dest_size);
+		std::u16string dest(reinterpret_cast<char16_t*>(buf));
+		delete[] buf;
+
+		return is_succeed ? std::move(dest) : std::u16string(); //is_succeed ? Just<std::u16string>::type(std::move(dest)) : Nothing(std::u16string());
 	}
+
+	// UTF-16 -> ShiftJIS
+	inline auto UTF16toSJIS(std::u16string const& src) ->std::string //Just<std::string>::type
+	{
+		LPCWSTR srcp = reinterpret_cast<LPCWSTR>(src.c_str());
+		const int dest_size = ::WideCharToMultiByte(CP_ACP, 0, srcp, -1, NULL, 0, NULL, NULL);
+		BYTE* buf = new BYTE[dest_size * 2];
+
+		bool is_succeed = ::WideCharToMultiByte(CP_ACP, 0, srcp, -1, reinterpret_cast<LPSTR>(buf), dest_size, NULL, NULL);
+		std::string dest(reinterpret_cast<char*>(buf));
+		delete[] buf;
+
+		return is_succeed ? std::move(dest) : std::string(); //is_succeed ? Just<std::string>::type(std::move(dest)) : Nothing(std::string());
+	}
+
+	// ShiftJIS -> UTF-8
+	inline auto SJIStoUTF8(std::string const& src) ->std::string
+	{
+		auto utf16 = SJIStoUTF16(src);
+		return UTF16toUTF8(utf16);
+	}
+
+	// UTF-8 -> ShiftJIS
+	inline auto UTF8toSJIS(std::string const& src) ->std::string
+	{
+		auto utf16 = UTF8toUTF16(src);
+		return UTF16toSJIS(utf16);
+	}
+	
 #endif
+
 
 	//HTML風にタグをエンコード・デコードする
 	//例：　<TAG>text<TAG>
@@ -227,7 +306,7 @@ namespace sig{
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
 	{
-		auto size = std::min(src.size(), tag.size());
+		auto size = Min(src.size(), tag.size());
 		auto calc = ZipWith([&](typename Container<String>::value_type s, typename Container<String>::value_type t){ return Encode(s, t); }, src, tag);
 		return std::accumulate(calc.begin(), calc.end(), String(""));
 	}

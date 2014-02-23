@@ -1,7 +1,8 @@
 ﻿#ifndef SIG_UTILUTIL_H_HPP
 #define SIG_UTILUTIL_H_HPP
 
-#define SIG_ENABLE_BOOST 1
+#define SIG_ENABLE_BOOST 1		//boostが使用可能化
+#define SIG_USE_OPTIONAL 1		//boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが発生する)
 
 #ifdef _WIN32
 #define SIG_MSVC_ENV 1
@@ -73,13 +74,17 @@ namespace sig{
 	
 	extern void* enabler;
 
-//maybeの有効・無効に関係なく記述するための処理
-#if SIG_ENABLE_BOOST
+//maybe(boost::optional)の有効・無効に関係なくコードを統一的に記述するための処理
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	template <class T> struct Just{ typedef maybe<T> type; };
 	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
+	template <class T> auto FromJust(maybe<T> const& sp){ return *sp; }
+	template <class T> auto FromJust(maybe<T>&& sp){ return std::move(*sp); }
 #else
 	template <class T> struct Just{ typedef T type; };
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
+	template <class T> auto FromJust(T const& sp){ return sp; }
+	template <class T> auto FromJust(T&& sp){ return std::forward<T>(sp); }
 #endif
 
 //ファイルパスの文字型の指定

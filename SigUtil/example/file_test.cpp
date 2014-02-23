@@ -25,7 +25,7 @@ void GetDirectoryNamesTest()
 	auto old_text_file_names = sig::GetFileNames(pass, false, L".old.txt");
 	auto hidden_text_file_names = sig::GetFileNames(pass, true, L".txt");
 
-#if SIG_ENABLE_BOOST
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl  << "[all visible files]"<< std::endl;
 	if(file_names){
 		for (auto fn : *file_names) std::wcout << fn << std::endl;
@@ -56,7 +56,7 @@ void GetDirectoryNamesTest()
 	auto folder_names = sig::GetFolderNames(pass, false);
 	auto hidden_folder_names = sig::GetFolderNames(pass, true);
 
-#if SIG_ENABLE_BOOST
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl << "[all visible folders]" << std::endl;
 	if (folder_names){
 		for (auto fn : *folder_names) std::wcout << fn << std::endl;
@@ -149,7 +149,7 @@ void FileSaveLoadTest()
 
 	//以下 かんたん読み込み♪
 
-#if SIG_ENABLE_BOOST
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	auto read1 = sig::ReadLine<std::string>(fpass1);
 	auto read2 = sig::ReadLine<std::wstring, std::list<std::wstring>>(fpass2);
 	auto read_num1 = sig::ReadNum<int>(fpass4);
