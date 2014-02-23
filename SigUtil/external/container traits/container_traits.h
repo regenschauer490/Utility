@@ -35,6 +35,7 @@ struct container_traits
 {
 	// bool exist
     // Type value_type
+	// Type container_type
 	// bool is_string
     // void add_element(C&,T)
     // void concat(C&,C)
@@ -50,6 +51,8 @@ struct sequence_container_traits<C<T,A>>
 	static const bool exist = true;
 
     using value_type = T;
+
+	template<class T_> using container_type = C<T_,A>;
 
 	static const bool is_string = false;
 
@@ -89,6 +92,8 @@ struct associative_container_traits<C<T,O<T>,A>>
 
     using value_type = T;
 
+	template<class T_> using container_type = C<T_,O<T_>,A>;
+
 	static const bool is_string = false;
 
     static void add_element(C<T,O<T>,A>& c, const T& t)
@@ -123,6 +128,8 @@ struct hash_container_traits<C<T,H<T>,O<T>,A>>
 
     using value_type = T;
 
+	template<class T_> using container_type = C<T_, H<T_>, O<T_>, A>;
+
 	static const bool is_string = false;
 
     static void add_element(C<T,H<T>,O<T>,A>& c, const T& t)
@@ -155,6 +162,8 @@ struct container_traits<std::basic_string<T,K<T>,A>>
 	bool exist = true;
 
     using value_type = T;
+
+	template<class T_> using container_type = std::basic_string<T_, K<T_>, A>;
 
 	static const bool is_string = true;
 
