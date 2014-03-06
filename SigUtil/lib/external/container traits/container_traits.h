@@ -21,12 +21,13 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_CONTAINER_TRAITS_H
 #define SIG_CONTAINER_TRAITS_H
 
+#include <array>
+#include <vector>
 #include <deque>
 #include <list>
 #include <set>
 #include <string>
 #include <unordered_set>
-#include <vector>
 
 #include "eval.h"
 
@@ -41,6 +42,26 @@ struct container_traits
     // void concat(C&,C)
     // Type rebind<U>
 };
+
+template<class C>
+struct array_container_traits;
+
+template<template<class, size_t> class C, class T, size_t N>
+struct array_container_traits<C<T, N>>
+{
+	static const bool exist = true;
+
+	using value_type = T;
+
+	template<class T_> using container_type = C<T_, N>;
+
+	static const bool is_string = false;
+};
+
+template<class T, size_t N>
+struct container_traits<std::array<T,N>> : public array_container_traits<std::array<T,N>>
+{};
+
 
 template<class C>
 struct sequence_container_traits;

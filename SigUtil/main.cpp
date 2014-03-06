@@ -14,17 +14,9 @@ int main()
 {
 	setlocale(LC_ALL, "Japanese");
 
-	sig::TimeWatch tw;
-	auto vec = sig::Replicate<std::wstring, std::multiset<std::wstring>>(10, std::wstring(5000000, L'あ'));
-	tw.Save();
-	auto vec2 = vec;
-	tw.Save();
-	auto tmp = sig::WSTRtoSTR(vec);
-	tw.Save();
-
-//	std::cout << sig::FromJust(tw.GetLapTime(0)) << std::endl;
-//	std::cout << sig::FromJust(tw.GetLapTime(1)) << std::endl;
-	std::cout << sig::FromJust(tw.GetLapTime(2)) << std::endl;
+	std::vector<int> v {1,2,3};
+	std::array<double, 3> ar{ { 1.1, 2.2, 3.3 }};
+	auto t = sig::ZipWith([](double v1, double v2){ return v1*v2; }, v, ar);
 
 	//functional.hpp test
 	MapTest();
