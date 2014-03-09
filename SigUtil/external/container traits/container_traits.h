@@ -34,13 +34,33 @@ template <class C>
 struct container_traits
 {
 	// bool exist
-    // Type value_type
-	// Type container_type
 	// bool is_string
+    // Type value_type
+    // Type rebind<U>
     // void add_element(C&,T)
     // void concat(C&,C)
-    // Type rebind<U>
 };
+
+template<class C>
+struct array_container_traits;
+
+template<template<class, size_t> class C, class T, size_t N>
+struct array_container_traits<C<T, N>>
+{
+	static const bool exist = true;
+
+	static const bool is_string = false;
+
+	using value_type = T;
+
+	template<class U>
+	using rebind = C<U, N>;
+};
+
+template<class T, size_t N>
+struct container_traits<std::array<T, N>> : public array_container_traits<std::array<T, N>>
+{};
+
 
 template<class C>
 struct sequence_container_traits;
@@ -50,11 +70,12 @@ struct sequence_container_traits<C<T,A>>
 {
 	static const bool exist = true;
 
+	static const bool is_string = false;
+
     using value_type = T;
 
-	template<class T_> using container_type = C<T_,A>;
-
-	static const bool is_string = false;
+    template<class U>
+    using rebind = C<U,typename A::template rebind<U>::other>;
 
     static void add_element(C<T,A>& c, const T& t)
     {
@@ -65,9 +86,6 @@ struct sequence_container_traits<C<T,A>>
     {
         lhs.insert(lhs.end(),rhs.begin(),rhs.end());
     }
-
-    template<class U>
-    using rebind = C<U,typename A::template rebind<U>::other>;
 };
 
 template<class... Args>
@@ -90,11 +108,12 @@ struct associative_container_traits<C<T,O<T>,A>>
 {
 	static const bool exist = true;
 
+	static const bool is_string = false;
+
     using value_type = T;
 
-	template<class T_> using container_type = C<T_,O<T_>,A>;
-
-	static const bool is_string = false;
+    template<class U>
+    using rebind = C<U,O<U>,typename A::template rebind<U>::other>;
 
     static void add_element(C<T,O<T>,A>& c, const T& t)
     {
@@ -105,9 +124,6 @@ struct associative_container_traits<C<T,O<T>,A>>
     {
         lhs.insert(rhs.begin(),rhs.end());
     }
-
-    template<class U>
-    using rebind = C<U,O<U>,typename A::template rebind<U>::other>;
 };
 
 template<class... Args>
@@ -126,11 +142,12 @@ struct hash_container_traits<C<T,H<T>,O<T>,A>>
 {
 	static const bool exist = true;
 
+	static const bool is_string = false;
+
     using value_type = T;
 
-	template<class T_> using container_type = C<T_, H<T_>, O<T_>, A>;
-
-	static const bool is_string = false;
+    template<class U>
+    using rebind = C<U,H<U>,O<U>,typename A::template rebind<U>::other>;
 
     static void add_element(C<T,H<T>,O<T>,A>& c, const T& t)
     {
@@ -141,9 +158,6 @@ struct hash_container_traits<C<T,H<T>,O<T>,A>>
     {
         lhs.insert(rhs.begin(),rhs.end());
     }
-
-    template<class U>
-    using rebind = C<U,H<U>,O<U>,typename A::template rebind<U>::other>;
 };
 
 template<class... Args>
@@ -161,11 +175,12 @@ struct container_traits<std::basic_string<T,K<T>,A>>
 {
 	bool exist = true;
 
+	static const bool is_string = true;
+
     using value_type = T;
 
-	template<class T_> using container_type = std::basic_string<T_, K<T_>, A>;
-
-	static const bool is_string = true;
+    template<class U>
+    using rebind = std::basic_string<U,K<U>,typename A::template rebind<U>::other>;
 
     static void add_element(std::basic_string<T,K<T>,A>& c, const T& t)
     {
@@ -176,9 +191,6 @@ struct container_traits<std::basic_string<T,K<T>,A>>
     {
         lhs+=rhs;
     }
-
-    template<class U>
-    using rebind = std::basic_string<U,K<U>,typename A::template rebind<U>::other>;
 };
 
 #endif

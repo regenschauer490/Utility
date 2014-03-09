@@ -9,22 +9,46 @@
 #include "example/tool_test.h"
 #include "example/modify_test.h"
 #include "example/functional_test.h"
+#include "example/calculate_test.hpp"
+
+#include <future>
 
 int main()
 {
 	setlocale(LC_ALL, "Japanese");
 
-	sig::TimeWatch tw;
-	auto vec = sig::Replicate<std::wstring, std::multiset<std::wstring>>(10, std::wstring(5000000, L'あ'));
+/*	sig::TimeWatch tw;
+	std::vector<int> vec{1,2, 3, 4, 5, 6, 7};
+	std::vector<std::vector<double>> result;
+
+	const auto Task = [&t](int id){
+		std::vector<double> r(id, 0);
+
+		std::cout << "id:" << id << std::endl;
+
+		return std::move(r);
+	};
+
+	std::vector<std::future< std::vector<double> >> task;
+
 	tw.Save();
-	auto vec2 = vec;
+	for (auto const& v :vec){
+		task.push_back(std::async(std::launch::async, Task, v));
+	}
+
 	tw.Save();
-	auto tmp = sig::WSTRtoSTR(vec);
+	for (auto& t : task){
+		result.push_back(t.get());
+	}
 	tw.Save();
 
-//	std::cout << sig::FromJust(tw.GetLapTime(0)) << std::endl;
-//	std::cout << sig::FromJust(tw.GetLapTime(1)) << std::endl;
+	std::cout << std::endl;
+	std::cout << sig::FromJust(tw.GetLapTime(0)) << std::endl;
+	std::cout << sig::FromJust(tw.GetLapTime(1)) << std::endl;
 	std::cout << sig::FromJust(tw.GetLapTime(2)) << std::endl;
+*/
+
+	ArithmeticOperationsTest();
 
 	//functional.hpp test
 	MapTest();

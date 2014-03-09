@@ -51,6 +51,8 @@ namespace sig{
 #undef max
 #undef min
 
+	extern void* enabler;
+
 	/* typedef */
 	using uint = std::size_t;
 	using StrPtr = std::shared_ptr< std::string >;
@@ -60,7 +62,8 @@ namespace sig{
 
 	using std::placeholders::_1;
 	using std::placeholders::_2;
-	
+
+
 #if SIG_ENABLE_BOOST
 	template <typename T>
 	using maybe = boost::optional<T>;
@@ -69,12 +72,16 @@ namespace sig{
 #endif
 
 
-/* ヘルパ関数・ヘルパクラス */
-	struct NullType{};
-	
-	extern void* enabler;
+//boost.call_traits の有効・無効に関係なくコードを統一的に記述するための処理
+#if SIG_ENABLE_BOOST
+	template <class T> using ParamType = typename boost::call_traits<T>::param_type;
+#else
+	template <class T>
+	using ParamType = T const&;
+#endif
+		
 
-//maybe(boost::optional)の有効・無効に関係なくコードを統一的に記述するための処理
+//maybe(boost.optional)の有効・無効に関係なくコードを統一的に記述するための処理
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	template <class T> struct Just{ typedef maybe<T> type; };
 	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
@@ -116,6 +123,7 @@ using SIG_WSMatch = std::wsmatch;
 #define SIG_RegexReplace std::regex_replace
 #endif
 
+
 	/*
 	template<uint I = 0, typename Func, typename... Ts>
 	auto ForEach(std::tuple<Ts...> &, Func) ->typename std::enable_if<I == sizeof...(Ts), void>::type{}
@@ -125,7 +133,14 @@ using SIG_WSMatch = std::wsmatch;
 	{
 		f(std::get<I>(t));
 		ForEach<I + 1, Func, Ts...>(t, f);
-	}*/
+	}
+
+	template <class T>
+	constexpr auto HasBegin(int) ->decltype(std::declval<T>().begin(), bool()){ return true; }
+
+	template <class T>
+	constexpr bool HasBegin(...){ return false; }
+	*/
 	
 	/*
 	template <class C>
@@ -213,9 +228,6 @@ using SIG_WSMatch = std::wsmatch;
 	
 	//template <class T, class D = void> struct HasBegin : std::true_type{};
 	//template <class T> struct HasBegin<T, decltype(std::declval<T>().begin())> : std::false_type{};
-
-	//template <class T> constexpr auto HasBegin(int) ->decltype(std::declval<T>().begin()){ return true; }
-	//template <class T> constexpr bool HasBegin(...){ return false; }
 
 	//template <typename T> constexpr auto has_reserve_method(int) -> decltype(std::declval<T>().reserve(0), bool()) { return true; }
 	//template <typename T> constexpr bool has_reserve_method(...) { return false; }

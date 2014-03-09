@@ -152,7 +152,7 @@ namespace sig{
 	template <class C, typename std::enable_if<std::is_same<typename container_traits<C>::value_type, std::wstring>::value>::type*& = enabler>
 	auto WSTRtoSTR(C const& strvec)
 	{
-		using R = container_traits<C>::container_type<std::string>;
+		using R = typename container_traits<C>::template rebind<std::string>;
 		R result;
 		for (auto const& str : strvec){
 			std::string r = WSTRtoSTR(str);
@@ -182,7 +182,7 @@ namespace sig{
 	template <class C, typename std::enable_if<std::is_same<typename container_traits<C>::value_type, std::string>::value>::type*& = enabler>
 	auto STRtoWSTR(C const& strvec)
 	{
-		using R = container_traits<C>::container_type<std::wstring>;
+		using R = typename container_traits<C>::template rebind<std::wstring>;
 		R result;
 		for (auto const& str : strvec){
 			std::wstring r = STRtoWSTR(str);
