@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTILUTIL_TOOL_HPP
-#define SIG_UTILUTIL_TOOL_HPP
+#ifndef SIG_UTIL_TOOL_HPP
+#define SIG_UTIL_TOOL_HPP
 
 #include "sigutil.hpp"
 
@@ -72,7 +72,7 @@ namespace sig{
 			result.push_back(r);
 		}
 
-		return std::move(result);
+		return result;
 	}
 
 	//タイムウォッチ
@@ -183,7 +183,7 @@ namespace sig{
 			auto Space = [](int num){
 				std::string space;
 				for (int i = 0; i < num; ++i) space.append(" ");
-				return std::move(space);
+				return space;
 			};
 
 			int const rketa = IntDigit(_max);
@@ -248,7 +248,7 @@ namespace sig{
 		auto GetCount() const -> std::array<uint, BIN_NUM>{
 			std::array<uint, BIN_NUM> tmp;
 			for (uint i = 0; i < BIN_NUM; ++i) tmp[i] = _count[i + 1];
-			return std::move(tmp);
+			return tmp;
 		}
 
 		//bin番目(0 ～ BIN_NUM-1)の頻度を取得

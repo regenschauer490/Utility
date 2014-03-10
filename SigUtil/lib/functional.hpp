@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTILUTIL_FUNCTIONAL_HPP
-#define SIG_UTILUTIL_FUNCTIONAL_HPP
+#ifndef SIG_UTIL_FUNCTIONAL_HPP
+#define SIG_UTIL_FUNCTIONAL_HPP
 
 #include "sigutil.hpp"
 #include "container_helper.hpp"
@@ -29,7 +29,7 @@ namespace sig
 		const uint length = Min(container1.size(), containers.size()...);
 		Iterate(length, result, func, std::begin(container1), std::begin(containers)...);
 
-		return std::move(result);
+		return result;
 	}
 
 	//(a -> b) -> [a] -> [b]
@@ -84,7 +84,7 @@ namespace sig
 			return std::make_tuple(std::move(v1), std::move(vs)...);
 		}, std::make_move_iterator(std::begin(container1)), std::make_move_iterator(std::begin(containers))...);
 
-		return std::move(result);
+		return result;
 	}
 
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
@@ -127,7 +127,7 @@ namespace sig
 		for (auto const& e : c_tuple){
 			container_traits<C>::add_element(result, std::get<Index>(e));
 		}
-		return std::move(result);
+		return result;
 	}
 
 	template <uint Index, class CT, typename std::enable_if<!std::is_lvalue_reference<CT>::value>::type*& = enabler>
@@ -140,7 +140,7 @@ namespace sig
 		for (auto& e : c_tuple){
 			container_traits<C>::add_element(result, std::get<Index>(std::move(e)));
 		}
-		return std::move(result);
+		return result;
 	}
 
 	template<class CT, size_t I = 0, typename std::enable_if<I + 1 == std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
@@ -186,7 +186,7 @@ namespace sig
 	{
 		C result;
 		for (uint i = 0; i<n; ++i) container_traits<C>::add_element(result, value);
-		return std::move(result);
+		return result;
 	}
 
 	template <class T, class C = std::vector<T>>
@@ -194,7 +194,7 @@ namespace sig
 	{
 		C result;
 		for (uint i = 0; i<n; ++i) container_traits<C>::add_element(result, st + i*d);
-		return std::move(result);
+		return result;
 	}
 
 	//[a] -> [a]
@@ -204,7 +204,7 @@ namespace sig
 	{
 		C result = container;
 		std::reverse(std::begin(result), std::end(result));
-		return std::move(result);
+		return result;
 	}
 
 	//[a] -> [a] -> [a]
@@ -214,7 +214,7 @@ namespace sig
 	{
 		auto result = container1;
 		container_traits<C>::concat(result, container2);
-		return std::move(result);
+		return result;
 	}
 
 	//[a] -> [b] -> [c]
@@ -225,7 +225,7 @@ namespace sig
 		C result;
 		for (auto v : container1) container_traits<C>::add_element(result, v);
 		for (auto v : container2) container_traits<C>::add_element(result, v);
-		return std::move(result);
+		return result;
 	}
 
 	//uint -> [a] -> [a]
@@ -236,7 +236,7 @@ namespace sig
 		C result;
 		uint i = 0;
 		for (auto it = std::begin(container); i < n; ++i, ++it) container_traits<C>::add_element(result, *it);
-		return std::move(result);
+		return result;
 	}
 
 	//uint -> [a] -> [a]
@@ -249,7 +249,7 @@ namespace sig
 		auto it = std::begin(container), end = std::end(container);
 		for (; i < n && it != end; ++i, ++it) ;
 		for (; it != end; ++i, ++it) container_traits<C>::add_element(result, *it);
-		return std::move(result);
+		return result;
 	}
 
 #ifndef SIG_MSVC_LT1800
@@ -259,13 +259,13 @@ namespace sig
 	auto Sort(F const& binary_op, C const& data){
 		C result = data;
 		std::sort(std::begin(result), std::end(result), binary_op);
-		return std::move(result);
+		return result;
 	}
 	template <class F, class C, typename std::enable_if<!HasRandomIter<C>::value, void>::type*& = enabler>
 	auto Sort(F const& binary_op, C const& data){
 		C result = data;
 		result.sort(binary_op);
-		return std::move(result);
+		return result;
 	}
 #endif
 }

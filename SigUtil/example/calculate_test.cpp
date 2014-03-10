@@ -13,4 +13,8 @@ void ArithmeticOperationsTest()
 	auto plus3 = sig::Plus(data3, data0);
 	auto plus4 = sig::Plus(data3, 1.0);
 	auto plus5 = sig::Plus(1.0, data4);
+
+
+	sig::CompoundAssignment([](double& v1, int v2){ v1 += v2; }, data2, data1);
+	sig::CompoundAssignment([](int& v1, int v2){ v1 += v2; }, data0, 1);
 }

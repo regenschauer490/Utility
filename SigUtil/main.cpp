@@ -13,11 +13,35 @@
 
 #include <future>
 
+struct Tes{
+	double v;
+	double v2;
+	Tes(double v_) : v(v_), v2(v_*2){}
+	double operator+(double d) const{ return d + v; }
+	double operator+=(double d) const{ return d += v; }
+};
+
 int main()
 {
 	setlocale(LC_ALL, "Japanese");
+/*
+	std::cout << container_traits<int>::exist << std::endl;
+	std::cout << container_traits<std::vector<int>>::exist << std::endl;
+	std::cout << container_traits<std::array<int,3>>::exist << std::endl;
 
-/*	sig::TimeWatch tw;
+	sig::TimeWatch tw;
+	for (int i=0; i<100; ++i){
+		tw.Stop();
+		std::vector<Tes> vec(100000, 1);
+		tw.ReStart();
+		auto d = sig::Plus(2, vec);
+		//for (auto& v : vec){ v += 2; }
+		tw.Save();
+	}
+
+	std::cout << tw.GetTotalTime() << std::endl;
+
+
 	std::vector<int> vec{1,2, 3, 4, 5, 6, 7};
 	std::vector<std::vector<double>> result;
 

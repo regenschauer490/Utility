@@ -1,5 +1,5 @@
-﻿#ifndef SIG_UTILUTIL_SET_HPP
-#define SIG_UTILUTIL_SET_HPP
+﻿#ifndef SIG_UTIL_SET_HPP
+#define SIG_UTIL_SET_HPP
 
 #include "sigutil.hpp"
 #include "tool.hpp"

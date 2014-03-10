@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTILUTIL_FILE_HPP
-#define SIG_UTILUTIL_FILE_HPP
+#ifndef SIG_UTIL_FILE_HPP
+#define SIG_UTIL_FILE_HPP
 
 #include "string.hpp"
 #include "sigutil.hpp"
@@ -211,7 +211,7 @@ namespace sig{
 		SaveLine(src, ofs);
 	}
 	//まとめて保存 (シーケンスな動的コンテナのみ対応)
-	template <class C, typename std::enable_if<!container_traits<C>::is_string>::type*& = enabler>
+	template <class C, typename std::enable_if<!container_traits<TString<C>>::is_string>::type*& = enabler>
 	void SaveLine(C const& src, FileString const& file_pass, WriteMode mode = WriteMode::overwrite)
 	{
 		static bool first = true;

@@ -1,5 +1,5 @@
-﻿#ifndef SIG_UTILUTIL_H_HPP
-#define SIG_UTILUTIL_H_HPP
+﻿#ifndef SIG_UTIL_H_HPP
+#define SIG_UTIL_H_HPP
 
 #define SIG_ENABLE_BOOST 1		//boostが使用可能化
 #define SIG_USE_OPTIONAL 1		//boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが発生する)

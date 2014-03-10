@@ -33,8 +33,8 @@ http://opensource.org/licenses/mit-license.php
 template <class C>
 struct container_traits
 {
-	// bool exist
-	// bool is_string
+	static const bool exist = false;
+	static const bool is_string = false;
     // Type value_type
     // Type rebind<U>
     // void add_element(C&,T)
@@ -173,7 +173,7 @@ struct container_traits<std::unordered_set<Args...>> : public hash_container_tra
 template<class T, template<class> class K, class A>
 struct container_traits<std::basic_string<T,K<T>,A>>
 {
-	bool exist = true;
+	static const bool exist = true;
 
 	static const bool is_string = true;
 

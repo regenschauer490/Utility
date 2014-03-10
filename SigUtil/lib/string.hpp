@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTILUTIL_STRING_HPP
-#define SIG_UTILUTIL_STRING_HPP
+#ifndef SIG_UTIL_STRING_HPP
+#define SIG_UTIL_STRING_HPP
 
 #include "sigutil.hpp"
 #include "type_map.hpp"
@@ -100,7 +100,7 @@ namespace sig{
 			result.push_back(src);
 		}
 
-		return std::move(result);
+		return result;
 	}
 
 	template < template <class T_, class = std::allocator<T_>> class CSeq = std::vector >
@@ -146,7 +146,7 @@ namespace sig{
 		std::string dest(mbs);
 		delete[] mbs;
 
-		return is_error ? std::string() : std::move(dest); //is_error ? Nothing(dest) : Just<std::string>::type(std::move(dest));
+		return is_error ? std::string() : dest; //is_error ? Nothing(dest) : Just<std::string>::type(std::move(dest));
 	}
 
 	template <class C, typename std::enable_if<std::is_same<typename container_traits<C>::value_type, std::wstring>::value>::type*& = enabler>
@@ -159,7 +159,7 @@ namespace sig{
 			if (!r.empty()) container_traits<R>::add_element(result, std::move(r));
 			//result.push_back(FromJust(WSTRtoSTR(str)));
 		}
-		return std::move(result);
+		return result;
 	}
 
 	//マルチバイト文字 -> ワイド文字 (ex: Windows環境では Shift-JIS -> UTF-16)
@@ -176,7 +176,7 @@ namespace sig{
 #endif
 		std::wstring dest(wcs);
 		delete[] wcs;
-		return is_error ? std::wstring() : std::move(dest); //is_error ? Nothing(dest) : Just<std::wstring>::type(std::move(dest));
+		return is_error ? std::wstring() : dest; //is_error ? Nothing(dest) : Just<std::wstring>::type(std::move(dest));
 	}
 
 	template <class C, typename std::enable_if<std::is_same<typename container_traits<C>::value_type, std::string>::value>::type*& = enabler>
@@ -189,7 +189,7 @@ namespace sig{
 			if (!r.empty()) container_traits<R>::add_element(result, std::move(r));
 			//result.push_back(FromJust(STRtoWSTR(str)));
 		}
-		return std::move(result);
+		return result;
 	}
 
 
@@ -198,7 +198,7 @@ namespace sig{
 	{
 		std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
 		std::u16string dest = convert.from_bytes(src);
-		return std::move(dest);
+		return dest;
 	}
 
 	// UTF-16 -> UTF-8
@@ -206,7 +206,7 @@ namespace sig{
 	{
 		std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
 		std::string dest = convert.to_bytes(src);
-		return std::move(dest);
+		return dest;
 	}
 
 	// UTF-8 -> UTF-32
@@ -214,7 +214,7 @@ namespace sig{
 	{
 		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
 		std::u32string dest = utf32conv.from_bytes(src);
-		return std::move(dest);
+		return dest;
 	}
 
 	// UTF-32 -> UTF-8
@@ -222,7 +222,7 @@ namespace sig{
 	{
 		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
 		std::string dest = utf32conv.to_bytes(src);
-		return std::move(dest);
+		return dest;
 	}
 
 #if SIG_MSVC_ENV
@@ -236,7 +236,7 @@ namespace sig{
 		std::u16string dest(reinterpret_cast<char16_t*>(buf));
 		delete[] buf;
 
-		return is_succeed ? std::move(dest) : std::u16string(); //is_succeed ? Just<std::u16string>::type(std::move(dest)) : Nothing(std::u16string());
+		return is_succeed ? dest : std::u16string(); //is_succeed ? Just<std::u16string>::type(std::move(dest)) : Nothing(std::u16string());
 	}
 
 	// UTF-16 -> ShiftJIS
@@ -250,7 +250,7 @@ namespace sig{
 		std::string dest(reinterpret_cast<char*>(buf));
 		delete[] buf;
 
-		return is_succeed ? std::move(dest) : std::string(); //is_succeed ? Just<std::string>::type(std::move(dest)) : Nothing(std::string());
+		return is_succeed ? dest : std::string(); //is_succeed ? Just<std::string>::type(std::move(dest)) : Nothing(std::string());
 	}
 
 	// ShiftJIS -> UTF-8
