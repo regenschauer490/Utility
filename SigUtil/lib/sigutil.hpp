@@ -317,6 +317,14 @@ using SIG_WSMatch = std::wsmatch;
 		return std::min(v1, Min(vs...));
 	}
 
+	//V1 > V2 -> true
+	template <uint V1, uint V2>
+	struct Greater{ static constexpr bool value = V1 > V2 ? true : false; };
+
+	//V1 < V2 -> true
+	template <uint V1, uint V2>
+	struct Less{ static constexpr bool value = V1 < V2 ? true : false; };
+
 
 /* 修正・補正・追加・削除 */
 
