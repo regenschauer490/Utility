@@ -225,12 +225,25 @@ namespace sig{
 		SaveLine(src, ofs);
 	}
 
-	//保存するデータが数値の場合
-	//デフォルトでは1要素1行で保存（delimiterで変更可）
-	template <class C>
-	void SaveNum(C const& src, FileString const& file_pass, WriteMode mode = WriteMode::overwrite, std::string delimiter = "\n")
+
+	//数値列(ex:ベクトル)の保存
+	//delimiterで数値間の区切り文字を指定（ex: delimiter = "," で簡易CSV）
+	template <class C, typename std::enable_if<container_traits<C>::exist && !container_traits<typename container_traits<C>::value_type>::exist>::type*& = enabler>
+	void SaveNum(C const& src, FileString const& file_pass, std::string delimiter, WriteMode mode = WriteMode::overwrite)
 	{
 		SaveLine(CatStr(src, delimiter), file_pass, mode);
+	}
+
+	//2次元配列の数値(ex:行列)を保存
+	//delimiterで各行の区切り文字を指定
+	template <class CC, typename std::enable_if<container_traits<typename container_traits<CC>::value_type>::exist>::type*& = enabler>
+	void SaveNum(CC const& src, FileString const& file_pass, std::string delimiter, WriteMode mode = WriteMode::overwrite)
+	{
+		std::vector<std::string> tmp;
+		for (auto const& line : src){
+			tmp.push_back(CatStr(line, delimiter));
+		}
+		SaveLine(tmp, file_pass, mode);
 	}
 
 
@@ -260,6 +273,7 @@ namespace sig{
 		}
 	}
 
+	//空のコンテナを渡して、テキストの読込結果を取得する
 	template <class C, class R = typename container_traits<C>::value_type>
 	void ReadLine(C& empty_dest,
 		FileString const& file_pass,
@@ -273,31 +287,8 @@ namespace sig{
 		ReadLine(empty_dest, ifs, conv);
 	}
 
-	template <class C, class R = typename container_traits<C>::value_type>
-	void ReadNum(C& empty_dest, FileString const& file_pass, std::string delimiter = "")
-	{
-		static_assert(std::is_same<R, typename container_traits<C>::value_type>::value, "error in ReadNum: R and C::value_type don't match");
-
-		IfsSelector<std::string> ifs(file_pass);
-		std::string line;
-
-		static bool first = true;
-		if (first){
-			std::locale::global(std::locale(""));
-			first = false;
-		}
-
-		if (!ifs){
-			FileOpenErrorPrint(file_pass);
-			return;
-		}
-		while (ifs && std::getline(ifs, line)){
-			auto split = Split(line, delimiter);
-			for (auto v : split) container_traits<C>::add_element(empty_dest, Str2NumSelector<R>()(v));
-		}
-	}
-
-	//読み込み失敗: return -> nothing
+	//テキスト読込結果のコンテナを返す
+	//読込失敗: return -> nothing
 	template <class R, class C = std::vector<R>>
 	auto ReadLine(IfsSelector<R>& ifs) ->typename Just<C>::type
 	{
@@ -317,12 +308,63 @@ namespace sig{
 		return ReadLine<R, C>(ifs);
 	}
 
-	template <class R, class C = std::vector<R>>
+
+	///空のコンテナを渡して、数値列の読込結果を取得する
+	//delimiterで数値間の区切り文字を指定 (デフォルトは空文字 = 行区切り)
+	template <class C, class RT = typename container_traits<C>::value_type, typename std::enable_if<!container_traits<typename container_traits<C>::value_type>::exist>::type*& = enabler>
+	void ReadNum(C& empty_dest, FileString const& file_pass, std::string delimiter = "")
+	{
+		auto read_str = ReadLine<std::string>(file_pass);
+		if (!read_str) return;
+
+		if (delimiter == ""){
+			for (auto const& line : *read_str){
+				container_traits<C>::add_element(empty_dest, Str2NumSelector<RT>()(line));
+			}
+		}
+		else{
+			auto split = Split((*read_str)[0], delimiter);
+			for (auto v : split) container_traits<C>::add_element(empty_dest, Str2NumSelector<RT>()(v));
+		}
+	}
+
+	//2次元配列の数値(ex:行列)の読込結果のコンテナを返す
+	//delimiterで各行の区切り文字を指定
+	template <class CC, class RC = typename container_traits<CC>::value_type, class RT = typename container_traits<RC>::value_type>
+	void ReadNum(CC& empty_dest, FileString const& file_pass, std::string delimiter)
+	{
+		auto read_str = ReadLine<std::string>(file_pass);
+		if (!read_str) return;
+
+		for (auto const& line : *read_str){
+			RC tmp;
+			auto split = Split(line, delimiter);
+
+			for (auto const& v : split){
+				container_traits<RC>::add_element(tmp, Str2NumSelector<RT>()(v));
+			}
+			container_traits<CC>::add_element(empty_dest, std::move(tmp));
+		}
+	}
+
+	//数値列の読込結果のコンテナを返す
+	//delimiterで数値間の区切り文字を指定
+	template <class C, typename std::enable_if<container_traits<C>::exist && !container_traits<typename container_traits<C>::value_type>::exist>::type*& = enabler>
 	auto ReadNum(FileString const& file_pass, std::string delimiter = "") ->typename Just<C>::type
 	{
 		C tmp;
 		ReadNum(tmp, file_pass, delimiter);
 		return tmp.size() ? typename Just<C>::type(std::move(tmp)) : Nothing(std::move(tmp));
+	}
+
+	//2次元配列の数値(ex:行列)の読込結果のコンテナを返す
+	//delimiterで各行の区切り文字を指定
+	template <class CC, typename std::enable_if<container_traits<typename container_traits<CC>::value_type>::exist>::type*& = enabler>
+	auto ReadNum(FileString const& file_pass, std::string delimiter) ->typename Just<CC>::type
+	{
+		CC tmp;
+		ReadNum(tmp, file_pass, delimiter);
+		return tmp.size() ? typename Just<CC>::type(std::move(tmp)) : Nothing(std::move(tmp));
 	}
 
 	/*

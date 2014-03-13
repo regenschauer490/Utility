@@ -121,7 +121,7 @@ void FileSaveLoadTest()
 
 	//既存の内容のクリア
 	sig::FileClear(fpass1);
-	sig::FileClear(fpass5);
+	sig::FileClear(fpass4);
 
 	//ofstreamを渡して保存
 	std::wofstream ofs(fpass1, std::ios::out | std::ios::app);
@@ -138,13 +138,19 @@ void FileSaveLoadTest()
 	//全行保存（上書き）
 	sig::SaveLine(blghost_text2, fpass3);
 
-	//数値データの保存（上書き、1行ずつ保存）
-	auto set_num = std::set<int, std::less<int>>{1, 2, 3, 4, 5};
-	sig::SaveNum(set_num, fpass4);
-
-	//数値データの保存（追記、カンマ分けで保存）
+	//数値列の保存（追記、1行ずつ保存）
+	auto list_num = std::unordered_set<double>{-1.1, -2.2, -3.3};
 	auto uset_num = std::unordered_set<double>{1.1, 2.2, 3.3};
-	sig::SaveNum(uset_num, fpass5, sig::WriteMode::append, ",");
+	sig::SaveNum(list_num, fpass4, "\n", sig::WriteMode::append);
+	sig::SaveNum(uset_num, fpass4, "\n", sig::WriteMode::append);
+
+	//数値行列の保存 (上書き、各行カンマ区切りで保存)
+	auto mat = std::array<std::array<int, 3>, 3>{{
+		std::array<int, 3>{{ 1, 2, 3 }},
+		std::array<int, 3>{{ 4, 5, 6 }},
+		std::array<int, 3>{{ 7, 8, 9 }}
+	}};
+	sig::SaveNum(mat, fpass5, ",");
 
 
 	//以下 かんたん読み込み♪
@@ -152,8 +158,8 @@ void FileSaveLoadTest()
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	auto read1 = sig::ReadLine<std::string>(fpass1);
 	auto read2 = sig::ReadLine<std::wstring, std::list<std::wstring>>(fpass2);
-	auto read_num1 = sig::ReadNum<int>(fpass4);
-	auto read_num2 = sig::ReadNum<double, std::set<double>>(fpass5, ",");
+	auto read_num = sig::ReadNum<std::set<double>>(fpass4);
+	auto read_mat = sig::ReadNum<std::vector<std::vector<int>>>(fpass5, ",");
 
 	if (read1){
 		auto test1 = sig::Merge(TVecw{L"test write 0"}, blghost_text1);
@@ -162,12 +168,15 @@ void FileSaveLoadTest()
 	if (read2){
 		sig::ZipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, *read2, TVecw{ L"test write 壱", L"test write 弐" });
 	}
-	if (read_num1){
-		sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, *read_num1, set_num);
+	if (read_num){
+		//保存前がunorderedで順不同となるので、読み取り後のdouble値の合計と一致するかで判断
+		assert( sig::Equal(std::accumulate(read_num->begin(), read_num->end(), 0.0), 0.0) );
 	}
-	if (read_num2){
-		//unorderedなのでdouble値の合計で判断
-		assert(std::accumulate(uset_num.begin(), uset_num.end(), 0.0) == std::accumulate(read_num2->begin(), read_num2->end(), 0.0));
+	if (read_mat){
+		auto rmat = *read_mat;
+		for(int i=0; i<rmat.size(); ++i){
+			sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, rmat[i], mat[i]);
+		}
 	}
 #else
 	std::vector<std::string> read1;
