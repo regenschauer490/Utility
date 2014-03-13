@@ -107,5 +107,8 @@
     <ClInclude Include="lib\external\container traits\container_traits.h">
       <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
+    <ClInclude Include="lib\array.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

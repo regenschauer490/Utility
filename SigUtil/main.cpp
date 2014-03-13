@@ -24,6 +24,13 @@ struct Tes{
 int main()
 {
 	setlocale(LC_ALL, "Japanese");
+
+	std::array<int, 4> ar{ { 1, 2, 3, 4 } };
+
+	auto e = ar.rend();
+	std::cout << *ar.rbegin() << std::endl;
+	std::cout << *(ar.rend()-3) << std::endl;
+
 /*
 	std::cout << container_traits<int>::exist << std::endl;
 	std::cout << container_traits<std::vector<int>>::exist << std::endl;
@@ -102,6 +109,7 @@ int main()
 	TimeWatchTest();
 	HistgramTest();
 	PercentTest();
+	ArrayTest();
 
 	return 0;
 }

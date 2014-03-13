@@ -13,7 +13,6 @@ http://opensource.org/licenses/mit-license.php
 #include <chrono>
 #include <fstream>
 
-
 #if SIG_ENABLE_BOOST
 
 #include <boost/serialization/serialization.hpp>
@@ -307,6 +306,8 @@ namespace sig{
 		}
 #endif
 	};
+
+
 }
 
 #endif

@@ -21,14 +21,16 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_CONTAINER_TRAITS_H
 #define SIG_CONTAINER_TRAITS_H
 
+#include <vector>
 #include <deque>
 #include <list>
 #include <set>
 #include <string>
 #include <unordered_set>
-#include <vector>
+#include <initializer_list>
 
 #include "eval.h"
+#include "../../array.hpp"
 
 template <class C>
 struct container_traits
@@ -42,10 +44,10 @@ struct container_traits
 };
 
 template<class C>
-struct array_container_traits;
+struct static_container_traits;
 
 template<template<class, size_t> class C, class T, size_t N>
-struct array_container_traits<C<T, N>>
+struct static_container_traits<C<T, N>>
 {
 	static const bool exist = true;
 
@@ -55,10 +57,40 @@ struct array_container_traits<C<T, N>>
 
 	template<class U>
 	using rebind = C<U, N>;
+
+	static void add_element(C<T, N>& c, const T& t)
+	{
+		c.push_back(t);
+	}
 };
 
 template<class T, size_t N>
-struct container_traits<std::array<T, N>> : public array_container_traits<std::array<T, N>>
+struct container_traits<std::array<T, N>> : public static_container_traits<std::array<T, N>>
+{};
+
+template<class T, size_t N>
+struct container_traits<sig::Array<T, N>> : public static_container_traits<sig::Array<T, N>>
+{};
+
+
+template<class C>
+struct temp_container_traits;
+
+template<template<class> class C, class T>
+struct temp_container_traits<C<T>>
+{
+	static const bool exist = true;
+
+	static const bool is_string = false;
+
+	using value_type = T;
+
+	template<class U>
+	using rebind = C<U>;
+};
+
+template<class T>
+struct container_traits<std::initializer_list<T>> : public temp_container_traits<std::initializer_list<T>>
 {};
 
 

@@ -1,4 +1,5 @@
 #include "tool_test.h"
+#include "../lib/calculation.hpp"
 
 #if SIG_MSVC_ENV
 #include <windows.h>
@@ -69,9 +70,10 @@ void TimeWatchTest()
 	assert(sig::TolerantEqual(tw.GetSplitTime(2), 600, 1));		//600 ± 1 (ms)
 	assert(sig::TolerantEqual(tw.GetSplitTime(3), 1000, 1));	//1000 ± 1 (ms)
 #endif
-	assert(sig::TolerantEqual(tw.GetTotalTime(), 1000, 1));				//1000 ± 1 (ms)
+	assert(sig::TolerantEqual(tw.GetTotalTime(), 1000, 10));				//1000 ± 10 (ms)
 	assert(sig::Equal(tw.GetTotalTime<std::chrono::seconds>(), 1));		//1 (s)
-	assert(sig::TolerantEqual(tw.GetTotalTime<std::chrono::microseconds>(), 1000000, 100));	//1000000  ± 100 (μs)
+	auto total = tw.GetTotalTime<std::chrono::microseconds>();
+	assert(sig::TolerantEqual(tw.GetTotalTime<std::chrono::microseconds>(), 1000000, 10000));	//1000000  ± 10000 (μs)
 #else
 
 #endif
@@ -184,4 +186,31 @@ void PercentTest()
 	assert(pc2.GetPercent() == 50 && pc2.GetDouble() == 0.5);	//50% = 0.5
 	assert(pc3.GetPercent() == 1 && pc3.GetDouble() == 0.01);	//1% = 0.01
 	assert(pc1 == pc4);
+}
+
+void ArrayTest()
+{
+	sig::Array<int, 4> ar1{ 1, 2, 3 };
+
+	std::array<double, 2> std_ar{ {1.1, 2.2} };
+	sig::Array<double, 2> ar2(std_ar);
+
+	ar2.pop_back();
+	ar2.push_back(3.3);
+
+	ar1.insert(ar1.begin()+1, 4);
+	ar1.erase(ar1.begin());
+
+	auto plus = sig::Plus(ar1, std::initializer_list<int>{1, 2, 3, 4});
+
+	for (auto v : plus) std::cout << v << std::endl;
+	for (auto it = ar1.rbegin(), end = ar1.rend(); it != end; ++it) std::cout << *it << std::endl;
+
+	ar1.swap(plus);
+
+	sig::Array<double, 2> ar3;
+	assert(ar3.size() == 0);
+
+	ar3 = ar2;		//copy
+
 }
