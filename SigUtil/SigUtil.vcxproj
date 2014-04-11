@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="example\calculate_test.cpp" />
+    <ClCompile Include="example\helper_test.cpp" />
     <ClCompile Include="example\modify_test.cpp" />
     <ClCompile Include="example\file_test.cpp" />
     <ClCompile Include="example\functional_test.cpp" />
@@ -94,6 +95,7 @@
   <ItemGroup>
     <ClInclude Include="botsu.hpp" />
     <ClInclude Include="example\calculate_test.hpp" />
+    <ClInclude Include="example\helper_test.h" />
     <ClInclude Include="example\modify_test.h" />
     <ClInclude Include="example\file_test.h" />
     <ClInclude Include="example\functional_test.h" />
@@ -104,6 +106,7 @@
     <ClInclude Include="lib\container_helper.hpp" />
     <ClInclude Include="lib\external\container traits\container_traits.h" />
     <ClInclude Include="lib\external\container traits\eval.h" />
+    <ClInclude Include="lib\helper.hpp" />
     <ClInclude Include="lib\modify.hpp" />
     <ClInclude Include="lib\file.hpp" />
     <ClInclude Include="lib\functional.hpp" />

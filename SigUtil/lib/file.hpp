@@ -9,7 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_FILE_HPP
 
 #include "string.hpp"
-#include "sigutil.hpp"
+#include "helper.hpp"
 
 #include <fstream>
 #include <locale>
@@ -76,7 +76,7 @@ namespace sig{
 		}
 		else{
 			do{
-				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && BoolConsistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
+				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && Consistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
 				{
 					result.push_back(std::wstring(fd.cFileName));
 				}
@@ -132,7 +132,7 @@ namespace sig{
 		}
 		else{
 			do{
-				if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && BoolConsistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
+				if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && Consistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
 				{
 					auto tmp = std::wstring(fd.cFileName);
 					if(tmp != L"." && tmp != L"..") result.push_back(tmp);

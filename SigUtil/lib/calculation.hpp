@@ -120,7 +120,7 @@ namespace sig
 
 	//効率を重視したコンテナへの代入演算 (element-wise: container and scalar)
 	template <class OP, class C, class T, typename std::enable_if<container_traits<C>::exist && !container_traits<T>::exist>::type*& = enabler>
-	auto CompoundAssignment(OP const& assign_op, C& dest, T src)
+	void CompoundAssignment(OP const& assign_op, C& dest, T src)
 //		->decltype(eval(assign_op, std::declval<typename container_traits<C>::value_type>(), src), void())
 	{
 		auto it = std::begin(dest), end = std::end(dest);

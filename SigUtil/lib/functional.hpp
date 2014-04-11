@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_FUNCTIONAL_HPP
 #define SIG_UTIL_FUNCTIONAL_HPP
 
-#include "sigutil.hpp"
+#include "helper.hpp"
 #include "container_helper.hpp"
 
 /* 関数型プログラミング サポート */

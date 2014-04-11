@@ -11,11 +11,21 @@
  * from the use of this software.
  */
 
+/*
+Copyright(c) 2014 Akihiro Nishimura
+
+This software is released under the MIT License.
+http://opensource.org/licenses/mit-license.php
+*/
+
 #ifndef SIG_EVAL_H
 #define SIG_EVAL_H
 
 #include <type_traits>
 #include <utility>
+
+
+namespace sig{
 
 template<
     class F, class... Args,
@@ -59,5 +69,6 @@ auto eval(R(C::*m), C& c) -> R&
 
 template<class... Args>
 using eval_result_type = decltype(eval(std::declval<Args>()...));
+}
 
 #endif

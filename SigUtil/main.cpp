@@ -4,6 +4,7 @@
 #include "lib/modify.hpp"
 #include "lib/functional.hpp"
 
+#include "example/helper_test.h"
 #include "example/string_test.h"
 #include "example/file_test.h"
 #include "example/tool_test.h"
@@ -25,11 +26,8 @@ int main()
 {
 	setlocale(LC_ALL, "Japanese");
 
-	std::array<int, 4> ar{ { 1, 2, 3, 4 } };
+//	sig::Array<sig::Array<int, 2>, 3> ar{{1,2}, {2,3}, {3,4}};
 
-	auto e = ar.rend();
-	std::cout << *ar.rbegin() << std::endl;
-	std::cout << *(ar.rend()-3) << std::endl;
 
 /*
 	std::cout << container_traits<int>::exist << std::endl;
@@ -78,6 +76,8 @@ int main()
 	std::cout << sig::FromJust(tw.GetLapTime(1)) << std::endl;
 	std::cout << sig::FromJust(tw.GetLapTime(2)) << std::endl;
 */
+
+	TestHelperModules();
 
 	ArithmeticOperationsTest();
 

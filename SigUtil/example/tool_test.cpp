@@ -1,4 +1,5 @@
 #include "tool_test.h"
+#include "../lib/helper.hpp"
 #include "../lib/calculation.hpp"
 
 #if SIG_MSVC_ENV

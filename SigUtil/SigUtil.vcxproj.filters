@@ -48,6 +48,9 @@
     <ClCompile Include="example\calculate_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
+    <ClCompile Include="example\helper_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="botsu.hpp">
@@ -109,6 +112,12 @@
     </ClInclude>
     <ClInclude Include="lib\array.hpp">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\helper.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="example\helper_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,7 +14,7 @@ http://opensource.org/licenses/mit-license.php
 namespace sig
 {
 	//最大容量が固定の静的配列
-	//std::arrayとは異なり、固定長なstd::vectorの感覚で使用できる
+	//std::arrayの利便性を拡張し、固定長なstd::vectorの感覚で使用できる
 	//基本的に初期化時に全要素に値を入れる使い方を想定しているが、逐次的に末尾に代入していくことも可能
 	//メンバ関数begin()からend()の範囲は、先頭から値が代入されている末尾までとなる([0]～[N-1]までではない)
 	template <class T, size_t N>
@@ -79,6 +79,9 @@ namespace sig
 
 	public:
 		Array() : tail_(0) {}
+
+		Array(uint size, T val) : tail_(0){ for(uint i=0; i<size; ++i) push_back(val); }
+
 		explicit Array(std::initializer_list<T> init) : tail_(0){
 			assert(init.size() <= N);
 			CompoundAssignment_([this](T& dest, ParamType<T> src){ dest = src; ++tail_; }, array_, init);
