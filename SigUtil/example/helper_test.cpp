@@ -2,7 +2,7 @@
 
 void TestHelperModules()
 {
-	/* コンパイル時 */
+	/* コンパイル時 兼 実行時 */
 
 	//可変長and/or
 	static_assert(sig::And(true, true), "");
@@ -10,14 +10,27 @@ void TestHelperModules()
 	static_assert(sig::Or(true, false), "");
 	static_assert(!sig::Or(false, false), "");
 
-	//大小比較
-	static_assert(!sig::Greater(0.5, 1), "");
-	static_assert(sig::Less(0.5, 1), "");
-
 #ifndef SIG_MSVC_LT1800
 	static_assert(!sig::And(true, true, true, false, true), "");
 	static_assert(sig::Or(true, false, true, false), "");
 #endif
+
+	//大小比較
+	static_assert(!sig::Greater(0.5, 1), "");
+	static_assert(sig::Less(0.5, 1), "");
+
+	//最小値/最大値
+	std::vector<int> v{ 1, 2, 3 };
+#ifndef SIG_MSVC_LT1800
+	static_assert(sig::Min(-1, 0, 1.5, 2) == -1, "");
+	static_assert(sig::Max(-1, 0, 1.5, 2) == 2, "");
+	assert(sig::Min(-1.5, 0, v.size()) == -1.5);
+	assert(sig::Max(-1.5, 0, v.size()) == v.size());
+#else
+	assert(sig::Min(-1, 0, static_cast<int>(v.size())) == -1);
+	assert(sig::Max(-1, 0, static_cast<int>(v.size())) == v.size());
+#endif
+
 
 	/* 実行時 */
 
@@ -63,6 +76,6 @@ void TestHelperModules()
 
 	//
 	assert(sig::Precision(0.5) == 1);
-	assert(sig::Precision(1.23000) == 2);
-	assert(sig::Precision(123.4560) == 3);
+	assert(sig::Precision(1.23000) == 3);
+	assert(sig::Precision(123.4560) == 6);
 }
