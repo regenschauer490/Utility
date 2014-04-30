@@ -1,8 +1,10 @@
 ﻿#ifndef SIG_UTIL_H_HPP
 #define SIG_UTIL_H_HPP
 
-#define SIG_ENABLE_BOOST 1		//boostが使用可能化
+#define SIG_ENABLE_BOOST 0		//boostが使用可能化
+#if SIG_ENABLE_BOOST
 #define SIG_USE_OPTIONAL 1		//boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが発生する)
+#endif
 
 #ifdef _WIN32
 #define SIG_MSVC_ENV 1
@@ -85,13 +87,15 @@ namespace sig{
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	template <class T> struct Just{ typedef maybe<T> type; };
 	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
-	template <class T> auto FromJust(maybe<T> const& sp){ return *sp; }
-	template <class T> auto FromJust(maybe<T>&& sp){ return std::move(*sp); }
+	template <class T> auto FromJust(maybe<T> const& m){ return *m; }
+	template <class T> auto FromJust(maybe<T>&& m){ return std::move(*m); }
+	template <class T> bool IsContainerValid(T const& m){ return m; }
 #else
 	template <class T> struct Just{ typedef T type; };
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
-	template <class T> auto FromJust(T const& sp){ return sp; }
-	template <class T> auto FromJust(T&& sp){ return std::forward<T>(sp); }
+	template <class T> auto FromJust(T const& raw){ return raw; }
+	template <class T> auto FromJust(T&& raw){ return std::forward<T>(raw); }
+	template <class T> bool IsContainerValid(T const& raw){ return !raw.empty(); }
 #endif
 
 //ファイルパスの文字型の指定

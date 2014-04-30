@@ -181,21 +181,25 @@ void FileSaveLoadTest()
 #else
 	std::vector<std::string> read1;
 	std::list<std::wstring> read2;
-	std::vector<int> read_num1;
-	std::set<double> read_num2;
+	std::set<double> read_num;
+	std::vector<std::vector<int>> read_mat;
 
 	sig::ReadLine(read1, fpass1);
 	sig::ReadLine(read2, fpass2);
-	sig::ReadNum(read_num1, fpass4);
-	sig::ReadNum(read_num2, fpass5, ",");
+	sig::ReadNum(read_num, fpass4);
+	sig::ReadNum(read_mat, fpass5, ",");
 	
 	auto test1 = sig::Merge(TVecw{L"test write 0"}, blghost_text1);
 	sig::ZipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, read1, test1);
 
 	sig::ZipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, read2, TVecw{ L"test write 壱", L"test write 弐" });
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, read_num1, set_num);
+	//保存前がunorderedで順不同となるので、読み取り後のdouble値の合計と一致するかで判断
+	assert(sig::Equal(std::accumulate(read_num.begin(), read_num.end(), 0.0), 0.0));
 	
-	assert(std::accumulate(uset_num.begin(), uset_num.end(), 0.0) == std::accumulate(read_num2.begin(), read_num2.end(), 0.0));
+	auto& rmat = read_mat;
+	for (int i = 0; i<rmat.size(); ++i){
+		sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, rmat[i], mat[i]);
+	}
 #endif
 }

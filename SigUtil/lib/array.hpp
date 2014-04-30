@@ -32,8 +32,13 @@ namespace sig
 		using const_reverse_iterator = typename std::array<T, N>::const_reverse_iterator;
 		using size_type = size_t;
 		using difference_type = typename std::array<T, N>::difference_type;
+#if SIG_ENABLE_BOOST
 		using result_type = typename boost::call_traits<T>::value_type;
 		using param_type = typename boost::call_traits<T>::param_type;
+#else
+		using result_type = value_type;
+		using param_type = typename std::conditional<std::is_class<T>::value, T const&, T>::type;
+#endif
 
 	private:
 		std::array<T, N> array_;
@@ -146,6 +151,8 @@ namespace sig
 
 		value_type* data() noexcept{ return array_.data(); }
 		value_type const* data() const noexcept{ return array_.data(); }
+
+		std::array<T, N> std_array() const noexcept{ return array_; }
 
 		void fill(value_type const& val){ array_.fill(val); tail_ = N; }
 

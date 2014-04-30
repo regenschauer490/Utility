@@ -315,15 +315,16 @@ namespace sig{
 	void ReadNum(C& empty_dest, FileString const& file_pass, std::string delimiter = "")
 	{
 		auto read_str = ReadLine<std::string>(file_pass);
-		if (!read_str) return;
+
+		if (!IsContainerValid(read_str)) return;
 
 		if (delimiter == ""){
-			for (auto const& line : *read_str){
+			for (auto const& line : FromJust(read_str)){
 				container_traits<C>::add_element(empty_dest, Str2NumSelector<RT>()(line));
 			}
 		}
 		else{
-			auto split = Split((*read_str)[0], delimiter);
+			auto split = Split(FromJust(read_str)[0], delimiter);
 			for (auto v : split) container_traits<C>::add_element(empty_dest, Str2NumSelector<RT>()(v));
 		}
 	}
@@ -334,9 +335,9 @@ namespace sig{
 	void ReadNum(CC& empty_dest, FileString const& file_pass, std::string delimiter)
 	{
 		auto read_str = ReadLine<std::string>(file_pass);
-		if (!read_str) return;
+		if (!IsContainerValid(read_str)) return;
 
-		for (auto const& line : *read_str){
+		for (auto const& line : FromJust(read_str)){
 			RC tmp;
 			auto split = Split(line, delimiter);
 
