@@ -31,7 +31,7 @@ namespace sig
 	{
 		using T1 = typename container_traits<C1>::value_type;
 		using T2 = typename container_traits<C2>::value_type;
-		return ZipWith([](ParamType<T1> v1, ParamType<T2> v2){ return v1 + v2; }, c1, c2);
+		return zipWith([](ParamType<T1> v1, ParamType<T2> v2){ return v1 + v2; }, c1, c2);
 	}
 
 	//“ñ€‰‰ŽZ (element-wise: container and scalar)
@@ -61,7 +61,7 @@ namespace sig
 		v
 		))>
 	{
-		return Plus(c, v);
+		return BinaryOperation(c, v);
 	}
 
 

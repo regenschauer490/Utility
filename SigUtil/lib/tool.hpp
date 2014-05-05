@@ -185,6 +185,21 @@ namespace sig{
 				return space;
 			};
 
+			auto Precision = [](double v)
+			{
+				uint keta = 0;
+				double dv = v - int(v);
+
+				while (true){
+					if (Equal(dv, 0) || keta >= 15) break;
+					v *= 10;
+					dv = v - int(v);
+					++keta;
+				}
+
+				return keta;
+			};
+
 			int const rketa = IntDigit(_max);
 			int const disp_precision = typename std::conditional<std::is_integral<T>::value, std::true_type, std::false_type>::type{}
 				? 0

@@ -100,6 +100,8 @@ namespace sig{
 	inline void FileOpenErrorPrint(FileString const& pass){ std::wcout << L"file open error: " << pass << std::endl; }
 #if _MSC_VER <= 1800
 #define SIG_MSVC_LT1800
+#else
+	static_assert(false, "require \"Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)\" to compile on msvc");
 #endif
 #else
 	using FileString = std::string;

@@ -9,7 +9,7 @@ namespace sig
 	//[a] -> [b] -> (a -> b -> void) -> void
 	//戻り値の型がvoidの場合
 	template <class R, class A, class B, template < class T, class = std::allocator<T >> class Container, typename std::enable_if<std::is_same<R, void>::value>::type*& = enabler>
-	void ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<void(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
+	void zipWith(Container<A> const& list1, Container<B> const& list2, std::function<void(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
 	{
 	const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
 	uint i = 0;
@@ -231,5 +231,54 @@ namespace sig
 	return move(result);
 	}
 	*/
+
+
+/*
+std::cout << container_traits<int>::exist << std::endl;
+std::cout << container_traits<std::vector<int>>::exist << std::endl;
+std::cout << container_traits<std::array<int,3>>::exist << std::endl;
+
+sig::TimeWatch tw;
+for (int i=0; i<100; ++i){
+tw.Stop();
+std::vector<Tes> vec(100000, 1);
+tw.ReStart();
+auto d = sig::plus(2, vec);
+//for (auto& v : vec){ v += 2; }
+tw.Save();
+}
+
+std::cout << tw.GetTotalTime() << std::endl;
+
+
+std::vector<int> vec{1,2, 3, 4, 5, 6, 7};
+std::vector<std::vector<double>> result;
+
+const auto Task = [&t](int id){
+std::vector<double> r(id, 0);
+
+std::cout << "id:" << id << std::endl;
+
+return std::move(r);
+};
+
+std::vector<std::future< std::vector<double> >> task;
+
+tw.Save();
+for (auto const& v :vec){
+task.push_back(std::async(std::launch::async, Task, v));
+}
+
+tw.Save();
+for (auto& t : task){
+result.push_back(t.get());
+}
+tw.Save();
+
+std::cout << std::endl;
+std::cout << sig::FromJust(tw.GetLapTime(0)) << std::endl;
+std::cout << sig::FromJust(tw.GetLapTime(1)) << std::endl;
+std::cout << sig::FromJust(tw.GetLapTime(2)) << std::endl;
+*/
 
 }

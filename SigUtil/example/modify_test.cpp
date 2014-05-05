@@ -16,14 +16,14 @@ void SortTest()
 	auto original_index1 = std::get<1>(swi1);
 
 	auto test1 = std::make_tuple(TVec<int>{ 0, 0, 1, 1, 3, 3, 3, 4, 5}, TVec<sig::uint>{ 4, 6, 0, 7, 2, 3, 8, 5, 1 });
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, sorted1, std::get<0>(test1));
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, original_index1, std::get<1>(test1));
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, sorted1, std::get<0>(test1));
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, original_index1, std::get<1>(test1));
 
 
 	auto swi2 = sig::SortWithIndex(data2, [](int l, int r){ return l > r; });
 	auto sorted2 = std::get<0>(swi2);
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, sorted2, sig::Reverse(std::get<0>(test1)));
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, sorted2, sig::reverse(std::get<0>(test1)));
 }
 
 void ShuffleTest()
@@ -38,7 +38,7 @@ void ShuffleTest()
 	//ex: c1[1, 2, 3, 4], c2[1, 2, 3, 4] -> c1'[3, 1, 4, 2], c2'[3, 1, 4, 2]
 	sig::Shuffle(data1, data2);
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data1, data2);
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data1, data2);
 }
 
 void RemoveDuplicateTest()
@@ -54,14 +54,14 @@ void RemoveDuplicateTest()
 	auto removed4 = sig::RemoveDuplicates(data4, true);
 	
 	
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data1, TVec<int>{ 1, 5, 3, 0, 4 });
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, removed1, TVec<int>{ 3, 0, 1, 3 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data1, TVec<int>{ 1, 5, 3, 0, 4 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, removed1, TVec<int>{ 3, 0, 1, 3 });
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data2, TVec<int>{ 1, 5, 3, 0, 4 });
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, removed2, TVec<int>{ 3, 0, 1, 3 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data2, TVec<int>{ 1, 5, 3, 0, 4 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, removed2, TVec<int>{ 3, 0, 1, 3 });
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data3, TVec<int>{ 5, 4, 3, 1, 0 });
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, removed3, TVec<int>{ 3, 3, 1, 0 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data3, TVec<int>{ 5, 4, 3, 1, 0 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, removed3, TVec<int>{ 3, 3, 1, 0 });
 
 	
 	auto testd4 = { 1, 5, 3, 0, 4 };
@@ -74,8 +74,8 @@ void RemoveDuplicateTest()
 	std::multimap<int, std::string> data5{ { 1, "a"}, {5, "b"}, {3, "c"}, {3, "d"}, {0, "e"}, {4, "f"}, {0, "g"}, {1, "h"}, {3, "c"} };
 	auto removed5 = sig::RemoveDuplicates(data5, true);
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data5, std::multimap<int, std::string>{ { 1, "a"}, {5, "b"}, {3, "c"}, {3, "d"}, {0, "e"}, {4, "f"}, {0, "g"}, {1, "h"} };);
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, removed5, std::multimap<int, std::string>{{3, "c"}});
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data5, std::multimap<int, std::string>{ { 1, "a"}, {5, "b"}, {3, "c"}, {3, "d"}, {0, "e"}, {4, "f"}, {0, "g"}, {1, "h"} };);
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, removed5, std::multimap<int, std::string>{{3, "c"}});
 #endif
 }
 
@@ -92,11 +92,11 @@ void RemoveTest()
 	assert( sig::RemoveOne(data3, 3) );
 	assert( sig::RemoveOne(data4, 3) );
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data1, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data1, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data2, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data2, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data3, TVec<int>{ 5, 4, 3, 3, 1, 1, 0, 0 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data3, TVec<int>{ 5, 4, 3, 3, 1, 1, 0, 0 });
 
 	auto testd4 = { 1, 1, 5, 3, 3, 0, 0, 4 };
 	assert(std::accumulate(data4.begin(), data4.end(), 0.0) == std::accumulate(testd4.begin(), testd4.end(), 0.0));
@@ -108,11 +108,11 @@ void RemoveTest()
 	assert( sig::RemoveAll(data3, 3) );
 	assert( sig::RemoveAll(data4, 3) );
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data1, TVec<int>{ 1, 5, 0, 4, 0, 1 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data1, TVec<int>{ 1, 5, 0, 4, 0, 1 });
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data2, TVec<int>{ 1, 5, 0, 4, 0, 1 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data2, TVec<int>{ 1, 5, 0, 4, 0, 1 });
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data3, TVec<int>{ 5, 4, 1, 1, 0, 0 });
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data3, TVec<int>{ 5, 4, 1, 1, 0, 0 });
 
 	auto testda4 = { 1, 1, 5, 0, 0, 4 };
 	assert(std::accumulate(data4.begin(), data4.end(), 0.0) == std::accumulate(testda4.begin(), testda4.end(), 0.0));

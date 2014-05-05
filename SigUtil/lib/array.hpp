@@ -16,7 +16,7 @@ namespace sig
 	//最大容量が固定の静的配列
 	//std::arrayの利便性を拡張し、固定長なstd::vectorの感覚で使用できる
 	//基本的に初期化時に全要素に値を入れる使い方を想定しているが、逐次的に末尾に代入していくことも可能
-	//メンバ関数begin()からend()の範囲は、先頭から値が代入されている末尾までとなる([0]～[N-1]までではない)
+	//メンバ関数begin()からend()で得られる範囲は、先頭から値が代入されている末尾までとなる([0]～[N-1]までではない)
 	template <class T, size_t N>
 	class Array
 	{
@@ -128,7 +128,7 @@ namespace sig
 		reference at(size_type pos){ RangeCheck_(pos); return array_.at(pos); }
 		const_reference at(size_type pos) const{ RangeCheck_(pos); return array_.at(pos); }
 
-		//tail_ 以上の添字アクセスは未保証
+		//tail_ 以降の添字アクセスは未保証
 		reference operator [](size_type pos){ return array_[pos]; }
 		const_reference operator [](size_type pos) const{ return array_[pos]; }
 

@@ -52,11 +52,11 @@ namespace sig
 	auto SortWithIndex(C const& container, F const& binary_op = std::less<typename sequence_container_traits<C>::value_type>())
 	{
 		using Tp = std::tuple<typename sequence_container_traits<C>::value_type, uint>;
-		auto result = Zip(container, ArithSequence(0, 1, container.size()));
+		auto result = zip(container, arithSequence(0, 1, container.size()));
 
 		Sort(result, [&](Tp const& l, Tp const& r){ return binary_op(std::get<0>(l), std::get<0>(r)); });
 
-		return UnZip(std::move(result));
+		return unzip(std::move(result));
 	}
 
 	//コンテナの要素をシャッフル

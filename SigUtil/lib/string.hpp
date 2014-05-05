@@ -307,7 +307,7 @@ namespace sig{
 	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
 	{
 		auto size = Min(src.size(), tag.size());
-		auto calc = ZipWith([&](typename Container<String>::value_type s, typename Container<String>::value_type t){ return Encode(s, t); }, src, tag);
+		auto calc = zipWith([&](typename Container<String>::value_type s, typename Container<String>::value_type t){ return Encode(s, t); }, src, tag);
 		return std::accumulate(calc.begin(), calc.end(), String(""));
 	}
 

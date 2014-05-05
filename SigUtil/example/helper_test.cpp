@@ -1,4 +1,5 @@
 #include "helper_test.h"
+#include "../lib/functional.hpp"
 
 void TestHelperModules()
 {
@@ -10,26 +11,14 @@ void TestHelperModules()
 	static_assert(sig::Or(true, false), "");
 	static_assert(!sig::Or(false, false), "");
 
-#ifndef SIG_MSVC_LT1800
-	static_assert(!sig::And(true, true, true, false, true), "");
-	static_assert(sig::Or(true, false, true, false), "");
-#endif
-
 	//ëÂè¨î‰är
 	static_assert(!sig::Greater(0.5, 1), "");
 	static_assert(sig::Less(0.5, 1), "");
 
 	//ç≈è¨íl/ç≈ëÂíl
 	std::vector<int> v{ 1, 2, 3 };
-#ifndef SIG_MSVC_LT1800
-	static_assert(sig::Min(-1, 0, 1.5, 2) == -1, "");
-	static_assert(sig::Max(-1, 0, 1.5, 2) == 2, "");
-	assert(sig::Min(-1.5, 0, v.size()) == -1.5);
-	assert(sig::Max(-1.5, 0, v.size()) == v.size());
-#else
 	assert(sig::Min(-1, 0, static_cast<int>(v.size())) == -1);
 	assert(sig::Max(-1, 0, static_cast<int>(v.size())) == v.size());
-#endif
 
 
 	/* é¿çséû */
@@ -61,21 +50,40 @@ void TestHelperModules()
 	assert(sig::DeltaAbs(3, 1.5) == 1.5);
 
 	//generic a == b
-	assert(sig::Equal(1, 1.1 - 0.1));
-	assert(sig::Equal(0.3333333333333333, 1.0 / 3));
-
-	int ct = 0;
+	int ct1 = 0;
 	for (double f = 0.0; !sig::Equal(f, 1.0); f += 0.1){
-		if (++ct >= 1000) break;
+		if (++ct1 >= 1000) break;
 	}
-	assert(ct == 10);
+	assert(ct1 == 10);
+
+	int ct2 = 0;
+	for (double f = 0.0; f != 1.0; f += 0.1){
+		if (++ct2 >= 1000) break;
+	}
+	assert(ct2 == 1000);
 
 	//generic a Å‡ b (|a - b| < É√)
-	assert(sig::TolerantEqual(0.33, 1.0 / 3, 0.01));
-	assert(!sig::TolerantEqual(0.33, 1.0 / 3, 0.001));
+	assert(sig::TolerantEqual(0.001, 0.002, 0.001));
+	assert(!sig::TolerantEqual(0.001, 0.003, 0.001));
 
-	//
-	assert(sig::Precision(0.5) == 1);
-	assert(sig::Precision(1.23000) == 3);
-	assert(sig::Precision(123.4560) == 6);
+	//value range check for 'cr'
+	int cr = 5;
+	assert(sig::CheckRange(cr, 0, 10));
+	assert(!sig::CheckRange(cr, 0, 3));
+	assert(cr == 5);
+
+	//value range check and modify for 'cr'
+	int mr = 5;
+	assert(sig::ModifyRange(mr, 0, 10));
+	assert(mr == 5);
+	assert(!sig::ModifyRange(mr, 0, 3));
+	assert(mr == 3);
+
+	//copy elements
+	std::vector<int> orig{1,4,3,2,1};
+	auto cpy_list = sig::Copy<std::list<int>>(orig);
+	auto cpy_set = sig::Copy<std::set<int>>(orig);
+
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, cpy_list, orig);
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, cpy_set, sig::Array<int,4>{1,2,3,4});
 }

@@ -4,8 +4,6 @@
 #include "sigutil.hpp"
 #include "tool.hpp"
 
-/* 集合操作 */
-
 namespace sig
 {
 

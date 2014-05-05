@@ -3,5 +3,5 @@
 #include "../lib/functional.hpp"
 
 void MapTest();
-void HigherOrederFuncTest();
+void ZipWithTest();
 void FunctionalTest();

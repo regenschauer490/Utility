@@ -162,11 +162,11 @@ void FileSaveLoadTest()
 	auto read_mat = sig::ReadNum<std::vector<std::vector<int>>>(fpass5, ",");
 
 	if (read1){
-		auto test1 = sig::Merge(TVecw{L"test write 0"}, blghost_text1);
-		sig::ZipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, *read1, test1);
+		auto test1 = sig::merge(TVecw{L"test write 0"}, blghost_text1);
+		sig::zipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, *read1, test1);
 	}
 	if (read2){
-		sig::ZipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, *read2, TVecw{ L"test write 壱", L"test write 弐" });
+		sig::zipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, *read2, TVecw{ L"test write 壱", L"test write 弐" });
 	}
 	if (read_num){
 		//保存前がunorderedで順不同となるので、読み取り後のdouble値の合計と一致するかで判断
@@ -175,7 +175,7 @@ void FileSaveLoadTest()
 	if (read_mat){
 		auto rmat = *read_mat;
 		for(int i=0; i<rmat.size(); ++i){
-			sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, rmat[i], mat[i]);
+			sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, rmat[i], mat[i]);
 		}
 	}
 #else
@@ -189,12 +189,12 @@ void FileSaveLoadTest()
 	sig::ReadNum(read_num1, fpass4);
 	sig::ReadNum(read_num2, fpass5, ",");
 	
-	auto test1 = sig::Merge(TVecw{L"test write 0"}, blghost_text1);
-	sig::ZipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, read1, test1);
+	auto test1 = sig::merge(TVecw{L"test write 0"}, blghost_text1);
+	sig::zipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, read1, test1);
 
-	sig::ZipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, read2, TVecw{ L"test write 壱", L"test write 弐" });
+	sig::zipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, read2, TVecw{ L"test write 壱", L"test write 弐" });
 
-	sig::ZipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, read_num1, set_num);
+	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, read_num1, set_num);
 	
 	assert(std::accumulate(uset_num.begin(), uset_num.end(), 0.0) == std::accumulate(read_num2.begin(), read_num2.end(), 0.0));
 #endif
