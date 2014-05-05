@@ -2,7 +2,7 @@
 #define SIG_UTIL_H_HPP
 
 #define SIG_ENABLE_BOOST 1		//boostが使用可能化
-#define SIG_USE_OPTIONAL 1		//boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが発生する)
+#define SIG_USE_OPTIONAL 1		//boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが発生する可能性あり)
 
 #ifdef _WIN32
 #define SIG_MSVC_ENV 1
@@ -33,8 +33,6 @@
 #include <regex>
 #include <utility>
 
-//#include "container_helper.hpp"
-//#include "type_map.hpp"
 
 #if SIG_ENABLE_BOOST
 
@@ -124,87 +122,6 @@ using SIG_WSMatch = std::wsmatch;
 #define SIG_RegexSearch std::regex_search
 #define SIG_RegexReplace std::regex_replace
 #endif
-
-
-	/*
-	template<uint I = 0, typename Func, typename... Ts>
-	auto ForEach(std::tuple<Ts...> &, Func) ->typename std::enable_if<I == sizeof...(Ts), void>::type{}
-
-	template<uint I = 0, typename Func, typename... Ts>
-	auto ForEach(std::tuple<Ts...>& t, Func f) ->typename std::enable_if<I < sizeof...(Ts), void>::type
-	{
-		f(std::get<I>(t));
-		ForEach<I + 1, Func, Ts...>(t, f);
-	}
-
-	template <class T>
-	constexpr auto HasBegin(int) ->decltype(std::declval<T>().begin(), bool()){ return true; }
-
-	template <class T>
-	constexpr bool HasBegin(...){ return false; }
-	*/
-	
-	/*
-	template <class C>
-	auto TestImpl(C c)
-	{
-		container_traits<C>::add_element(c, 1);
-		return std::make_tuple(std::move(c));
-	}
-	template <class C, class... Cs>
-	auto TestImpl(C c, Cs... cs)
-	{
-		container_traits<C>::add_element(c, 1);
-		return std::tuple_cat(std::make_tuple(std::move(c)), TestImpl(cs...));
-	}
-
-	template <class T, size_t... I>
-	auto Test(T const& tuple, std::index_sequence<I...>)
-	{
-		return TestImpl(std::vector<typename std::tuple_element<I, T>::type>{}...);
-	}
-	*/
-
-
-	//template <class Container, class Sfinae = void> struct ContainerConstructor{ typedef Container type; };
-	//template <class Container> struct ContainerConstructor<Container, typename std::enable_if<std::is_array<Container>::value>::type>{ typedef std::array<std::remove_extent<Container>, std::rank<Container>::value> type; };
-	
-	//template <class T, class D = void> struct HasBegin : std::true_type{};
-	//template <class T> struct HasBegin<T, decltype(std::declval<T>().begin())> : std::false_type{};
-
-	//template <typename T> constexpr auto has_reserve_method(int) -> decltype(std::declval<T>().reserve(0), bool()) { return true; }
-	//template <typename T> constexpr bool has_reserve_method(...) { return false; }
-
-	/*template <typename T>
-	auto Reserve(T& t, size_t n) -> typename std::enable_if<has_reserve_method<T>(0), void>::type {
-		std::cout << "true" << std::endl;
-		t.reserve(n);
-	}
-
-	template <typename T>
-	auto Reserve(T& t, size_t n) -> typename std::enable_if<!has_reserve_method<T>(0), void>::type {
-		std::cout << "false" << std::endl;
-	}*/
-	
-	/*template <typename T, typename std::enable_if<has_reserve_method<T>(0)>::type *& = enabler>
-	void Reserve(T& t, size_t n){
-		std::cout << "true" << std::endl;
-		t.reserve(n);
-	}
-
-	template <typename T, typename std::enable_if<!has_reserve_method<T>(0)>::type *& = enabler>
-	void Reserve(T& t, size_t n) {
-		std::cout << "false" << std::endl;
-	}*/
-	/*
-	template <class T>
-	auto Reserve(T& t, size_t n) ->decltype(t.reserve(n), void()){ t.reserve(n); std::cout << "true" << std::endl; }
-
-	template <class T>
-	void Reserve(T& t, size_t n){ std::cout << "false" << std::endl; }
-	*/
-
-/* 便利関数 */
 
 }
 
