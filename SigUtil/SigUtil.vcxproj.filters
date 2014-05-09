@@ -119,5 +119,8 @@
     <ClInclude Include="example\helper_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
+    <ClInclude Include="example\debug.hpp">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

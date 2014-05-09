@@ -85,11 +85,13 @@ namespace sig{
 	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
 	template <class T> auto FromJust(maybe<T> const& sp){ return *sp; }
 	template <class T> auto FromJust(maybe<T>&& sp){ return std::move(*sp); }
+	template <class T> bool IsContainerValid(T const& m){ return m; }
 #else
 	template <class T> struct Just{ typedef T type; };
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
 	template <class T> auto FromJust(T const& sp){ return sp; }
 	template <class T> auto FromJust(T&& sp){ return std::forward<T>(sp); }
+	template <class T> bool IsContainerValid(T const& raw){ return !raw.empty(); }
 #endif
 
 //ファイルパスの文字型の指定

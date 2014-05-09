@@ -197,7 +197,7 @@ namespace sig{
 	//src: 保存対象
 	//file_pass: 保存先のディレクトリとファイル名（フルパス）
 	//open_mode: 上書き(overwrite) or 追記(append)
-	template <class S, typename std::enable_if<container_traits<TString<S>>::is_string>::type*& = enabler>
+	template <class S, typename std::enable_if<!container_traits<TString<S>>::exist>::type*& = enabler>
 	void SaveLine(S src, FileString const& file_pass, WriteMode mode = WriteMode::overwrite)
 	{
 		static bool first = true;
@@ -211,7 +211,7 @@ namespace sig{
 		SaveLine(src, ofs);
 	}
 	//まとめて保存 (シーケンスな動的コンテナのみ対応)
-	template <class C, typename std::enable_if<!container_traits<TString<C>>::is_string>::type*& = enabler>
+	template <class C, typename std::enable_if<container_traits<TString<C>>::exist>::type*& = enabler>
 	void SaveLine(C const& src, FileString const& file_pass, WriteMode mode = WriteMode::overwrite)
 	{
 		static bool first = true;

@@ -202,7 +202,7 @@ void ArrayTest()
 	ar1.insert(ar1.begin()+1, 4);
 	ar1.erase(ar1.begin());
 
-	auto plus = sig::Plus(ar1, std::initializer_list<int>{1, 2, 3, 4});
+	auto plus = sig::plus(ar1, std::initializer_list<int>{1, 2, 3, 4});
 
 	for (auto v : plus) std::cout << v << std::endl;
 	for (auto it = ar1.rbegin(), end = ar1.rend(); it != end; ++it) std::cout << *it << std::endl;

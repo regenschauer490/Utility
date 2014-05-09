@@ -95,6 +95,7 @@
   <ItemGroup>
     <ClInclude Include="botsu.hpp" />
     <ClInclude Include="example\calculate_test.hpp" />
+    <ClInclude Include="example\debug.hpp" />
     <ClInclude Include="example\helper_test.h" />
     <ClInclude Include="example\modify_test.h" />
     <ClInclude Include="example\file_test.h" />

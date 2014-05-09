@@ -53,9 +53,7 @@ template<template<class, size_t> class C, class T, size_t N>
 struct static_container_traits<C<T, N>>
 {
 	static const bool exist = true;
-
-	static const bool is_string = false;
-
+	
 	using value_type = T;
 
 	template<class U>
@@ -83,9 +81,7 @@ template<template<class> class C, class T>
 struct temp_container_traits<C<T>>
 {
 	static const bool exist = true;
-
-	static const bool is_string = false;
-
+	
 	using value_type = T;
 
 	template<class U>
@@ -104,9 +100,7 @@ template<template<class,class> class C, class T, class A>
 struct sequence_container_traits<C<T,A>>
 {
 	static const bool exist = true;
-
-	static const bool is_string = false;
-
+	
     using value_type = T;
 
     template<class U>
@@ -142,9 +136,7 @@ template<template<class,class,class> class C, class T, template<class> class O, 
 struct associative_container_traits<C<T,O<T>,A>>
 {
 	static const bool exist = true;
-
-	static const bool is_string = false;
-
+	
     using value_type = T;
 
     template<class U>
@@ -176,9 +168,7 @@ template<template<class,class,class,class> class C, class T, template<class> cla
 struct hash_container_traits<C<T,H<T>,O<T>,A>>
 {
 	static const bool exist = true;
-
-	static const bool is_string = false;
-
+	
     using value_type = T;
 
     template<class U>
@@ -203,15 +193,13 @@ template<class... Args>
 struct container_traits<std::unordered_set<Args...>> : public hash_container_traits<std::unordered_set<Args...>>
 {};
 
-
+/*
 // basic_string
 template<class T, template<class> class K, class A>
 struct container_traits<std::basic_string<T,K<T>,A>>
 {
 	static const bool exist = true;
-
-	static const bool is_string = true;
-
+	
     using value_type = T;
 
     template<class U>
@@ -227,6 +215,6 @@ struct container_traits<std::basic_string<T,K<T>,A>>
         lhs+=rhs;
     }
 };
-
+*/
 }
 #endif

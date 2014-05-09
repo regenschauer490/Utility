@@ -50,6 +50,23 @@ namespace sig
 	}
 
 
+	// (a -> b -> a) -> a -> [b] -> a
+	// リストの先頭からたたみ込み
+	template <class F, class T, class C>
+	auto foldl(F func, T init, C container)
+	{
+		return std::accumulate(std::begin(container), std::end(container), init, func);
+	}
+
+	// (a -> b -> b) -> b -> [a] -> b
+	// リストの末尾からたたみ込み
+	template <class F, class T, class C>
+	auto foldr(F func, T init, C container)
+	{
+		return std::accumulate(std::rbegin(container), std::rend(container), init, func);
+	}
+
+
 	//[a] -> [b] -> ... -> [(a, b, ...)]
 	//複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
 	template <class... Cs
