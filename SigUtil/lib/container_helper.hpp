@@ -28,19 +28,36 @@ namespace sig
 	}
 
 	template<class It>
-	auto DereferenceIterator(It& iter)
+	auto& DereferenceIterator(It& iter)
 	{
 		return *iter;
 	}
 
 	//variadic templatesで受け取った複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用する
 	template <class C, class F, class... Its>
-	void Iterate(std::size_t loop, C& dest, F const& func, Its... iterators)
+	void Iterate1(std::size_t loop, C& dest, F const& func, Its... iterators)
 	{
 		for (std::size_t i = 0; i < loop; ++i, IncrementIterator(iterators...)){
 			container_traits<C>::add_element(dest, eval(func, DereferenceIterator(iterators)...));
 		}
 	}
+
+	template <class F, class... Its>
+	void Iterate2(std::size_t loop, F const& func, Its... iterators)
+	{
+		for (std::size_t i = 0; i < loop; ++i, IncrementIterator(iterators...)){
+			func(DereferenceIterator(iterators)...);
+		}
+	}
+
+	template <class F, class... Its>
+	void Iterate2(std::size_t loop, int init, F const& func, Its... iterators)
+	{
+		for (std::size_t i = 0; i < loop; ++i, IncrementIterator(iterators...)){
+			func(i + init, DereferenceIterator(iterators)...);
+		}
+	}
+
 
 	template <class T, class D = void> struct HasRandomIter{ static const bool value = false; };
 	template <class T> struct HasRandomIter<T, decltype(std::declval<typename T::iterator>()[0], void())>{ static const bool value = true; };

@@ -1,4 +1,4 @@
-#include "calculate_test.hpp"
+#include "calculate_test.h"
 #include "debug.hpp"
 
 void ArithmeticOperationsTest()
@@ -109,26 +109,4 @@ void ArithmeticOperationsTest()
 		sig::zipWith(std::divides<double>(), data2, data0)
 	);
 
-
-	// 複合代入(コンテナの各要素に対して何らかの演算を行い、演算後の値を代入する)
-	std::vector<int> data5{ 1, 2, 3 };
-	auto data6 = data5;
-	const auto data7 = data5;
-
-	sig::compound_assignment([](int& v1, int v2){ v1 += v2; }, data5, 1);
-	sig::zipWith(
-		sig::DebugEqual(),
-		data5,
-		sig::zipWith(std::plus<int>(), data7, sig::replicate(data7.size(), 1))
-	);
-
-	sig::compound_assignment([](int& v1, int v2){ v1 -= v2; }, data6, data0);
-	sig::zipWith(
-		sig::DebugEqual(),
-		data6,
-		sig::zipWith(std::minus<int>(), data7, data0)
-	);
-
-	std::vector<std::string> str_set{"ein", "zwei", "drei"};
-	sig::compound_assignment([](std::string& str, std::string add){ str += add; }, str_set, std::string("-hander"));
 }
