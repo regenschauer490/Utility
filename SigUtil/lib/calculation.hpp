@@ -110,26 +110,5 @@ namespace sig
 
 	SIG_MakeBinaryOperation(divides, / );
 
-
-	// コンテナへの代入演算 (element-wise: container and container)
-	template <class OP, class C1, class C2, typename std::enable_if<container_traits<C1>::exist && container_traits<C2>::exist>::type*& = enabler>
-	void compound_assignment(OP const& assign_op, C1& dest, C2 const& src)
-	{
-		auto it1 = std::begin(dest), end1 = std::end(dest);
-		auto it2 = std::begin(src), end2 = std::end(src);
-
-		for(; it1 != end1 && it2 != end2; ++it1, ++it2){
-			assign_op(*it1, *it2);
-		}
-	}
-
-	// コンテナへの代入演算 (element-wise: container and scalar)
-	template <class OP, class C, class T, typename std::enable_if<container_traits<C>::exist && !container_traits<T>::exist>::type*& = enabler>
-	void compound_assignment(OP const& assign_op, C& dest, T src)
-	{
-		for(auto& e : dest){
-			assign_op(e, src);
-		}
-	}
 }
 #endif

@@ -10,7 +10,8 @@
 #include "example/tool_test.h"
 #include "example/modify_test.h"
 #include "example/functional_test.h"
-#include "example/calculate_test.hpp"
+#include "example/calculate_test.h"
+#include "example/iteration_test.h"
 
 #include <future>
 
@@ -31,6 +32,9 @@ int main()
 
 	//calculation.hpp test
 	ArithmeticOperationsTest();
+
+	//
+	ForeachTest();
 
 	//functional.hpp test
 	MapTest();

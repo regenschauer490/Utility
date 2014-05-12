@@ -51,6 +51,9 @@
     <ClCompile Include="example\helper_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
+    <ClCompile Include="example\iteration_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="botsu.hpp">
@@ -101,9 +104,6 @@
     <ClInclude Include="lib\calculation.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="example\calculate_test.hpp">
-      <Filter>ヘッダー ファイル\example</Filter>
-    </ClInclude>
     <ClInclude Include="lib\external\container traits\eval.h">
       <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
@@ -121,6 +121,15 @@
     </ClInclude>
     <ClInclude Include="example\debug.hpp">
       <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="example\calculate_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="example\iteration_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\iteration.hpp">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

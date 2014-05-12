@@ -27,7 +27,7 @@ namespace sig
 
 		OutputType result;
 		const uint length = Min(container1.size(), containers.size()...);
-		Iterate(length, result, func, std::begin(container1), std::begin(containers)...);
+		Iterate1(length, result, func, std::begin(container1), std::begin(containers)...);
 
 		return result;
 	}
@@ -97,7 +97,7 @@ namespace sig
 
 		const uint length = Min(container1.size(), containers.size()...);
 		OutputType result;
-		Iterate(length, result, [](typename container_traits<C1>::value_type&& v1, typename container_traits<Cs>::value_type&&... vs){
+		Iterate1(length, result, [](typename container_traits<C1>::value_type&& v1, typename container_traits<Cs>::value_type&&... vs){
 			return std::make_tuple(std::move(v1), std::move(vs)...);
 		}, std::make_move_iterator(std::begin(container1)), std::make_move_iterator(std::begin(containers))...);
 
