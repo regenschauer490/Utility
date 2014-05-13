@@ -174,7 +174,7 @@ namespace sig{
 
 			auto FirstZero = [](double v){
 				uint keta = 0;
-				if (Equal(v, 0)) return keta;
+				if (equal(v, 0)) return keta;
 				while (static_cast<int>(v * std::pow(10, keta)) == 0) ++keta;
 				return keta;
 			};
@@ -191,7 +191,7 @@ namespace sig{
 				double dv = v - int(v);
 
 				while (true){
-					if (Equal(dv, 0) || keta >= 15) break;
+					if (equal(dv, 0) || keta >= 15) break;
 					v *= 10;
 					dv = v - int(v);
 					++keta;
@@ -276,7 +276,7 @@ namespace sig{
 		void Print() const{ PrintBase(std::cout); }
 
 		//ファイルへ出力
-		void Print(FileString const& file_pass) const{
+		void Print(FilepassString const& file_pass) const{
 			std::ofstream ofs(file_pass);
 			PrintBase(ofs);
 		}

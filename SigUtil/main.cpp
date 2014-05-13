@@ -35,6 +35,7 @@ int main()
 
 	//
 	ForeachTest();
+	CompoundAssignmentTest();
 
 	//functional.hpp test
 	MapTest();

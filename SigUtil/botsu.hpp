@@ -276,9 +276,9 @@ result.push_back(t.get());
 tw.Save();
 
 std::cout << std::endl;
-std::cout << sig::FromJust(tw.GetLapTime(0)) << std::endl;
-std::cout << sig::FromJust(tw.GetLapTime(1)) << std::endl;
-std::cout << sig::FromJust(tw.GetLapTime(2)) << std::endl;
+std::cout << sig::fromJust(tw.GetLapTime(0)) << std::endl;
+std::cout << sig::fromJust(tw.GetLapTime(1)) << std::endl;
+std::cout << sig::fromJust(tw.GetLapTime(2)) << std::endl;
 */
 
 

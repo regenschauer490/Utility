@@ -70,7 +70,7 @@ namespace sig{
 #endif
 
 
-//boost.call_traits の有効・無効に関係なくコードを統一的に記述するための処理
+// boost.call_traits の有効・無効に関係なくコードを統一的に記述するための処理
 #if SIG_ENABLE_BOOST
 	template <class T> using ParamType = typename boost::call_traits<T>::param_type;
 #else
@@ -79,36 +79,38 @@ namespace sig{
 #endif
 		
 
-//maybe(boost.optional)の有効・無効に関係なくコードを統一的に記述するための処理
+// maybe(boost.optional)の有効・無効に関係なくコードを統一的に記述するための処理
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	template <class T> struct Just{ typedef maybe<T> type; };
 	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
-	template <class T> auto FromJust(maybe<T> const& sp){ return *sp; }
-	template <class T> auto FromJust(maybe<T>&& sp){ return std::move(*sp); }
-	template <class T> bool IsContainerValid(T const& m){ return m; }
+	template <class T> auto fromJust(maybe<T> const& sp){ return *sp; }
+	template <class T> auto fromJust(maybe<T>&& sp){ return std::move(*sp); }
+	template <class T> bool is_container_valid(T const& m){ return m; }
 #else
 	template <class T> struct Just{ typedef T type; };
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
-	template <class T> auto FromJust(T const& sp){ return sp; }
-	template <class T> auto FromJust(T&& sp){ return std::forward<T>(sp); }
-	template <class T> bool IsContainerValid(T const& raw){ return !raw.empty(); }
+	template <class T> auto fromJust(T const& sp){ return sp; }
+	template <class T> auto fromJust(T&& sp){ return std::forward<T>(sp); }
+	template <class T> bool is_container_valid(T const& raw){ return !raw.empty(); }
 #endif
 
-//ファイルパスの文字型の指定
+
+// ファイルパスの文字型の指定
 #if SIG_MSVC_ENV
-	using FileString = std::wstring;
-	inline void FileOpenErrorPrint(FileString const& pass){ std::wcout << L"file open error: " << pass << std::endl; }
+	using FilepassString = std::wstring;
+	inline void FileOpenErrorPrint(FilepassString const& pass){ std::wcout << L"file open error: " << pass << std::endl; }
 #if _MSC_VER <= 1800
 #define SIG_MSVC_LT1800
 #else
 	static_assert(false, "require \"Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)\" to compile on msvc");
 #endif
 #else
-	using FileString = std::string;
-	inline void FileOpenErrorPrint(FileString const& pass){ std::cout << "file open error: " << pass << std::endl; }
+	using FilepassString = std::string;
+	inline void FileOpenErrorPrint(FilepassString const& pass){ std::cout << "file open error: " << pass << std::endl; }
 #endif
 
-//正規表現ライブラリの指定 (gcc標準はバグが多いため避ける)
+
+// 正規表現ライブラリの指定 (gcc標準はバグが多いため避ける)
 #if !SIG_MSVC_ENV && SIG_ENABLE_BOOST
 using SIG_Regex = boost::regex;
 using SIG_WRegex = boost::wregex;

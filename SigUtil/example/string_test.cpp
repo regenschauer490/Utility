@@ -14,15 +14,15 @@ void RegexTest()
 {
 #if SIG_MSVC_ENV
 	//エスケープ処理した文字列を取得
-	auto escaped1 = sig::RegexEscaper("? or (lol) must be escaped");
-	auto escaped2 = sig::RegexEscaper(L"?とか(笑)はエスケープすべき文字");
+	auto escaped1 = sig::escape_regex("? or (lol) must be escaped");
+	auto escaped2 = sig::escape_regex(L"?とか(笑)はエスケープすべき文字");
 
 	auto test1 = R"(\? or \(lol\) must be escaped)";	assert(escaped1 == test1);
 	auto test2 = LR"(\?とか\(笑\)はエスケープすべき文字)";	assert(escaped2 == test2);
 	
 
 	//エスケープ処理をしつつ std::regex(or std::wregex)を取得
-	auto reg = sig::RegexMaker(L"(笑)");
+	auto reg = sig::make_regex(L"(笑)");
 	auto replaced = SIG_RegexReplace(std::wstring(L"てすと(笑)です"), reg, std::wstring(L""));
 
 	assert(replaced == L"てすとです");
@@ -31,18 +31,18 @@ void RegexTest()
 #endif
 
 	//正規表現で検索
-	auto matches1 = sig::RegexSearch("test tes1a tes2b", SIG_Regex("tes(\\d)(\\w)"));
-	auto matches2 = sig::RegexSearch("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
+	auto matches1 = sig::regex_search("test tes1a tes2b", SIG_Regex("tes(\\d)(\\w)"));
+	auto matches2 = sig::regex_search("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
 	
 	TVec2 test3 = { { "tes1a", "1", "a" }, { "tes2b", "2", "b" } };
 	auto test4 = "? or (lol) must be escaped";
 
-	for (uint i=0; i < sig::FromJust(matches1).size(); ++i){
-		for (uint j = 0; j < sig::FromJust(matches1)[i].size(); ++j){
-			assert(sig::FromJust(matches1)[i][j] == test3[i][j]);
+	for (uint i=0; i < sig::fromJust(matches1).size(); ++i){
+		for (uint j = 0; j < sig::fromJust(matches1)[i].size(); ++j){
+			assert(sig::fromJust(matches1)[i][j] == test3[i][j]);
 		}
 	}
-	for (auto m : sig::FromJust(matches2)){
+	for (auto m : sig::fromJust(matches2)){
 		assert( m.front() == test4);
 	}
 
@@ -59,7 +59,7 @@ void TagDealerTest()
 	auto decoded = tag_dealer.Decode(encoded, "TAG");
 	auto ignored = tag_dealer.Decode(encoded, "HOO");
 
-	assert(sig::FromJust(decoded) == "test");
+	assert(sig::fromJust(decoded) == "test");
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	if (ignored) assert(false);				//ignored == nothing
 #else
@@ -85,22 +85,23 @@ void TagDealerTest()
 void SplitTest()
 {
 	std::string str{ "one, 2, 参 "};
+
 	//,をデリミタとして分割
-	auto split1 = sig::Split(str, ",");
+	auto split1 = sig::split(str, ",");
 
 	TVec test1{ "one", " 2", " 参 " };
 	for (uint i = 0; i<split1.size(); ++i) assert(split1[i] == test1[i]);
 
 	//コンテナ(シーケンス限定)の明示的指定も可
-	auto split2 = sig::Split<std::list>(L"https://github.com/regenschauer490/Utility", L"/");
+	auto split2 = sig::split<std::list>(L"https://github.com/regenschauer490/Utility", L"/");
 
 	TVecw test2{ L"https:", L"github.com", L"regenschauer490", L"Utility" };
 	auto sp2it = split2.begin();
 	for (uint i = 0; i<split2.size(); ++i, ++sp2it) assert(*sp2it == test2[i]);
 
 	//デリミタ間に何もなければ無視
-	auto split3 = sig::Split("10 100  1000", " ");	
-	auto split4 = sig::Split(" ,, ,  ,", ",");
+	auto split3 = sig::split("10 100  1000", " ");	
+	auto split4 = sig::split(" ,, ,  ,", ",");
 
 	TVec test3{ "10", "100", "1000"};
 	for (uint i = 0; i<split3.size(); ++i) assert(split3[i] == test3[i]);
@@ -113,7 +114,7 @@ void SplitTest()
 4
 )";
 	//行毎に分割（空行無視）
-	auto split5 = sig::Split(sentence, "\n");
+	auto split5 = sig::split(sentence, "\n");
 	TVec test5 = { "1", "2", "4" };
 	for (uint i = 0; i<split5.size(); ++i) assert(split5[i] == test5[i]);
 }
@@ -121,9 +122,9 @@ void SplitTest()
 void CatStrTest()
 {
 	//文字列の結合
-	auto cat1 = sig::CatStr(std::vector<std::string>{"eins", "zwei", "drei"}, "");
-	auto cat2 = sig::CatStr(std::list<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
-	auto cat3 = sig::CatStr(std::set<int>{1, 2, 3}, "\n");
+	auto cat1 = sig::cat_str(std::vector<std::string>{"eins", "zwei", "drei"}, "");
+	auto cat2 = sig::cat_str(std::list<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
+	auto cat3 = sig::cat_str(std::set<int>{1, 2, 3}, "\n");
 
 	assert(cat1 == "einszweidrei");
 	assert(cat2 == L"eins,zwei,drei");
@@ -132,8 +133,8 @@ void CatStrTest()
 
 void StrConvertTest()
 {
-	const auto sjis = sig::FromJust( sig::ReadLine<std::string>(L"../SigUtil/example/test_file/shift_jis.txt"));
-	const auto utf8 = sig::FromJust( sig::ReadLine<std::string>(L"../SigUtil/example/test_file/utf8.txt"));
+	const auto sjis = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/shift_jis.txt"));
+	const auto utf8 = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/utf8.txt"));
 
 	//マルチ文字 <-> ワイド文字 変換
 	std::wstring	wstr = sig::STRtoWSTR(sjis[1]);

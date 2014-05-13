@@ -26,8 +26,8 @@ namespace sig
 		))>;
 
 		OutputType result;
-		const uint length = Min(container1.size(), containers.size()...);
-		Iterate1(length, result, func, std::begin(container1), std::begin(containers)...);
+		const uint length = min(container1.size(), containers.size()...);
+		iterative_make(length, result, func, std::begin(container1), std::begin(containers)...);
 
 		return result;
 	}
@@ -71,7 +71,7 @@ namespace sig
 	//複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
 	template <class... Cs
 #ifndef SIG_MSVC_LT1800
-		, typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
+		, typename std::enable_if< and(container_traits<Cs>::exist...) >::type*& = enabler
 #endif
 		>
 	auto zip(Cs const&... containers)
@@ -86,8 +86,8 @@ namespace sig
 
 	//for rvalue reference
 	template <class C1, class... Cs,
-		typename std::enable_if<!std::is_lvalue_reference<C1>::value && !And(std::is_lvalue_reference<Cs>::value...)>::type*& = enabler,
-		typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
+		typename std::enable_if<!std::is_lvalue_reference<C1>::value && !and(std::is_lvalue_reference<Cs>::value...)>::type*& = enabler,
+		typename std::enable_if< and(container_traits<Cs>::exist...) >::type*& = enabler
 	>
 	auto zip(C1&& container1, Cs&&... containers)
 	{
@@ -95,9 +95,9 @@ namespace sig
 			std::tuple<typename container_traits<C1>::value_type, typename container_traits<Cs>::value_type...>
 		>;
 
-		const uint length = Min(container1.size(), containers.size()...);
+		const uint length = min(container1.size(), containers.size()...);
 		OutputType result;
-		Iterate1(length, result, [](typename container_traits<C1>::value_type&& v1, typename container_traits<Cs>::value_type&&... vs){
+		iterative_make(length, result, [](typename container_traits<C1>::value_type&& v1, typename container_traits<Cs>::value_type&&... vs){
 			return std::make_tuple(std::move(v1), std::move(vs)...);
 		}, std::make_move_iterator(std::begin(container1)), std::make_move_iterator(std::begin(containers))...);
 
@@ -272,13 +272,13 @@ namespace sig
 #ifndef SIG_MSVC_LT1800
 	//(a -> a -> bool) -> [a] -> [a]
 	//比較関数を指定してソート
-	template <class F, class C, typename std::enable_if<HasRandomIter<C>::value, void>::type*& = enabler>
+	template <class F, class C, typename std::enable_if<has_random_iterator<C>::value, void>::type*& = enabler>
 	auto sort(F const& binary_op, C const& data){
 		C result = data;
 		std::sort(std::begin(result), std::end(result), binary_op);
 		return result;
 	}
-	template <class F, class C, typename std::enable_if<!HasRandomIter<C>::value, void>::type*& = enabler>
+	template <class F, class C, typename std::enable_if<!has_random_iterator<C>::value, void>::type*& = enabler>
 	auto sort(F const& binary_op, C const& data){
 		C result = data;
 		result.sort(binary_op);

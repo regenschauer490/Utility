@@ -70,7 +70,7 @@ struct container_traits<std::array<T, N>> : public static_container_traits<std::
 {};
 
 template<class T, size_t N>
-struct container_traits<sig::Array<T, N>> : public static_container_traits<sig::Array<T, N>>
+struct container_traits<sig::array<T, N>> : public static_container_traits<sig::array<T, N>>
 {};
 
 

@@ -28,107 +28,113 @@ http://opensource.org/licenses/mit-license.php
 namespace sig{
 
 #if SIG_MSVC_ENV
-	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
-	inline auto RegexEscaper(std::string const& expression) ->std::string
-	{
-		static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
-		return SIG_RegexReplace(expression, escape_reg, std::string(R"(\$1)"));
-	}
-	inline auto RegexEscaper(std::wstring const& expression) ->std::wstring
-	{
-		static const SIG_WRegex escape_reg(LR"(([(){}\[\]|^?$.+*\\]))");
-		return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\$1)"));
-	}
 
-	//自動でエスケープしてstd::regex or std::wregex を返す
-	template <class S>
-	auto RegexMaker(S const& expression) ->typename Str2RegexSelector<TString<S>>::regex
-	{
-		return typename Str2RegexSelector<TString<S>>::regex(RegexEscaper(expression));
-	}
+// expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
+inline auto escape_regex(std::string const& expression) ->std::string
+{
+	static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
+	return SIG_RegexReplace(expression, escape_reg, std::string(R"(\$1)"));
+}
+inline auto escape_regex(std::wstring const& expression) ->std::wstring
+{
+	static const SIG_WRegex escape_reg(LR"(([(){}\[\]|^?$.+*\\]))");
+	return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\$1)"));
+}
+
+// エスケープ処理を行い、std::regex or std::wregexを返す
+template <class S>
+auto make_regex(S const& expression) ->typename Str2RegexSelector<TString<S>>::regex
+{
+	return typename Str2RegexSelector<TString<S>>::regex(escape_regex(expression));
+}
 #endif
 
-	//std::regex_search のラッパ関数。
-	//return -> maybe ? [マッチした箇所の順番][マッチ内の参照の順番. 0は全文, 1以降は参照箇所] : nothing
-	//例：
-	//src = "test tes1 tes2"
-	//expression = std::regex("tes(\\d)")
-	//return -> [[tes1, 1], [tes2, 2]]
-	template <class S>
-	auto RegexSearch(S src, typename Str2RegexSelector<TString<S>>::regex const& expression) ->typename Just<std::vector<std::vector<TString<S>>>>::type
-	{
-		using R = std::vector<std::vector<TString<S>>>;
-		R d;
-		typename Str2RegexSelector<TString<S>>::smatch match;
-		auto tmp = TString<S>(src);
+// std::regex_search のラッパ関数
+// src: 探索対象の文字列
+// expression: 正規表現 ((windows)std::regex or (others)boost::regex)
+// return -> (探索の成否) ? [マッチした箇所の順番][マッチ内の参照の順番. 0は全文, 1以降は参照箇所] : nothing
+// 例：
+// src = "test tes1 tes2"
+// expression = std::regex("tes(\\d)")
+// return -> [[tes1, 1], [tes2, 2]]
+template <class S>
+auto regex_search(
+	S src,
+	typename Str2RegexSelector<TString<S>>::regex const& expression
+	) ->typename Just<std::vector<std::vector<TString<S>>>>::type
+{
+	using R = std::vector<std::vector<TString<S>>>;
+	R d;
+	typename Str2RegexSelector<TString<S>>::smatch match;
+	auto tmp = TString<S>(src);
 
-		while (SIG_RegexSearch(tmp, match, expression)){
-			d.push_back(std::vector<TString<S>>());
-			for (auto const& m : match) d.back().push_back(m);
-			tmp = match.suffix().str();
-		}
-
-		return d.empty() ? Nothing(std::move(d)) : typename Just<R>::type(std::move(d));
+	while (SIG_RegexSearch(tmp, match, expression)){
+		d.push_back(std::vector<TString<S>>());
+		for (auto const& m : match) d.back().push_back(m);
+		tmp = match.suffix().str();
 	}
 
-/*
-	//expressionに含まれる文字に関して、正規表現の特殊文字をエスケープしてから処理（推奨）
-	template < class T, template < class T_, class = std::allocator<T_>> class Container = std::vector >
-	auto RegexSearch(T src, T expression) ->typename Just< Container< Container<String<T>>>>::type
-	{
-		return RegexSearch(src, RegexMaker(expression));
+	return d.empty() ? Nothing(std::move(d)) : typename Just<R>::type(std::move(d));
+}
+
+// 文字列(src)をある文字列(delimiter)を目印に分割する
+// src: 分割対象の文字列
+// delimiter: 分割の目印となる文字列
+// return -> 分割後の文字列が格納されたシーケンスコンテナ(templateパラメータでコンテナの種類を指定可)
+// 例：
+// src="one, 2, 参 ", delim="," -> return vector<string>{"one", " 2", " 参 "}
+template <template <class T_, class = std::allocator<T_>> class CSeq = std::vector, class S = std::string >
+auto split(
+	S src,
+	TString<S> const& delimiter
+	) ->CSeq<TString<S>>
+{
+	CSeq<S> result;
+	int const mag = delimiter.size();
+	int cut_at;
+
+	if (!mag) return CSeq<S>{src};
+
+	while ((cut_at = src.find(delimiter)) != src.npos){
+		if (cut_at > 0) result.push_back(src.substr(0, cut_at));
+		src = src.substr(cut_at + mag);
 	}
-*/
-
-	//文字列(src)をある文字列(delim)を目印に分割する
-	//戻り値のコンテナはデフォルトではvector (listやdeque等のシーケンスコンテナならOK)
-	//例：src="one, 2, 参 ", delim="," -> return vector<string>{"one", " 2", " 参 "}
-	template <template <class T_, class = std::allocator<T_>> class CSeq = std::vector, class S = std::string >
-	auto Split(S src, typename std::common_type<S>::type const& delimiter) ->CSeq<typename StringId<S>::type>
-	{
-		CSeq<S> result;
-		int const mag = delimiter.size();
-		int cut_at;
-
-		if (!mag) return CSeq<S>{src};
-
-		while ((cut_at = src.find(delimiter)) != src.npos){
-			if (cut_at > 0) result.push_back(src.substr(0, cut_at));
-			src = src.substr(cut_at + mag);
-		}
-		if (src.length() > 0){
-			result.push_back(src);
-		}
-
-		return result;
+	if (src.length() > 0){
+		result.push_back(src);
 	}
 
-	template < template <class T_, class = std::allocator<T_>> class CSeq = std::vector >
-	CSeq<std::string> Split(char const* const src, char const* const delimiter)
-	{
-		return Split<CSeq>(std::string(src), std::string(delimiter));
+	return result;
+}
+
+template < template <class T_, class = std::allocator<T_>> class CSeq = std::vector >
+CSeq<std::string> split(char const* const src, char const* const delimiter)
+{
+	return split<CSeq>(std::string(src), std::string(delimiter));
+}
+
+template < template < class T_, class = std::allocator<T_>> class CSeq = std::vector >
+CSeq<std::wstring> split(wchar_t const* const src, wchar_t const* const delimiter)
+{
+	return split<CSeq>(std::wstring(src), std::wstring(delimiter));
+}
+
+
+// コンテナに格納された全文字列を結合して1つの文字列に(delimiterで区切り指定)
+// container: 文字列が格納されたコンテナ
+// delimiter: 結合する文字列間に挿入される文字列
+// return -> 結合した文字列
+template <class C, class T>
+auto cat_str(C const& container, T delimiter)
+{
+	typename SStreamSelector<typename container_traits<C>::value_type>::ostringstream osstream;
+	if (container.empty()) return osstream.str();
+
+	osstream << *std::begin(container);
+	for (auto it = ++std::begin(container), end = std::end(container); it != end; ++it){
+		osstream << delimiter << *it;
 	}
-
-	template < template < class T_, class = std::allocator<T_>> class CSeq = std::vector >
-	CSeq<std::wstring> Split(wchar_t const* const src, wchar_t const* const delimiter)
-	{
-		return Split<CSeq>(std::wstring(src), std::wstring(delimiter));
-	}
-
-
-	//コンテナに格納された全文字列を結合して1つの文字列に(delimiterで区切り指定)
-	template <class C, class T>
-	auto CatStr(C const& container, T delimiter)
-	{
-		typename SStreamSelector<typename container_traits<C>::value_type>::ostringstream osstream;
-		if (container.empty()) return osstream.str();
-
-		osstream << *container.begin();
-		for (auto it = ++container.begin(), end = container.end(); it != end; ++it){
-			osstream << delimiter << *it;
-		}
-		return osstream.str();
-	}
+	return osstream.str();
+}
 
 
 	//ワイド文字 -> マルチバイト文字 (ex: Windows環境では UTF-16 -> Shift-JIS)
@@ -157,7 +163,7 @@ namespace sig{
 		for (auto const& str : strvec){
 			std::string r = WSTRtoSTR(str);
 			if (!r.empty()) container_traits<R>::add_element(result, std::move(r));
-			//result.push_back(FromJust(WSTRtoSTR(str)));
+			//result.push_back(fromJust(WSTRtoSTR(str)));
 		}
 		return result;
 	}
@@ -187,7 +193,7 @@ namespace sig{
 		for (auto const& str : strvec){
 			std::wstring r = STRtoWSTR(str);
 			if (!r.empty()) container_traits<R>::add_element(result, std::move(r));
-			//result.push_back(FromJust(STRtoWSTR(str)));
+			//result.push_back(fromJust(STRtoWSTR(str)));
 		}
 		return result;
 	}
@@ -289,7 +295,7 @@ namespace sig{
 
 		auto Decode(String const& src, String const& tag) ->typename Just<String>::type const{
 			auto tag_str = tel_ + tag + ter_;
-			auto parse = Split(" " + src, tag_str);
+			auto parse = split(" " + src, tag_str);
 			return parse.size() < 2 ? Nothing(String()) : typename Just<String>::type(parse[1]);
 		}
 
@@ -306,7 +312,7 @@ namespace sig{
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 	String TagDealer<String>::Encode(Container<String> const& src, Container<String> const& tag) const
 	{
-		auto size = Min(src.size(), tag.size());
+		auto size = min(src.size(), tag.size());
 		auto calc = zipWith([&](typename Container<String>::value_type s, typename Container<String>::value_type t){ return Encode(s, t); }, src, tag);
 		return std::accumulate(calc.begin(), calc.end(), String(""));
 	}

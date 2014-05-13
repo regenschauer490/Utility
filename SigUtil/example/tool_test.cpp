@@ -49,32 +49,32 @@ void TimeWatchTest()
 	tw.Save();		//ここまでのタイムを記録
 
 #if SIG_ENABLE_BOOST
-	assert(sig::TolerantEqual(*tw.GetLapTime(0), 100, 1));		//100 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetLapTime(1), 200, 1));		//200 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetLapTime(2), 300, 1));		//300 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetLapTime(3), 400, 1));		//400 ± 1 (ms)
+	assert(sig::equal_tolerant(*tw.GetLapTime(0), 100, 1));		//100 ± 1 (ms)
+	assert(sig::equal_tolerant(*tw.GetLapTime(1), 200, 1));		//200 ± 1 (ms)
+	assert(sig::equal_tolerant(*tw.GetLapTime(2), 300, 1));		//300 ± 1 (ms)
+	assert(sig::equal_tolerant(*tw.GetLapTime(3), 400, 1));		//400 ± 1 (ms)
 	assert(! tw.GetLapTime(4));
 
-	assert(sig::TolerantEqual(*tw.GetSplitTime(0), 100, 1));	//100 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetSplitTime(1), 300, 1));	//300 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetSplitTime(2), 600, 1));	//600 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetSplitTime(3), 1000, 1));	//1000 ± 1 (ms)
+	assert(sig::equal_tolerant(*tw.GetSplitTime(0), 100, 1));	//100 ± 1 (ms)
+	assert(sig::equal_tolerant(*tw.GetSplitTime(1), 300, 1));	//300 ± 1 (ms)
+	assert(sig::equal_tolerant(*tw.GetSplitTime(2), 600, 1));	//600 ± 1 (ms)
+	assert(sig::equal_tolerant(*tw.GetSplitTime(3), 1000, 1));	//1000 ± 1 (ms)
 #else
-	assert(sig::TolerantEqual(tw.GetLapTime(0), 100, 1));		//100 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetLapTime(1), 200, 1));		//200 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetLapTime(2), 300, 1));		//300 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetLapTime(3), 400, 1));		//400 ± 1 (ms)
+	assert(sig::equal_tolerant(tw.GetLapTime(0), 100, 1));		//100 ± 1 (ms)
+	assert(sig::equal_tolerant(tw.GetLapTime(1), 200, 1));		//200 ± 1 (ms)
+	assert(sig::equal_tolerant(tw.GetLapTime(2), 300, 1));		//300 ± 1 (ms)
+	assert(sig::equal_tolerant(tw.GetLapTime(3), 400, 1));		//400 ± 1 (ms)
 	assert(tw.GetLapTime(4) == -1);
 
-	assert(sig::TolerantEqual(tw.GetSplitTime(0), 100, 1));		//100 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetSplitTime(1), 300, 1));		//300 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetSplitTime(2), 600, 1));		//600 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetSplitTime(3), 1000, 1));	//1000 ± 1 (ms)
+	assert(sig::equal_tolerant(tw.GetSplitTime(0), 100, 1));		//100 ± 1 (ms)
+	assert(sig::equal_tolerant(tw.GetSplitTime(1), 300, 1));		//300 ± 1 (ms)
+	assert(sig::equal_tolerant(tw.GetSplitTime(2), 600, 1));		//600 ± 1 (ms)
+	assert(sig::equal_tolerant(tw.GetSplitTime(3), 1000, 1));	//1000 ± 1 (ms)
 #endif
-	assert(sig::TolerantEqual(tw.GetTotalTime(), 1000, 10));				//1000 ± 10 (ms)
-	assert(sig::Equal(tw.GetTotalTime<std::chrono::seconds>(), 1));		//1 (s)
+	assert(sig::equal_tolerant(tw.GetTotalTime(), 1000, 10));				//1000 ± 10 (ms)
+	assert(sig::equal(tw.GetTotalTime<std::chrono::seconds>(), 1));		//1 (s)
 	auto total = tw.GetTotalTime<std::chrono::microseconds>();
-	assert(sig::TolerantEqual(tw.GetTotalTime<std::chrono::microseconds>(), 1000000, 10000));	//1000000  ± 10000 (μs)
+	assert(sig::equal_tolerant(tw.GetTotalTime<std::chrono::microseconds>(), 1000000, 10000));	//1000000  ± 10000 (μs)
 #else
 
 #endif
@@ -191,10 +191,10 @@ void PercentTest()
 
 void ArrayTest()
 {
-	sig::Array<int, 4> ar1{ 1, 2, 3 };
+	sig::array<int, 4> ar1{ 1, 2, 3 };
 
 	std::array<double, 2> std_ar{ {1.1, 2.2} };
-	sig::Array<double, 2> ar2(std_ar);
+	sig::array<double, 2> ar2(std_ar);
 
 	ar2.pop_back();
 	ar2.push_back(3.3);
@@ -209,7 +209,7 @@ void ArrayTest()
 
 	ar1.swap(plus);
 
-	sig::Array<double, 2> ar3;
+	sig::array<double, 2> ar3;
 	assert(ar3.size() == 0);
 
 	ar3 = ar2;		//copy

@@ -16,14 +16,14 @@ using TVecw = std::vector<std::wstring>;
 
 void GetDirectoryNamesTest()
 {
-	auto pass = sig::DirpassTailModify(raw_pass, true);
+	const auto pass = sig::impl::modify_dirpass_tail(raw_pass, true);
 
 #if SIG_MSVC_ENV || SIG_ENABLE_BOOST
 
-	auto file_names = sig::GetFileNames(pass, false);
-	auto text_file_names = sig::GetFileNames(pass, false, L".txt");
-	auto old_text_file_names = sig::GetFileNames(pass, false, L".old.txt");
-	auto hidden_text_file_names = sig::GetFileNames(pass, true, L".txt");
+	const auto file_names = sig::get_file_names(pass, false);
+	const auto text_file_names = sig::get_file_names(pass, false, L".txt");
+	const auto old_text_file_names = sig::get_file_names(pass, false, L".old.txt");
+	const auto hidden_text_file_names = sig::get_file_names(pass, true, L".txt");
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl  << "[all visible files]"<< std::endl;
@@ -53,8 +53,8 @@ void GetDirectoryNamesTest()
 	for (auto fn : hidden_text_file_names) std::wcout << fn << std::endl;
 #endif
 
-	auto folder_names = sig::GetFolderNames(pass, false);
-	auto hidden_folder_names = sig::GetFolderNames(pass, true);
+	const auto folder_names = sig::get_folder_names(pass, false);
+	const auto hidden_folder_names = sig::get_folder_names(pass, true);
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl << "[all visible folders]" << std::endl;
@@ -78,28 +78,28 @@ void GetDirectoryNamesTest()
 
 void FileSaveLoadTest()
 {
-	auto pass = sig::DirpassTailModify(raw_pass, true);
+	const auto pass = sig::impl::modify_dirpass_tail(raw_pass, true);
 
 #if SIG_MSVC_ENV
-	auto fpass1 = pass + L"test.txt";
-	auto fpass2 = pass + L"test2.txt";
-	auto fpass3 = pass + L"test3.txt";
-	auto fpass4 = pass + L"test4.txt";
-	auto fpass5 = pass + L"test5.txt";
+	const auto fpass1 = pass + L"test.txt";
+	const auto fpass2 = pass + L"test2.txt";
+	const auto fpass3 = pass + L"test3.txt";
+	const auto fpass4 = pass + L"test4.txt";
+	const auto fpass5 = pass + L"test5.txt";
 
 	std::wcout << fpass1 << std::endl << std::endl;
 #else
-	auto fpass1 = pass + "test.txt";
-	auto fpass2 = pass + "test2.txt";
-	auto fpass3 = pass + "test3.txt";
-	auto fpass4 = pass + "test4.txt";
-	auto fpass5 = pass + "test5.txt";
+	const auto fpass1 = pass + "test.txt";
+	const auto fpass2 = pass + "test2.txt";
+	const auto fpass3 = pass + "test3.txt";
+	const auto fpass4 = pass + "test4.txt";
+	const auto fpass5 = pass + "test5.txt";
 
 	std::cout << fpass1 << std::endl << std::endl;
 #endif
 
 
-	std::vector<std::wstring> blghost_text1{
+	const std::vector<std::wstring> blghost_text1{
 		L"O.K.",
 		L"CLOSE INITIALIZE SEQUENCE.",
 		L"AND",
@@ -107,7 +107,7 @@ void FileSaveLoadTest()
 		L"B.L.GHOST STRATEGY RECORDER."
 	};
 
-	std::list<std::string> blghost_text2{
+	const std::list<std::string> blghost_text2{
 		"HAIL TO YOU,MY FELLOW.",
 		"I DON'T KNOW YOUR INFERNAL DAYS.",
 		"HOWEVER.",
@@ -120,60 +120,61 @@ void FileSaveLoadTest()
 	
 
 	//既存の内容のクリア
-	sig::FileClear(fpass1);
-	sig::FileClear(fpass4);
+	sig::file_clear(fpass1);
+	sig::file_clear(fpass4);
 
 	//ofstreamを渡して保存
 	std::wofstream ofs(fpass1, std::ios::out | std::ios::app);
-	sig::SaveLine(L"test write 0", ofs);		//1行保存
-	sig::SaveLine(blghost_text1, ofs);		//全行保存
+	sig::save_line(L"test write 0", ofs);		//1行保存
+	sig::save_line(blghost_text1, ofs);		//全行保存
 	ofs.close();
 
-	//以下 かんたん保存♪
+/* 以下 かんたん保存 */
 
 	//1行保存（上書き）
-	sig::SaveLine(L"test write 壱", fpass2);
+	sig::save_line(L"test write 壱", fpass2);
 	//1行保存（追記）
-	sig::SaveLine(L"test write 弐", fpass2, sig::WriteMode::append);
+	sig::save_line(L"test write 弐", fpass2, sig::WriteMode::append);
 	//全行保存（上書き）
-	sig::SaveLine(blghost_text2, fpass3);
+	sig::save_line(blghost_text2, fpass3);
 
 	//数値列の保存（追記、1行ずつ保存）
-	auto list_num = std::unordered_set<double>{-1.1, -2.2, -3.3};
-	auto uset_num = std::unordered_set<double>{1.1, 2.2, 3.3};
-	sig::SaveNum(list_num, fpass4, "\n", sig::WriteMode::append);
-	sig::SaveNum(uset_num, fpass4, "\n", sig::WriteMode::append);
+	const auto list_num = std::unordered_set<double>{-1.1, -2.2, -3.3};
+	const auto uset_num = std::unordered_set<double>{1.1, 2.2, 3.3};
+	sig::save_num(list_num, fpass4, "\n", sig::WriteMode::overwrite);
+	sig::save_num(uset_num, fpass4, "\n", sig::WriteMode::append);
 
 	//数値行列の保存 (上書き、各行カンマ区切りで保存)
-	auto mat = std::array<std::array<int, 3>, 3>{{
+	const auto mat = std::array<std::array<int, 3>, 3>{{
 		std::array<int, 3>{{ 1, 2, 3 }},
 		std::array<int, 3>{{ 4, 5, 6 }},
 		std::array<int, 3>{{ 7, 8, 9 }}
 	}};
-	sig::SaveNum(mat, fpass5, ",");
+	sig::save_num(mat, fpass5, ",");
 
 
-	//以下 かんたん読み込み♪
+/* 以下 かんたん読み込み */
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-	auto read1 = sig::ReadLine<std::string>(fpass1);
-	auto read2 = sig::ReadLine<std::wstring, std::list<std::wstring>>(fpass2);
-	auto read_num = sig::ReadNum<std::set<double>>(fpass4);
-	auto read_mat = sig::ReadNum<std::vector<std::vector<int>>>(fpass5, ",");
+	const auto read1 = sig::read_line<std::string>(fpass1);
+	const auto read2 = sig::read_line<std::wstring, std::list<std::wstring>>(fpass2);
+	const auto read_num = sig::read_num<std::set<double>>(fpass4);
+	const auto read_mat = sig::read_num<std::vector<std::vector<int>>>(fpass5, ",");
 
 	if (read1){
-		auto test1 = sig::merge(TVecw{L"test write 0"}, blghost_text1);
+		const auto test1 = sig::merge(TVecw{ L"test write 0" }, blghost_text1);
 		sig::zipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, *read1, test1);
 	}
 	if (read2){
 		sig::zipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, *read2, TVecw{ L"test write 壱", L"test write 弐" });
 	}
 	if (read_num){
+		const auto test = std::accumulate(list_num.begin(), list_num.end(), 0.0) + std::accumulate(uset_num.begin(), uset_num.end(), 0.0);
 		//保存前がunorderedで順不同となるので、読み取り後のdouble値の合計と一致するかで判断
-		assert( sig::Equal(std::accumulate(read_num->begin(), read_num->end(), 0.0), 0.0) );
+		assert( sig::equal(std::accumulate(read_num->begin(), read_num->end(), 0.0), test) );
 	}
 	if (read_mat){
-		auto rmat = *read_mat;
+		const auto rmat = *read_mat;
 		for(int i=0; i<rmat.size(); ++i){
 			sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, rmat[i], mat[i]);
 		}
@@ -184,12 +185,12 @@ void FileSaveLoadTest()
 	std::vector<int> read_num1;
 	std::set<double> read_num2;
 
-	sig::ReadLine(read1, fpass1);
-	sig::ReadLine(read2, fpass2);
-	sig::ReadNum(read_num1, fpass4);
-	sig::ReadNum(read_num2, fpass5, ",");
+	sig::read_line(read1, fpass1);
+	sig::read_line(read2, fpass2);
+	sig::read_num(read_num1, fpass4);
+	sig::read_num(read_num2, fpass5, ",");
 	
-	auto test1 = sig::merge(TVecw{L"test write 0"}, blghost_text1);
+	const auto test1 = sig::merge(TVecw{L"test write 0"}, blghost_text1);
 	sig::zipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, read1, test1);
 
 	sig::zipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, read2, TVecw{ L"test write 壱", L"test write 弐" });

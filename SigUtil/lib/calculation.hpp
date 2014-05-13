@@ -13,65 +13,65 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
-	// “ñ€‰‰Z (scalar and scalar)
-	template <class OP, class T1, class T2>
-	auto binary_operation(OP func, T1 v1, T2 v2) ->decltype(v1 + v2)
-	{
-		return func(v1, v2);
-	}
+// “ñ€‰‰Z (scalar and scalar)
+template <class OP, class T1, class T2>
+auto binary_operation(OP func, T1 v1, T2 v2) ->decltype(v1 + v2)
+{
+	return func(v1, v2);
+}
 
-	// “ñ€‰‰Z (element-wise: container and container)
-	template <class OP, class C1, class C2>
-	auto binary_operation(OP func, C1 const& c1, C2 const& c2)
-		->typename container_traits<C1>::template rebind<decltype(eval(
-		func,
-		std::declval<typename container_traits<C1>::value_type>(),
-		std::declval<typename container_traits<C2>::value_type>()
-		))>
-	{
-		using T1 = typename container_traits<C1>::value_type;
-		using T2 = typename container_traits<C2>::value_type;
-		return zipWith([&](ParamType<T1> v1, ParamType<T2> v2){ return func(v1, v2); }, c1, c2);
-	}
+// “ñ€‰‰Z (element-wise: container and container)
+template <class OP, class C1, class C2>
+auto binary_operation(OP func, C1 const& c1, C2 const& c2)
+	->typename container_traits<C1>::template rebind<decltype(eval(
+	func,
+	std::declval<typename container_traits<C1>::value_type>(),
+	std::declval<typename container_traits<C2>::value_type>()
+	))>
+{
+	using T1 = typename container_traits<C1>::value_type;
+	using T2 = typename container_traits<C2>::value_type;
+	return zipWith([&](ParamType<T1> v1, ParamType<T2> v2){ return func(v1, v2); }, c1, c2);
+}
 
-	// “ñ€‰‰Z (element-wise: container and scalar)
-	template <class OP, class C, class T, class = typename container_traits<C>::value_type>
-	auto binary_operation(OP func, C const& c, T v)
-		->typename container_traits<C>::template rebind<decltype(eval(
-		func,
-		std::declval<typename container_traits<C>::value_type>(),
-		v
-		))>
-	{
-		using CT = typename container_traits<C>::value_type;
-		using RT = decltype(eval(func, std::declval<typename container_traits<C>::value_type>(), v));
-		using R = typename container_traits<C>::template rebind<RT>;
+// “ñ€‰‰Z (element-wise: container and scalar)
+template <class OP, class C, class T, class = typename container_traits<C>::value_type>
+auto binary_operation(OP func, C const& c, T v)
+	->typename container_traits<C>::template rebind<decltype(eval(
+	func,
+	std::declval<typename container_traits<C>::value_type>(),
+	v
+	))>
+{
+	using CT = typename container_traits<C>::value_type;
+	using RT = decltype(eval(func, std::declval<typename container_traits<C>::value_type>(), v));
+	using R = typename container_traits<C>::template rebind<RT>;
 
-		R r;
-		for (ParamType<CT> vc : c) container_traits<R>::add_element(r, func(vc, v));
-		return r;
-	}
+	R r;
+	for (ParamType<CT> vc : c) container_traits<R>::add_element(r, func(vc, v));
+	return r;
+}
 
-	// “ñ€‰‰Z (element-wise: scalar and container)
-	template <class OP, class T, class C, class = typename container_traits<C>::value_type>
-	auto binary_operation(OP func, T v, C const& c)
-		->typename container_traits<C>::template rebind<decltype(eval(
-		func,
-		std::declval<typename container_traits<C>::value_type>(),
-		v
-		))>
-	{
-		using CT = typename container_traits<C>::value_type;
-		using RT = decltype(eval(func, std::declval<typename container_traits<C>::value_type>(), v));
-		using R = typename container_traits<C>::template rebind<RT>;
+// “ñ€‰‰Z (element-wise: scalar and container)
+template <class OP, class T, class C, class = typename container_traits<C>::value_type>
+auto binary_operation(OP func, T v, C const& c)
+	->typename container_traits<C>::template rebind<decltype(eval(
+	func,
+	std::declval<typename container_traits<C>::value_type>(),
+	v
+	))>
+{
+	using CT = typename container_traits<C>::value_type;
+	using RT = decltype(eval(func, std::declval<typename container_traits<C>::value_type>(), v));
+	using R = typename container_traits<C>::template rebind<RT>;
 
-		R r;
-		for (ParamType<CT> vc : c) container_traits<R>::add_element(r, func(v, vc));
-		return r;
-	}
+	R r;
+	for (ParamType<CT> vc : c) container_traits<R>::add_element(r, func(v, vc));
+	return r;
+}
 
 
-	/* ‰ÁŒ¸æœ‚Ì‰‰Z‚ğˆê”Ê“I‚É‹Lq‚·‚é‚½‚ß‚ÌŠÖ”ŒQ */
+/* ‰ÁŒ¸æœ‚Ì‰‰Z‚ğˆê”Ê“I‚É‹Lq‚·‚é‚½‚ß‚ÌŠÖ”ŒQ */
 
 #define SIG_MakeBinaryOperation(FunctionName, Operator)\
 	template <class T1, class T2>\
@@ -102,13 +102,14 @@ namespace sig
 		return binary_operation([](T v1, CT v2){ return v1 Operator v2; }, v, c); \
 	}\
 
-	SIG_MakeBinaryOperation(plus, +);
+SIG_MakeBinaryOperation(plus, +);
 
-	SIG_MakeBinaryOperation(minus, -);
+SIG_MakeBinaryOperation(minus, -);
 
-	SIG_MakeBinaryOperation(multiplies, *);
+SIG_MakeBinaryOperation(multiplies, *);
 
-	SIG_MakeBinaryOperation(divides, / );
+SIG_MakeBinaryOperation(divides, / );
 
 }
+
 #endif
