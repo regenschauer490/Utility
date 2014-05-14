@@ -60,7 +60,7 @@ private:
 
 	void range_check_(size_type index){
 		if (index >= tail_){
-			throw out_of_range("invalid sig::array<T, N> subscript");
+			throw std::out_of_range("invalid sig::array<T, N> subscript");
 		}
 	}
 

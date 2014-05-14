@@ -15,7 +15,7 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
-	//n引数高階関数
+	// n引数高階関数
 	template <class F, class C1, class... Cs>
 	auto variadicZipWith(F const& func, C1 const& container1, Cs const&... containers)
 	{
@@ -32,8 +32,8 @@ namespace sig
 		return result;
 	}
 
-	//(a -> b) -> [a] -> [b]
-	//1引数高階関数
+	// (a -> b) -> [a] -> [b]
+	// 1引数高階関数
 	template <class F, class C>
 	auto map(F const& func, C const& container)
 	{
@@ -41,8 +41,8 @@ namespace sig
 	}
 
 
-	//(a -> b -> c) -> [a] -> [b] -> [c]
-	//2引数高階関数
+	// (a -> b -> c) -> [a] -> [b] -> [c]
+	// 2引数高階関数
 	template <class F, class C1, class C2>
 	auto zipWith(F const& func, C1 const& container1, C2 const& container2)
 	{
@@ -67,8 +67,8 @@ namespace sig
 	}
 
 
-	//[a] -> [b] -> ... -> [(a, b, ...)]
-	//複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
+	// [a] -> [b] -> ... -> [(a, b, ...)]
+	// 複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
 	template <class... Cs
 #ifndef SIG_MSVC_LT1800
 		, typename std::enable_if< and(container_traits<Cs>::exist...) >::type*& = enabler
@@ -84,7 +84,7 @@ namespace sig
 
 #ifndef SIG_MSVC_LT1800
 
-	//for rvalue reference
+	// for rvalue reference
 	template <class C1, class... Cs,
 		typename std::enable_if<!std::is_lvalue_reference<C1>::value && !and(std::is_lvalue_reference<Cs>::value...)>::type*& = enabler,
 		typename std::enable_if< and(container_traits<Cs>::exist...) >::type*& = enabler
@@ -116,8 +116,8 @@ namespace sig
 		return zip(std::get<I>(std::forward<TC>(t_containers))...);
 	}
 
-	//([a], [b], ...) -> [(a, b, ...)]
-	//コンテナのタプルから、タプルのコンテナを作る
+	// ([a], [b], ...) -> [(a, b, ...)]
+	// コンテナのタプルから、タプルのコンテナを作る
 	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>
 	auto zip(std::tuple<Cs...> const& t_containers)
 	{
@@ -132,8 +132,8 @@ namespace sig
 #endif
 #endif
 
-	//[(a, b, ...)] -> [a0]
-	//タプルのコンテナから、指定したコンテナを取り出す
+	// [(a, b, ...)] -> [a0]
+	// タプルのコンテナから、指定したコンテナを取り出す
 	template <size_t Index, class CT>
 	auto unzip(CT const& c_tuple)
 	{
@@ -182,8 +182,8 @@ namespace sig
 		return std::tuple_cat(std::make_tuple(unzip<I>(std::forward<CT>(c_tuple))), UnzipImpl_<CT, I + 1>(std::forward<CT>(c_tuple)));
 	}
 
-	//[(a, b, ...)] -> ([a], [b], ...)
-	//タプルのコンテナから、コンテナのタプルを作る
+	// [(a, b, ...)] -> ([a], [b], ...)
+	// タプルのコンテナから、コンテナのタプルを作る
 	template <class CT>
 	auto unzip(CT const& c_tuple)
 	{
@@ -196,8 +196,8 @@ namespace sig
 		return UnzipImpl_(std::forward<CT>(c_tuple));
 	}
 
-	//uint -> a -> [a]
-	//値を複製したコンテナを返す
+	// uint -> a -> [a]
+	// 値を複製したコンテナを返す
 	template <class T, class C = std::vector<T>>
 	C replicate(uint n, T const& value)
 	{
@@ -214,8 +214,8 @@ namespace sig
 		return result;
 	}
 
-	//[a] -> [a]
-	//コンテナの要素を逆転させたコンテナを返す
+	// [a] -> [a]
+	// コンテナの要素を逆転させたコンテナを返す
 	template <class C>
 	C reverse(C const& container)
 	{
@@ -224,8 +224,8 @@ namespace sig
 		return result;
 	}
 
-	//[a] -> [a] -> [a]
-	//コンテナの結合
+	// [a] -> [a] -> [a]
+	// コンテナの結合
 	template <class C>
 	C merge(C const& container1, C const& container2)
 	{
@@ -234,8 +234,8 @@ namespace sig
 		return result;
 	}
 
-	//[a] -> [b] -> [c]
-	//コンテナの結合
+	// [a] -> [b] -> [c]
+	// コンテナの結合
 	template <class C, class C1, class C2>
 	C merge(C1 const& container1, C2 const& container2)
 	{
@@ -245,8 +245,8 @@ namespace sig
 		return result;
 	}
 
-	//uint -> [a] -> [a]
-	//コンテナの先頭からn個を取り出したコンテナを返す (順序の無いコンテナでは実装依存)
+	// uint -> [a] -> [a]
+	// コンテナの先頭からn個を取り出したコンテナを返す (順序の無いコンテナでは実装依存)
 	template <class C>
 	C take(uint n, C const& container)
 	{
@@ -256,8 +256,8 @@ namespace sig
 		return result;
 	}
 
-	//uint -> [a] -> [a]
-	//コンテナの先頭からn個を削除したコンテナを返す (順序の無いコンテナでは実装依存)
+	// uint -> [a] -> [a]
+	// コンテナの先頭からn個を削除したコンテナを返す (順序の無いコンテナでは実装依存)
 	template <class C>
 	C drop(uint n, C const& container)
 	{

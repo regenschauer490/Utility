@@ -27,6 +27,8 @@ int main()
 {
 	setlocale(LC_ALL, "Japanese");
 
+	StrConvertPerformanceTest();
+
 	//helper.hpp test
 	TestHelperModules();
 

@@ -114,7 +114,7 @@ template <class... Cs>
 void shuffle(Cs&... containers)
 {
 	uint size = min(containers.size()...);
-	auto rseq = RandomUniqueNumbers(size, 0, size - 1, false);
+	auto rseq = random_unique_numbers(size, 0, size - 1, false);
 		
 	impl::shuffle_impl(size, rseq, std::begin(containers)...);
 }
