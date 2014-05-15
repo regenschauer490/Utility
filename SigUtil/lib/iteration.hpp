@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 Copyright(c) 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
@@ -11,15 +11,15 @@ http://opensource.org/licenses/mit-license.php
 #include "helper.hpp"
 #include "container_helper.hpp"
 
-/* ‚©‚ä‚¢‚Æ‚±‚ë‚Éè‚ª“Í‚­”½•œˆ—ŠÖ” */
+/* ã‹ã‚†ã„ã¨ã“ã‚ã«æ‰‹ãŒå±Šãåå¾©å‡¦ç†é–¢æ•° */
 
 namespace sig
 {
 #undef max
 #undef min
 
-	// •¡”ƒRƒ“ƒeƒi‚ğ”½•œˆ— (æ“ª‚©‚ç‡”ÔAƒCƒ“ƒfƒbƒNƒX‚Í‹¤’Ê)
-	// ˆø”‚Å“n‚·ŠÖ”ƒIƒuƒWƒFƒNƒg(‚âƒ‰ƒ€ƒ_)‚Ìˆø”‚ğQÆ(&)‚É‚·‚é‚±‚Æ‚Å•ÏX‘€ì‚à‰Â”\
+	// è¤‡æ•°ã‚³ãƒ³ãƒ†ãƒŠã‚’åå¾©å‡¦ç† (å…ˆé ­ã‹ã‚‰é †ç•ªã€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯å…±é€š)
+	// å¼•æ•°ã§æ¸¡ã™é–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ(ã‚„ãƒ©ãƒ ãƒ€)ã®å¼•æ•°ã‚’å‚ç…§(&)ã«ã™ã‚‹ã“ã¨ã§å¤‰æ›´æ“ä½œã‚‚å¯èƒ½
 	template <class F, class... Cs>
 	auto for_each(F const& func, Cs&... containers)
 	{
@@ -27,9 +27,9 @@ namespace sig
 		iterative_assign(length, func, std::begin(containers)...);
 	}
 	
-	// •¡”ƒRƒ“ƒeƒi‚ğ”½•œˆ— (æ“ª‚©‚ç‡”ÔAƒCƒ“ƒfƒbƒNƒX‚Í‹¤’Ê)
-	// 1”½•œ–ˆ‚É1‚¸‚ÂƒCƒ“ƒNƒŠƒƒ“ƒg‚³‚ê‚é•Ï”‚à‚ ‚é (init‚Í‚»‚Ì‰Šú’l)
-	// ˆø”‚Å“n‚·ŠÖ”ƒIƒuƒWƒFƒNƒg(‚âƒ‰ƒ€ƒ_)‚Ìˆø”‚ğQÆ(&)‚É‚·‚é‚±‚Æ‚Å•ÏX‘€ì‚à‰Â”\
+	// è¤‡æ•°ã‚³ãƒ³ãƒ†ãƒŠã‚’åå¾©å‡¦ç† (å…ˆé ­ã‹ã‚‰é †ç•ªã€ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯å…±é€š)
+	// 1åå¾©æ¯ã«1ãšã¤ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã•ã‚Œã‚‹å¤‰æ•°ã‚‚ã‚ã‚‹ (initã¯ãã®åˆæœŸå€¤)
+	// å¼•æ•°ã§æ¸¡ã™é–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ(ã‚„ãƒ©ãƒ ãƒ€)ã®å¼•æ•°ã‚’å‚ç…§(&)ã«ã™ã‚‹ã“ã¨ã§å¤‰æ›´æ“ä½œã‚‚å¯èƒ½
 	template <class F, class... Cs>
 	auto for_each(F const& func, int init, Cs&... containers)
 	{
@@ -38,7 +38,7 @@ namespace sig
 	}
 
 
-	// ƒRƒ“ƒeƒi‚Ö‚Ì‘ã“ü‰‰Z (element-wise: container and container)
+	// ã‚³ãƒ³ãƒ†ãƒŠã¸ã®ä»£å…¥æ¼”ç®— (element-wise: container and container)
 	template <class C1, class C2, typename std::enable_if<container_traits<C1>::exist && container_traits<C2>::exist>::type*& = enabler>
 	void compound_assignment(
 		std::function<void(typename container_traits<C1>::value_type&, ParamType<typename container_traits<C2>::value_type>)> const& assign_op,
@@ -48,7 +48,7 @@ namespace sig
 		for_each(assign_op, dest, src);
 	}
 
-	// ƒRƒ“ƒeƒi‚Ö‚Ì‘ã“ü‰‰Z (element-wise: container and scalar)
+	// ã‚³ãƒ³ãƒ†ãƒŠã¸ã®ä»£å…¥æ¼”ç®— (element-wise: container and scalar)
 	template <class C, class T, typename std::enable_if<container_traits<C>::exist && !container_traits<T>::exist>::type*& = enabler>
 	void compound_assignment(
 		std::function<void(typename container_traits<C>::value_type&, ParamType<T>)> const& assign_op,

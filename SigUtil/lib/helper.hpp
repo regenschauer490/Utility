@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 Copyright(c) 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
@@ -11,16 +11,16 @@ http://opensource.org/licenses/mit-license.php
 #include "sigutil.hpp"
 #include <sstream> 
 
-/* •â•ƒ‚ƒWƒ…[ƒ‹ */
+/* è£œåŠ©ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« */
 
 namespace sig
 {
 #undef max
 #undef min
 
-/* ƒRƒ“ƒpƒCƒ‹—p */
+/* ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«æ™‚ç”¨ */
 
-// ‰Â•Ï’· and
+// å¯å¤‰é•· and
 template <class B>
 constexpr B and(B cond){
 	return cond;
@@ -30,7 +30,7 @@ constexpr Bf and(Bf cond, Be... conds){
 	return cond && and(conds...);
 }
 
-// ‰Â•Ï’· or
+// å¯å¤‰é•· or
 template <class B>
 constexpr B or(B cond){
 	return cond;
@@ -40,7 +40,7 @@ constexpr Bf or(Bf cond, Be... conds){
 	return cond || or(conds...);
 }
 
-// ‰Â•Ï’· min
+// å¯å¤‰é•· min
 template <class T>
 auto min(T v)
 {
@@ -57,7 +57,7 @@ auto min(T v1, Ts... vs)
 	return std::min(v1, min(vs...));
 }
 
-// ‰Â•Ï’· max
+// å¯å¤‰é•· max
 template <class T>
 auto max(T v)
 {
@@ -83,25 +83,25 @@ template <class T1, class T2>
 constexpr bool less(T1 v1, T2 v2){ return v1 < v2 ? true : false; };
 
 
-/* Às—p */
+/* å®Ÿè¡Œæ™‚ç”¨ */
 
 // xor
 template <class B1, class B2>
 inline bool xor(B1 a, B2 b){ return (a && !b) || (!a && b); }
 
-// A‚ÆB‚Ì^‹Uˆê’v‚Åtrue‚ğ•Ô‚· (Ì !xor)
+// Aã¨Bã®çœŸå½ä¸€è‡´ã§trueã‚’è¿”ã™ (â‡” !xor)
 template <class B1, class B2>
 inline bool consistency(B1 a, B2 b){ return (a && b) || (!a && !b); }
 
 
-//2•Ï”‚Ì·‚Ìâ‘Î’l‚ğ•Ô‚·
+//2å¤‰æ•°ã®å·®ã®çµ¶å¯¾å€¤ã‚’è¿”ã™
 template <class T1, class T2>
 auto abs_delta(T1 v1, T2 v2) ->typename std::common_type<T1, T2>::type
 {
 	return v1 < v2 ? v2 - v1 : v1 - v2;
 }
 
-//•‚“®¬”“_Œ^‚É‚àg‚¦‚é“™’l”äŠr
+//æµ®å‹•å°æ•°ç‚¹å‹ã«ã‚‚ä½¿ãˆã‚‹ç­‰å€¤æ¯”è¼ƒ
 template <class T1, class T2>
 bool equal(T1 v1, T2 v2)
 {
@@ -110,14 +110,14 @@ bool equal(T1 v1, T2 v2)
 	return !(abs_delta(v1, v2) > dmin);
 }
 
-//w’è”ÍˆÍ“à‚ÌŒë·‚ğ‹–‚µ‚½“™’l”äŠr
+//æŒ‡å®šç¯„å›²å†…ã®èª¤å·®ã‚’è¨±ã—ãŸç­‰å€¤æ¯”è¼ƒ
 template <class T1, class T2>
 bool equal_tolerant(T1 v1, T2 v2, typename std::common_type<T1, T2>::type margin)
 {
 	return margin ? !(abs_delta(v1, v2) > margin) : equal(v1, v2);
 }
 
-//”ÍˆÍƒ`ƒFƒbƒN (min … val … max)
+//ç¯„å›²ãƒã‚§ãƒƒã‚¯ (min â‰¦ val â‰¦ max)
 template <class T, class U>
 inline bool check_range(T const& val, U const& min, U const& max)
 {
@@ -126,7 +126,7 @@ inline bool check_range(T const& val, U const& min, U const& max)
 	return true;
 }
 
-//”ÍˆÍ©“®C³ (min … val … max)
+//ç¯„å›²è‡ªå‹•ä¿®æ­£ (min â‰¦ val â‰¦ max)
 template <class T, class U>
 inline bool modify_range(T& val, U const& min, U const& max)
 {
@@ -135,7 +135,7 @@ inline bool modify_range(T& val, U const& min, U const& max)
 	return true;
 }
 
-//•Ê‚ÌƒRƒ“ƒeƒi‚É—v‘f‚ğƒRƒs[‚·‚é—p
+//åˆ¥ã®ã‚³ãƒ³ãƒ†ãƒŠã«è¦ç´ ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ç”¨
 template <class RC, class C>
 auto copy(C const& src) ->RC
 {

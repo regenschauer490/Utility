@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 Copyright(c) 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
@@ -13,10 +13,10 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
-// Å‘å—e—Ê‚ªŒÅ’è‚ÌÃ“I”z—ñ
-// std::array‚Ì—˜•Ö«‚ğŠg’£‚µAŒÅ’è’·‚Èstd::vector‚ÌŠ´Šo‚Åg—p‚Å‚«‚é
-// Šî–{“I‚É‰Šú‰»‚É‘S—v‘f‚É’l‚ğ“ü‚ê‚ég‚¢•û‚ğ‘z’è‚µ‚Ä‚¢‚é‚ªA’€Ÿ“I‚É––”ö‚É‘ã“ü‚µ‚Ä‚¢‚­‚±‚Æ‚à‰Â”\
-// ƒƒ“ƒoŠÖ”begin()‚©‚çend()‚Å“¾‚ç‚ê‚é”ÍˆÍ‚ÍAæ“ª‚©‚ç’l‚ª‘ã“ü‚³‚ê‚Ä‚¢‚é––”ö‚Ü‚Å‚Æ‚È‚é([0]`[N-1]‚Ü‚Å‚Å‚Í‚È‚¢)
+// æœ€å¤§å®¹é‡ãŒå›ºå®šã®é™çš„é…åˆ—
+// std::arrayã®åˆ©ä¾¿æ€§ã‚’æ‹¡å¼µã—ã€å›ºå®šé•·ãªstd::vectorã®æ„Ÿè¦šã§ä½¿ç”¨ã§ãã‚‹
+// åŸºæœ¬çš„ã«åˆæœŸåŒ–æ™‚ã«å…¨è¦ç´ ã«å€¤ã‚’å…¥ã‚Œã‚‹ä½¿ã„æ–¹ã‚’æƒ³å®šã—ã¦ã„ã‚‹ãŒã€é€æ¬¡çš„ã«æœ«å°¾ã«ä»£å…¥ã—ã¦ã„ãã“ã¨ã‚‚å¯èƒ½
+// ãƒ¡ãƒ³ãƒé–¢æ•°begin()ã‹ã‚‰end()ã§å¾—ã‚‰ã‚Œã‚‹ç¯„å›²ã¯ã€å…ˆé ­ã‹ã‚‰å€¤ãŒä»£å…¥ã•ã‚Œã¦ã„ã‚‹æœ«å°¾ã¾ã§ã¨ãªã‚‹([0]ï½[N-1]ã¾ã§ã§ã¯ãªã„)
 template <class T, size_t N>
 class array
 {
@@ -42,7 +42,7 @@ public:
 
 private:
 	std::array<T, N> array_;
-	size_type tail_;				// Œ»İg—p‚µ‚Ä‚¢‚é“Yš––”ö
+	size_type tail_;				// ç¾åœ¨ä½¿ç”¨ã—ã¦ã„ã‚‹æ·»å­—æœ«å°¾
 
 private:
 	template <class OP, class C1, class C2>
@@ -64,7 +64,7 @@ private:
 		}
 	}
 
-	// posˆÈ~‚Ì—v‘f‚ğ1‚ÂŒã‚Ö‚¸‚ç‚·
+	// posä»¥é™ã®è¦ç´ ã‚’1ã¤å¾Œã¸ãšã‚‰ã™
 	iterator back_shift_(const_iterator pos){
 		auto pit = rbegin();
 		for (auto it = pit; pit.base() != pos; pit = it++){
@@ -73,7 +73,7 @@ private:
 		return pit.base();
 	}
 
-	// posˆÈ~‚Ì—v‘f‚ğ1‚Â‘O‚Ö‚¸‚ç‚·
+	// posä»¥é™ã®è¦ç´ ã‚’1ã¤å‰ã¸ãšã‚‰ã™
 	iterator front_shift_(iterator pos){
 		iterator pit = pos;
 		for (auto end = this->end(); pos != end; pit = pos++){
@@ -133,7 +133,7 @@ public:
 	reference at(size_type pos){ range_check_(pos); return array_.at(pos); }
 	const_reference at(size_type pos) const{ range_check_(pos); return array_.at(pos); }
 
-	//tail_ ˆÈ~‚Ì“YšƒAƒNƒZƒX‚Í–¢•ÛØ
+	//tail_ ä»¥é™ã®æ·»å­—ã‚¢ã‚¯ã‚»ã‚¹ã¯æœªä¿è¨¼
 	reference operator [](size_type pos){ return array_[pos]; }
 	const_reference operator [](size_type pos) const{ return array_[pos]; }
 
