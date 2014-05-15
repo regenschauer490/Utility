@@ -146,16 +146,16 @@ inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::strin
 	if (mbs_size < 2 || src == L"\0") return std::string();
 	char *mbs = new char[mbs_size];
 
-#if SIG_MSVC_ENV
+#if SIG_MSVC_ENV && SIG_DEBUG_MODE
 	size_t num;
-	int is_error = wcstombs_s(&num, mbs, mbs_size, src.c_str(), src.length() * MB_CUR_MAX + 1);
+	int error = wcstombs_s(&num, mbs, mbs_size, src.c_str(), src.length() * MB_CUR_MAX + 1);
 #else
-	int is_error = wcstombs(mbs, src.c_str(), src.length() * MB_CUR_MAX + 1);
+	int error = wcstombs(mbs, src.c_str(), src.length() * MB_CUR_MAX + 1);
 #endif
 	std::string dest(mbs);
 	delete[] mbs;
 
-	return is_error ? std::string() : dest; //is_error ? Nothing(dest) : Just<std::string>::type(std::move(dest));
+	return error ? std::string() : dest; //error ? Nothing(dest) : Just<std::string>::type(std::move(dest));
 }
 
 // src: 変換対象の文字列が格納されたコンテナ
@@ -182,15 +182,15 @@ inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstri
 	if (wcs_size < 2 || src == "\0") return std::wstring();
 	wchar_t *wcs = new wchar_t[wcs_size];
 
-#if SIG_MSVC_ENV
+#if SIG_MSVC_ENV && SIG_DEBUG_MODE
 	size_t num;
-	int is_error = mbstowcs_s(&num, wcs, wcs_size, src.c_str(), src.length() + 1);
+	int error = mbstowcs_s(&num, wcs, wcs_size, src.c_str(), src.length() + 1);
 #else
-	int is_error = mbstowcs(wcs, src.c_str(), src.length() + 1);
+	int error = mbstowcs(wcs, src.c_str(), src.length() + 1);
 #endif
 	std::wstring dest(wcs);
 	delete[] wcs;
-	return is_error ? std::wstring() : dest; //is_error ? Nothing(dest) : Just<std::wstring>::type(std::move(dest));
+	return error ? std::wstring() : dest; //error ? Nothing(dest) : Just<std::wstring>::type(std::move(dest));
 }
 
 // src: 変換対象の文字列が格納されたコンテナ

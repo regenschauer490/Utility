@@ -9,7 +9,13 @@
 #elif _WIN64
 #define SIG_MSVC_ENV 1
 #else
-#define SIG_MSVC_ENV 0
+#endif
+
+#ifdef SIG_MSVC_ENV
+	#ifdef _DEBUG
+	#define SIG_DEBUG_MODE 1
+	#endif
+#else
 #endif
 
 #include <assert.h>
@@ -99,11 +105,12 @@ namespace sig{
 #if SIG_MSVC_ENV
 	using FilepassString = std::wstring;
 	inline void FileOpenErrorPrint(FilepassString const& pass){ std::wcout << L"file open error: " << pass << std::endl; }
-#if _MSC_VER <= 1800
-#define SIG_MSVC_LT1800
-#else
-	static_assert(false, "require \"Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)\" to compile on msvc");
-#endif
+
+	#if _MSC_VER <= 1800
+	#define SIG_MSVC_LT1800
+	#else
+		static_assert(false, "require \"Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)\" to compile on msvc");
+	#endif
 #else
 	using FilepassString = std::string;
 	inline void FileOpenErrorPrint(FilepassString const& pass){ std::cout << "file open error: " << pass << std::endl; }

@@ -134,7 +134,7 @@ void CatStrTest()
 
 void StrConvertTest()
 {
-/*	const auto sjis = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/shift_jis.txt"));
+	const auto sjis = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/shift_jis.txt"));
 	const auto utf8 = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/utf8.txt"));
 
 	//マルチ文字 <-> ワイド文字 変換
@@ -170,7 +170,7 @@ void StrConvertTest()
 	assert(utf16_from_utf8 == utf16_from_sjis);
 	
 #else
-#endif*/
+#endif
 }
 
 void ZenHanTest()
@@ -218,7 +218,7 @@ void StrConvertPerformanceTest()
 		tw.save();
 	}
 
-	std::cout << tw.get_total_time<std::chrono::milliseconds>() << std::endl;
+	std::cout << "str_to_wstr time: " << tw.get_total_time<std::chrono::milliseconds>() << std::endl;
 
 	/*
 
