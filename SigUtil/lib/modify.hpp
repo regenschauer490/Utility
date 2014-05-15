@@ -113,7 +113,7 @@ void shuffle_impl(uint loop, C const& seq, It iter, Its... iters)
 template <class... Cs>
 void shuffle(Cs&... containers)
 {
-	uint size = min(containers.size()...);
+	uint size = Min(containers.size()...);
 	auto rseq = random_unique_numbers(size, 0, size - 1, false);
 		
 	impl::shuffle_impl(size, rseq, std::begin(containers)...);

@@ -5,21 +5,45 @@ void TestHelperModules()
 {
 	/* コンパイル時 兼 実行時 */
 
-	//可変長and/or
-	static_assert(sig::and(true, true), "");
-	static_assert(!sig::and(false, true), "");
-	static_assert(sig::or(true, false), "");
-	static_assert(!sig::or(false, false), "");
+	//可変長and
+	static_assert(sig::And(true, true), "");
+	static_assert(!sig::And(true, false), "");
+	static_assert(!sig::And(false, true), "");
+	static_assert(!sig::And(false, false), "");
+	static_assert(sig::And(true, true, true, true), "");
+	static_assert(!sig::And(false, true, false, true, false), "");
+
+	//可変長or
+	static_assert(sig::Or(true, true), "");
+	static_assert(sig::Or(true, false), "");
+	static_assert(sig::Or(false, true), "");
+	static_assert(!sig::Or(false, false), "");
+	static_assert(!sig::Or(false, false, false), "");
+#if !SIG_MSVC_ENV
+	static_assert(sig::Or(false, true, false, true, false), "");
+#endif
+
+	//xor
+	static_assert(!sig::Xor(true, true), "");
+	static_assert(sig::Xor(true, false), "");
+	static_assert(sig::Xor(false, true), "");
+	static_assert(!sig::Xor(false, false), "");
+
+	//!xor
+	static_assert(sig::Consistency(true, true), "");
+	static_assert(!sig::Consistency(true, false), "");
+	static_assert(!sig::Consistency(false, true), "");
+	static_assert(sig::Consistency(false, false), "");
 
 	//大小比較
-	static_assert(!sig::greater(0.5, 1), "");
-	static_assert(sig::less(0.5, 1), "");
+	static_assert(!sig::Greater(0.5, 1), "");
+	static_assert(sig::Less(0.5, 1), "");
 
+#if !SIG_MSVC_ENV
 	//最小値/最大値
-	std::vector<int> v{ 1, 2, 3 };
-	assert(sig::min(-1, 0, static_cast<int>(v.size())) == -1);
-	assert(sig::max(-1, 0, static_cast<int>(v.size())) == v.size());
-
+	static_assert(sig::Min(1, -1, 0, 3, 2) == -1, "");
+	static_assert(sig::Max(1, -1, 0, 3, 2) == 3, "");
+#endif
 
 	/* 実行時 */
 
@@ -27,21 +51,46 @@ void TestHelperModules()
 	const sig::Just<int>::type maybe_true(1);
 	const sig::Just<int>::type maybe_false(sig::Nothing(0));
 
-	//xor
-	assert(sig::xor(true, false));
-	assert(sig::xor(false, true));
-	assert(!sig::xor(true, true));
-	assert(!sig::xor(false, false));
-	assert(sig::xor(maybe_true, false));
-	assert(sig::xor(maybe_false, true));
+	assert(sig::And(maybe_true, maybe_true));
+	assert(sig::And(maybe_true, true));
+	assert(!sig::And(maybe_true, maybe_false));
+	assert(!sig::And(maybe_true, false));
+	assert(!sig::And(maybe_false, maybe_true));
+	assert(!sig::And(maybe_false, true));
+	assert(!sig::And(maybe_false, maybe_false));
+	assert(!sig::And(maybe_false, false));
 
-	//!xor
-	assert(!sig::consistency(true, false));
-	assert(!sig::consistency(false, true));
-	assert(sig::consistency(true, true));
-	assert(sig::consistency(false, false));
-	assert(!sig::consistency(maybe_true, false));
-	assert(!sig::consistency(maybe_false, true));
+	assert(sig::Or(maybe_true, maybe_true));
+	assert(sig::Or(maybe_true, true));
+	assert(sig::Or(maybe_true, maybe_false));
+	assert(sig::Or(maybe_true, false));
+	assert(sig::Or(maybe_false, maybe_true));
+	assert(sig::Or(maybe_false, true));
+	assert(!sig::Or(maybe_false, maybe_false));
+	assert(!sig::Or(maybe_false, false));
+
+	assert(!sig::Xor(maybe_true, maybe_true));
+	assert(!sig::Xor(maybe_true, true));
+	assert(sig::Xor(maybe_true, maybe_false));
+	assert(sig::Xor(maybe_true, false));
+	assert(sig::Xor(maybe_false, maybe_true));
+	assert(sig::Xor(maybe_false, true));
+	assert(!sig::Xor(maybe_false, maybe_false));
+	assert(!sig::Xor(maybe_false, false));
+
+	assert(sig::Consistency(maybe_true, maybe_true));
+	assert(sig::Consistency(maybe_true, true));
+	assert(!sig::Consistency(maybe_true, maybe_false));
+	assert(!sig::Consistency(maybe_true, false));
+	assert(!sig::Consistency(maybe_false, maybe_true));
+	assert(!sig::Consistency(maybe_false, true));
+	assert(sig::Consistency(maybe_false, maybe_false));
+	assert(sig::Consistency(maybe_false, false));
+
+	//min,max
+	std::vector<int> v{ 1, 2, 3 };
+	assert(sig::Min(1, -1, 0, v.size(), 2) == -1);
+	assert(sig::Max(1, -1, 0, v.size(), 2) == v.size());
 
 	//generic |a - b|
 	assert(sig::abs_delta(1, 3) == 2);

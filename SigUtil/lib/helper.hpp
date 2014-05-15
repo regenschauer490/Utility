@@ -22,77 +22,82 @@ namespace sig
 
 // 可変長 and
 template <class B>
-constexpr B and(B cond){
+constexpr bool And(B cond){
 	return cond;
 }
-template <class Bf, class... Be>
-constexpr Bf and(Bf cond, Be... conds){
-	return cond && and(conds...);
+template <class B1, class... Bs>
+constexpr bool And(B1 cond, Bs... conds){
+	return cond && And(conds...);
 }
 
 // 可変長 or
 template <class B>
-constexpr B or(B cond){
+constexpr bool Or(B cond){
 	return cond;
 }
-template <class Bf, class... Be>
-constexpr Bf or(Bf cond, Be... conds){
-	return cond || or(conds...);
+template <class B1, class... Bs>
+constexpr bool Or(B1 cond, Bs... conds){
+	return cond || Or(conds...);
+}
+
+// xor
+template <class B1, class B2>
+constexpr bool Xor(B1 a, B2 b){
+	return (a && !b) || (!a && b); 
+}
+
+// AとBの真偽一致でtrueを返す (⇔ !xor)
+template <class B1, class B2>
+constexpr bool Consistency(B1 a, B2 b){
+	return (a && b) || (!a && !b); 
 }
 
 // 可変長 min
 template <class T>
-auto min(T v)
+#if !SIG_MSVC_ENV
+constexpr
+#endif
+auto Min(T v)
 {
 	return v;
 }
-template <class T1, class T2>
-auto min(T1 v1, T2 v2)
-{
-	return std::min(v1, v2);
-}
 template <class T, class... Ts>
-auto min(T v1, Ts... vs)
+#if !SIG_MSVC_ENV
+constexpr
+#endif
+auto Min(T v1, Ts... vs)
 {
-	return std::min(v1, min(vs...));
+	return std::min(v1, Min(vs...));
 }
 
 // 可変長 max
 template <class T>
-auto max(T v)
+#if !SIG_MSVC_ENV
+constexpr 
+#endif
+auto Max(T v)
 {
 	return v;
 }
-template <class T1, class T2>
-auto max(T1 v1, T2 v2)
-{
-	return std::max(v1, v2);
-}
 template <class T, class... Ts>
-auto max(T v1, Ts... vs)
+#if !SIG_MSVC_ENV
+constexpr
+#endif
+auto Max(T v1, Ts... vs)
 {
-	return std::max(v1, max(vs...));
+	return std::max(v1, Max(vs...));
 }
 
 // V1 > V2 -> true
 template <class T1, class T2>
-constexpr bool greater(T1 v1, T2 v2){ return v1 > v2 ? true : false; };
+constexpr bool Greater(T1 v1, T2 v2){ return v1 > v2 ? true : false; };
 
 // V1 < V2 -> true
 template <class T1, class T2>
-constexpr bool less(T1 v1, T2 v2){ return v1 < v2 ? true : false; };
+constexpr bool Less(T1 v1, T2 v2){ return v1 < v2 ? true : false; };
 
 
 /* 実行時用 */
-
-// xor
-template <class B1, class B2>
-inline bool xor(B1 a, B2 b){ return (a && !b) || (!a && b); }
-
-// AとBの真偽一致でtrueを返す (⇔ !xor)
-template <class B1, class B2>
-inline bool consistency(B1 a, B2 b){ return (a && b) || (!a && !b); }
-
 
 //2変数の差の絶対値を返す
 template <class T1, class T2>

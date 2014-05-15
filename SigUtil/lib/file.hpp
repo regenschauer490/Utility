@@ -82,7 +82,7 @@ inline auto get_file_names(
 	}
 	else{
 		do{
-			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && consistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
+			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && Consistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
 			{
 				result.push_back(std::wstring(fd.cFileName));
 			}
@@ -140,7 +140,7 @@ inline auto get_folder_names(
 	}
 	else{
 		do{
-			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && consistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
+			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && Consistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
 			{
 				auto tmp = std::wstring(fd.cFileName);
 				if(tmp != L"." && tmp != L"..") result.push_back(tmp);

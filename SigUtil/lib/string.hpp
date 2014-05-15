@@ -323,7 +323,7 @@ template <class String>
 template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 String TagDealer<String>::encode(Container<String> const& src, Container<String> const& tag) const
 {
-	auto size = min(src.size(), tag.size());
+	auto size = Min(src.size(), tag.size());
 	auto calc = zipWith([&](typename Container<String>::value_type s, typename Container<String>::value_type t){ return encode(s, t); }, src, tag);
 	return std::accumulate(calc.begin(), calc.end(), String(""));
 }

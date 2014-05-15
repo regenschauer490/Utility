@@ -56,14 +56,14 @@ void ZipWithTest()
 
 	//forループで処理して検証
 	auto d3it = data3.begin();
-	for (int i = 0, size = sig::min(data1.size(), data2.size(), data3.size()); i < size; ++i, ++d3it){
+	for (int i = 0, size = sig::Min(data1.size(), data2.size(), data3.size()); i < size; ++i, ++d3it){
 		assert( sig::equal(h123[i], *d3it ? data1[i] * data2[i] : 0) );
 	}
 
 	d3it = data3.begin();
 	auto d4it = data4.begin();
 	auto d5it = data5.begin();
-	for (int i = 0, size = sig::min(data1.size(), data2.size(), data3.size(), data4.size(), data5.size()); i < size; ++i, ++d3it, ++d4it, ++d5it){
+	for (int i = 0, size = sig::Min(data1.size(), data2.size(), data3.size(), data4.size(), data5.size()); i < size; ++i, ++d3it, ++d4it, ++d5it){
 		assert( h12345[i] == (*d3it ? *d5it + std::to_string(data1[i]) : std::to_string(*d4it * data2[i])) );
 	}
 }

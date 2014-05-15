@@ -26,7 +26,7 @@ namespace sig
 		))>;
 
 		OutputType result;
-		const uint length = min(container1.size(), containers.size()...);
+		const uint length = Min(container1.size(), containers.size()...);
 		iterative_make(length, result, func, std::begin(container1), std::begin(containers)...);
 
 		return result;
@@ -95,7 +95,7 @@ namespace sig
 			std::tuple<typename container_traits<C1>::value_type, typename container_traits<Cs>::value_type...>
 		>;
 
-		const uint length = min(container1.size(), containers.size()...);
+		const uint length = Min(container1.size(), containers.size()...);
 		OutputType result;
 		iterative_make(length, result, [](typename container_traits<C1>::value_type&& v1, typename container_traits<Cs>::value_type&&... vs){
 			return std::make_tuple(std::move(v1), std::move(vs)...);
