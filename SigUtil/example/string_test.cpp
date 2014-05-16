@@ -205,11 +205,11 @@ void ZenHanTest()
 
 void StrConvertPerformanceTest()
 {
-	const int N = 10000;
+	const int N = 1000;
 	const auto str = "test string";
 
 	sig::TimeWatch tw;
-	for (int loop=0; loop<100; ++loop){
+	for (int loop=0; loop<10; ++loop){
 		sig::array<std::wstring, N> ar;
 
 		for (int i=0; i<N; ++i){

@@ -51,6 +51,7 @@ void TestHelperModules()
 	const sig::Just<int>::type maybe_true(1);
 	const sig::Just<int>::type maybe_false(sig::Nothing(0));
 
+#if !SIG_MSVC_ENV
 	assert(sig::And(maybe_true, maybe_true));
 	assert(sig::And(maybe_true, true));
 	assert(!sig::And(maybe_true, maybe_false));
@@ -86,11 +87,12 @@ void TestHelperModules()
 	assert(!sig::Consistency(maybe_false, true));
 	assert(sig::Consistency(maybe_false, maybe_false));
 	assert(sig::Consistency(maybe_false, false));
+#endif
 
 	//min,max
 	std::vector<int> v{ 1, 2, 3 };
-	assert(sig::Min(1, -1, 0, v.size(), 2) == -1);
-	assert(sig::Max(1, -1, 0, v.size(), 2) == v.size());
+	assert(sig::Min(1, -1, 0, (int)v.size(), 2) == -1);
+	assert(sig::Max(1, -1, 0, (int)v.size(), 2) == v.size());
 
 	//generic |a - b|
 	assert(sig::abs_delta(1, 3) == 2);

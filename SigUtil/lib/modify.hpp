@@ -18,7 +18,7 @@ http://opensource.org/licenses/mit-license.php
 namespace sig
 {
 
-#ifndef SIG_MSVC_LT1800
+#if SIG_MSVC_LT1800
 
 // 標準ソート関数のラッパ (シーケンスコンテナのみ対応)
 // container: ソートするコンテナ

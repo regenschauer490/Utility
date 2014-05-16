@@ -11,7 +11,7 @@ void ArithmeticOperationsTest()
 
 	// スカラー + スカラー
 	assert(sig::plus(1, 1.0) == 2.0);
-/*	
+
 	// ベクトル + スカラー
 	sig::zipWith(
 		sig::DebugEqual(),
@@ -108,5 +108,5 @@ void ArithmeticOperationsTest()
 		sig::divides(data2, data0),
 		sig::zipWith(std::divides<double>(), data2, data0)
 	);
-*/
+
 }

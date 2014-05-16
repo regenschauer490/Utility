@@ -71,7 +71,7 @@ namespace sig
 	// [a] -> [b] -> ... -> [(a, b, ...)]
 	// 複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
 	template <class... Cs
-#ifndef SIG_MSVC_LT1800
+#if SIG_MSVC_LT1800
 		, typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
 #endif
 		>
@@ -83,7 +83,7 @@ namespace sig
 	}
 
 
-#ifndef SIG_MSVC_LT1800
+#if SIG_MSVC_LT1800
 
 	// for rvalue reference
 	template <class C1, class... Cs,
@@ -270,7 +270,7 @@ namespace sig
 		return result;
 	}
 
-#ifndef SIG_MSVC_LT1800
+#if SIG_MSVC_LT1800
 	//(a -> a -> bool) -> [a] -> [a]
 	//比較関数を指定してソート
 	template <class F, class C, typename std::enable_if<has_random_iterator<C>::value, void>::type*& = enabler>

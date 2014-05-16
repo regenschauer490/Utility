@@ -99,7 +99,7 @@ void FunctionalTest()
 	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, d2, std::vector<int>{ 5, 2 });
 	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, d3, std::vector<int>{ 2, 5, 10 });
 
-#ifndef SIG_MSVC_LT1800
+#if SIG_MSVC_LT1800
 	//sort
 	auto sorted1 = sig::sort(std::less<int>(), data1);
 	auto sorted2 = sig::sort([](int l, int r){ return std::abs(l) < std::abs(r); }, data2);
@@ -109,7 +109,7 @@ void FunctionalTest()
 #endif
 
 	//zip, unzip test (move and const& ver)
-#ifndef SIG_MSVC_LT1800
+#if SIG_MSVC_LT1800
 	//move ver (run only sequence container)
 	auto mdata1 = data1;
 	auto mdata2 = data2;
@@ -138,7 +138,7 @@ void FunctionalTest()
 
 	auto cunzipped = sig::unzip(czipped);		//std::tuple< std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>
 
-#ifndef SIG_MSVC_LT1800
+#if !SIG_MSVC_LT1800
 #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
 	auto crezipped = sig::zip(cunzipped);		//std::vector< std::tuple<int, int, int, int>>
 #endif

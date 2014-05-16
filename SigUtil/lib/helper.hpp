@@ -85,7 +85,8 @@ constexpr
 #endif
 auto Max(T v1, Ts... vs)
 {
-	return std::max(v1, Max(vs...));
+	using R = typename std::common_type<T, Ts...>::type;
+	return std::max(static_cast<R>(v1), static_cast<R>(Max(vs...)));
 }
 
 // V1 > V2 -> true

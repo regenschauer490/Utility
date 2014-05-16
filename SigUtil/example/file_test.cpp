@@ -1,7 +1,7 @@
 ﻿#include "file_test.h"
 #include "../lib/string.hpp"
 #include "../lib/functional.hpp"
-#include "debug.hpp
+#include "debug.hpp"
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 //処理方法の優先順位は SIG_MSVC_ENV(windows.h使用) > SIG_ENABLE_BOOOST(boost::filesystem使用)
@@ -164,10 +164,10 @@ void FileSaveLoadTest()
 
 	if (read1){
 		const auto test1 = sig::merge(TVecw{ L"test write 0" }, blghost_text1);
-		sig::zipWith([&](std::string s1, std::wstring s2){ assert(sig::STRtoWSTR(s1) == s2); return 0; }, *read1, test1);
+		sig::zipWith([&](std::string s1, std::wstring s2){ assert(sig::str_to_wstr(s1) == s2); return 0; }, *read1, test1);
 	}
 	if (read2){
-		sig::zipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, *read2, TVecw{ L"test write 壱", L"test write 弐" });
+		sig::zipWith(sig::DebugEqual(), *read2, TVecw{ L"test write 壱", L"test write 弐" });
 	}
 	if (read_num){
 		const auto test = std::accumulate(list_num.begin(), list_num.end(), 0.0) + std::accumulate(uset_num.begin(), uset_num.end(), 0.0);
@@ -175,29 +175,31 @@ void FileSaveLoadTest()
 		assert( sig::equal(std::accumulate(read_num->begin(), read_num->end(), 0.0), test) );
 	}
 	if (read_mat){
-		const auto rmat = *read_mat;
-		for(int i=0; i<rmat.size(); ++i){
-			sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, rmat[i], mat[i]);
+		for(int i=0; i<read_mat->size(); ++i){
+			sig::zipWith(sig::DebugEqual(), (*read_mat)[i], mat[i]);
 		}
 	}
-#else
-	std::vector<std::string> read1;
-	std::list<std::wstring> read2;
-	std::set<double> read_num;
-	std::vector<int> read_mat;
+#endif
+	std::vector<std::string> read3;
+	std::list<std::wstring> read4;
+	std::set<double> read_num2;
+	std::vector<std::vector<int>> read_mat2;
 
-	sig::read_line(read1, fpass1);
-	sig::read_line(read2, fpass2);
-	sig::read_num(read_num, fpass4);
-	sig::read_num(read_mat, fpass5, ",");
+	sig::read_line(read3, fpass1);
+	sig::read_line(read4, fpass2);
+	sig::read_num(read_num2, fpass4);
+	sig::read_num(read_mat2, fpass5, ",");
 	
 	const auto test1 = sig::merge(TVecw{L"test write 0"}, blghost_text1);
-	sig::zipWith([&](std::string s1, std::wstring s2){ assert(sig::str_to_wstr(s1) == s2); return 0; }, read1, test1);
+	sig::zipWith([&](std::string s1, std::wstring s2){ assert(sig::str_to_wstr(s1) == s2); return 0; }, read3, test1);
 
-	sig::zipWith([](std::wstring s1, std::wstring s2){ assert(s1 == s2); return 0; }, read2, TVecw{ L"test write 壱", L"test write 弐" });
+	sig::zipWith(sig::DebugEqual(), read4, TVecw{ L"test write 壱", L"test write 弐" });
 
-	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, read_num1, set_num);
+	const auto test2 = std::accumulate(list_num.begin(), list_num.end(), 0.0) + std::accumulate(uset_num.begin(), uset_num.end(), 0.0);
+	//保存前がunorderedで順不同となるので、読み取り後のdouble値の合計と一致するかで判断
+	assert(sig::equal(std::accumulate(read_num2.begin(), read_num2.end(), 0.0), test2));
 	
-	assert(std::accumulate(uset_num.begin(), uset_num.end(), 0.0) == std::accumulate(read_num2.begin(), read_num2.end(), 0.0));
-#endif
+	for (int i = 0; i<read_mat2.size(); ++i){
+		sig::zipWith(sig::DebugEqual(), read_mat2[i], mat[i]);
+	}
 }
