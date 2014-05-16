@@ -19,7 +19,9 @@ http://opensource.org/licenses/mit-license.php
 #include <windows.h>
 #endif
 
+#if !SIG_GCC_ENV
 #include <codecvt>
+#endif
 
 #include "tool.hpp"
 
@@ -208,7 +210,7 @@ auto str_to_wstr(C const& strvec)
 	return result;
 }
 
-
+#if !SIG_GCC_ENV
 // UTF-8 -> UTF-16
 inline auto utf8_to_utf16(std::string const& src) ->std::u16string
 {
@@ -240,6 +242,7 @@ inline auto utf32_to_utf8(std::u32string const& src) ->std::string
 	std::string dest = utf32conv.to_bytes(src);
 	return dest;
 }
+#endif
 
 #if SIG_MSVC_ENV
 

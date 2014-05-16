@@ -169,6 +169,7 @@ void StrConvertTest()
 
 	assert(utf16_from_utf8 == utf16_from_sjis);
 	
+#elif SIG_GCC_ENV	//g++
 #else
 #endif
 }

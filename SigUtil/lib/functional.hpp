@@ -58,6 +58,7 @@ namespace sig
 		return std::accumulate(std::begin(container), std::end(container), init, func);
 	}
 
+#if SIG_MSVC_ENV || SIG_GCC_GT4_9_0
 	// (a -> b -> b) -> b -> [a] -> b
 	// リストの末尾からたたみ込み
 	template <class F, class T, class C>
@@ -65,13 +66,13 @@ namespace sig
 	{
 		return std::accumulate(std::rbegin(container), std::rend(container), init, func);
 	}
-
+#endif
 
 	// [a] -> [b] -> ... -> [(a, b, ...)]
 	// 複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
 	template <class... Cs
 #ifndef SIG_MSVC_LT1800
-		, typename std::enable_if< and(container_traits<Cs>::exist...) >::type*& = enabler
+		, typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
 #endif
 		>
 	auto zip(Cs const&... containers)
@@ -86,8 +87,8 @@ namespace sig
 
 	// for rvalue reference
 	template <class C1, class... Cs,
-		typename std::enable_if<!std::is_lvalue_reference<C1>::value && !and(std::is_lvalue_reference<Cs>::value...)>::type*& = enabler,
-		typename std::enable_if< and(container_traits<Cs>::exist...) >::type*& = enabler
+		typename std::enable_if<!std::is_lvalue_reference<C1>::value && !And(std::is_lvalue_reference<Cs>::value...)>::type*& = enabler,
+		typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
 	>
 	auto zip(C1&& container1, Cs&&... containers)
 	{

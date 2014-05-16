@@ -104,6 +104,15 @@ void erase_if(C& container, F const& remove_pred)
 		else ++it;
 	}
 }
+
+//別のコンテナに要素をコピーする用
+template <class RC, class C>
+auto copy(C const& src) ->RC
+{
+	RC dest;
+	for (auto const& e : src) container_traits<RC>::add_element(dest, e);
+	return dest;
+}
 	
 }
 

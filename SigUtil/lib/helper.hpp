@@ -140,14 +140,5 @@ inline bool modify_range(T& val, U const& min, U const& max)
 	return true;
 }
 
-//別のコンテナに要素をコピーする用
-template <class RC, class C>
-auto copy(C const& src) ->RC
-{
-	RC dest;
-	for (auto const& e : src) container_traits<RC>::add_element(dest, e);
-	return dest;
-}
-
 }
 #endif

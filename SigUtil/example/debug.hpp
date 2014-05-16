@@ -8,6 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_DEBUG_HPP
 #define SIG_UTIL_DEBUG_HPP
 
+#include <assert.h>
 #include "../lib/functional.hpp"
 
 /* デバッグ用ツール */
@@ -24,7 +25,7 @@ struct DebugEqual{
 template <class C, class T>
 void DebugElements(C const& container1, std::initializer_list<T> container2)
 {
-	using CT = container_traits<C>::value_type;
+	using CT = typename container_traits<C>::value_type;
 
 	sig::zipWith([](CT v1, T v2){ assert(v1 == v2); return 0; }, container1, container2);
 }
