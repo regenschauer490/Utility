@@ -39,9 +39,9 @@ namespace sig
 
 
 	// コンテナへの代入演算 (element-wise: container and container)
-	template <class C1, class C2, typename std::enable_if<container_traits<C1>::exist && container_traits<C2>::exist>::type*& = enabler>
+	template <class OP, class C1, class C2, typename std::enable_if<container_traits<C1>::exist && container_traits<C2>::exist>::type*& = enabler>
 	void compound_assignment(
-		std::function<void(typename container_traits<C1>::value_type&, ParamType<typename container_traits<C2>::value_type>)> const& assign_op,
+		OP const& assign_op,
 		C1& dest,
 		C2 const& src)
 	{
@@ -49,9 +49,9 @@ namespace sig
 	}
 
 	// コンテナへの代入演算 (element-wise: container and scalar)
-	template <class C, class T, typename std::enable_if<container_traits<C>::exist && !container_traits<T>::exist>::type*& = enabler>
+	template <class OP, class C, class T, typename std::enable_if<container_traits<C>::exist && !container_traits<T>::exist>::type*& = enabler>
 	void compound_assignment(
-		std::function<void(typename container_traits<C>::value_type&, ParamType<T>)> const& assign_op,
+		OP const& assign_op,
 		C& dest,
 		T src)
 	{

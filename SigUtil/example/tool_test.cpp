@@ -183,9 +183,9 @@ void PercentTest()
 	pc3 = 1;					//copy assignment. pc4 == 1%
 	pc4 = sig::Percent::unit();	//copy assignment. pc3 == 100%
 
-	assert(pc1.get_percent() == 100 && pc1.get_double() == 1);	//100% = 1
-	assert(pc2.get_percent() == 50 && pc2.get_double() == 0.5);	//50% = 0.5
-	assert(pc3.get_percent() == 1 && pc3.get_double() == 0.01);	//1% = 0.01
+	assert(pc1.get_percent() == 100 && sig::equal(pc1.get_double(), 1));	//100% = 1
+	assert(pc2.get_percent() == 50 && sig::equal(pc2.get_double(), 0.5));	//50% = 0.5
+	assert(pc3.get_percent() == 1 && sig::equal(pc3.get_double(), 0.01));	//1% = 0.01
 	assert(pc1 == pc4);
 }
 

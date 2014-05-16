@@ -61,13 +61,21 @@ auto Min(T v)
 {
 	return v;
 }
+template <class T1, class T2>
+#if !SIG_MSVC_ENV
+constexpr
+#endif
+auto Min(T1 v1, T2 v2)
+{
+	return v1 < v2 ? v1 : v2;
+}
 template <class T, class... Ts>
 #if !SIG_MSVC_ENV
 constexpr
 #endif
 auto Min(T v1, Ts... vs)
 {
-	return std::min(v1, Min(vs...));
+	return Min(v1, Min(vs...));
 }
 
 // 可変長 max
@@ -79,14 +87,21 @@ auto Max(T v)
 {
 	return v;
 }
+template <class T1, class T2>
+#if !SIG_MSVC_ENV
+constexpr 
+#endif
+auto Max(T1 v1, T2 v2)
+{
+	return v1 < v2 ? v2 : v1;
+}
 template <class T, class... Ts>
 #if !SIG_MSVC_ENV
 constexpr
 #endif
 auto Max(T v1, Ts... vs)
 {
-	using R = typename std::common_type<T, Ts...>::type;
-	return std::max(static_cast<R>(v1), static_cast<R>(Max(vs...)));
+	return Max(v1, Max(vs...));
 }
 
 // V1 > V2 -> true

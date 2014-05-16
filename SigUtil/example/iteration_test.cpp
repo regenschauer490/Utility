@@ -28,7 +28,7 @@ void ForeachTest()
 	sig::for_each([](int i, int a, int& b){ b += (a + i); }, 1, data0, data1_t);
 
 	auto data1_tt = data1;
-	for (int i = 0; i<data1.size(); ++i){
+	for (unsigned i = 0; i<data1.size(); ++i){
 		data1_tt[i] += (data0[i] + i+1);
 	}
 	sig::zipWith(
@@ -67,4 +67,5 @@ void CompoundAssignmentTest()
 
 	std::vector<std::string> str_set{ "ein", "zwei", "drei" };
 	sig::compound_assignment([](std::string& str, std::string add){ str += add; }, str_set, std::string("-hander"));
+
 }

@@ -9,6 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_TOOL_HPP
 
 #include "sigutil.hpp"
+#include "helper.hpp"
 
 #include <chrono>
 #include <fstream>

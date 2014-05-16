@@ -175,7 +175,7 @@ void FileSaveLoadTest()
 		assert( sig::equal(std::accumulate(read_num->begin(), read_num->end(), 0.0), test) );
 	}
 	if (read_mat){
-		for(int i=0; i<read_mat->size(); ++i){
+		for(unsigned i=0; i<read_mat->size(); ++i){
 			sig::zipWith(sig::DebugEqual(), (*read_mat)[i], mat[i]);
 		}
 	}
@@ -199,7 +199,7 @@ void FileSaveLoadTest()
 	//保存前がunorderedで順不同となるので、読み取り後のdouble値の合計と一致するかで判断
 	assert(sig::equal(std::accumulate(read_num2.begin(), read_num2.end(), 0.0), test2));
 	
-	for (int i = 0; i<read_mat2.size(); ++i){
+	for (unsigned i = 0; i<read_mat2.size(); ++i){
 		sig::zipWith(sig::DebugEqual(), read_mat2[i], mat[i]);
 	}
 }

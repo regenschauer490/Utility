@@ -26,12 +26,17 @@ void RegexTest()
 	auto replaced = SIG_RegexReplace(std::wstring(L"てすと(笑)です"), reg, std::wstring(L""));
 
 	assert(replaced == L"てすとです");
-#else
-	auto escaped1 = R"(? or (lol) must be escaped)";
-#endif
 
 	//正規表現で検索
 	auto matches1 = sig::regex_search("test tes1a tes2b", SIG_Regex("tes(\\d)(\\w)"));
+#else
+	auto escaped1 = R"(? or (lol) must be escaped)";
+
+	//正規表現で検索
+	auto matches1 = sig::regex_search("test tes1a tes2b", SIG_Regex("tes(\d)(\w)"));
+#endif
+
+	//正規表現で検索
 	auto matches2 = sig::regex_search("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
 	
 	TVec2 test3 = { { "tes1a", "1", "a" }, { "tes2b", "2", "b" } };
@@ -134,6 +139,8 @@ void CatStrTest()
 
 void StrConvertTest()
 {
+#if SIG_MSVC_ENV	//windows + VisualStudio環境
+
 	const auto sjis = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/shift_jis.txt"));
 	const auto utf8 = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/utf8.txt"));
 
@@ -145,8 +152,6 @@ void StrConvertTest()
 
 	//まとめて変換
 	auto wstr_vec = sig::str_to_wstr(sjis);
-
-#if SIG_MSVC_ENV	//windows + VisualStudio環境
 
 	//Shift-JIS <-> UTF-8
 	std::string	utf8_from_sjis = sig::sjis_to_utf8(sjis[1]);
@@ -170,6 +175,16 @@ void StrConvertTest()
 	assert(utf16_from_utf8 == utf16_from_sjis);
 	
 #elif SIG_GCC_ENV	//g++
+	const auto utf8 = sig::fromJust( sig::read_line<std::string>("../SigUtil/example/test_file/utf8.txt"));
+
+	//マルチ文字 <-> ワイド文字 変換
+	std::wstring	wstr = sig::str_to_wstr(utf8[1]);
+	std::string	str = sig::wstr_to_str(wstr);
+
+	assert(str == utf8[1]);
+
+	//まとめて変換
+	auto wstr_vec = sig::str_to_wstr(utf8);
 #else
 #endif
 }

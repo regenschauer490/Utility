@@ -1,7 +1,7 @@
 ﻿#ifndef SIG_UTIL_HPP
 #define SIG_UTIL_HPP
 
-#define SIG_ENABLE_BOOST 1		//boostが使用可能化
+#define SIG_ENABLE_BOOST 0		//boostが使用可能化
 #define SIG_USE_OPTIONAL 1		//boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが発生する可能性あり)
 
 #ifdef _WIN32

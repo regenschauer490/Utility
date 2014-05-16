@@ -92,7 +92,7 @@ void TestHelperModules()
 	//min,max
 	std::vector<int> v{ 1, 2, 3 };
 	assert(sig::Min(1, -1, 0, (int)v.size(), 2) == -1);
-	assert(sig::Max(1, -1, 0, (int)v.size(), 2) == v.size());
+	assert(sig::Max(1, -1, 0, (int)v.size(), 2) == (int)v.size());
 
 	//generic |a - b|
 	assert(sig::abs_delta(1, 3) == 2);

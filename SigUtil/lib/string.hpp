@@ -131,8 +131,9 @@ auto cat_str(C const& container, T delimiter)
 	typename SStreamSelector<typename container_traits<C>::value_type>::ostringstream osstream;
 	if (container.empty()) return osstream.str();
 
-	osstream << *std::begin(container);
-	for (auto it = ++std::begin(container), end = std::end(container); it != end; ++it){
+	auto it = std::begin(container);
+	osstream << *it++;
+	for (auto end = std::end(container); it != end; ++it){
 		osstream << delimiter << *it;
 	}
 	return osstream.str();
@@ -157,7 +158,7 @@ inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::strin
 	std::string dest(mbs);
 	delete[] mbs;
 
-	return error ? std::string() : dest; //error ? Nothing(dest) : Just<std::string>::type(std::move(dest));
+	return error == -1 ? std::string() : dest; //error ? Nothing(dest) : Just<std::string>::type(std::move(dest));
 }
 
 // src: 変換対象の文字列が格納されたコンテナ
@@ -192,7 +193,7 @@ inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstri
 #endif
 	std::wstring dest(wcs);
 	delete[] wcs;
-	return error ? std::wstring() : dest; //error ? Nothing(dest) : Just<std::wstring>::type(std::move(dest));
+	return error == -1 ? std::wstring() : dest; //error ? Nothing(dest) : Just<std::wstring>::type(std::move(dest));
 }
 
 // src: 変換対象の文字列が格納されたコンテナ

@@ -39,7 +39,6 @@ template <class C>
 struct container_traits
 {
 	static const bool exist = false;
-	static const bool is_string = false;
     // Type value_type
     // Type rebind<U>
     // void add_element(C&,T)
