@@ -1,5 +1,6 @@
 #include "iteration_test.h"
 #include "debug.hpp"
+#include "../lib/functional.hpp"
 
 const std::array<int, 4> data0{ { 1, 2, 3, 4 } };
 const std::vector<int> data1{1, 2, 3};

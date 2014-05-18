@@ -87,18 +87,13 @@ void FileSaveLoadTest()
 	const auto fpass3 = pass + L"test3.txt";
 	const auto fpass4 = pass + L"test4.txt";
 	const auto fpass5 = pass + L"test5.txt";
-
-	std::wcout << fpass1 << std::endl << std::endl;
 #else
 	const auto fpass1 = pass + "test.txt";
 	const auto fpass2 = pass + "test2.txt";
 	const auto fpass3 = pass + "test3.txt";
 	const auto fpass4 = pass + "test4.txt";
 	const auto fpass5 = pass + "test5.txt";
-
-	std::cout << fpass1 << std::endl << std::endl;
 #endif
-
 
 	const std::vector<std::wstring> blghost_text1{
 		L"O.K.",
@@ -117,8 +112,7 @@ void FileSaveLoadTest()
 		"",
 		"SO,YOUR PAIN IS MINE.",
 		"KEEP YOUR DIGNITY."
-	};
-	
+	};	
 
 	//既存の内容のクリア
 	sig::file_clear(fpass1);
@@ -130,7 +124,7 @@ void FileSaveLoadTest()
 	sig::save_line(blghost_text1, ofs);		//全行保存
 	ofs.close();
 
-/* 以下 かんたん保存 */
+/* 書き込み */
 
 	//1行保存（上書き）
 	sig::save_line(L"test write 壱", fpass2);
@@ -154,7 +148,7 @@ void FileSaveLoadTest()
 	sig::save_num(mat, fpass5, ",");
 
 
-/* 以下 かんたん読み込み */
+/* 読み込み */
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	const auto read1 = sig::read_line<std::string>(fpass1);

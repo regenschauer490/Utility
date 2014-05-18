@@ -13,21 +13,12 @@
 #include "example/calculate_test.h"
 #include "example/iteration_test.h"
 
-#include <future>
-
-struct Tes{
-	double v;
-	double v2;
-	Tes(double v_) : v(v_), v2(v_*2){}
-	double operator+(double d) const{ return d + v; }
-	double operator+=(double d) const{ return d += v; }
-};
 
 int main()
 {
 	setlocale(LC_ALL, "Japanese");
 
-	StrConvertPerformanceTest();
+	//StrConvertPerformanceTest();
 
 	//helper.hpp test
 	TestHelperModules();

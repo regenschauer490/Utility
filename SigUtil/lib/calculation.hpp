@@ -110,6 +110,21 @@ SIG_MakeBinaryOperation(multiplies, *);
 
 SIG_MakeBinaryOperation(divides, / );
 
+	// 総和を求める
+	template <class C>
+	auto sum(C const& container)
+	{
+		using R = typename container_traits<C>::value_type;
+		return std::accumulate(std::begin(container), std::end(container), static_cast<R>(0), std::plus<R>{});
+	}
+
+	// 総乗を求める
+	template <class C>
+	auto product(C const& container)
+	{
+		using R = typename container_traits<C>::value_type;
+		return std::accumulate(std::begin(container), std::end(container), static_cast<R>(0), std::multiplies<R>{});
+	}
 }
 
 #endif

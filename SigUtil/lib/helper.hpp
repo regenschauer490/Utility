@@ -115,30 +115,31 @@ constexpr bool Less(T1 v1, T2 v2){ return v1 < v2 ? true : false; };
 
 /* 実行時用 */
 
-//2変数の差の絶対値を返す
+// 2変数の差の絶対値を返す
 template <class T1, class T2>
 auto abs_delta(T1 v1, T2 v2) ->typename std::common_type<T1, T2>::type
 {
 	return v1 < v2 ? v2 - v1 : v1 - v2;
 }
 
-//浮動小数点型にも使える等値比較
+// 厳密な計算でない場合に使用する簡易等値比較 (浮動小数点型の誤差をある程度許容)
 template <class T1, class T2>
 bool equal(T1 v1, T2 v2)
 {
+	const uint tolerant_rate = 10000;	//許容範囲の調整 (10^-16 * tolerant_rate)
 	const auto dmin = std::numeric_limits<typename std::common_type<T1, T2>::type>::epsilon();
 
-	return !(abs_delta(v1, v2) > dmin);
+	return !(abs_delta(v1, v2) > tolerant_rate * dmin);
 }
 
-//指定範囲内の誤差を許した等値比較
+// 指定範囲内の誤差を許した等値比較
 template <class T1, class T2>
 bool equal_tolerant(T1 v1, T2 v2, typename std::common_type<T1, T2>::type margin)
 {
 	return margin ? !(abs_delta(v1, v2) > margin) : equal(v1, v2);
 }
 
-//範囲チェック (min ≦ val ≦ max)
+// 範囲チェック (min ≦ val ≦ max)
 template <class T, class U>
 inline bool check_range(T const& val, U const& min, U const& max)
 {
@@ -147,7 +148,7 @@ inline bool check_range(T const& val, U const& min, U const& max)
 	return true;
 }
 
-//範囲自動修正 (min ≦ val ≦ max)
+// 範囲自動修正 (min ≦ val ≦ max)
 template <class T, class U>
 inline bool modify_range(T& val, U const& min, U const& max)
 {
@@ -155,6 +156,20 @@ inline bool modify_range(T& val, U const& min, U const& max)
 	if (val>max){ val = max; return false; }
 	return true;
 }
+
+/* 関数オブジェクト */
+
+struct increment
+{
+	template <class T>
+	T operator()(T v) const{ return ++v; }
+};
+
+struct decrement
+{
+	template <class T>
+	T operator()(T v) const{ return --v; }
+};
 
 }
 #endif

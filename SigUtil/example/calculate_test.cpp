@@ -3,7 +3,7 @@
 
 void ArithmeticOperationsTest()
 {
-	const std::array<int, 4> data0{{1, 2, 3, 4 }};
+	const sig::array<int, 4> data0{1, 2, 3, 4 };
 	const std::vector<int> data1{ 1, -3, 5 };
 	const std::list<double> data2{ 1.0, -3.0, 5.0 };
 	const std::multiset<int, std::greater<int>> data3{ 1, -3, 5 };
@@ -109,4 +109,15 @@ void ArithmeticOperationsTest()
 		sig::zipWith(std::divides<double>(), data2, data0)
 	);
 
+	int sum1 = sig::sum(data0);
+	double sum2 = sig::sum(data2);
+
+	assert(sig::equal(sum1, std::accumulate(std::begin(data0), std::end(data0), 0)));
+	assert(sig::equal(sum2, std::accumulate(std::begin(data2), std::end(data2), 0.0)));
+
+	int pi1 = sig::product(data0);
+	double pi2 = sig::product(data2);
+
+	assert(sig::equal(pi1, std::accumulate(std::begin(data0), std::end(data0), 0, std::multiplies<int>{})));
+	assert(sig::equal(pi2, std::accumulate(std::begin(data2), std::end(data2), 0.0, std::multiplies<double>{})));
 }

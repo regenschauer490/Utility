@@ -101,13 +101,13 @@ inline auto get_file_names(
 	fs::directory_iterator end;
 	for (fs::directory_iterator it(directory_pass); it != end; ++it)
 	{
-		if (!fs::is_directory(*it) && BoolConsistency(hidden_file, IsHidden(*it))){
+		if (!fs::is_directory(*it) && Consistency(hidden_file, IsHidden(*it))){
 			auto leaf = sig::split(it->path().wstring(), L"\\").back();
 			if (extension.empty()) result.push_back(leaf);
 			else{
 				auto query = L".*(" + escape_regex(extension) + L")";
-				auto ext = regex_search(leaf, std::wregex(query));
-				if (ext && (*ext)[0][1] == extension) result.push_back(leaf);
+				auto ext = sig::regex_search(leaf, SIG_WRegex(query));
+				if (is_container_valid(ext) && fromJust(ext)[0][1] == extension) result.push_back(leaf);
 			}
 		}
 	}
@@ -160,7 +160,7 @@ inline auto get_folder_names(
 	fs::directory_iterator end;
 	for (fs::directory_iterator it(directory_pass); it != end; ++it)
 	{
-		if (fs::is_directory(*it) && BoolConsistency(hidden_file, IsHidden(*it))){
+		if (fs::is_directory(*it) && Consistency(hidden_file, IsHidden(*it))){
 			result.push_back(sig::split(it->path().wstring(), L"\\").back());
 		}
 	}

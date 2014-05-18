@@ -1,7 +1,7 @@
 ﻿#ifndef SIG_UTIL_HPP
 #define SIG_UTIL_HPP
 
-#define SIG_ENABLE_BOOST 0		//boostが使用可能化
+#define SIG_ENABLE_BOOST 1		//boostが使用可能化
 #define SIG_USE_OPTIONAL 1		//boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが発生する可能性あり)
 
 #ifdef _WIN32
@@ -18,13 +18,17 @@
 	#ifdef _DEBUG
 	#define SIG_DEBUG_MODE 1
 	#endif
+
 	#if _MSC_VER < 1800
-	#define SIG_MSVC_LT1800 1
 	static_assert(false, "require \"Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)\" to compile on msvc");
 	#endif
-#else
-	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
+
+#elif SIG_GCC_ENV
+	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)
 	#define SIG_GCC_GT4_9_0 1
+	#endif
+	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
+	#define SIG_GCC_GT4_8_0 1
 	#endif
 #endif
 

@@ -12,9 +12,11 @@ using sig::SIG_Regex;
 
 void RegexTest()
 {
-#if SIG_MSVC_ENV
+#if SIG_MSVC_ENV || (SIG_GCC_ENV && SIG_ENABLE_BOOST)
+	auto raw1 = "? or (lol) must be escaped";
+
 	//エスケープ処理した文字列を取得
-	auto escaped1 = sig::escape_regex("? or (lol) must be escaped");
+	auto escaped1 = sig::escape_regex(raw1);
 	auto escaped2 = sig::escape_regex(L"?とか(笑)はエスケープすべき文字");
 
 	auto test1 = R"(\? or \(lol\) must be escaped)";	assert(escaped1 == test1);
@@ -29,28 +31,22 @@ void RegexTest()
 
 	//正規表現で検索
 	auto matches1 = sig::regex_search("test tes1a tes2b", SIG_Regex("tes(\\d)(\\w)"));
-#else
-	auto escaped1 = R"(? or (lol) must be escaped)";
 
-	//正規表現で検索
-	auto matches1 = sig::regex_search("test tes1a tes2b", SIG_Regex("tes(\d)(\w)"));
-#endif
-
-	//正規表現で検索
-	auto matches2 = sig::regex_search("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
-	
+	//auto match = *matches; //optional
+	//match[0][0] == tes1a, match[0][1] == 1, match[0][2] == a
+	//match[1][0] == tes2b, match[1][1] == 2, match[1][2] == b
 	TVec2 test3 = { { "tes1a", "1", "a" }, { "tes2b", "2", "b" } };
-	auto test4 = "? or (lol) must be escaped";
-
 	for (uint i=0; i < sig::fromJust(matches1).size(); ++i){
 		for (uint j = 0; j < sig::fromJust(matches1)[i].size(); ++j){
-			assert(sig::fromJust(matches1)[i][j] == test3[i][j]);
+			assert(sig::is_container_valid(matches1) && sig::fromJust(matches1)[i][j] == test3[i][j]);
 		}
 	}
-	for (auto m : sig::fromJust(matches2)){
-		assert( m.front() == test4);
-	}
 
+	//正規表現で検索 (エスケープ済みの文字列を使用)
+	auto matches2 = sig::regex_search("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
+	
+	assert(sig::is_container_valid(matches2) && sig::fromJust(matches2)[0][0] == raw1);
+#endif
 }
 
 void TagDealerTest()

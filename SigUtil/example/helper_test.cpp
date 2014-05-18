@@ -113,6 +113,12 @@ void TestHelperModules()
 	}
 	assert(ct2 == 1000);
 
+	for(int i=0; i<10000; ++i){
+		if(!sig::equal(1.1*i, i*1 + i*(1.0/10))){
+			std::cout << "equal error:" << i << std::endl;
+		}
+	}
+
 	//generic a à b (|a - b| < ƒÃ)
 	assert(sig::equal_tolerant(0.001, 0.002, 0.001));
 	assert(!sig::equal_tolerant(0.001, 0.003, 0.001));

@@ -28,8 +28,14 @@ void increment_iterator(It& iter, Its&... iterators)
 }
 
 template<class It>
-auto& dereference_iterator(It& iter)
+auto dereference_iterator(It& iter) ->typename std::add_rvalue_reference<decltype(*iter)>::type
 {
+/*
+	if(std::is_same<typename std::add_rvalue_reference<decltype(*iter)>::type, typename std::iterator_traits<It>::value_type&>{}) std::cout << "lval&";
+	if(std::is_same<typename std::add_rvalue_reference<decltype(*iter)>::type, typename std::add_const<typename std::iterator_traits<It>::value_type>::type&>{}) std::cout << "const lval&";
+	if(std::is_same<typename std::add_rvalue_reference<decltype(*iter)>::type, typename std::iterator_traits<It>::value_type&&>{}) std::cout << "rval&";
+std::cout << std::endl;
+*/
 	return *iter;
 }
 

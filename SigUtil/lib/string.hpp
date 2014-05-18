@@ -29,9 +29,8 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig{
 
-#if SIG_MSVC_ENV
-
 // expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
+#if SIG_MSVC_ENV
 inline auto escape_regex(std::string const& expression) ->std::string
 {
 	static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
@@ -43,13 +42,26 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 	return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\$1)"));
 }
 
+#elif (SIG_GCC_ENV && SIG_ENABLE_BOOST)
+inline auto escape_regex(std::string const& expression) ->std::string
+{
+	static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
+	return SIG_RegexReplace(expression, escape_reg, std::string(R"(\\$1)"));
+}
+inline auto escape_regex(std::wstring const& expression) ->std::wstring
+{
+	static const SIG_WRegex escape_reg(LR"(([(){}\[\]|^?$.+*\\]))");
+	return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\\$1)"));
+}
+#endif
+
+#if SIG_MSVC_ENV || (SIG_GCC_ENV && SIG_ENABLE_BOOST)
 // エスケープ処理を行い、std::regex or std::wregexを返す
 template <class S>
 auto make_regex(S const& expression) ->typename Str2RegexSelector<TString<S>>::regex
 {
 	return typename Str2RegexSelector<TString<S>>::regex(escape_regex(expression));
 }
-#endif
 
 // std::regex_search のラッパ関数
 // src: 探索対象の文字列
@@ -78,6 +90,7 @@ auto regex_search(
 
 	return d.empty() ? Nothing(std::move(d)) : typename Just<R>::type(std::move(d));
 }
+#endif
 
 // 文字列(src)をある文字列(delimiter)を目印に分割する
 // src: 分割対象の文字列
@@ -317,10 +330,9 @@ public:
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 	String encode(Container<String> const& src, Container<String> const& tag) const;
 
-#if SIG_ENABLE_BOOST
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 	auto decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const;
-#endif
+
 };
 
 template <class String>
@@ -332,7 +344,6 @@ String TagDealer<String>::encode(Container<String> const& src, Container<String>
 	return std::accumulate(calc.begin(), calc.end(), String(""));
 }
 
-#if SIG_ENABLE_BOOST
 template <class String>
 template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 auto TagDealer<String>::decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const
@@ -343,7 +354,6 @@ auto TagDealer<String>::decode(String const& src, Container<String> const& tag) 
 	}
 	return result.empty() ? Nothing(String()) : typename Just<Container<String>>::type(std::move(result));
 }
-#endif
 
 //全角・半角文字の置換処理を行う
 class ZenHanReplace{

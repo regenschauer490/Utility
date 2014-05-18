@@ -1,8 +1,8 @@
 COMPILER = g++
 CFLAGS   = -Wextra -g -MMD -MP -std=gnu++1y
 LDFLAGS  =
-LIBS     = 
-INCLUDE  = -I/home/nishimura/boost-1_54_0
+LIBS     = /usr/include/c++/boost/boost_1_55_0/stage/lib/libboost_system.a /usr/include/c++/boost/boost_1_55_0/stage/lib/libboost_filesystem.a /usr/include/c++/boost/boost_1_55_0/stage/lib/libboost_regex.a 
+INCLUDE  = -I/usr/include/c++/boost/boost_1_55_0
 BIN_DIR  = ../bin
 TARGET	= test
 TARGET0   = $(addprefix $(BIN_DIR)/,$(TARGET))

@@ -15,9 +15,7 @@ http://opensource.org/licenses/mit-license.php
 #include <fstream>
 
 #if SIG_ENABLE_BOOST
-
 #include <boost/serialization/serialization.hpp>
-
 #endif
 
 /* 便利ツール */

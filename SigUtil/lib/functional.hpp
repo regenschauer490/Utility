@@ -55,23 +55,26 @@ namespace sig
 	template <class F, class T, class C>
 	auto foldl(F func, T init, C container)
 	{
-		return std::accumulate(std::begin(container), std::end(container), init, func);
+		using R = decltype(eval(func, init, std::declval<typename container_traits<C>::value_type>()));
+		return std::accumulate(std::begin(container), std::end(container), static_cast<R>(init), func);
 	}
 
-#if SIG_MSVC_ENV || SIG_GCC_GT4_9_0
+#if SIG_GCC_GT4_9_0 || SIG_MSVC_ENV
 	// (a -> b -> b) -> b -> [a] -> b
 	// リストの末尾からたたみ込み
 	template <class F, class T, class C>
 	auto foldr(F func, T init, C container)
 	{
-		return std::accumulate(std::rbegin(container), std::rend(container), init, func);
+		using R = decltype(eval(func, init, std::declval<typename container_traits<C>::value_type>()));
+		return std::accumulate(std::rbegin(container), std::rend(container), static_cast<R>(init), std::bind(func, _2, _1));
 	}
 #endif
 
 	// [a] -> [b] -> ... -> [(a, b, ...)]
 	// 複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
+	// for variadic parameter, const lvalue reference
 	template <class... Cs
-#if SIG_MSVC_LT1800
+#if SIG_GCC_GT4_8_0 || _MSC_VER >= 1900
 		, typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
 #endif
 		>
@@ -82,10 +85,8 @@ namespace sig
 		}, containers...);
 	}
 
-
-#if SIG_MSVC_LT1800
-
-	// for rvalue reference
+#if SIG_GCC_GT4_8_0 || _MSC_VER >= 1900
+	// for variadic parameter, rvalue reference
 	template <class C1, class... Cs,
 		typename std::enable_if<!std::is_lvalue_reference<C1>::value && !And(std::is_lvalue_reference<Cs>::value...)>::type*& = enabler,
 		typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
@@ -104,8 +105,9 @@ namespace sig
 
 		return result;
 	}
+#endif
 
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
+#if SIG_GCC_GT4_9_0 || _MSC_VER >= 1900
 	template <class TC, size_t... I>
 	auto ZipImpl_(TC const& t_containers, std::index_sequence<I...>)
 	{
@@ -119,22 +121,22 @@ namespace sig
 
 	// ([a], [b], ...) -> [(a, b, ...)]
 	// コンテナのタプルから、タプルのコンテナを作る
+	// for tuple, const lvalue reference
 	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>
 	auto zip(std::tuple<Cs...> const& t_containers)
 	{
 		return ZipImpl_(t_containers, Indices());
 	}
 
+	// for tuple, rvalue reference
 	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>
 	auto zip(std::tuple<Cs...>&& t_containers)
 	{
 		return ZipImpl_(std::move(t_containers), Indices());
 	}
 #endif
-#endif
-
 	// [(a, b, ...)] -> [a0]
-	// タプルのコンテナから、指定したコンテナを取り出す
+	// タプルのコンテナから、指定したindexのコンテナ(templateパラメータで指定)を取り出す
 	template <size_t Index, class CT>
 	auto unzip(CT const& c_tuple)
 	{
@@ -155,8 +157,8 @@ namespace sig
 		using C = std::vector<T>;
 		C result;
 
-		for (auto& e : c_tuple){
-			container_traits<C>::add_element(result, std::get<Index>(std::move(e)));
+		for (auto& t : c_tuple){
+			container_traits<C>::add_element(result, std::get<Index>(std::move(t)));
 		}
 		return result;
 	}
@@ -207,11 +209,14 @@ namespace sig
 		return result;
 	}
 
-	template <class T, class C = std::vector<T>>
-	C arithSequence(T st, T d, uint n)
+	// 等差数列
+	// st:初項, d:公差, n:項数
+	template <class T1, class T2, class C = std::vector<typename std::common_type<T1, T2>::type>>
+	C seq(T1 st, T2 d, uint n)
 	{
+		using R = typename std::common_type<T1, T2>::type;
 		C result;
-		for (uint i = 0; i<n; ++i) container_traits<C>::add_element(result, st + i*d);
+		for (uint i = 0; i<n; ++i) container_traits<C>::add_element(result, static_cast<R>(st) + i * static_cast<R>(d));
 		return result;
 	}
 
@@ -235,8 +240,8 @@ namespace sig
 		return result;
 	}
 
-	// [a] -> [b] -> [c]
-	// コンテナの結合
+	// [a] -> [a] -> [a]
+	// コンテナの結合 (tamplateパラメータCで結合後のコンテナの種類を指定)
 	template <class C, class C1, class C2>
 	C merge(C1 const& container1, C2 const& container2)
 	{
@@ -270,7 +275,7 @@ namespace sig
 		return result;
 	}
 
-#if SIG_MSVC_LT1800
+#if SIG_GCC_GT4_8_0 || _MSC_VER >= 1900
 	//(a -> a -> bool) -> [a] -> [a]
 	//比較関数を指定してソート
 	template <class F, class C, typename std::enable_if<has_random_iterator<C>::value, void>::type*& = enabler>
