@@ -9,7 +9,7 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 * g++ (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1
 * Ubuntu clang version 3.4-1~exp1 (trunk) (based on LLVM 3.4)
 
-～おしながき～ 
+#### ～おしながき～   
 **\<array.hpp>**
 * class array: std::arrayの利便性を拡張し、固定長なstd::vectorの感覚で使用できる静的配列
 
