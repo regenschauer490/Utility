@@ -9,7 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTILCONTAINER_TRAITS_H
 
 
-#include "external/container traits/container_traits.h"
+#include "external/container traits/container_traits.hpp"
 
 namespace sig
 {

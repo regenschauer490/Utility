@@ -107,12 +107,6 @@
     <ClInclude Include="lib\calculation.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="lib\external\container traits\eval.h">
-      <Filter>ヘッダー ファイル\external</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\external\container traits\container_traits.h">
-      <Filter>ヘッダー ファイル\external</Filter>
-    </ClInclude>
     <ClInclude Include="lib\array.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -136,6 +130,12 @@
     </ClInclude>
     <ClInclude Include="example\array_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\external\container traits\container_traits.hpp">
+      <Filter>ヘッダー ファイル\external</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\external\container traits\eval.hpp">
+      <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

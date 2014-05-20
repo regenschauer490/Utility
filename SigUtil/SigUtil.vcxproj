@@ -109,8 +109,8 @@
     <ClInclude Include="lib\array.hpp" />
     <ClInclude Include="lib\calculation.hpp" />
     <ClInclude Include="lib\container_helper.hpp" />
-    <ClInclude Include="lib\external\container traits\container_traits.h" />
-    <ClInclude Include="lib\external\container traits\eval.h" />
+    <ClInclude Include="lib\external\container traits\container_traits.hpp" />
+    <ClInclude Include="lib\external\container traits\eval.hpp" />
     <ClInclude Include="lib\iteration.hpp" />
     <ClInclude Include="lib\helper.hpp" />
     <ClInclude Include="lib\modify.hpp" />
