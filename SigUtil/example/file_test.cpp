@@ -26,32 +26,54 @@ void GetDirectoryNamesTest()
 	const auto old_text_file_names = sig::get_file_names(pass, false, L".old.txt");
 	const auto hidden_text_file_names = sig::get_file_names(pass, true, L".txt");
 
+	const std::set<std::wstring> t_text{
+		L"test.txt",
+		L"test2.txt",
+		L"test3.txt",
+		L"test4.txt",
+		L"test5.txt",
+		L"histgram1.txt",
+		L"histgram2.txt",
+		L"shift_jis.txt",
+		L"utf8.txt"
+	};
+	const std::set<std::wstring> t_hidden_linux{ L".hidden file linux.txt" };
+	const std::set<std::wstring> t_old_text{ L"test.old.txt" };
+	const std::set<std::wstring> t_noextension{ L"dummy" };
+
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl  << "[all visible files]"<< std::endl;
-	if(file_names){
-		for (auto fn : *file_names) std::wcout << fn << std::endl;
+	auto t_all_visible = sig::merge(t_text, sig::merge(t_old_text, t_noextension));
+	assert(sig::fromJust(file_names).size() == t_all_visible.size());
+	for (auto fn : sig::fromJust(file_names)){
+		std::wcout << fn << std::endl;
+		assert(t_all_visible.count(fn));
 	}
+	
 	std::cout << std::endl << "[all .txt files]" << std::endl;
-	if(text_file_names){
-		for (auto fn : *text_file_names) std::wcout << fn << std::endl;
+	auto t_text_visible = sig::merge(t_text, t_old_text);
+	assert(sig::fromJust(text_file_names).size() == t_text_visible.size());
+	for (auto fn : sig::fromJust(text_file_names)){
+		std::wcout << fn << std::endl;
+		assert(t_text_visible.count(fn));
 	}
+	
 	std::cout << std::endl << "[all .old.txt files]" << std::endl;
-	if(old_text_file_names){
-		for (auto fn : *old_text_file_names) std::wcout << fn << std::endl;
+	auto t_old_text_visible = t_old_text;
+	assert(sig::fromJust(old_text_file_names).size() == t_old_text.size());
+	for (auto fn : sig::fromJust(old_text_file_names)){
+		std::wcout << fn << std::endl;
+		assert(t_old_text_visible.count(fn));
 	}
+	
 	std::cout << std::endl << "[all hidden files]" << std::endl;
-	if(hidden_text_file_names){
-		for (auto fn : *hidden_text_file_names) std::wcout << fn << std::endl;
+	for (auto fn : sig::fromJust(hidden_text_file_names)){
+		std::wcout << fn << std::endl;
+#if SIG_LINUX_ENV
+		assert(sig::fromJust(hidden_text_file_names).size() == t_hidden_linux.size());
+		assert(t_hidden_linux.count(fn));
+#endif
 	}
-#else
-	std::cout << std::endl << "[all visible files]" << std::endl;
-	for (auto fn : file_names) std::wcout << fn << std::endl;
-	std::cout << std::endl << "[all .txt files]" << std::endl;
-	for (auto fn : text_file_names) std::wcout << fn << std::endl;
-	std::cout << std::endl << "[all .old.txt files]" << std::endl;
-	for (auto fn : old_text_file_names) std::wcout << fn << std::endl;
-	std::cout << std::endl << "[all hidden files]" << std::endl;
-	for (auto fn : hidden_text_file_names) std::wcout << fn << std::endl;
 #endif
 
 	const auto folder_names = sig::get_folder_names(pass, false);
@@ -59,22 +81,15 @@ void GetDirectoryNamesTest()
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl << "[all visible folders]" << std::endl;
-	if (folder_names){
-		for (auto fn : *folder_names) std::wcout << fn << std::endl;
-	}
+	for (auto fn : sig::fromJust(folder_names)) std::wcout << fn << std::endl;
+	
 	std::cout << std::endl << "[all hidden folders]" << std::endl;
-	if (hidden_folder_names){
-		for (auto fn : *hidden_folder_names) std::wcout << fn << std::endl;
-	}
-#else
-	std::cout << std::endl << "[all visible folders]" << std::endl;
-	for (auto fn : folder_names) std::wcout << fn << std::endl;
-	std::cout << std::endl << "[all hidden folders]" << std::endl;
-	for (auto fn : hidden_folder_names) std::wcout << fn << std::endl;
+	for (auto fn : sig::fromJust(hidden_folder_names)) std::wcout << fn << std::endl;
 #endif
 #else
-	std::cout << "this OS is not support. please include boost if any." << std::endl; 
+	std::cout << "I don't support this environment. please include boost if any." << std::endl; 
 #endif
+	std::cout << std::endl;
 }
 
 void FileSaveLoadTest()

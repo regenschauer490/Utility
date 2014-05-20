@@ -4,6 +4,8 @@
 
 #if SIG_MSVC_ENV
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
@@ -25,60 +27,53 @@ void TimeWatchTest()
 	sig::TimeWatch tw;		//計測開始
 
 #if SIG_MSVC_ENV
-	Sleep(100);
+	auto tsleep = [](unsigned milisec){ Sleep(milisec); };
+#else
+	auto tsleep = [](unsigned milisec){ usleep(milisec*1000); };
+#endif
+	tsleep(100);
 
 	tw.save();		//ここまでのタイムを記録
 
-	Sleep(200);
+	tsleep(200);
 
 	tw.save();		//ここまでのタイムを記録
 
-	Sleep(300);
+	tsleep(300);
 
 	tw.stop();		//一時停止
 
-	Sleep(10);
+	tsleep(10);
 
 	tw.save();		//ここまでのタイムを記録
 
-	Sleep(20);
+	tsleep(20);
 
 	tw.restart();	//計測再開
 
-	Sleep(400);
+	tsleep(400);
 
 	tw.save();		//ここまでのタイムを記録
 
-#if SIG_ENABLE_BOOST
-	assert(sig::equal_tolerant(*tw.get_lap_time(0), 100, 1));		//100 ± 1 (ms)
-	assert(sig::equal_tolerant(*tw.get_lap_time(1), 200, 1));		//200 ± 1 (ms)
-	assert(sig::equal_tolerant(*tw.get_lap_time(2), 300, 1));		//300 ± 1 (ms)
-	assert(sig::equal_tolerant(*tw.get_lap_time(3), 400, 1));		//400 ± 1 (ms)
+	const uint moe = 10;	//環境毎のsleep時間誤差（ms）
+
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(0)), 100, moe));		//100 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(1)), 200, moe));		//200 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(2)), 300, moe));		//300 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(3)), 400, moe));		//400 ± moe (ms)
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	assert(! tw.get_lap_time(4));
-
-	assert(sig::equal_tolerant(*tw.get_split_time(0), 100, 1));	//100 ± 1 (ms)
-	assert(sig::equal_tolerant(*tw.get_split_time(1), 300, 1));	//300 ± 1 (ms)
-	assert(sig::equal_tolerant(*tw.get_split_time(2), 600, 1));	//600 ± 1 (ms)
-	assert(sig::equal_tolerant(*tw.get_split_time(3), 1000, 1));	//1000 ± 1 (ms)
 #else
-	assert(sig::equal_tolerant(tw.get_lap_time(0), 100, 1));		//100 ± 1 (ms)
-	assert(sig::equal_tolerant(tw.get_lap_time(1), 200, 1));		//200 ± 1 (ms)
-	assert(sig::equal_tolerant(tw.get_lap_time(2), 300, 1));		//300 ± 1 (ms)
-	assert(sig::equal_tolerant(tw.get_lap_time(3), 400, 1));		//400 ± 1 (ms)
 	assert(tw.get_lap_time(4) == -1);
-
-	assert(sig::equal_tolerant(tw.get_split_time(0), 100, 1));		//100 ± 1 (ms)
-	assert(sig::equal_tolerant(tw.get_split_time(1), 300, 1));		//300 ± 1 (ms)
-	assert(sig::equal_tolerant(tw.get_split_time(2), 600, 1));		//600 ± 1 (ms)
-	assert(sig::equal_tolerant(tw.get_split_time(3), 1000, 1));	//1000 ± 1 (ms)
 #endif
-	assert(sig::equal_tolerant(tw.get_total_time(), 1000, 10));				//1000 ± 10 (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(0)), 100, moe));	//100 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(1)), 300, moe));	//300 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(2)), 600, moe));	//600 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(3)), 1000, moe));	//1000 ± moe (ms)
+
+	assert(sig::equal_tolerant(tw.get_total_time(), 1000, 4*moe));				//1000 ± 4*moe (ms)
 	assert(sig::equal(tw.get_total_time<std::chrono::seconds>(), 1));		//1 (s)
-	auto total = tw.get_total_time<std::chrono::microseconds>();
 	assert(sig::equal_tolerant(tw.get_total_time<std::chrono::microseconds>(), 1000000, 10000));	//1000000  ± 10000 (μs)
-#else
-
-#endif
 }
 
 void HistgramTest()

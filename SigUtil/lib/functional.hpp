@@ -59,7 +59,7 @@ namespace sig
 		return std::accumulate(std::begin(container), std::end(container), static_cast<R>(init), func);
 	}
 
-#if SIG_GCC_GT4_9_0 || SIG_MSVC_ENV
+#if SIG_GCC_GT_4_9 || SIG_CLANG_GT_3_5 || SIG_MSVC_ENV
 	// (a -> b -> b) -> b -> [a] -> b
 	// リストの末尾からたたみ込み
 	template <class F, class T, class C>
@@ -74,7 +74,7 @@ namespace sig
 	// 複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
 	// for variadic parameter, const lvalue reference
 	template <class... Cs
-#if SIG_GCC_GT4_8_0 || _MSC_VER >= 1900
+#if !SIG_MSVC_ENV || !(MSC_VER < 1900)
 		, typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
 #endif
 		>
@@ -85,7 +85,7 @@ namespace sig
 		}, containers...);
 	}
 
-#if SIG_GCC_GT4_8_0 || _MSC_VER >= 1900
+#if !SIG_MSVC_ENV || !(MSC_VER < 1900)
 	// for variadic parameter, rvalue reference
 	template <class C1, class... Cs,
 		typename std::enable_if<!std::is_lvalue_reference<C1>::value && !And(std::is_lvalue_reference<Cs>::value...)>::type*& = enabler,
@@ -107,7 +107,7 @@ namespace sig
 	}
 #endif
 
-#if SIG_GCC_GT4_9_0 || _MSC_VER >= 1900
+#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || _MSC_VER >= 1900
 	template <class TC, size_t... I>
 	auto ZipImpl_(TC const& t_containers, std::index_sequence<I...>)
 	{
@@ -275,7 +275,7 @@ namespace sig
 		return result;
 	}
 
-#if SIG_GCC_GT4_8_0 || _MSC_VER >= 1900
+#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || _MSC_VER >= 1900
 	//(a -> a -> bool) -> [a] -> [a]
 	//比較関数を指定してソート
 	template <class F, class C, typename std::enable_if<has_random_iterator<C>::value, void>::type*& = enabler>

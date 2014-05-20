@@ -19,8 +19,9 @@ http://opensource.org/licenses/mit-license.php
 #include <windows.h>
 #endif
 
-#if !SIG_GCC_ENV
+#if SIG_MSVC_ENV || !(__GLIBCXX__ || __GLIBCPP__)
 #include <codecvt>
+#define SIG_ENABLE_CODECVT 1
 #endif
 
 #include "tool.hpp"
@@ -42,7 +43,7 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 	return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\$1)"));
 }
 
-#elif (SIG_GCC_ENV && SIG_ENABLE_BOOST)
+#elif (SIG_LINUX_ENV && SIG_ENABLE_BOOST)
 inline auto escape_regex(std::string const& expression) ->std::string
 {
 	static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
@@ -55,7 +56,7 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 }
 #endif
 
-#if SIG_MSVC_ENV || (SIG_GCC_ENV && SIG_ENABLE_BOOST)
+#if SIG_MSVC_ENV || (SIG_LINUX_ENV && SIG_ENABLE_BOOST)
 // エスケープ処理を行い、std::regex or std::wregexを返す
 template <class S>
 auto make_regex(S const& expression) ->typename Str2RegexSelector<TString<S>>::regex
@@ -105,8 +106,8 @@ auto split(
 	) ->CSeq<TString<S>>
 {
 	CSeq<S> result;
-	int const mag = delimiter.size();
-	int cut_at;
+	const uint mag = delimiter.size();
+	uint cut_at;
 
 	if (!mag) return CSeq<S>{src};
 
@@ -224,7 +225,7 @@ auto str_to_wstr(C const& strvec)
 	return result;
 }
 
-#if !SIG_GCC_ENV
+#if SIG_ENABLE_CODECVT
 // UTF-8 -> UTF-16
 inline auto utf8_to_utf16(std::string const& src) ->std::u16string
 {
@@ -339,7 +340,6 @@ template <class String>
 template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 String TagDealer<String>::encode(Container<String> const& src, Container<String> const& tag) const
 {
-	auto size = Min(src.size(), tag.size());
 	auto calc = zipWith([&](typename Container<String>::value_type s, typename Container<String>::value_type t){ return encode(s, t); }, src, tag);
 	return std::accumulate(calc.begin(), calc.end(), String(""));
 }

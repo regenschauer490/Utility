@@ -1,7 +1,7 @@
 ﻿#include "string_test.h"
 #include "../lib/file.hpp"
 
-//SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
+//sigutil.hpp の SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 
 using TVec = std::vector<std::string>;
 using TVecw = std::vector<std::wstring>;
@@ -12,7 +12,7 @@ using sig::SIG_Regex;
 
 void RegexTest()
 {
-#if SIG_MSVC_ENV || (SIG_GCC_ENV && SIG_ENABLE_BOOST)
+#if !((__GLIBCXX__ || __GLIBCPP__) && !SIG_ENABLE_BOOST)
 	auto raw1 = "? or (lol) must be escaped";
 
 	//エスケープ処理した文字列を取得
@@ -109,15 +109,22 @@ void SplitTest()
 	TVec test4{ " ", " ", "  " };
 	for (uint i = 0; i<split4.size(); ++i) assert(split4[i] == test4[i]);
 
-	auto sentence = R"(1
+	std::string sentence = R"(1
 2
 
 4
 )";
-	//行毎に分割（空行無視）
+
+	//行毎に分割
+#if SIG_CLANG_ENV
+	auto split5 = sig::split(sentence, "\r\n");
+#else
 	auto split5 = sig::split(sentence, "\n");
+#endif
 	TVec test5 = { "1", "2", "4" };
-	for (uint i = 0; i<split5.size(); ++i) assert(split5[i] == test5[i]);
+	for (uint i = 0; i<split5.size(); ++i){
+		assert(split5[i] == test5[i]);
+	}
 }
 
 void CatStrTest()

@@ -18,11 +18,11 @@ http://opensource.org/licenses/mit-license.php
 namespace sig
 {
 
-#if SIG_MSVC_LT1800
-
 // 標準ソート関数のラッパ (シーケンスコンテナのみ対応)
 // container: ソートするコンテナ
-// binary_op: 大小比較を行う関数(STLと同様)
+// binary_op: 大小比較を行う関数オブジェクト(STLと同様)
+#if SIG_MSVC_LT1800
+
 template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<has_random_iterator<C>::value>::type*& = enabler>
 void sort(
 	C& container,
@@ -40,9 +40,6 @@ void sort(
 }
 #else
 
-// 標準ソート関数のラッパ (シーケンスコンテナのみ対応)
-// data: ソートするコンテナ
-// binary_op: 大小比較を行う関数(STLと同様)
 template <class T, class F>
 void sort(
 	std::vector<T>& container,
@@ -50,7 +47,7 @@ void sort(
 {
 	std::sort(std::begin(container), std::end(container), binary_op);
 }
-// メンバ関数にsort()がある場合
+
 template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<!has_random_iterator<C>::value>::type*& = enabler>
 void sort(
 	C& container,
@@ -63,7 +60,7 @@ void sort(
 // ソート前の位置を保持してソート (シーケンスコンテナのみ対応)
 // ex: [30, 50, -10, 0] -> ([-10, 0, 30, 50], [2, 3, 0, 1])
 // container: ソート対象のデータ
-// binary_op: 大小比較を行う関数(STLと同様)
+// binary_op: 大小比較を行う関数オブジェクト(STLと同様)
 // return -> std::tuple<(ソート後のコンテナ), (ソート前のindexを記録したコンテナ)>
 template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>>
 auto sort_with_index(
@@ -122,31 +119,25 @@ void shuffle(Cs&... containers)
 
 // コンテナの要素から重複したものを削除
 // container: 処理対象コンテナ
-// need_removes: 削除した要素を戻り値で受け取るか
-// return -> 削除要素
+// return -> 削除要素とその個数
 template <class C>
-C remove_duplicates(C& container, bool need_removes)
+auto remove_duplicates(C& container)
 {
 	using T = typename container_traits<C>::value_type;
-	std::unordered_map<T, bool> rmv;
-	C result, removed;
+	std::map<T, uint> removed;
 
 	for (auto it = std::begin(container), end = std::end(container); it != end;){
-		if (!rmv.count(*it)){
-			container_traits<C>::add_element(result, std::move(*it));
-			rmv[*it] = true;
+		if (!removed.count(*it)){
+			removed[*it] = 0;
 			++it;
-			continue;
 		}
-		else if(need_removes){
-			container_traits<C>::add_element(removed, std::move(*it));
+		else{
+			++removed[*it];
+			it = container.erase(it);
+			end = container.end();
 		}
-		++rmv[*it];
-		it = container.erase(it);
-		end = container.end();
 	}
 
-	container = std::move(result);
 	return removed;
 }
 
@@ -175,7 +166,7 @@ bool remove_one(C& container, Sig_Eraser_ParamType1 remove)
 
 // コンテナから述語条件を満たす要素を1つ削除
 // container: 処理対象コンテナ
-// remove_pred: 削除判別関数
+// remove_pred: 削除判別を行う関数オブジェクト
 // return -> 削除要素が存在したか
 template <class Pred, class C>
 bool remove_one_if(C& container, Pred remove_pred)
@@ -205,7 +196,7 @@ bool remove_all(C& container, Sig_Eraser_ParamType1 remove)
 
 // コンテナから述語条件を満たす要素を全削除
 // container: 処理対象コンテナ
-// remove_pred: 削除判別関数
+// remove_pred: 削除判別を行う関数オブジェクト
 // return -> 削除要素が存在したか
 template <class Pred, class C>
 bool remove_all_if(C& container, Pred remove_pred)

@@ -97,18 +97,18 @@ void TestHelperModules()
 	//generic |a - b|
 	assert(sig::abs_delta(1, 3) == 2);
 	assert(sig::abs_delta(-2, -1) == 1);
-	assert(sig::abs_delta(3.0, 1.5) == 1.5);
-	assert(sig::abs_delta(3, 1.5) == 1.5);
+	assert(sig::equal(sig::abs_delta(3.0, 1.5), 1.5));
+	assert(sig::equal(sig::abs_delta(3, 1.5), 1.5));
 
 	//generic a == b
 	int ct1 = 0;
-	for (double f = 0.0; !sig::equal(f, 1.0); f += 0.1){
+	for (double f = 0.0; !sig::equal(f, 1); f += 0.1){
 		if (++ct1 >= 1000) break;
 	}
 	assert(ct1 == 10);
 
 	int ct2 = 0;
-	for (double f = 0.0; f != 1.0; f += 0.1){
+	for (double f = 0.0; f != 1; f += 0.1){
 		if (++ct2 >= 1000) break;
 	}
 	assert(ct2 == 1000);

@@ -1,5 +1,6 @@
 #include "modify_test.h"
 #include "../lib/functional.hpp"
+#include "../lib/iteration.hpp"
 #include "debug.hpp"
 
 template <class T>
@@ -51,33 +52,48 @@ void RemoveDuplicateTest()
 	std::multiset<int, std::greater<int>> data3{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 	std::unordered_multiset<int> data4{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 
-	auto removed1 = sig::remove_duplicates(data1, true);
-	auto removed2 = sig::remove_duplicates(data2, true);
-	auto removed3 = sig::remove_duplicates(data3, true);
-	auto removed4 = sig::remove_duplicates(data4, true);
-	
+	std::map<int, uint> removed1 = sig::remove_duplicates(data1);
+	auto removed2 = sig::remove_duplicates(data2);
+	auto removed3 = sig::remove_duplicates(data3);
+	auto removed4 = sig::remove_duplicates(data4);
+
+	auto test_remove_duplicates = [](std::map<int, uint>& removed){
+		assert(removed.size() == 5);
+		assert(removed[0] == 1);
+		assert(removed[1] == 1);
+		assert(removed[3] == 2);
+		assert(removed[4] == 0);
+		assert(removed[5] == 0);
+	};
+
 	sig::zipWith(sig::DebugEqual(), data1, TVec<int>{ 1, 5, 3, 0, 4 });
-	sig::zipWith(sig::DebugEqual(), removed1, TVec<int>{ 3, 0, 1, 3 });
+	test_remove_duplicates(removed1);
 
 	sig::zipWith(sig::DebugEqual(), data2, TVec<int>{ 1, 5, 3, 0, 4 });
-	sig::zipWith(sig::DebugEqual(), removed2, TVec<int>{ 3, 0, 1, 3 });
+	test_remove_duplicates(removed2);
 
 	sig::zipWith(sig::DebugEqual(), data3, TVec<int>{ 5, 4, 3, 1, 0 });
-	sig::zipWith(sig::DebugEqual(), removed3, TVec<int>{ 3, 3, 1, 0 });
+	test_remove_duplicates(removed3);
 
-	
 	auto testd4 = { 1, 5, 3, 0, 4 };
 	assert(std::accumulate(data4.begin(), data4.end(), 0.0) == std::accumulate(testd4.begin(), testd4.end(), 0.0));
+	test_remove_duplicates(removed4);
 
-	auto testr4 = {3, 0, 1, 3};
-	assert(std::accumulate(removed4.begin(), removed4.end(), 0.0) == std::accumulate(testr4.begin(), testr4.end(), 0.0));
-
-#if _MSC_VER > 1800
+#if SIG_GCC_ENV || SIG_CLANG_ENV || _MSC_VER >= 1900
 	std::multimap<int, std::string> data5{ { 1, "a"}, {5, "b"}, {3, "c"}, {3, "d"}, {0, "e"}, {4, "f"}, {0, "g"}, {1, "h"}, {3, "c"} };
-	auto removed5 = sig::remove_duplicates(data5, true);
+	auto removed5 = sig::remove_duplicates(data5);
 
-	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, data5, std::multimap<int, std::string>{ { 1, "a"}, {5, "b"}, {3, "c"}, {3, "d"}, {0, "e"}, {4, "f"}, {0, "g"}, {1, "h"} };);
-	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, removed5, std::multimap<int, std::string>{{3, "c"}});
+	std::multimap<int, std::string> testd5{ { 1, "a"}, {5, "b"}, {3, "c"}, {3, "d"}, {0, "e"}, {4, "f"}, {0, "g"}, {1, "h"} };
+	sig::for_each(sig::DebugEqual(), data5, testd5);
+	assert(removed5.size() == 8);
+	assert(removed5[std::make_pair(1, "a")] == 0);
+	assert(removed5[std::make_pair(5, "b")] == 0);
+	assert(removed5[std::make_pair(3, "c")] == 1);
+	assert(removed5[std::make_pair(3, "d")] == 0);
+	assert(removed5[std::make_pair(0, "e")] == 0);
+	assert(removed5[std::make_pair(4, "f")] == 0);
+	assert(removed5[std::make_pair(0, "g")] == 0);
+	assert(removed5[std::make_pair(1, "h")] == 0);
 #endif
 }
 

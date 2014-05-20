@@ -62,13 +62,13 @@ public:
 // max:	最大値
 // debug:	乱数のシードを固定するか
 template < template < class T, class = std::allocator<T>> class Container = std::vector >
-Container<int> random_unique_numbers(std::size_t n, int min, int max, bool debug) {
+Container<int> random_unique_numbers(uint n, int min, int max, bool debug) {
 	std::unordered_set<int> match;
 	Container<int> result;
 	SimpleRandom<int> Rand(0, max - min, debug);
 
 	int r;
-	for (int i = 0; i < n; ++i){
+	for (uint i = 0; i < n; ++i){
 		do{
 			r = min + Rand();
 		} while (match.find(r) != match.end());
@@ -174,7 +174,7 @@ class Histgram{
 
 private:
 	void print_base_(std::ostream& ofs) const{
-		auto IsPlus = [](double v){ return v < 0 ? false : true; };
+		//auto IsPlus = [](double v){ return v < 0 ? false : true; };
 
 		auto IntDigit = [](double v){ return log10(v) + 1; };
 
@@ -230,7 +230,7 @@ private:
 			else if (i == BIN_NUM + 1) ofs << std::fixed << std::setprecision(disp_precision) << "\n[" << std::setw(keta + 1) << low << ",+∞" << Space(keta - 2) << ")" << "：" << std::setw(ctketa) << _count[i] << " ";
 			else ofs << std::fixed << std::setprecision(disp_precision) << "\n[" << std::setw(keta + 1) << low << "," << std::setw(keta + 1) << high << ")" << "：" << std::setw(ctketa) << _count[i] << " ";
 
-			for (int j = 1; dbar*j <= _count[i]; ++j) ofs << "|";
+			for (uint j = 1; dbar*j <= _count[i]; ++j) ofs << "|";
 		}
 		ofs << std::resetiosflags(std::ios_base::floatfield) << "\n\n";
 	}

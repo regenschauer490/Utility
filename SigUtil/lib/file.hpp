@@ -58,6 +58,7 @@ inline auto modify_dirpass_tail(FilepassString const& directory_pass, bool const
 }	//impl
 
 // 指定ディレクトリにあるファイル名を取得
+// 必要条件：VisualStudio環境 または boostのインクルード
 // directry_pass：調べたいディレクトリのパス
 // hidden_file：true->隠しファイルのみ, false->非隠しファイルのみ (Windows, Linux環境のみ)
 // extension：拡張子指定(オプション)
@@ -102,7 +103,7 @@ inline auto get_file_names(
 	for (fs::directory_iterator it(directory_pass); it != end; ++it)
 	{
 		if (!fs::is_directory(*it) && Consistency(hidden_file, IsHidden(*it))){
-			auto leaf = sig::split(it->path().wstring(), L"\\").back();
+			auto leaf = sig::split(it->path().wstring(), L"/").back();
 			if (extension.empty()) result.push_back(leaf);
 			else{
 				auto query = L".*(" + escape_regex(extension) + L")";
@@ -113,12 +114,13 @@ inline auto get_file_names(
 	}
 	return Just<ResultType>::type(std::move(result));
 #else
-	std::cout << "this OS is not support. please include boost if any." << std::endl; 
+	std::cout << "I don't support this envirnment which is default. please include boost if any." << std::endl; 
 	assert(false);
 #endif
 }
 
 // 指定ディレクトリにあるフォルダ名を取得
+// 必要条件：VisualStudio環境 または boostのインクルード
 // directry_pass：調べたいディレクトリのパス
 // hidden_file：true->隠しファイルのみ, false->非隠しファイルのみ (Windows, Linux環境のみ)
 // 読み込み失敗: return -> nothing or empty-vector
@@ -161,12 +163,12 @@ inline auto get_folder_names(
 	for (fs::directory_iterator it(directory_pass); it != end; ++it)
 	{
 		if (fs::is_directory(*it) && Consistency(hidden_file, IsHidden(*it))){
-			result.push_back(sig::split(it->path().wstring(), L"\\").back());
+			result.push_back(sig::split(it->path().wstring(), L"/").back());
 		}
 	}
 	return Just<ResultType>::type(std::move(result));
 #else
-	std::cout << "this OS is not support. please include boost if any." << std::endl; 
+	std::cout << "I don't support this envirnment which is default. please include boost if any." << std::endl; 
 	assert(false);
 #endif
 }

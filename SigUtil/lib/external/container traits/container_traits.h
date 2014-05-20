@@ -39,10 +39,10 @@ template <class C>
 struct container_traits
 {
 	static const bool exist = false;
-    // Type value_type
-    // Type rebind<U>
-    // void add_element(C&,T)
-    // void concat(C&,C)
+	// Type value_type
+	// Type rebind<U>
+	// void add_element(C&,T)
+	// void concat(C&,C)
 };
 
 template<class C>
@@ -100,20 +100,20 @@ struct sequence_container_traits<C<T,A>>
 {
 	static const bool exist = true;
 	
-    using value_type = T;
+	using value_type = T;
 
-    template<class U>
-    using rebind = C<U,typename A::template rebind<U>::other>;
+	template<class U>
+	using rebind = C<U,typename A::template rebind<U>::other>;
 
-    static void add_element(C<T,A>& c, const T& t)
-    {
-        c.push_back(t);
-    }
+	static void add_element(C<T,A>& c, const T& t)
+	{
+		c.push_back(t);
+	}
 
-    static void concat(C<T,A>& lhs, const C<T,A>& rhs)
-    {
-        lhs.insert(lhs.end(),rhs.begin(),rhs.end());
-    }
+	static void concat(C<T,A>& lhs, const C<T,A>& rhs)
+	{
+		lhs.insert(lhs.end(),rhs.begin(),rhs.end());
+	}
 };
 
 template<class... Args>
@@ -136,20 +136,28 @@ struct associative_container_traits<C<T,O<T>,A>>
 {
 	static const bool exist = true;
 	
-    using value_type = T;
+	using value_type = T;
 
-    template<class U>
-    using rebind = C<U,O<U>,typename A::template rebind<U>::other>;
+	template<class U>
+	using rebind = C<U,O<U>,typename A::template rebind<U>::other>;
 
-    static void add_element(C<T,O<T>,A>& c, const T& t)
-    {
-        c.insert(t);
-    }
+	static void add_element(C<T,O<T>,A>& c, const T& t)
+	{
+		c.insert(t);
+	}
 
-    static void concat(C<T,O<T>,A>& lhs, const C<T,O<T>,A>& rhs)
-    {
-        lhs.insert(rhs.begin(),rhs.end());
-    }
+	static void concat(C<T,O<T>,A>& lhs, const C<T,O<T>,A>& rhs)
+	{
+		lhs.insert(rhs.begin(),rhs.end());
+	}
+};
+
+template<template<class,class,class,class> class C, class K, class T, template<class> class O, class A>
+struct associative_container_traits<C<K,T,O<K>,A>>
+{
+	static const bool exist = true;
+	
+	using value_type = std::pair<const K,T>;
 };
 
 template<class... Args>
@@ -160,6 +168,14 @@ template<class... Args>
 struct container_traits<std::set<Args...>> : public associative_container_traits<std::set<Args...>>
 {};
 
+template<class... Args>
+struct container_traits<std::map<Args...>> : public associative_container_traits<std::map<Args...>>
+{};	// only ::value_type
+
+template<class... Args>
+struct container_traits<std::multimap<Args...>> : public associative_container_traits<std::multimap<Args...>>
+{};	// only ::value_type
+
 template<class C>
 struct hash_container_traits;
 
@@ -168,20 +184,28 @@ struct hash_container_traits<C<T,H<T>,O<T>,A>>
 {
 	static const bool exist = true;
 	
-    using value_type = T;
+	using value_type = T;
 
-    template<class U>
-    using rebind = C<U,H<U>,O<U>,typename A::template rebind<U>::other>;
+	template<class U>
+	using rebind = C<U,H<U>,O<U>,typename A::template rebind<U>::other>;
 
-    static void add_element(C<T,H<T>,O<T>,A>& c, const T& t)
-    {
-        c.insert(t);
-    }
+	static void add_element(C<T,H<T>,O<T>,A>& c, const T& t)
+	{
+		c.insert(t);
+ 	}
 
-    static void concat(C<T,H<T>,O<T>,A>& lhs, const C<T,H<T>,O<T>,A>& rhs)
-    {
-        lhs.insert(rhs.begin(),rhs.end());
-    }
+	static void concat(C<T,H<T>,O<T>,A>& lhs, const C<T,H<T>,O<T>,A>& rhs)
+	{
+		lhs.insert(rhs.begin(),rhs.end());
+	}
+};
+
+template<template<class,class,class,class,class> class C, class K, class T, template<class> class H, template<class> class O, class A>
+struct hash_container_traits<C<K,T,H<K>,O<K>,A>>
+{
+	static const bool exist = true;
+	
+	using value_type = std::pair<const K,T>;
 };
 
 template<class... Args>
@@ -191,6 +215,14 @@ struct container_traits<std::unordered_multiset<Args...>> : public hash_containe
 template<class... Args>
 struct container_traits<std::unordered_set<Args...>> : public hash_container_traits<std::unordered_set<Args...>>
 {};
+
+template<class... Args>
+struct container_traits<std::unordered_map<Args...>> : public hash_container_traits<std::unordered_map<Args...>>
+{};	// only ::value_type
+
+template<class... Args>
+struct container_traits<std::unordered_multimap<Args...>> : public hash_container_traits<std::unordered_multimap<Args...>>
+{};	// only ::value_type
 
 /*
 // basic_string

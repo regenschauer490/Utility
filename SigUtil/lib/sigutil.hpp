@@ -1,19 +1,29 @@
 ﻿#ifndef SIG_UTIL_HPP
 #define SIG_UTIL_HPP
 
-#define SIG_ENABLE_BOOST 1		//boostが使用可能化
-#define SIG_USE_OPTIONAL 1		//boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが発生する可能性あり)
+/*--------------------------------------- User Option --------------------------------------------------------------------*/
 
-#ifdef _WIN32
-#define SIG_MSVC_ENV 1
-#elif _WIN64
-#define SIG_MSVC_ENV 1
-#else
-#ifdef __GNUC__
-#define SIG_GCC_ENV 1
-#endif
+#define SIG_ENABLE_BOOST 1		// boostが使用可能か
+#define SIG_USE_OPTIONAL 1		// boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが発生する可能性あり)
+
+/*------------------------------------------------------------------------------------------------------------------------*/
+
+#if defined(_WIN32) || defined(_WIN64) // windows env
+	#ifdef _MSC_VER
+	#define SIG_MSVC_ENV 1
+	#endif
+
+#elif defined(__unix__) || defined(linux) // linux env
+	#define SIG_LINUX_ENV 1
+
+	#if defined(__clang__)
+	#define SIG_CLANG_ENV 1
+	#elif defined(__GNUC__)
+	#define SIG_GCC_ENV 1
+	#endif
 #endif
 
+// compiler version check
 #ifdef SIG_MSVC_ENV
 	#ifdef _DEBUG
 	#define SIG_DEBUG_MODE 1
@@ -30,25 +40,31 @@
 	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
 	#define SIG_GCC_GT4_8_0 1
 	#endif
+
+#elif SIG_CLANG_ENV
+	#if __clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 4)
+	#define SIG_CLANG_GT_3_4 1
+	#endif
+	#if __clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 5)
+	#define SIG_CLANG_GT_3_5 1
+	#endif
 #endif
 
 #include <assert.h>
 #include <string>
-#include <vector>
-
-#include <stdio.h>
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <memory>
-#include <random>
-#include <functional>
-#include <algorithm>
 #include <array>
+#include <vector>
 #include <set>
 #include <map>
 #include <unordered_set>
 #include <unordered_map>
+//#include <stdio.h>
+#include <iostream>
+#include <iomanip>
+#include <memory>
+#include <random>
+#include <functional>
+#include <algorithm>
 #include <numeric>
 #include <regex>
 #include <utility>

@@ -116,10 +116,17 @@ constexpr bool Less(T1 v1, T2 v2){ return v1 < v2 ? true : false; };
 /* 実行時用 */
 
 // 2変数の差の絶対値を返す
-template <class T1, class T2>
-auto abs_delta(T1 v1, T2 v2) ->typename std::common_type<T1, T2>::type
+template <class T>
+T abs_delta(T v1, T v2)
 {
 	return v1 < v2 ? v2 - v1 : v1 - v2;
+}
+
+template <class T1, class T2>
+auto abs_delta(T1 v1, T2 v2)
+{
+	using T = typename std::common_type<T1, T2>::type;
+	return abs_delta(static_cast<T>(v1), static_cast<T>(v2));
 }
 
 // 厳密な計算でない場合に使用する簡易等値比較 (浮動小数点型の誤差をある程度許容)
@@ -127,7 +134,9 @@ template <class T1, class T2>
 bool equal(T1 v1, T2 v2)
 {
 	const uint tolerant_rate = 10000;	//許容範囲の調整 (10^-16 * tolerant_rate)
-	const auto dmin = std::numeric_limits<typename std::common_type<T1, T2>::type>::epsilon();
+
+	using T = typename std::common_type<T1, T2>::type;
+	const T dmin = std::numeric_limits<T>::epsilon();
 
 	return !(abs_delta(v1, v2) > tolerant_rate * dmin);
 }

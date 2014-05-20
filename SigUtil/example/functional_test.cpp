@@ -15,7 +15,7 @@ void MapTest()
 
 	auto r1 = sig::map([](int v){ return v * 2; }, data1);
 
-#if SIG_GCC_GT4_8_0 || _MSC_VER >= 1900
+#if !SIG_MSVC_ENV || !(MSC_VER < 1900)
 	auto r2 = sig::map([](int v){ return [v](int th){ return v < th; }; }, data2);
 #endif
 	auto r3 = sig::map([](int v){ return v / 4.0; }, data3);
@@ -29,7 +29,7 @@ void MapTest()
 	for(unsigned i=0; i<data1.size(); ++i){
 		assert(data1[i] * 2 == r1[i]);
 	}
-#if SIG_GCC_GT4_8_0 || _MSC_VER >= 1900
+#if !SIG_MSVC_ENV || !(MSC_VER < 1900)
 	{
 	const int th = 2;
 	auto it2 = data2.begin();
@@ -98,7 +98,7 @@ void FunctionalTest()
 	assert(fl1 == sig::sum(data1));
 	assert(fl2 == std::accumulate(std::begin(data1), std::end(data1), 0.0, [](double sum, int v){ return sum + v * 0.5; }));
 
-#if SIG_GCC_GT4_9_0 || _MSC_VER >= 1800
+#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || SIG_MSVC_ENV
 
 	int fl0 = sig::foldl(std::minus<int>(), 1, sig::array<int, 3>{ 2, 3, 4 }); //((1-2)-3)-4
 	int fr0 = sig::foldr(std::minus<int>(), 4, sig::array<int, 3>{ 1, 2, 3 }); //1-(2-(3-4))
@@ -108,7 +108,7 @@ void FunctionalTest()
 #endif
 
 	/// zip, unzip (move and const& ver)
-#if SIG_GCC_GT4_8_0 || _MSC_VER >= 1900
+#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || _MSC_VER >= 1900
 	//move ver
 	auto mdata1 = data1;
 	auto mdata2 = data2;
@@ -126,7 +126,7 @@ void FunctionalTest()
 	sig::variadicZipWith(sig::DebugEqual(), data1, std::get<0>(unzipped));
 	sig::variadicZipWith(sig::DebugEqual(), data2, std::get<1>(unzipped));
 
-#if SIG_GCC_GT4_9_0 || _MSC_VER >= 1900
+#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || _MSC_VER >= 1900
 	//make container of tuple, from tuple of container
 	auto rezipped = sig::zip(std::move(unzipped));		//std::vector< std::tuple<int, int>>
 
@@ -219,7 +219,7 @@ void FunctionalTest()
 	sig::zipWith(sig::DebugEqual(), d2, sig::array<int, 1>{ 2 });
 	sig::zipWith(sig::DebugEqual(), d3, sig::array<int, 1>{ 10 });
 
-#if SIG_GCC_GT4_8_0 || _MSC_VER >= 1900
+#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || _MSC_VER >= 1900
 	/// sort
 	auto s0 = sig::sort(std::greater<int>(), data0);
 	auto s1 = sig::sort(std::less<int>(), data1);
