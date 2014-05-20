@@ -22,17 +22,20 @@ int main()
 {
 	setlocale(LC_ALL, "Japanese");
 
-	sig::TimeWatch tw;
-	auto vec = sig::Replicate<std::wstring, std::multiset<std::wstring>>(10, std::wstring(5000000, L'あ'));
-	tw.Save();
-	auto vec2 = vec;
-	tw.Save();
-	auto tmp = sig::WSTRtoSTR(vec);
-	tw.Save();
+	//StrConvertPerformanceTest();
 
-//	std::cout << sig::FromJust(tw.GetLapTime(0)) << std::endl;
-//	std::cout << sig::FromJust(tw.GetLapTime(1)) << std::endl;
-	std::cout << sig::FromJust(tw.GetLapTime(2)) << std::endl;
+	//helper.hpp test
+	TestHelperModules();
+
+	//array.hpp test
+	ArrayTest();
+
+	//calculation.hpp test
+	ArithmeticOperationsTest();
+
+	//
+	ForeachTest();
+	CompoundAssignmentTest();
 
 	//functional.hpp test
 	MapTest();

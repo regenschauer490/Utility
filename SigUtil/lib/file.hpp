@@ -28,8 +28,8 @@ namespace fs = boost::filesystem;
 
 namespace sig
 {
-namespace impl{
 
+namespace impl{
 // ディレクトリ・ファイルパスの末尾に'/'or'\'があるかチェックし、付けるか外すかどうか指定
 inline auto modify_dirpass_tail(FilepassString const& directory_pass, bool const has_slash)
 {

@@ -59,9 +59,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="botsu.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="lib\string.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -101,7 +98,43 @@
     <ClInclude Include="example\modify_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
-    <ClInclude Include="lib\others.hpp">
+    <ClInclude Include="lib\array.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\calculation.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\helper.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\iteration.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="example\array_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="example\calculate_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\external\container traits\container_traits.hpp">
+      <Filter>ヘッダー ファイル\external</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\external\container traits\eval.hpp">
+      <Filter>ヘッダー ファイル\external</Filter>
+    </ClInclude>
+    <ClInclude Include="example\helper_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="example\iteration_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="example\debug.hpp">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tmp\botsu.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tmp\others.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

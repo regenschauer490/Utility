@@ -18,10 +18,11 @@ http://opensource.org/licenses/mit-license.php
 #include <boost/serialization/serialization.hpp>
 #endif
 
+
 /* 便利ツール */
 
-namespace sig{
-
+namespace sig
+{
 //初期化時に指定した範囲の一様分布乱数を発生させるクラス
 //デフォルト: 乱数生成器 -> メルセンヌツイスター
 template <class NumType, class Engine = std::mt19937>

@@ -173,6 +173,7 @@ inline bool modify_range(T& val, U const& min, U const& max)
 	return true;
 }
 
+
 /* 関数オブジェクト */
 
 struct increment

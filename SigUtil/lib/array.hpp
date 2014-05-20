@@ -87,7 +87,7 @@ private:
 public:
 	array() : tail_(0) {}
 
-	array(uint size, T val) : tail_(0){ for(uint i=0; i<size; ++i) push_back(val); }
+	array(size_type size, T val) : tail_(0){ for(size_type i=0; i<size; ++i) push_back(val); }
 
 	explicit array(std::initializer_list<T> init) : tail_(0){
 		assert(init.size() <= N);

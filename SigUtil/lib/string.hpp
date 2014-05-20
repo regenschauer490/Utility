@@ -26,10 +26,11 @@ http://opensource.org/licenses/mit-license.php
 
 #include "tool.hpp"
 
+
 /* 文字列処理関連 */
 
-namespace sig{
-
+namespace sig
+{
 // expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
 #if SIG_MSVC_ENV
 inline auto escape_regex(std::string const& expression) ->std::string

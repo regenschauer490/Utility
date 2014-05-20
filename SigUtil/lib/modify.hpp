@@ -13,11 +13,11 @@ http://opensource.org/licenses/mit-license.php
 #include "tool.hpp"
 #include <iterator>
 
+
 /* ソート・削除など、コンテナに対する変更操作 */
 
 namespace sig
 {
-
 // 標準ソート関数のラッパ (シーケンスコンテナのみ対応)
 // container: ソートするコンテナ
 // binary_op: 大小比較を行う関数オブジェクト(STLと同様)

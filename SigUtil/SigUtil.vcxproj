@@ -95,7 +95,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="botsu.hpp" />
     <ClInclude Include="example\array_test.h" />
     <ClInclude Include="example\calculate_test.h" />
     <ClInclude Include="example\debug.hpp" />
@@ -116,9 +115,10 @@
     <ClInclude Include="lib\modify.hpp" />
     <ClInclude Include="lib\file.hpp" />
     <ClInclude Include="lib\functional.hpp" />
-    <ClInclude Include="lib\others.hpp" />
     <ClInclude Include="lib\sigutil.hpp" />
     <ClInclude Include="lib\string.hpp" />
+    <ClInclude Include="lib\tmp\botsu.hpp" />
+    <ClInclude Include="lib\tmp\others.hpp" />
     <ClInclude Include="lib\tool.hpp" />
     <ClInclude Include="lib\type_map.hpp" />
   </ItemGroup>

@@ -126,5 +126,4 @@ SIG_MakeBinaryOperation(divides, / );
 		return std::accumulate(std::begin(container), std::end(container), static_cast<R>(0), std::multiplies<R>{});
 	}
 }
-
 #endif
