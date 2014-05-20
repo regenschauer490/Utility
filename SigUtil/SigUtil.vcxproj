@@ -83,6 +83,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="example\array_test.cpp" />
+    <ClCompile Include="example\calculate_test.cpp" />
+    <ClCompile Include="example\iteration_test.cpp" />
+    <ClCompile Include="example\helper_test.cpp" />
     <ClCompile Include="example\modify_test.cpp" />
     <ClCompile Include="example\file_test.cpp" />
     <ClCompile Include="example\functional_test.cpp" />
@@ -92,14 +96,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="botsu.hpp" />
+    <ClInclude Include="example\array_test.h" />
+    <ClInclude Include="example\calculate_test.h" />
+    <ClInclude Include="example\debug.hpp" />
+    <ClInclude Include="example\iteration_test.h" />
+    <ClInclude Include="example\helper_test.h" />
     <ClInclude Include="example\modify_test.h" />
     <ClInclude Include="example\file_test.h" />
     <ClInclude Include="example\functional_test.h" />
     <ClInclude Include="example\string_test.h" />
     <ClInclude Include="example\tool_test.h" />
+    <ClInclude Include="lib\array.hpp" />
+    <ClInclude Include="lib\calculation.hpp" />
     <ClInclude Include="lib\container_helper.hpp" />
-    <ClInclude Include="lib\external\container traits\container_traits.h" />
-    <ClInclude Include="lib\external\container traits\eval.h" />
+    <ClInclude Include="lib\external\container traits\container_traits.hpp" />
+    <ClInclude Include="lib\external\container traits\eval.hpp" />
+    <ClInclude Include="lib\helper.hpp" />
+    <ClInclude Include="lib\iteration.hpp" />
     <ClInclude Include="lib\modify.hpp" />
     <ClInclude Include="lib\file.hpp" />
     <ClInclude Include="lib\functional.hpp" />

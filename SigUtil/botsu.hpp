@@ -9,7 +9,7 @@ namespace sig
 	//[a] -> [b] -> (a -> b -> void) -> void
 	//戻り値の型がvoidの場合
 	template <class R, class A, class B, template < class T, class = std::allocator<T >> class Container, typename std::enable_if<std::is_same<R, void>::value>::type*& = enabler>
-	void ZipWith(Container<A> const& list1, Container<B> const& list2, std::function<void(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
+	void zipWith(Container<A> const& list1, Container<B> const& list2, std::function<void(typename std::common_type<A>::type, typename std::common_type<B>::type)> const& func)
 	{
 	const uint length = list1.size() < list2.size() ? list1.size() : list2.size();
 	uint i = 0;
@@ -231,5 +231,134 @@ namespace sig
 	return move(result);
 	}
 	*/
+
+
+/*
+std::cout << container_traits<int>::exist << std::endl;
+std::cout << container_traits<std::vector<int>>::exist << std::endl;
+std::cout << container_traits<std::array<int,3>>::exist << std::endl;
+
+sig::TimeWatch tw;
+for (int i=0; i<100; ++i){
+tw.Stop();
+std::vector<Tes> vec(100000, 1);
+tw.ReStart();
+auto d = sig::plus(2, vec);
+//for (auto& v : vec){ v += 2; }
+tw.Save();
+}
+
+std::cout << tw.GetTotalTime() << std::endl;
+
+
+std::vector<int> vec{1,2, 3, 4, 5, 6, 7};
+std::vector<std::vector<double>> result;
+
+const auto Task = [&t](int id){
+std::vector<double> r(id, 0);
+
+std::cout << "id:" << id << std::endl;
+
+return std::move(r);
+};
+
+std::vector<std::future< std::vector<double> >> task;
+
+tw.Save();
+for (auto const& v :vec){
+task.push_back(std::async(std::launch::async, Task, v));
+}
+
+tw.Save();
+for (auto& t : task){
+result.push_back(t.get());
+}
+tw.Save();
+
+std::cout << std::endl;
+std::cout << sig::fromJust(tw.GetLapTime(0)) << std::endl;
+std::cout << sig::fromJust(tw.GetLapTime(1)) << std::endl;
+std::cout << sig::fromJust(tw.GetLapTime(2)) << std::endl;
+*/
+
+
+/*
+template<uint I = 0, typename Func, typename... Ts>
+auto ForEach(std::tuple<Ts...> &, Func) ->typename std::enable_if<I == sizeof...(Ts), void>::type{}
+
+template<uint I = 0, typename Func, typename... Ts>
+auto ForEach(std::tuple<Ts...>& t, Func f) ->typename std::enable_if<I < sizeof...(Ts), void>::type
+{
+f(std::get<I>(t));
+ForEach<I + 1, Func, Ts...>(t, f);
+}
+
+template <class T>
+constexpr auto HasBegin(int) ->decltype(std::declval<T>().begin(), bool()){ return true; }
+
+template <class T>
+constexpr bool HasBegin(...){ return false; }
+*/
+
+/*
+template <class C>
+auto TestImpl(C c)
+{
+container_traits<C>::add_element(c, 1);
+return std::make_tuple(std::move(c));
+}
+template <class C, class... Cs>
+auto TestImpl(C c, Cs... cs)
+{
+container_traits<C>::add_element(c, 1);
+return std::tuple_cat(std::make_tuple(std::move(c)), TestImpl(cs...));
+}
+
+template <class T, size_t... I>
+auto Test(T const& tuple, std::index_sequence<I...>)
+{
+return TestImpl(std::vector<typename std::tuple_element<I, T>::type>{}...);
+}
+*/
+
+
+//template <class Container, class Sfinae = void> struct ContainerConstructor{ typedef Container type; };
+//template <class Container> struct ContainerConstructor<Container, typename std::enable_if<std::is_array<Container>::value>::type>{ typedef std::array<std::remove_extent<Container>, std::rank<Container>::value> type; };
+
+//template <class T, class D = void> struct HasBegin : std::true_type{};
+//template <class T> struct HasBegin<T, decltype(std::declval<T>().begin())> : std::false_type{};
+
+//template <typename T> constexpr auto has_reserve_method(int) -> decltype(std::declval<T>().reserve(0), bool()) { return true; }
+//template <typename T> constexpr bool has_reserve_method(...) { return false; }
+
+/*template <typename T>
+auto Reserve(T& t, size_t n) -> typename std::enable_if<has_reserve_method<T>(0), void>::type {
+std::cout << "true" << std::endl;
+t.reserve(n);
+}
+
+template <typename T>
+auto Reserve(T& t, size_t n) -> typename std::enable_if<!has_reserve_method<T>(0), void>::type {
+std::cout << "false" << std::endl;
+}*/
+
+/*template <typename T, typename std::enable_if<has_reserve_method<T>(0)>::type *& = enabler>
+void Reserve(T& t, size_t n){
+std::cout << "true" << std::endl;
+t.reserve(n);
+}
+
+template <typename T, typename std::enable_if<!has_reserve_method<T>(0)>::type *& = enabler>
+void Reserve(T& t, size_t n) {
+std::cout << "false" << std::endl;
+}*/
+/*
+template <class T>
+auto Reserve(T& t, size_t n) ->decltype(t.reserve(n), void()){ t.reserve(n); std::cout << "true" << std::endl; }
+
+template <class T>
+void Reserve(T& t, size_t n){ std::cout << "false" << std::endl; }
+*/
+
 
 }

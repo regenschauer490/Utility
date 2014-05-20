@@ -5,19 +5,19 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTILUTIL_FUNCTIONAL_HPP
-#define SIG_UTILUTIL_FUNCTIONAL_HPP
+#ifndef SIG_UTIL_FUNCTIONAL_HPP
+#define SIG_UTIL_FUNCTIONAL_HPP
 
-#include "sigutil.hpp"
+#include "helper.hpp"
 #include "container_helper.hpp"
 
 /* 関数型プログラミング サポート */
 
 namespace sig
 {
-	//n引数高階関数
+	// n引数高階関数
 	template <class F, class C1, class... Cs>
-	auto HigherOrderFunction(F const& func, C1 const& container1, Cs const&... containers)
+	auto variadicZipWith(F const& func, C1 const& container1, Cs const&... containers)
 	{
 		using OutputType = typename container_traits<C1>::template rebind<decltype(eval(
 			func,
@@ -27,52 +27,71 @@ namespace sig
 
 		OutputType result;
 		const uint length = Min(container1.size(), containers.size()...);
-		Iterate(length, result, func, std::begin(container1), std::begin(containers)...);
+		iterative_make(length, result, func, std::begin(container1), std::begin(containers)...);
 
-		return std::move(result);
+		return result;
 	}
 
-	//(a -> b) -> [a] -> [b]
-	//1引数高階関数
+	// (a -> b) -> [a] -> [b]
+	// 1引数高階関数
 	template <class F, class C>
-	auto Map(F const& func, C const& container)
+	auto map(F const& func, C const& container)
 	{
-		return HigherOrderFunction(func, container);
+		return variadicZipWith(func, container);
 	}
 
 
-	//(a -> b -> c) -> [a] -> [b] -> [c]
-	//2引数高階関数
+	// (a -> b -> c) -> [a] -> [b] -> [c]
+	// 2引数高階関数
 	template <class F, class C1, class C2>
-	auto ZipWith(F const& func, C1 const& container1, C2 const& container2)
+	auto zipWith(F const& func, C1 const& container1, C2 const& container2)
 	{
-		return HigherOrderFunction(func, container1, container2);
+		return variadicZipWith(func, container1, container2);
 	}
 
 
-	//[a] -> [b] -> ... -> [(a, b, ...)]
-	//複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
+	// (a -> b -> a) -> a -> [b] -> a
+	// リストの先頭からたたみ込み
+	template <class F, class T, class C>
+	auto foldl(F func, T init, C container)
+	{
+		using R = decltype(eval(func, init, std::declval<typename container_traits<C>::value_type>()));
+		return std::accumulate(std::begin(container), std::end(container), static_cast<R>(init), func);
+	}
+
+#if SIG_GCC_GT_4_9 || SIG_CLANG_GT_3_5 || SIG_MSVC_ENV
+	// (a -> b -> b) -> b -> [a] -> b
+	// リストの末尾からたたみ込み
+	template <class F, class T, class C>
+	auto foldr(F func, T init, C container)
+	{
+		using R = decltype(eval(func, init, std::declval<typename container_traits<C>::value_type>()));
+		return std::accumulate(std::rbegin(container), std::rend(container), static_cast<R>(init), std::bind(func, _2, _1));
+	}
+#endif
+
+	// [a] -> [b] -> ... -> [(a, b, ...)]
+	// 複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
+	// for variadic parameter, const lvalue reference
 	template <class... Cs
-#ifndef SIG_MSVC_LT1800
+#if !SIG_MSVC_ENV || !(MSC_VER < 1900)
 		, typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
 #endif
 		>
-	auto Zip(Cs const&... containers)
+	auto zip(Cs const&... containers)
 	{
-		return HigherOrderFunction([](typename container_traits<Cs>::value_type const&... vs){
+		return variadicZipWith([](typename container_traits<Cs>::value_type const&... vs){
 			return std::make_tuple(vs...);
 		}, containers...);
 	}
 
-
-#ifndef SIG_MSVC_LT1800
-
-	//for rvalue reference
+#if !SIG_MSVC_ENV || !(MSC_VER < 1900)
+	// for variadic parameter, rvalue reference
 	template <class C1, class... Cs,
 		typename std::enable_if<!std::is_lvalue_reference<C1>::value && !And(std::is_lvalue_reference<Cs>::value...)>::type*& = enabler,
 		typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
 	>
-	auto Zip(C1&& container1, Cs&&... containers)
+	auto zip(C1&& container1, Cs&&... containers)
 	{
 		using OutputType = typename container_traits<C1>::template rebind<
 			std::tuple<typename container_traits<C1>::value_type, typename container_traits<Cs>::value_type...>
@@ -80,45 +99,46 @@ namespace sig
 
 		const uint length = Min(container1.size(), containers.size()...);
 		OutputType result;
-		Iterate(length, result, [](typename container_traits<C1>::value_type&& v1, typename container_traits<Cs>::value_type&&... vs){
+		iterative_make(length, result, [](typename container_traits<C1>::value_type&& v1, typename container_traits<Cs>::value_type&&... vs){
 			return std::make_tuple(std::move(v1), std::move(vs)...);
 		}, std::make_move_iterator(std::begin(container1)), std::make_move_iterator(std::begin(containers))...);
 
-		return std::move(result);
-	}
-
-#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 8)
-	template <class TC, size_t... I>
-	auto ZipImpl(TC const& t_containers, std::index_sequence<I...>)
-	{
-		return Zip(std::get<I>(t_containers)...);
-	}
-	template <class TC, size_t... I>
-	auto ZipImpl(TC&& t_containers, std::index_sequence<I...>)
-	{
-		return Zip(std::get<I>(std::forward<TC>(t_containers))...);
-	}
-
-	//([a], [b], ...) -> [(a, b, ...)]
-	//コンテナのタプルから、タプルのコンテナを作る
-	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>
-	auto Zip(std::tuple<Cs...> const& t_containers)
-	{
-		return ZipImpl(t_containers, Indices());
-	}
-
-	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>
-	auto Zip(std::tuple<Cs...>&& t_containers)
-	{
-		return ZipImpl(std::move(t_containers), Indices());
+		return result;
 	}
 #endif
-#endif
 
-	//[(a, b, ...)] -> [a0]
-	//タプルのコンテナから、指定したコンテナを取り出す
+#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || _MSC_VER >= 1900
+	template <class TC, size_t... I>
+	auto ZipImpl_(TC const& t_containers, std::index_sequence<I...>)
+	{
+		return zip(std::get<I>(t_containers)...);
+	}
+	template <class TC, size_t... I>
+	auto ZipImpl_(TC&& t_containers, std::index_sequence<I...>)
+	{
+		return zip(std::get<I>(std::forward<TC>(t_containers))...);
+	}
+
+	// ([a], [b], ...) -> [(a, b, ...)]
+	// コンテナのタプルから、タプルのコンテナを作る
+	// for tuple, const lvalue reference
+	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>
+	auto zip(std::tuple<Cs...> const& t_containers)
+	{
+		return ZipImpl_(t_containers, Indices());
+	}
+
+	// for tuple, rvalue reference
+	template <class... Cs, typename Indices = std::make_index_sequence<sizeof...(Cs)>
+	auto zip(std::tuple<Cs...>&& t_containers)
+	{
+		return ZipImpl_(std::move(t_containers), Indices());
+	}
+#endif
+	// [(a, b, ...)] -> [a0]
+	// タプルのコンテナから、指定したindexのコンテナ(templateパラメータで指定)を取り出す
 	template <size_t Index, class CT>
-	auto UnZip(CT const& c_tuple)
+	auto unzip(CT const& c_tuple)
 	{
 		using T = typename std::tuple_element<Index, typename container_traits<CT>::value_type>::type;
 		using C = std::vector<T>;
@@ -127,145 +147,148 @@ namespace sig
 		for (auto const& e : c_tuple){
 			container_traits<C>::add_element(result, std::get<Index>(e));
 		}
-		return std::move(result);
+		return result;
 	}
 
 	template <uint Index, class CT, typename std::enable_if<!std::is_lvalue_reference<CT>::value>::type*& = enabler>
-	auto UnZip(CT&& c_tuple)
+	auto unzip(CT&& c_tuple)
 	{
 		using T = typename std::tuple_element<Index, typename container_traits<CT>::value_type>::type;
 		using C = std::vector<T>;
 		C result;
 
-		for (auto& e : c_tuple){
-			container_traits<C>::add_element(result, std::get<Index>(std::move(e)));
+		for (auto& t : c_tuple){
+			container_traits<C>::add_element(result, std::get<Index>(std::move(t)));
 		}
-		return std::move(result);
+		return result;
 	}
 
 	template<class CT, size_t I = 0, typename std::enable_if<I + 1 == std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
-	auto UnZipImpl(CT const& c_tuple)
+	auto UnzipImpl_(CT const& c_tuple)
 	{
-		return std::make_tuple(UnZip<I>(c_tuple));
+		return std::make_tuple(unzip<I>(c_tuple));
 	}
 	template<class CT, size_t I = 0, typename std::enable_if<I + 1 < std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
-	auto UnZipImpl(CT const& c_tuple)
+	auto UnzipImpl_(CT const& c_tuple)
 	{
-		return std::tuple_cat(std::make_tuple(UnZip<I>(c_tuple)), UnZipImpl<CT, I + 1>(c_tuple));
+		return std::tuple_cat(std::make_tuple(unzip<I>(c_tuple)), UnzipImpl_<CT, I + 1>(c_tuple));
 	}
 
 	template<class CT, uint I = 0, typename std::enable_if<I + 1 == std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
-	auto UnZipImpl(CT&& c_tuple)
+	auto UnzipImpl_(CT&& c_tuple)
 	{
-		return std::make_tuple(UnZip<I>(std::forward<CT>(c_tuple)));
+		return std::make_tuple(unzip<I>(std::forward<CT>(c_tuple)));
 	}
 	template<class CT, uint I = 0, typename std::enable_if<I + 1 < std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
-	auto UnZipImpl(CT&& c_tuple)
+	auto UnzipImpl_(CT&& c_tuple)
 	{
-		return std::tuple_cat(std::make_tuple(UnZip<I>(std::forward<CT>(c_tuple))), UnZipImpl<CT, I + 1>(std::forward<CT>(c_tuple)));
+		return std::tuple_cat(std::make_tuple(unzip<I>(std::forward<CT>(c_tuple))), UnzipImpl_<CT, I + 1>(std::forward<CT>(c_tuple)));
 	}
 
-	//[(a, b, ...)] -> ([a], [b], ...)
-	//タプルのコンテナから、コンテナのタプルを作る
+	// [(a, b, ...)] -> ([a], [b], ...)
+	// タプルのコンテナから、コンテナのタプルを作る
 	template <class CT>
-	auto UnZip(CT const& c_tuple)
+	auto unzip(CT const& c_tuple)
 	{
-		return UnZipImpl(c_tuple);
+		return UnzipImpl_(c_tuple);
 	}
 
 	template <class CT, typename std::enable_if<!std::is_lvalue_reference<CT>::value>::type*& = enabler>
-	auto UnZip(CT&& c_tuple)
+	auto unzip(CT&& c_tuple)
 	{
-		return UnZipImpl(std::forward<CT>(c_tuple));
+		return UnzipImpl_(std::forward<CT>(c_tuple));
 	}
 
-	//uint -> a -> [a]
-	//値を複製したコンテナを返す
+	// uint -> a -> [a]
+	// 値を複製したコンテナを返す
 	template <class T, class C = std::vector<T>>
-	C Replicate(uint n, T const& value)
+	C replicate(uint n, T const& value)
 	{
 		C result;
 		for (uint i = 0; i<n; ++i) container_traits<C>::add_element(result, value);
-		return std::move(result);
+		return result;
 	}
 
-	template <class T, class C = std::vector<T>>
-	C ArithSequence(T st, T d, uint n)
+	// 等差数列
+	// st:初項, d:公差, n:項数
+	template <class T1, class T2, class C = std::vector<typename std::common_type<T1, T2>::type>>
+	C seq(T1 st, T2 d, uint n)
 	{
+		using R = typename std::common_type<T1, T2>::type;
 		C result;
-		for (uint i = 0; i<n; ++i) container_traits<C>::add_element(result, st + i*d);
-		return std::move(result);
+		for (uint i = 0; i<n; ++i) container_traits<C>::add_element(result, static_cast<R>(st) + i * static_cast<R>(d));
+		return result;
 	}
 
-	//[a] -> [a]
-	//コンテナの要素を逆転させたコンテナを返す
+	// [a] -> [a]
+	// コンテナの要素を逆転させたコンテナを返す
 	template <class C>
-	C Reverse(C const& container)
+	C reverse(C const& container)
 	{
 		C result = container;
 		std::reverse(std::begin(result), std::end(result));
-		return std::move(result);
+		return result;
 	}
 
-	//[a] -> [a] -> [a]
-	//コンテナの結合
+	// [a] -> [a] -> [a]
+	// コンテナの結合
 	template <class C>
-	C Merge(C const& container1, C const& container2)
+	C merge(C const& container1, C const& container2)
 	{
 		auto result = container1;
 		container_traits<C>::concat(result, container2);
-		return std::move(result);
+		return result;
 	}
 
-	//[a] -> [b] -> [c]
-	//コンテナの結合
+	// [a] -> [a] -> [a]
+	// コンテナの結合 (tamplateパラメータCで結合後のコンテナの種類を指定)
 	template <class C, class C1, class C2>
-	C Merge(C1 const& container1, C2 const& container2)
+	C merge(C1 const& container1, C2 const& container2)
 	{
 		C result;
 		for (auto v : container1) container_traits<C>::add_element(result, v);
 		for (auto v : container2) container_traits<C>::add_element(result, v);
-		return std::move(result);
+		return result;
 	}
 
-	//uint -> [a] -> [a]
-	//コンテナの先頭からn個を取り出したコンテナを返す (順序の無いコンテナでは実装依存)
+	// uint -> [a] -> [a]
+	// コンテナの先頭からn個を取り出したコンテナを返す (順序の無いコンテナでは実装依存)
 	template <class C>
-	C Take(uint n, C const& container)
+	C take(uint n, C const& container)
 	{
 		C result;
 		uint i = 0;
 		for (auto it = std::begin(container); i < n; ++i, ++it) container_traits<C>::add_element(result, *it);
-		return std::move(result);
+		return result;
 	}
 
-	//uint -> [a] -> [a]
-	//コンテナの先頭からn個を削除したコンテナを返す (順序の無いコンテナでは実装依存)
+	// uint -> [a] -> [a]
+	// コンテナの先頭からn個を削除したコンテナを返す (順序の無いコンテナでは実装依存)
 	template <class C>
-	C Drop(uint n, C const& container)
+	C drop(uint n, C const& container)
 	{
 		C result;
 		uint i = 0;
 		auto it = std::begin(container), end = std::end(container);
 		for (; i < n && it != end; ++i, ++it) ;
 		for (; it != end; ++i, ++it) container_traits<C>::add_element(result, *it);
-		return std::move(result);
+		return result;
 	}
 
-#ifndef SIG_MSVC_LT1800
+#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || _MSC_VER >= 1900
 	//(a -> a -> bool) -> [a] -> [a]
 	//比較関数を指定してソート
-	template <class F, class C, typename std::enable_if<HasRandomIter<C>::value, void>::type*& = enabler>
-	auto Sort(F const& binary_op, C const& data){
+	template <class F, class C, typename std::enable_if<has_random_iterator<C>::value, void>::type*& = enabler>
+	auto sort(F const& binary_op, C const& data){
 		C result = data;
 		std::sort(std::begin(result), std::end(result), binary_op);
-		return std::move(result);
+		return result;
 	}
-	template <class F, class C, typename std::enable_if<!HasRandomIter<C>::value, void>::type*& = enabler>
-	auto Sort(F const& binary_op, C const& data){
+	template <class F, class C, typename std::enable_if<!has_random_iterator<C>::value, void>::type*& = enabler>
+	auto sort(F const& binary_op, C const& data){
 		C result = data;
 		result.sort(binary_op);
-		return std::move(result);
+		return result;
 	}
 #endif
 }

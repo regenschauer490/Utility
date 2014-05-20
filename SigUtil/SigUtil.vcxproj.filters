@@ -45,6 +45,18 @@
     <ClCompile Include="example\modify_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
+    <ClCompile Include="example\calculate_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
+    <ClCompile Include="example\helper_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
+    <ClCompile Include="example\iteration_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
+    <ClCompile Include="example\array_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="botsu.hpp">
@@ -91,12 +103,6 @@
     </ClInclude>
     <ClInclude Include="lib\others.hpp">
       <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\external\container traits\container_traits.h">
-      <Filter>ヘッダー ファイル\external</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\external\container traits\eval.h">
-      <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

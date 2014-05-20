@@ -8,3 +8,4 @@ void SplitTest();
 void CatStrTest();
 void StrConvertTest();
 void ZenHanTest();
+void StrConvertPerformanceTest();

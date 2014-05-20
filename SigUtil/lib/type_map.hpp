@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef _SIG_UTILUTIL_TYPEMAP_HPP
-#define _SIG_UTILUTIL_TYPEMAP_HPP
+#ifndef _SIG_UTIL_TYPEMAP_HPP
+#define _SIG_UTIL_TYPEMAP_HPP
 
 #include "sigutil.hpp"
 
@@ -68,21 +68,21 @@ namespace sig{
 		double operator()(std::string s){ return std::stod(s); }
 	};
 
-	//identify whether T is string-related type and convert to STL string type
+	//convert string-related type T into STL string type
 	template <class T>
-	struct StringId{};
+	struct StringId{ typedef T type; static const bool value = false; };
 	template <>
-	struct StringId<std::string>{ typedef std::string type; };
+	struct StringId<std::string>{ typedef std::string type; static const bool value = true; };
 	template <>
-	struct StringId<char*>{ typedef std::string type; };
+	struct StringId<char*>{ typedef std::string type; static const bool value = true; };
 	template <>
-	struct StringId<char const*>{ typedef std::string type; };
+	struct StringId<char const*>{ typedef std::string type; static const bool value = true; };
 	template <>
-	struct StringId<std::wstring>{ typedef std::wstring type; };
+	struct StringId<std::wstring>{ typedef std::wstring type; static const bool value = true; };
 	template <>
-	struct StringId<wchar_t*>{ typedef std::wstring type; };
+	struct StringId<wchar_t*>{ typedef std::wstring type; static const bool value = true; };
 	template <>
-	struct StringId<wchar_t const*>{ typedef std::wstring type; };
+	struct StringId<wchar_t const*>{ typedef std::wstring type; static const bool value = true; };
 
 	//preset to use StringId 
 	template <class T>

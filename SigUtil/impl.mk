@@ -1,12 +1,3 @@
-COMPILER = g++
-CFLAGS   = -Wextra -g -MMD -MP -std=gnu++1y
-LDFLAGS  =
-LIBS     = 
-INCLUDE  = -I/home/nishimura/boost-1_54_0
-BIN_DIR  = ../bin
-TARGET	= test
-TARGET0   = $(addprefix $(BIN_DIR)/,$(TARGET))
-OBJ_DIR   = obj
 ifeq "$(strip $(OBJ_DIR))" ""
   OBJ_DIR = .
 endif

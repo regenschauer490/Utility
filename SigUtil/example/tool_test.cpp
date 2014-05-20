@@ -1,7 +1,11 @@
 #include "tool_test.h"
+#include "../lib/helper.hpp"
+#include "../lib/calculation.hpp"
 
 #if SIG_MSVC_ENV
 #include <windows.h>
+#else
+#include <unistd.h>
 #endif
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
@@ -10,10 +14,11 @@ void RandomTest()
 {
 	sig::SimpleRandom<int> rand_maker(-10, 10, true);	//[-10, 10]の一様分布乱数、デバッグモード(シード固定)
 	
-	std::cout << rand_maker() << std::endl;
+	std::cout << "make random number in [-10, 10]:" << rand_maker() << std::endl;
 
-	auto rints = sig::RandomUniqueNumbers(10, 0, 30, true);	//[0, 30]の一様分布から10個重複無くサンプル
+	auto rints = sig::random_unique_numbers(10, 0, 20, true);	//[0, 20]の一様分布から10個重複無くサンプル
 
+	std::cout << "make 10 random numbers in [0, 20]" << std::endl;
 	for (auto v : rints) std::cout << v << std::endl;
 }
 
@@ -22,59 +27,53 @@ void TimeWatchTest()
 	sig::TimeWatch tw;		//計測開始
 
 #if SIG_MSVC_ENV
-	Sleep(100);
-
-	tw.Save();		//ここまでのタイムを記録
-
-	Sleep(200);
-
-	tw.Save();		//ここまでのタイムを記録
-
-	Sleep(300);
-
-	tw.Stop();		//一時停止
-
-	Sleep(10);
-
-	tw.Save();		//ここまでのタイムを記録
-
-	Sleep(20);
-
-	tw.ReStart();	//計測再開
-
-	Sleep(400);
-
-	tw.Save();		//ここまでのタイムを記録
-
-#if SIG_ENABLE_BOOST
-	assert(sig::TolerantEqual(*tw.GetLapTime(0), 100, 1));		//100 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetLapTime(1), 200, 1));		//200 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetLapTime(2), 300, 1));		//300 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetLapTime(3), 400, 1));		//400 ± 1 (ms)
-	assert(! tw.GetLapTime(4));
-
-	assert(sig::TolerantEqual(*tw.GetSplitTime(0), 100, 1));	//100 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetSplitTime(1), 300, 1));	//300 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetSplitTime(2), 600, 1));	//600 ± 1 (ms)
-	assert(sig::TolerantEqual(*tw.GetSplitTime(3), 1000, 1));	//1000 ± 1 (ms)
+	auto tsleep = [](unsigned milisec){ Sleep(milisec); };
 #else
-	assert(sig::TolerantEqual(tw.GetLapTime(0), 100, 1));		//100 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetLapTime(1), 200, 1));		//200 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetLapTime(2), 300, 1));		//300 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetLapTime(3), 400, 1));		//400 ± 1 (ms)
-	assert(tw.GetLapTime(4) == -1);
-
-	assert(sig::TolerantEqual(tw.GetSplitTime(0), 100, 1));		//100 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetSplitTime(1), 300, 1));		//300 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetSplitTime(2), 600, 1));		//600 ± 1 (ms)
-	assert(sig::TolerantEqual(tw.GetSplitTime(3), 1000, 1));	//1000 ± 1 (ms)
+	auto tsleep = [](unsigned milisec){ usleep(milisec*1000); };
 #endif
-	assert(sig::TolerantEqual(tw.GetTotalTime(), 1000, 1));				//1000 ± 1 (ms)
-	assert(sig::Equal(tw.GetTotalTime<std::chrono::seconds>(), 1));		//1 (s)
-	assert(sig::TolerantEqual(tw.GetTotalTime<std::chrono::microseconds>(), 1000000, 100));	//1000000  ± 100 (μs)
+	tsleep(100);
+
+	tw.save();		//ここまでのタイムを記録
+
+	tsleep(200);
+
+	tw.save();		//ここまでのタイムを記録
+
+	tsleep(300);
+
+	tw.stop();		//一時停止
+
+	tsleep(10);
+
+	tw.save();		//ここまでのタイムを記録
+
+	tsleep(20);
+
+	tw.restart();	//計測再開
+
+	tsleep(400);
+
+	tw.save();		//ここまでのタイムを記録
+
+	const unsigned moe = 10;	//環境毎のsleep時間誤差（ms）
+
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(0)), 100, moe));		//100 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(1)), 200, moe));		//200 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(2)), 300, moe));		//300 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(3)), 400, moe));		//400 ± moe (ms)
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
+	assert(! tw.get_lap_time(4));
 #else
-
+	assert(tw.get_lap_time(4) == -1);
 #endif
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(0)), 100, moe));	//100 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(1)), 300, moe));	//300 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(2)), 600, moe));	//600 ± moe (ms)
+	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(3)), 1000, moe));	//1000 ± moe (ms)
+
+	assert(sig::equal_tolerant(tw.get_total_time(), 1000, 4*moe));				//1000 ± 4*moe (ms)
+	assert(sig::equal(tw.get_total_time<std::chrono::seconds>(), 1));		//1 (s)
+	assert(sig::equal_tolerant(tw.get_total_time<std::chrono::microseconds>(), 1000000, 10000));	//1000000  ± 10000 (μs)
 }
 
 void HistgramTest()
@@ -91,10 +90,10 @@ void HistgramTest()
 
 	sig::Histgram<int, 10> hist(-10, 10);	//int型、ビン数10、[-10～10）の範囲の数値を集計
 
-	hist.Count(data1);
+	hist.count(data1);
 
-	hist.Print();						//コンソールへ出力
-	hist.Print(file1);	//ファイルへ出力
+	hist.print();						//コンソールへ出力
+	hist.print(file1);	//ファイルへ出力
 
 	/*
 	-- Histgram --
@@ -113,11 +112,11 @@ void HistgramTest()
 	[ 10,+∞)：1 |
 	*/
 
-	auto count = hist.GetCount();		//0 ～ BIN_NUM-1 の頻度を取得
+	auto count = hist.get_count();		//0 ～ BIN_NUM-1 の頻度を取得
 	assert(count[2] == 2);				//[ -6, -4)の個数
 
-	auto c2 = hist.GetCount(2);
-	auto c100 = hist.GetCount(100);
+	auto c2 = hist.get_count(2);
+	auto c100 = hist.get_count(100);
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	if(c2){
@@ -136,17 +135,17 @@ void HistgramTest()
 	assert(std::get<0>(c100) == 0);
 #endif
 
-	bool over = hist.IsOverRange();	//初期設定の範囲外の値が存在したか
+	bool over = hist.is_over_range();	//初期設定の範囲外の値が存在したか
 	assert(over == 1);				//範囲外の値の個数：1
 	
 
 	sig::Histgram<double, 15> hist2(0, 1);						//double型、ビン数15、[0～1）の範囲の数値を集計
 	auto rand_maker = sig::SimpleRandom<double>(0, 1.5, true);	//[0, 1.5]の一様分布乱数、デバッグモード(シード固定)
 	
-	for (int i = 0; i<100; ++i) hist2.Count(rand_maker());
+	for (int i = 0; i<100; ++i) hist2.count(rand_maker());
 
-	hist2.Print();
-	hist2.Print(file2);
+	hist2.print();
+	hist2.print(file2);
 	/*
 	-- Histgram --
 
@@ -178,10 +177,10 @@ void PercentTest()
 	sig::Percent pc4(0);
 
 	pc3 = 1;					//copy assignment. pc4 == 1%
-	pc4 = sig::Percent::Unit();	//copy assignment. pc3 == 100%
+	pc4 = sig::Percent::unit();	//copy assignment. pc3 == 100%
 
-	assert(pc1.GetPercent() == 100 && pc1.GetDouble() == 1);	//100% = 1
-	assert(pc2.GetPercent() == 50 && pc2.GetDouble() == 0.5);	//50% = 0.5
-	assert(pc3.GetPercent() == 1 && pc3.GetDouble() == 0.01);	//1% = 0.01
+	assert(pc1.get_percent() == 100 && sig::equal(pc1.get_double(), 1));	//100% = 1
+	assert(pc2.get_percent() == 50 && sig::equal(pc2.get_double(), 0.5));	//50% = 0.5
+	assert(pc3.get_percent() == 1 && sig::equal(pc3.get_double(), 0.01));	//1% = 0.01
 	assert(pc1 == pc4);
 }

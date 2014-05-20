@@ -1,92 +1,246 @@
 ﻿/*
-Copyright(c) 2014 Akihiro Nishimura
-
-This software is released under the MIT License.
-http://opensource.org/licenses/mit-license.php
-*/
-
-#ifndef SIG_UTILCONTAINER_TRAITS_H
-#define SIG_UTILCONTAINER_TRAITS_H
-
-
+* Copyright (c) 2013, Daniel Park
+* All rights reserved.
+﻿/*
+Copyright(c) 2014 Akihiro NishimuraThis software is released under the MIT License.http://opensource.org/licenses/mit-license.php*/
+#ifndef SIG_UTILCONTAINER_TRAITS_H#define SIG_UTILCONTAINER_TRAITS_H
 #include "external/container traits/container_traits.h"
 
-namespace sig
-{
-	extern void* enabler;
-
-	template<class It>
-	void IncrementIterator(It& iter)
-	{
-		++iter;
-	}
-	template<class It, class... Its>
-	void IncrementIterator(It& iter, Its&... iterators)
-	{
-		++iter;
-		IncrementIterator(iterators...);
-	}
-
-	template<class It>
-	auto DereferenceIterator(It& iter)
-	{
-		return *iter;
-	}
-
-	//variadic templatesで受け取った複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用する
-	template <class C, class F, class... Its>
-	void Iterate(std::size_t loop, C& dest, F const& func, Its... iterators)
-	{
-		for (std::size_t i = 0; i < loop; ++i, IncrementIterator(iterators...)){
-			container_traits<C>::add_element(dest, eval(func, DereferenceIterator(iterators)...));
-		}
-	}
-
-	template <class T, class D = void> struct HasRandomIter{ static const bool value = false; };
-	template <class T> struct HasRandomIter<T, decltype(std::declval<typename T::iterator>()[0], void())>{ static const bool value = true; };
+namespace sig{
 
 	template <class C>
-	void Erase(C& container, typename sequence_container_traits<C>::value_type const& t)
+	struct container_traits
 	{
-		container.erase(std::remove(std::begin(container), std::end(container), t), std::end(container));
-	}
-	template <class C>
-	void Erase(C& container, typename associative_container_traits<C>::value_type const& t)
+		static const bool exist = false;
+		// Type value_type
+		// Type rebind<U>
+		// void add_element(C&,T)
+		// void concat(C&,C)
+	};
+
+	template<class C>
+	struct static_container_traits;
+
+	template<template<class, size_t> class C, class T, size_t N>
+	struct static_container_traits<C<T, N>>
 	{
-		container.erase(t);
-	}
-	template <class C>
-	void Erase(C& container, typename hash_container_traits<C>::value_type const& t)
+		static const bool exist = true;
+
+		using value_type = T;
+
+		template<class U>
+		using rebind = C<U, N>;
+
+		static void add_element(C<T, N>& c, const T& t)
+		{
+			c.push_back(t);
+		}
+	};
+
+	template<class T, size_t N>
+	struct container_traits<std::array<T, N>> : public static_container_traits<std::array<T, N>>
+	{};
+
+	template<class T, size_t N>
+	struct container_traits<sig::array<T, N>> : public static_container_traits<sig::array<T, N>>
+	{};
+
+
+	template<class C>
+	struct temp_container_traits;
+
+	template<template<class> class C, class T>
+	struct temp_container_traits<C<T>>
 	{
-		container.erase(t);
+		static const bool exist = true;
+
+		using value_type = T;
+
+		template<class U>
+		using rebind = C<U>;
+	};
+
+	template<class T>
+	struct container_traits<std::initializer_list<T>> : public temp_container_traits<std::initializer_list<T>>
+	{};
+
+
+	template<class C>
+	struct sequence_container_traits;
+
+	template<template<class, class> class C, class T, class A>
+	struct sequence_container_traits<C<T, A>>
+	{
+		static const bool exist = true;
+
+		using value_type = T;
+
+		template<class U>
+		using rebind = C<U, typename A::template rebind<U>::other>;
+
+		static void add_element(C<T, A>& c, const T& t)
+		{
+			c.push_back(t);
+		}
+
+		static void concat(C<T, A>& lhs, const C<T, A>& rhs)
+		{
+			lhs.insert(lhs.end(), rhs.begin(), rhs.end());
+		}
+	};
+
+	template<class... Args>
+	struct container_traits<std::deque<Args...>> : public sequence_container_traits<std::deque<Args...>>
+	{};
+
+	template<class... Args>
+	struct container_traits<std::list<Args...>> : public sequence_container_traits<std::list<Args...>>
+	{};
+
+	template<class... Args>
+	struct container_traits<std::vector<Args...>> : public sequence_container_traits<std::vector<Args...>>
+	{};
+
+	template<class C>
+	struct associative_container_traits;
+
+	template<template<class, class, class> class C, class T, template<class> class O, class A>
+	struct associative_container_traits<C<T, O<T>, A>>
+	{
+		static const bool exist = true;
+
+		using value_type = T;
+
+		template<class U>
+		using rebind = C<U, O<U>, typename A::template rebind<U>::other>;
+
+		static void add_element(C<T, O<T>, A>& c, const T& t)
+		{
+			c.insert(t);
+		}
+
+		static void concat(C<T, O<T>, A>& lhs, const C<T, O<T>, A>& rhs)
+		{
+			lhs.insert(rhs.begin(), rhs.end());
+		}
+	};
+
+	template<template<class, class, class, class> class C, class K, class T, template<class> class O, class A>
+	struct associative_container_traits<C<K, T, O<K>, A>>
+	{
+		static const bool exist = true;
+
+		using value_type = std::pair<const K, T>;
+	};
+
+	template<class... Args>
+	struct container_traits<std::multiset<Args...>> : public associative_container_traits<std::multiset<Args...>>
+	{};
+
+	template<class... Args>
+	struct container_traits<std::set<Args...>> : public associative_container_traits<std::set<Args...>>
+	{};
+
+#if SIG_MSVC_ENV
+	template<class K, class T, class... Args>
+	struct container_traits<std::map<K, T, Args...>> : public associative_container_traits<std::map<K, T, Args...>>
+	{};	// only ::value_type
+
+	template<class K, class T, class... Args>
+	struct container_traits<std::multimap<K, T, Args...>> : public associative_container_traits<std::multimap<K, T, Args...>>
+	{};	// only ::value_type
+
+#else
+	template<class... Args>
+	struct container_traits<std::map<Args...>> : public associative_container_traits<std::map<Args...>>
+	{};	// only ::value_type
+
+	template<class... Args>
+	struct container_traits<std::multimap<Args...>> : public associative_container_traits<std::multimap<Args...>>
+	{};	// only ::value_type
+#endif
+
+	template<class C>
+	struct hash_container_traits;
+
+	template<template<class, class, class, class> class C, class T, template<class> class H, template<class> class O, class A>
+	struct hash_container_traits<C<T, H<T>, O<T>, A>>
+	{
+		static const bool exist = true;
+
+		using value_type = T;
+
+		template<class U>
+		using rebind = C<U, H<U>, O<U>, typename A::template rebind<U>::other>;
+
+		static void add_element(C<T, H<T>, O<T>, A>& c, const T& t)
+		{
+			c.insert(t);
+		}
+
+		static void concat(C<T, H<T>, O<T>, A>& lhs, const C<T, H<T>, O<T>, A>& rhs)
+		{
+			lhs.insert(rhs.begin(), rhs.end());
+		}
+	};
+
+	template<template<class, class, class, class, class> class C, class K, class T, template<class> class H, template<class> class O, class A>
+	struct hash_container_traits<C<K, T, H<K>, O<K>, A>>
+	{
+		static const bool exist = true;
+
+		using value_type = std::pair<const K, T>;
+	};
+
+	template<class... Args>
+	struct container_traits<std::unordered_multiset<Args...>> : public hash_container_traits<std::unordered_multiset<Args...>>
+	{};
+
+	template<class... Args>
+	struct container_traits<std::unordered_set<Args...>> : public hash_container_traits<std::unordered_set<Args...>>
+	{};
+
+#if SIG_MSVC_ENV
+	template<class K, class T, class... Args>
+	struct container_traits<std::unordered_map<K, T, Args...>> : public hash_container_traits<std::unordered_map<K, T, Args...>>
+	{};	// only ::value_type
+
+	template<class K, class T, class... Args>
+	struct container_traits<std::unordered_multimap<K, T, Args...>> : public hash_container_traits<std::unordered_multimap<K, T, Args...>>
+	{};	// only ::value_type
+
+#else
+	template<class... Args>
+	struct container_traits<std::unordered_map<Args...>> : public hash_container_traits<std::unordered_map<Args...>>
+	{};	// only ::value_type
+
+	template<class... Args>
+	struct container_traits<std::unordered_multimap<Args...>> : public hash_container_traits<std::unordered_multimap<Args...>>
+	{};	// only ::value_type
+#endif
+
+	/*
+	// basic_string
+	template<class T, template<class> class K, class A>
+	struct container_traits<std::basic_string<T,K<T>,A>>
+	{
+	static const bool exist = true;
+
+	using value_type = T;
+
+	template<class U>
+	using rebind = std::basic_string<U,K<U>,typename A::template rebind<U>::other>;
+
+	static void add_element(std::basic_string<T,K<T>,A>& c, const T& t)
+	{
+	c.push_back(t);
 	}
 
-	template <class C, class F, typename std::enable_if<sequence_container_traits<C>::exist>::type*& = enabler>
-	void EraseIf(C& container, F const& remove_pred)
+	static void concat(std::basic_string<T,K<T>,A>& lhs, const std::basic_string<T,K<T>,A>& rhs)
 	{
-		container.erase(std::remove_if(std::begin(container), std::end(container), remove_pred), std::end(container));
+	lhs+=rhs;
 	}
-	template <class C, class F, typename std::enable_if<associative_container_traits<C>::exist>::type*& = enabler>
-	void EraseIf(C& container, F const& remove_pred)
-	{
-		for (auto it = std::begin(container), end = std::end(container); it != end;){
-			if (remove_pred(*it)){
-				it = container.erase(it);
-			}
-			else ++it;
-		}
-	}
-	template <class C, class F, typename std::enable_if<hash_container_traits<C>::exist>::type*& = enabler>
-	void EraseIf(C& container, F const& remove_pred)
-	{
-		for (auto it = std::begin(container), end = std::end(container); it != end;){
-			if (remove_pred(*it)){
-				it = container.erase(it);
-			}
-			else ++it;
-		}
-	}
-	
+	};
+	*/
 }
-
 #endif
