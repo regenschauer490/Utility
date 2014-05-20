@@ -83,6 +83,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="example\array_test.cpp" />
     <ClCompile Include="example\calculate_test.cpp" />
     <ClCompile Include="example\iteration_test.cpp" />
     <ClCompile Include="example\helper_test.cpp" />
@@ -95,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="botsu.hpp" />
+    <ClInclude Include="example\array_test.h" />
     <ClInclude Include="example\calculate_test.h" />
     <ClInclude Include="example\debug.hpp" />
     <ClInclude Include="example\iteration_test.h" />

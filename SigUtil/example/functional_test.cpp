@@ -1,7 +1,7 @@
 #include "functional_test.h"
+#include "debug.hpp"
 #include "../lib/array.hpp"
 #include "../lib/calculation.hpp"
-#include "debug.hpp"
 
 void MapTest()
 {
@@ -144,10 +144,10 @@ void FunctionalTest()
 
 	auto cunzipped = sig::unzip(czipped);		//std::tuple< std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>
 
-	sig::variadicZipWith(sig::DebugEqual(), data1, std::get<0>(cunzipped));
-	sig::variadicZipWith(sig::DebugEqual(), data2, std::get<1>(cunzipped));
-	sig::variadicZipWith(sig::DebugEqual(), data3, std::get<2>(cunzipped));
-	sig::variadicZipWith(sig::DebugEqual(), data4, std::get<3>(cunzipped));
+	sig::for_each(sig::DebugEqual(), data1, std::get<0>(cunzipped));
+	sig::for_each(sig::DebugEqual(), data2, std::get<1>(cunzipped));
+	sig::for_each(sig::DebugEqual(), data3, std::get<2>(cunzipped));
+	sig::for_each(sig::DebugEqual(), data4, std::get<3>(cunzipped));
 
 #if SIG_GCC_GT4_9_0 || _MSC_VER >= 1900
 	auto crezipped = sig::zip(cunzipped);		//std::vector< std::tuple<int, int, int, int>>
@@ -170,17 +170,17 @@ void FunctionalTest()
 	auto as1 = sig::seq(1, 2, 5);
 	auto as2 = sig::seq(0, -1.1, 4);
 
-	sig::zipWith(sig::DebugEqual(), as1, sig::array<int, 5>{ 1, 3, 5, 7, 9 });
-	sig::zipWith(sig::DebugEqual(), as2, sig::array<double, 4>{ 0, -1.1, -2.2, -3.3 });
+	sig::for_each(sig::DebugEqual(), as1, sig::array<int, 5>{ 1, 3, 5, 7, 9 });
+	sig::for_each(sig::DebugEqual(), as2, sig::array<double, 4>{ 0, -1.1, -2.2, -3.3 });
 
 	/// make container whose element reversed
 	auto rev0 = sig::reverse(data0);
 	auto rev1 = sig::reverse(data1);
 	auto rev2 = sig::reverse(data2);
 
-	sig::zipWith(sig::DebugEqual(), rev0, sig::array<int, 5>{ 5, 4, 3, 2, 1 });
-	sig::zipWith(sig::DebugEqual(), rev1, sig::array<int, 5>{ 10, 2, 5, -3, 1 });
-	sig::zipWith(sig::DebugEqual(), rev2, sig::array<int, 4>{ 2, 5, -3, 1 });
+	sig::for_each(sig::DebugEqual(), rev0, sig::array<int, 5>{ 5, 4, 3, 2, 1 });
+	sig::for_each(sig::DebugEqual(), rev1, sig::array<int, 5>{ 10, 2, 5, -3, 1 });
+	sig::for_each(sig::DebugEqual(), rev2, sig::array<int, 4>{ 2, 5, -3, 1 });
 
 	/// merge containers
 	auto mc1 = sig::merge(data1, data1);
@@ -203,10 +203,10 @@ void FunctionalTest()
 	auto t2 = sig::take(3, data2);
 	auto t3 = sig::take(4, data3);
 
-	sig::zipWith(sig::DebugEqual(), t0, sig::array<int, 1>{ 1 });
-	sig::zipWith(sig::DebugEqual(), t1, sig::array<int, 2>{ 1, -3 });
-	sig::zipWith(sig::DebugEqual(), t2, sig::array<int, 3>{ 1, -3, 5 });
-	sig::zipWith(sig::DebugEqual(), t3, sig::array<int, 4>{ -3, 1, 2, 5 });
+	sig::for_each(sig::DebugEqual(), t0, sig::array<int, 1>{ 1 });
+	sig::for_each(sig::DebugEqual(), t1, sig::array<int, 2>{ 1, -3 });
+	sig::for_each(sig::DebugEqual(), t2, sig::array<int, 3>{ 1, -3, 5 });
+	sig::for_each(sig::DebugEqual(), t3, sig::array<int, 4>{ -3, 1, 2, 5 });
 
 	/// drop top n elements
 	auto d0 = sig::drop(1, data0);
@@ -214,10 +214,10 @@ void FunctionalTest()
 	auto d2 = sig::drop(3, data2);
 	auto d3 = sig::drop(4, data3);
 
-	sig::zipWith(sig::DebugEqual(), d0, sig::array<int, 4>{ 2, 3, 4, 5 });
-	sig::zipWith(sig::DebugEqual(), d1, sig::array<int, 3>{ 5, 2, 10 });
-	sig::zipWith(sig::DebugEqual(), d2, sig::array<int, 1>{ 2 });
-	sig::zipWith(sig::DebugEqual(), d3, sig::array<int, 1>{ 10 });
+	sig::for_each(sig::DebugEqual(), d0, sig::array<int, 4>{ 2, 3, 4, 5 });
+	sig::for_each(sig::DebugEqual(), d1, sig::array<int, 3>{ 5, 2, 10 });
+	sig::for_each(sig::DebugEqual(), d2, sig::array<int, 1>{ 2 });
+	sig::for_each(sig::DebugEqual(), d3, sig::array<int, 1>{ 10 });
 
 #if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || _MSC_VER >= 1900
 	/// sort
@@ -225,9 +225,9 @@ void FunctionalTest()
 	auto s1 = sig::sort(std::less<int>(), data1);
 	auto s2 = sig::sort([](int l, int r){ return std::abs(l) < std::abs(r); }, data2);
 
-	sig::zipWith(sig::DebugEqual(), s0, sig::array<int, 5>{ 5, 4, 3, 2, 1 });
-	sig::zipWith(sig::DebugEqual(), s1, sig::array<int, 5>{ -3, 1, 2, 5, 10 });
-	sig::zipWith(sig::DebugEqual(), s2, sig::array<int, 4>{ 1, 2, -3, 5 });
+	sig::for_each(sig::DebugEqual(), s0, sig::array<int, 5>{ 5, 4, 3, 2, 1 });
+	sig::for_each(sig::DebugEqual(), s1, sig::array<int, 5>{ -3, 1, 2, 5, 10 });
+	sig::for_each(sig::DebugEqual(), s2, sig::array<int, 4>{ 1, 2, -3, 5 });
 #endif
 
 }

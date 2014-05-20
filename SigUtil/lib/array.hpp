@@ -8,6 +8,8 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_ARRAY_HPP
 #define SIG_UTIL_ARRAY_HPP
 
+#include "sigutil.hpp"
+
 #include <array>
 #include <initializer_list>
 
@@ -140,14 +142,14 @@ public:
 	reference front(){ return array_.front(); }
 	const_reference front() const{ return array_.front(); }
 
-	reference back(){ return array_[tail_]; }
-	const_reference back() const{ return array_[tail_]; }
+	reference back(){ return tail_ ? array_[tail_-1] : array_.front(); }
+	const_reference back() const{ return tail_ ? array_[tail_ - 1] : array_.front(); }
 
 	bool empty() const noexcept{ return tail_ == 0; }
 
 	size_type size() const noexcept{ return tail_; }
 
-	size_type max_size() const noexcept{ return array_.max_size; }
+	size_type max_size() const noexcept{ return N; }
 
 	value_type* data() noexcept{ return array_.data(); }
 	value_type const* data() const noexcept{ return array_.data(); }

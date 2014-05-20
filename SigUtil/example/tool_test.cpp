@@ -184,30 +184,3 @@ void PercentTest()
 	assert(pc3.get_percent() == 1 && sig::equal(pc3.get_double(), 0.01));	//1% = 0.01
 	assert(pc1 == pc4);
 }
-
-void ArrayTest()
-{
-	sig::array<int, 4> ar1{ 1, 2, 3 };
-
-	std::array<double, 2> std_ar{ {1.1, 2.2} };
-	sig::array<double, 2> ar2(std_ar);
-
-	ar2.pop_back();
-	ar2.push_back(3.3);
-
-	ar1.insert(ar1.begin()+1, 4);
-	ar1.erase(ar1.begin());
-
-	auto plus = sig::plus(ar1, std::initializer_list<int>{1, 2, 3, 4});
-
-	for (auto v : plus) std::cout << v << std::endl;
-	for (auto it = ar1.rbegin(), end = ar1.rend(); it != end; ++it) std::cout << *it << std::endl;
-
-	ar1.swap(plus);
-
-	sig::array<double, 2> ar3;
-	assert(ar3.size() == 0);
-
-	ar3 = ar2;		//copy
-
-}

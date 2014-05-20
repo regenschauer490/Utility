@@ -1,6 +1,5 @@
 #include "iteration_test.h"
 #include "debug.hpp"
-#include "../lib/functional.hpp"
 
 const std::array<int, 4> data0{ { 1, 2, 3, 4 } };
 const std::vector<int> data1{1, 2, 3};
@@ -18,7 +17,7 @@ void ForeachTest()
 	// 要素毎に、data1_tにdata0の値を加える
 	sig::for_each([](int& a, int b){ a += b; }, data2_t, data0);
 
-	sig::zipWith(
+	sig::for_each(
 		sig::DebugEqual(),
 		data2_t,
 		sig::zipWith(std::plus<int>(), data2, data0)
@@ -32,7 +31,7 @@ void ForeachTest()
 	for (unsigned i = 0; i<data1.size(); ++i){
 		data1_tt[i] += (data0[i] + i+1);
 	}
-	sig::zipWith(
+	sig::for_each(
 		sig::DebugEqual(),
 		data1_t,
 		data1_tt
@@ -53,14 +52,14 @@ void CompoundAssignmentTest()
 
 	// 複合代入(コンテナの各要素に対して何らかの演算を行い、演算後の値を代入する)
 	sig::compound_assignment([](int& v1, int v2){ v1 += v2; }, data1_t, 1);
-	sig::zipWith(
+	sig::for_each(
 		sig::DebugEqual(),
 		data1_t,
 		sig::zipWith(std::plus<int>(), data1, sig::replicate(data1.size(), 1))
 		);
 
 	sig::compound_assignment([](int& v1, int v2){ v1 -= v2; }, data2_t, data0);
-	sig::zipWith(
+	sig::for_each(
 		sig::DebugEqual(),
 		data2_t,
 		sig::zipWith(std::minus<int>(), data2, data0)

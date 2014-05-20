@@ -23,6 +23,9 @@ int main()
 	//helper.hpp test
 	TestHelperModules();
 
+	//array.hpp test
+	ArrayTest();
+
 	//calculation.hpp test
 	ArithmeticOperationsTest();
 
@@ -55,10 +58,9 @@ int main()
 
 	//tool.hpp test
 	RandomTest();
-	TimeWatchTest();
 	HistgramTest();
 	PercentTest();
-	ArrayTest();
+//	TimeWatchTest();	//処理環境のスペック依存
 
 	return 0;
 }
