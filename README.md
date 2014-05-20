@@ -4,12 +4,21 @@ SigUtil (version 1.00)
 コンテナに対してはboost::rangeのようにイテレータを介さず使用できる.  
 Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため). boost無しの場合、一部使用できない機能あり.
 
-[動作確認環境]
+#### [ 動作確認環境 ]
 * Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
 * g++ (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1
 * Ubuntu clang version 3.4-1~exp1 (trunk) (based on LLVM 3.4)
 
-#### ～おしながき～   
+#### [ インストール & テスト ]
+ヘッダオンリーなので特にインストールは必要ありません. boostを使用するかの設定と動作確認のみを行ってください.  
+* SigUtil/lib/sigutil.hpp を開いて「SIG\_ENABLE\_BOOST」の値をboost使用時は1、未使用時は0に設定.
+* SigUtil/main.cpp にテスト項目が列挙されている. テスト内容や使用例は SigUtil/example/\*\*\*.cpp に記述.
+
+コンパイル+テスト実行方法
+* Windows: VisualStudio2013(November2013 CTPをインストール済み)で SigUtil/SigUtil.vcxproj を起動してコンパイル+実行.
+* Linux: ターミナルでSigUtil下に移動し、「make -f gcc.mk」または「make -f clang.mk」を実行.コンパイルに成功した後は、「../bin/test」でテストを実行.
+
+#### [ おしながき ]   
 **\<array.hpp>**
 * class array: std::arrayの利便性を拡張し、固定長なstd::vectorの感覚で使用できる静的配列
 
