@@ -16,7 +16,7 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 
 コンパイル+テスト実行方法
 * Windows: VisualStudio2013(November2013 CTPをインストール済み)で SigUtil/SigUtil.vcxproj を起動してコンパイル+実行.
-* Linux: ターミナルでSigUtil下に移動し、「make -f gcc.mk」または「make -f clang.mk」を実行.コンパイルに成功した後は、「../bin/test」でテストを実行.
+* Linux: ターミナルでSigUtil下に移動し、「make -f gcc.mk」または「make -f clang.mk」を実行(事前にINCLUDEやLIBRARYパスは環境に合わせて修正して下さい).コンパイルに成功した後は、「../bin/test」でテストを実行.
 
 #### [ おしながき ]   
 **\<array.hpp>**
