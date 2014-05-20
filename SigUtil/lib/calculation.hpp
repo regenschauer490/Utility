@@ -11,6 +11,9 @@ http://opensource.org/licenses/mit-license.php
 #include "sigutil.hpp"
 #include "functional.hpp"
 
+
+/* スカラ変数とベクトル変数(+コンテナの種類)を気にせず使える演算関数 */
+
 namespace sig
 {
 // 二項演算 (scalar and scalar)

@@ -21,7 +21,7 @@ namespace sig
 	template <class F, class... Cs>
 	auto for_each(F const& func, Cs const&... containers)
 	{
-		const uint length = Min(containers.size()...);
+		const uint length = min(containers.size()...);
 		iterative_assign(length, func, std::begin(containers)...);
 	}
 

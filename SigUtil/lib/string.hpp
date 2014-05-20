@@ -19,7 +19,11 @@ http://opensource.org/licenses/mit-license.php
 #include <windows.h>
 #endif
 
-#if SIG_MSVC_ENV || !(__GLIBCXX__ || __GLIBCPP__)
+#if (__GLIBCXX__ || __GLIBCPP__)
+#define SIG_USE_GLIBCPP 1
+#endif
+
+#if SIG_MSVC_ENV || !(SIG_USE_GLIBCPP)
 #include <codecvt>
 #define SIG_ENABLE_CODECVT 1
 #endif
@@ -44,7 +48,7 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 	return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\$1)"));
 }
 
-#elif (SIG_LINUX_ENV && SIG_ENABLE_BOOST)
+#elif (SIG_USE_GLIBCPP && SIG_ENABLE_BOOST)
 inline auto escape_regex(std::string const& expression) ->std::string
 {
 	static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
@@ -57,8 +61,8 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 }
 #endif
 
-#if SIG_MSVC_ENV || (SIG_LINUX_ENV && SIG_ENABLE_BOOST)
-// エスケープ処理を行い、std::regex or std::wregexを返す
+#if SIG_MSVC_ENV || (SIG_USE_GLIBCPP && SIG_ENABLE_BOOST)
+// エスケープ処理を行い、std::regex or std::wregexを返す(libstdc++使用時 かつ boost使用時は boost::regex)
 template <class S>
 auto make_regex(S const& expression) ->typename Str2RegexSelector<TString<S>>::regex
 {
@@ -292,15 +296,13 @@ inline auto utf16_to_sjis(std::u16string const& src) ->std::string //Just<std::s
 // ShiftJIS -> UTF-8
 inline auto sjis_to_utf8(std::string const& src) ->std::string
 {
-	auto utf16 = sjis_to_utf16(src);
-	return utf16_to_utf8(utf16);
+	return utf16_to_utf8(sjis_to_utf16(src));
 }
 
 // UTF-8 -> ShiftJIS
 inline auto utf8_to_sjis(std::string const& src) ->std::string
 {
-	auto utf16 = utf8_to_utf16(src);
-	return utf16_to_sjis(utf16);
+	return utf16_to_sjis(utf8_to_utf16(src));
 }
 	
 #endif

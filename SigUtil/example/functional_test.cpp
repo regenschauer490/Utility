@@ -63,7 +63,7 @@ void ZipWithTest()
 
 	{
 	auto it3 = data3.begin();
-	for(unsigned i=0, end = sig::Min(data1.size(), data2.size(), data3.size()); i<end; ++i, ++it3){
+	for(unsigned i=0, end = sig::min(data1.size(), data2.size(), data3.size()); i<end; ++i, ++it3){
 		assert(sig::equal(h123[i], *it3 ? data1[i] * data2[i] : -1));
 	}
 	}
@@ -77,7 +77,7 @@ void ZipWithTest()
 	auto it3 = data3.begin();
 	auto it4 = data4.begin();
 	auto it5 = data5.begin();
-	for(unsigned i=0, end = sig::Min(data1.size(), data2.size(), data3.size(), data4.size(), data5.size()); i<end; ++i, ++it3, ++it4, ++it5){
+	for(unsigned i=0, end = sig::min(data1.size(), data2.size(), data3.size(), data4.size(), data5.size()); i<end; ++i, ++it3, ++it4, ++it5){
 		assert(h12345[i] == (*it3 ? *it5 + std::to_string(data1[i]) : std::to_string(*it4 * data2[i])));
 	}
 	}

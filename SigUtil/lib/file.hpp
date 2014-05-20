@@ -24,6 +24,7 @@ http://opensource.org/licenses/mit-license.php
 namespace fs = boost::filesystem;
 #endif
 
+
 /* 入出力関連 */
 
 namespace sig

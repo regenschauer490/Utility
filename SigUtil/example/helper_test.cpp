@@ -36,13 +36,13 @@ void TestHelperModules()
 	static_assert(sig::Consistency(false, false), "");
 
 	//‘å¬”äŠr
-	static_assert(!sig::Greater(0.5, 1), "");
-	static_assert(sig::Less(0.5, 1), "");
+	static_assert(!sig::greater(0.5, 1), "");
+	static_assert(sig::less(0.5, 1), "");
 
 #if !SIG_MSVC_ENV
 	//Å¬’l/Å‘å’l
-	static_assert(sig::Min(1, -1, 0, 3, 2) == -1, "");
-	static_assert(sig::Max(1, -1, 0, 3, 2) == 3, "");
+	static_assert(sig::min(1, -1, 0, 3, 2) == -1, "");
+	static_assert(sig::max(1, -1, 0, 3, 2) == 3, "");
 #endif
 
 	/* Às */
@@ -91,12 +91,12 @@ void TestHelperModules()
 
 	//min,max
 	std::vector<int> v{ 1, 2, 3 };
-	assert(sig::Min(1, -1, 0, (int)v.size(), 2) == -1);
-	assert(sig::Max(1, -1, 0, (int)v.size(), 2) == (int)v.size());
+	assert(sig::min(1, -1, 0, (int)v.size(), 2) == -1);
+	assert(sig::max(1, -1, 0, (int)v.size(), 2) == (int)v.size());
 
 	//generic |a - b|
-	assert(sig::abs_delta(1, 3) == 2);
-	assert(sig::abs_delta(-2, -1) == 1);
+	static_assert(sig::abs_delta(1, 3) == 2, "");
+	static_assert(sig::abs_delta(-2, -1) == 1, "");
 	assert(sig::equal(sig::abs_delta(3.0, 1.5), 1.5));
 	assert(sig::equal(sig::abs_delta(3, 1.5), 1.5));
 

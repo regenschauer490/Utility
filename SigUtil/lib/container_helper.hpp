@@ -15,6 +15,7 @@ namespace sig
 {
 extern void* enabler;
 
+namespace impl{
 template<class It>
 void increment_iterator(It& iter)
 {
@@ -38,13 +39,14 @@ std::cout << std::endl;
 */
 	return *iter;
 }
+}
 
-// 複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用してdestに格納
+// 複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用して結果をdestに格納
 template <class C, class F, class... Its>
 void iterative_make(std::size_t loop, C& dest, F const& func, Its... iterators)
 {
-	for (std::size_t i = 0; i < loop; ++i, increment_iterator(iterators...)){
-		container_traits<C>::add_element(dest, eval(func, dereference_iterator(iterators)...));
+	for (std::size_t i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
+		container_traits<C>::add_element(dest, eval(func, impl::dereference_iterator(iterators)...));
 	}
 }
 
@@ -52,22 +54,21 @@ void iterative_make(std::size_t loop, C& dest, F const& func, Its... iterators)
 template <class F, class... Its>
 void iterative_assign(std::size_t loop, F const& func, Its... iterators)
 {
-	for (std::size_t i = 0; i < loop; ++i, increment_iterator(iterators...)){
-		func(dereference_iterator(iterators)...);
+	for (std::size_t i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
+		func(impl::dereference_iterator(iterators)...);
 	}
 }
-
 template <class F, class... Its>
 void iterative_assign(std::size_t loop, int init, F const& func, Its... iterators)
 {
-	for (std::size_t i = 0; i < loop; ++i, increment_iterator(iterators...)){
-		func(i + init, dereference_iterator(iterators)...);
+	for (std::size_t i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
+		func(i + init, impl::dereference_iterator(iterators)...);
 	}
 }
 
 
-template <class T, class D = void> struct has_random_iterator{ static const bool value = false; };
-template <class T> struct has_random_iterator<T, decltype(std::declval<typename T::iterator>()[0], void())>{ static const bool value = true; };
+template <class T, class D = void> struct has_random_access_op{ static const bool value = false; };
+template <class T> struct has_random_access_op<T, decltype(std::declval<typename T::iterator>()[0], void())>{ static const bool value = true; };
 
 template <class C>
 void erase(C& container, typename sequence_container_traits<C>::value_type const& t)
@@ -111,7 +112,7 @@ void erase_if(C& container, F const& remove_pred)
 	}
 }
 
-//別のコンテナに要素をコピーする用
+//別のコンテナに要素をコピーする
 template <class RC, class C>
 auto copy(C const& src) ->RC
 {

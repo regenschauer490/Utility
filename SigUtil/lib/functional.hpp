@@ -26,7 +26,7 @@ auto variadicZipWith(F const& func, C1 const& container1, Cs const&... container
 	))>;
 
 	OutputType result;
-	const uint length = Min(container1.size(), containers.size()...);
+	const uint length = min(container1.size(), containers.size()...);
 	iterative_make(length, result, func, std::begin(container1), std::begin(containers)...);
 
 	return result;
@@ -50,7 +50,7 @@ auto zipWith(F const& func, C1 const& container1, C2 const& container2)
 
 
 // (a -> b -> a) -> a -> [b] -> a
-// リストの先頭からたたみ込み
+// コンテナの先頭からたたみ込み
 template <class F, class T, class C>
 auto foldl(F func, T init, C container)
 {
@@ -60,7 +60,7 @@ auto foldl(F func, T init, C container)
 
 #if SIG_GCC_GT_4_9 || SIG_CLANG_GT_3_5 || SIG_MSVC_ENV
 // (a -> b -> b) -> b -> [a] -> b
-// リストの末尾からたたみ込み
+// コンテナの末尾からたたみ込み
 template <class F, class T, class C>
 auto foldr(F func, T init, C container)
 {
@@ -96,7 +96,7 @@ auto zip(C1&& container1, Cs&&... containers)
 		std::tuple<typename container_traits<C1>::value_type, typename container_traits<Cs>::value_type...>
 	>;
 
-	const uint length = Min(container1.size(), containers.size()...);
+	const uint length = min(container1.size(), containers.size()...);
 	OutputType result;
 	iterative_make(length, result, [](typename container_traits<C1>::value_type&& v1, typename container_traits<Cs>::value_type&&... vs){
 		return std::make_tuple(std::move(v1), std::move(vs)...);
@@ -278,13 +278,13 @@ C drop(uint n, C const& container)
 #if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || !(_MSC_VER < 1900)
 //(a -> a -> bool) -> [a] -> [a]
 //比較関数を指定してソート
-template <class F, class C, typename std::enable_if<has_random_iterator<C>::value, void>::type*& = enabler>
+template <class F, class C, typename std::enable_if<has_random_access_op<C>::value, void>::type*& = enabler>
 auto sort(F const& binary_op, C const& data){
 	C result = data;
 	std::sort(std::begin(result), std::end(result), binary_op);
 	return result;
 }
-template <class F, class C, typename std::enable_if<!has_random_iterator<C>::value, void>::type*& = enabler>
+template <class F, class C, typename std::enable_if<!has_random_access_op<C>::value, void>::type*& = enabler>
 auto sort(F const& binary_op, C const& data){
 	C result = data;
 	result.sort(binary_op);

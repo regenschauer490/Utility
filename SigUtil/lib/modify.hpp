@@ -23,7 +23,7 @@ namespace sig
 // binary_op: 大小比較を行う関数オブジェクト(STLと同様)
 #if SIG_MSVC_LT1800
 
-template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<has_random_iterator<C>::value>::type*& = enabler>
+template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<has_random_access_op<C>::value>::type*& = enabler>
 void sort(
 	C& container,
 	F const& binary_op = std::less<typename container_traits<C>::value_type>())
@@ -31,7 +31,7 @@ void sort(
 	std::sort(std::begin(container), std::end(container), binary_op);
 }
 // メンバ関数にsort()がある場合
-template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<!has_random_iterator<C>::value>::type*& = enabler>
+template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<!has_random_access_op<C>::value>::type*& = enabler>
 void sort(
 	C& container,
 	F const& binary_op = std::less<typename container_traits<C>::value_type>())
@@ -48,7 +48,7 @@ void sort(
 	std::sort(std::begin(container), std::end(container), binary_op);
 }
 
-template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<!has_random_iterator<C>::value>::type*& = enabler>
+template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<!has_random_access_op<C>::value>::type*& = enabler>
 void sort(
 	C& container,
 	F const& binary_op = std::less<typename sequence_container_traits<C>::value_type>())
@@ -110,7 +110,7 @@ void shuffle_impl(uint loop, C const& seq, It iter, Its... iters)
 template <class... Cs>
 void shuffle(Cs&... containers)
 {
-	uint size = Min(containers.size()...);
+	uint size = min(containers.size()...);
 	auto rseq = random_unique_numbers(size, 0, size - 1, false);
 		
 	impl::shuffle_impl(size, rseq, std::begin(containers)...);
