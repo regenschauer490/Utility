@@ -168,6 +168,16 @@ template<class... Args>
 struct container_traits<std::set<Args...>> : public associative_container_traits<std::set<Args...>>
 {};
 
+#if SIG_MSVC_ENV
+template<class K, class T, class... Args>
+struct container_traits<std::map<K, T, Args...>> : public associative_container_traits<std::map<K, T, Args...>>
+{};	// only ::value_type
+
+template<class K, class T, class... Args>
+struct container_traits<std::multimap<K, T, Args...>> : public associative_container_traits<std::multimap<K, T, Args...>>
+{};	// only ::value_type
+
+#else
 template<class... Args>
 struct container_traits<std::map<Args...>> : public associative_container_traits<std::map<Args...>>
 {};	// only ::value_type
@@ -175,6 +185,7 @@ struct container_traits<std::map<Args...>> : public associative_container_traits
 template<class... Args>
 struct container_traits<std::multimap<Args...>> : public associative_container_traits<std::multimap<Args...>>
 {};	// only ::value_type
+#endif
 
 template<class C>
 struct hash_container_traits;
@@ -216,6 +227,16 @@ template<class... Args>
 struct container_traits<std::unordered_set<Args...>> : public hash_container_traits<std::unordered_set<Args...>>
 {};
 
+#if SIG_MSVC_ENV
+template<class K, class T, class... Args>
+struct container_traits<std::unordered_map<K, T, Args...>> : public hash_container_traits<std::unordered_map<K, T, Args...>>
+{};	// only ::value_type
+
+template<class K, class T, class... Args>
+struct container_traits<std::unordered_multimap<K, T, Args...>> : public hash_container_traits<std::unordered_multimap<K, T, Args...>>
+{};	// only ::value_type
+
+#else
 template<class... Args>
 struct container_traits<std::unordered_map<Args...>> : public hash_container_traits<std::unordered_map<Args...>>
 {};	// only ::value_type
@@ -223,6 +244,7 @@ struct container_traits<std::unordered_map<Args...>> : public hash_container_tra
 template<class... Args>
 struct container_traits<std::unordered_multimap<Args...>> : public hash_container_traits<std::unordered_multimap<Args...>>
 {};	// only ::value_type
+#endif
 
 /*
 // basic_string

@@ -52,12 +52,12 @@ void RemoveDuplicateTest()
 	std::multiset<int, std::greater<int>> data3{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 	std::unordered_multiset<int> data4{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 
-	std::map<int, uint> removed1 = sig::remove_duplicates(data1);
+	std::map<int, sig::uint> removed1 = sig::remove_duplicates(data1);
 	auto removed2 = sig::remove_duplicates(data2);
 	auto removed3 = sig::remove_duplicates(data3);
 	auto removed4 = sig::remove_duplicates(data4);
 
-	auto test_remove_duplicates = [](std::map<int, uint>& removed){
+	auto test_remove_duplicates = [](std::map<int, sig::uint>& removed){
 		assert(removed.size() == 5);
 		assert(removed[0] == 1);
 		assert(removed[1] == 1);

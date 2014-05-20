@@ -1,4 +1,5 @@
 #include "helper_test.h"
+#include "debug.hpp"
 #include "../lib/functional.hpp"
 
 void TestHelperModules()
@@ -101,6 +102,21 @@ void TestHelperModules()
 	assert(sig::equal(sig::abs_delta(3, 1.5), 1.5));
 
 	//generic a == b
+	assert(sig::equal(1, 1));
+	assert(sig::equal(1, 1u));
+	assert(sig::equal(1u, 1));
+	assert(sig::equal(1u, 1u));
+	assert(sig::equal(1, 1.0));
+	assert(sig::equal(1.0, 1));
+	assert(sig::equal('a', 'a'));
+	assert(sig::equal("tes", "tes"));
+	assert(sig::equal(L"tes", L"tes"));
+	assert(sig::equal("tes", std::string("tes")));
+	assert(sig::equal(std::string("tes"), "tes"));
+	assert(sig::equal(L"tes", std::wstring(L"tes")));
+	assert(sig::equal(std::wstring(L"tes"), L"tes"));
+
+	//誤差の蓄積にある程度対処できる(許容範囲の設定は関数定義)
 	int ct1 = 0;
 	for (double f = 0.0; !sig::equal(f, 1); f += 0.1){
 		if (++ct1 >= 1000) break;
@@ -119,7 +135,7 @@ void TestHelperModules()
 		}
 	}
 
-	//generic a ≒ b (|a - b| < ε)
+	//許容範囲を指定　a ≒ b (|a - b| < ε)
 	assert(sig::equal_tolerant(0.001, 0.002, 0.001));
 	assert(!sig::equal_tolerant(0.001, 0.003, 0.001));
 
@@ -141,6 +157,6 @@ void TestHelperModules()
 	auto cpy_list = sig::copy<std::list<int>>(orig);
 	auto cpy_set = sig::copy<std::set<int>>(orig);
 
-	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, cpy_list, orig);
-	sig::zipWith([](int v1, int v2){ assert(v1 == v2); return 0; }, cpy_set, sig::array<int,4>{1,2,3,4});
+	sig::zipWith(sig::DebugEqual(), cpy_list, orig);
+	sig::zipWith(sig::DebugEqual(), cpy_set, sig::array<int,4>{1,2,3,4});
 }

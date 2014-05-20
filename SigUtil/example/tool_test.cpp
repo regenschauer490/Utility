@@ -55,7 +55,7 @@ void TimeWatchTest()
 
 	tw.save();		//ここまでのタイムを記録
 
-	const uint moe = 10;	//環境毎のsleep時間誤差（ms）
+	const unsigned moe = 10;	//環境毎のsleep時間誤差（ms）
 
 	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(0)), 100, moe));		//100 ± moe (ms)
 	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(1)), 200, moe));		//200 ± moe (ms)
