@@ -123,8 +123,8 @@ void FunctionalTest()
 	//make tuple of container
 	auto unzipped = sig::unzip(std::move(zipped));		//std::tuple< std::vector<int>, std::vector<int>, std::vector<int>, std::vector<int>>
 
-	sig::variadicZipWith(sig::DebugEqual(), data1, std::get<0>(unzipped));
-	sig::variadicZipWith(sig::DebugEqual(), data2, std::get<1>(unzipped));
+	sig::for_each(sig::DebugEqual(), data1, std::get<0>(unzipped));
+	sig::for_each(sig::DebugEqual(), data2, std::get<1>(unzipped));
 
 #if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || _MSC_VER >= 1900
 	//make container of tuple, from tuple of container

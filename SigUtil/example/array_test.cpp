@@ -30,9 +30,9 @@ void ArrayTest()
 
 	//member functions
 	assert(*ar2.begin() == 1);
-	assert(*(--ar2.end()) == 3);
+	assert(*(ar2.end()-1) == 3);
 	assert(*ar2.rbegin() == 3);
-	assert(*(--ar2.rend()) == 1);
+	assert(*(ar2.rend()-1) == 1);
 
 	assert(ar2.at(0) == 1);
 	assert(ar2.at(1) == 2);
@@ -69,7 +69,7 @@ void ArrayTest()
 	assert(ar2.empty());
 
 	ar1.clear();
-	for (unsigned i=0; i<ar1.max_size(); ++i){
+	for (int i=0; i<(int)ar1.max_size(); ++i){
 		ar1.push_back(i);
 		assert(ar1[i] == i);
 	}
@@ -82,7 +82,7 @@ void ArrayTest()
 	assert(ar1[2] == 2);
 	assert(ar1[3] == 3);
 
-	ar1.insert(++ar1.begin(), 10);
+	ar1.insert(ar1.begin()+1, 10);
 	assert(ar1[0] == 0);
 	assert(ar1[1] == 10);
 	assert(ar1[2] == 1);
