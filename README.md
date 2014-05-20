@@ -6,11 +6,11 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 
 #### [ 動作確認環境 ]
 * Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
-* g++ (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1
-* Ubuntu clang version 3.4-1~exp1 (trunk) (based on LLVM 3.4)
+* g++ (Ubuntu 4.8.1-2) 4.8.1
+* clang version 3.4-1 (based on LLVM 3.4)
 
 #### [ インストール & テスト ]
-ヘッダオンリーなので特にインストールは必要ありません. boostを使用するかの設定と動作確認のみを行ってください.  
+ヘッダオンリーなのでlibフォルダをコピーするだけで利用できます. boostを使用するかの設定と動作確認のみを行ってください.  
 * SigUtil/lib/sigutil.hpp を開いて「SIG\_ENABLE\_BOOST」の値をboost使用時は1、未使用時は0に設定.
 * SigUtil/main.cpp にテスト項目が列挙されている. テスト内容や使用例は SigUtil/example/\*\*\*.cpp に記述.
 
