@@ -92,7 +92,7 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 　入出力関連
 * get\_file\_names: 指定ディレクトリにあるファイル名を取得(option:隠しファイル識別、拡張子指定)
 * get\_folder\_names: 指定ディレクトリにあるフォルダ名を取得(option:隠しファイル識別、拡張子指定)
-* file_clear: ファイル内容の初期化
+* clear\_file: ファイル内容の初期化
 * save\_line: 文字列or文字列のコンテナを渡し、1行ずつ保存 
 * save\_num: 数値or数値のコンテナを渡し、改行やデリミタで区切って保存(行列形式の保存も可)
 * read\_line: ファイルから文字列を1行ずつ読み込む
