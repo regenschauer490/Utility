@@ -155,8 +155,8 @@ void FileSaveLoadTest()
 	};	
 
 	//既存の内容のクリア
-	sig::file_clear(fpass1);
-	sig::file_clear(fpass4);
+	sig::clear_file(fpass1);
+	sig::clear_file(fpass4);
 
 	//ofstreamを渡して保存
 	std::wofstream ofs(fpass1, std::ios::out | std::ios::app);

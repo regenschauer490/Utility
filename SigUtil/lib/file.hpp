@@ -180,7 +180,7 @@ enum class WriteMode{ overwrite, append };
 
 //ファイル内容の初期化
 // file_pass: 保存先のディレクトリとファイル名（フルパス）
-inline void file_clear(FilepassString const& file_pass)
+inline void clear_file(FilepassString const& file_pass)
 {
 	std::ofstream ofs(file_pass);
 	ofs << "";
