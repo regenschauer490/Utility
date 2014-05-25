@@ -72,9 +72,6 @@
 #if SIG_ENABLE_BOOST
 #include <boost/optional.hpp>
 #include <boost/call_traits.hpp>
-//#include <boost/format.hpp>
-//#include <boost/range.hpp>
-//#include <boost/range/algorithm.hpp>
 #endif
 
 namespace sig{
