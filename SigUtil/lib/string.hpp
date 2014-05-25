@@ -28,6 +28,10 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_ENABLE_CODECVT 1
 #endif
 
+#if SIG_ENABLE_BOOST
+#include <boost/regex.hpp>
+#endif
+
 #include "tool.hpp"
 
 
