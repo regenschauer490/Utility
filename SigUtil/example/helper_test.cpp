@@ -24,16 +24,16 @@ void TestHelperModules()
 #endif
 
 	//xor
-	static_assert(!sig::Xor(true, true), "");
-	static_assert(sig::Xor(true, false), "");
-	static_assert(sig::Xor(false, true), "");
-	static_assert(!sig::Xor(false, false), "");
+	static_assert(!sig::xor(true, true), "");
+	static_assert(sig::xor(true, false), "");
+	static_assert(sig::xor(false, true), "");
+	static_assert(!sig::xor(false, false), "");
 
 	//!xor
-	static_assert(sig::Consistency(true, true), "");
-	static_assert(!sig::Consistency(true, false), "");
-	static_assert(!sig::Consistency(false, true), "");
-	static_assert(sig::Consistency(false, false), "");
+	static_assert(sig::consistency(true, true), "");
+	static_assert(!sig::consistency(true, false), "");
+	static_assert(!sig::consistency(false, true), "");
+	static_assert(sig::consistency(false, false), "");
 
 	//ëÂè¨î‰är
 	static_assert(!sig::greater(0.5, 1), "");
@@ -70,23 +70,23 @@ void TestHelperModules()
 	assert(!sig::Or(maybe_false, maybe_false));
 	assert(!sig::Or(maybe_false, false));
 
-	assert(!sig::Xor(maybe_true, maybe_true));
-	assert(!sig::Xor(maybe_true, true));
-	assert(sig::Xor(maybe_true, maybe_false));
-	assert(sig::Xor(maybe_true, false));
-	assert(sig::Xor(maybe_false, maybe_true));
-	assert(sig::Xor(maybe_false, true));
-	assert(!sig::Xor(maybe_false, maybe_false));
-	assert(!sig::Xor(maybe_false, false));
+	assert(!sig::xor(maybe_true, maybe_true));
+	assert(!sig::xor(maybe_true, true));
+	assert(sig::xor(maybe_true, maybe_false));
+	assert(sig::xor(maybe_true, false));
+	assert(sig::xor(maybe_false, maybe_true));
+	assert(sig::xor(maybe_false, true));
+	assert(!sig::xor(maybe_false, maybe_false));
+	assert(!sig::xor(maybe_false, false));
 
-	assert(sig::Consistency(maybe_true, maybe_true));
-	assert(sig::Consistency(maybe_true, true));
-	assert(!sig::Consistency(maybe_true, maybe_false));
-	assert(!sig::Consistency(maybe_true, false));
-	assert(!sig::Consistency(maybe_false, maybe_true));
-	assert(!sig::Consistency(maybe_false, true));
-	assert(sig::Consistency(maybe_false, maybe_false));
-	assert(sig::Consistency(maybe_false, false));
+	assert(sig::consistency(maybe_true, maybe_true));
+	assert(sig::consistency(maybe_true, true));
+	assert(!sig::consistency(maybe_true, maybe_false));
+	assert(!sig::consistency(maybe_true, false));
+	assert(!sig::consistency(maybe_false, maybe_true));
+	assert(!sig::consistency(maybe_false, true));
+	assert(sig::consistency(maybe_false, maybe_false));
+	assert(sig::consistency(maybe_false, false));
 #endif
 
 	//min,max

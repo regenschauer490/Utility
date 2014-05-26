@@ -84,7 +84,7 @@ inline auto get_file_names(
 	}
 	else{
 		do{
-			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && Consistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
+			if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && consistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
 			{
 				result.push_back(std::wstring(fd.cFileName));
 			}
@@ -103,7 +103,7 @@ inline auto get_file_names(
 	fs::directory_iterator end;
 	for (fs::directory_iterator it(directory_pass); it != end; ++it)
 	{
-		if (!fs::is_directory(*it) && Consistency(hidden_file, IsHidden(*it))){
+		if (!fs::is_directory(*it) && consistency(hidden_file, IsHidden(*it))){
 			auto leaf = sig::split(it->path().wstring(), L"/").back();
 			if (extension.empty()) result.push_back(leaf);
 			else{
@@ -143,7 +143,7 @@ inline auto get_folder_names(
 	}
 	else{
 		do{
-			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && Consistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
+			if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && consistency(hidden_file, (fd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)))
 			{
 				auto tmp = std::wstring(fd.cFileName);
 				if(tmp != L"." && tmp != L"..") result.push_back(tmp);
@@ -163,7 +163,7 @@ inline auto get_folder_names(
 	fs::directory_iterator end;
 	for (fs::directory_iterator it(directory_pass); it != end; ++it)
 	{
-		if (fs::is_directory(*it) && Consistency(hidden_file, IsHidden(*it))){
+		if (fs::is_directory(*it) && consistency(hidden_file, IsHidden(*it))){
 			result.push_back(sig::split(it->path().wstring(), L"/").back());
 		}
 	}
