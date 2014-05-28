@@ -112,14 +112,14 @@ namespace sig{
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	template <class T> struct Just{ typedef maybe<T> type; };
 	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
-	template <class T> auto fromJust(maybe<T> const& sp){ return *sp; }
-	template <class T> auto fromJust(maybe<T>&& sp){ return std::move(*sp); }
+	template <class T> T fromJust(maybe<T> const& sp){ return *sp; }
+	template <class T> T fromJust(maybe<T>&& sp){ return std::move(*sp); }
 	template <class T> bool is_container_valid(T const& m){ return m; }
 #else
 	template <class T> struct Just{ typedef T type; };
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
-	template <class T> auto fromJust(T const& sp){ return sp; }
-	template <class T> auto fromJust(T&& sp){ return std::forward<T>(sp); }
+	template <class T> T fromJust(T const& sp){ return sp; }
+	template <class T> T fromJust(T&& sp){ return std::forward<T>(sp); }
 	template <class T> bool is_container_valid(T const& raw){ return !raw.empty(); }
 #endif
 
