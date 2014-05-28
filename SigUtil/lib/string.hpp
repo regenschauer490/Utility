@@ -11,6 +11,7 @@ http://opensource.org/licenses/mit-license.php
 #include "sigutil.hpp"
 #include "type_map.hpp"
 #include "functional.hpp"
+
 #include <regex>
 #include <stdlib.h>
 #include <sstream>
@@ -26,6 +27,10 @@ http://opensource.org/licenses/mit-license.php
 #if SIG_MSVC_ENV || !(SIG_USE_GLIBCPP)
 #include <codecvt>
 #define SIG_ENABLE_CODECVT 1
+#endif
+
+#if SIG_ENABLE_BOOST
+#include <boost/regex.hpp>
 #endif
 
 #include "tool.hpp"
