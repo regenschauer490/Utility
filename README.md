@@ -110,8 +110,8 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 　雑多な補助モジュール
 * And: constexpr 可変長and
 * Or: constexpr 可変長or
-* xor: constexpr xor
-* consistency: constexpr !xor
+* Xor: constexpr xor
+* Consistency: constexpr !xor
 * min: constexpr可変長min
 * max: constexpr可変長max
 * greater: constexpr 大小比較
