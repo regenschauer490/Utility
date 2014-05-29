@@ -15,12 +15,10 @@ http://opensource.org/licenses/mit-license.php
 #include <locale>
 
 #if SIG_MSVC_ENV
-#include <windows.h>
-#endif
-
-#if SIG_ENABLE_BOOST
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
+	#include <windows.h>
+#elif SIG_USE_BOOST_FILESYSTEM
+	#include <boost/filesystem.hpp>
+	namespace fs = boost::filesystem;
 #endif
 
 
@@ -300,7 +298,7 @@ using IfsSelector = typename std::conditional<std::is_same<R, std::string>::valu
 // ifs: std::ifstream or std::wifstream
 // conv: 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはread_numを推奨) string or wstring -> R
 template <class C, class R = typename container_traits<C>::value_type>
-void read_line(
+bool read_line(
 	C& empty_dest,
 	IfsSelector<R>& ifs,
 	std::function< R(typename std::conditional<std::is_same<R, std::string>::value, std::string, std::wstring>::type) > const& conv = nullptr)
@@ -318,6 +316,7 @@ void read_line(
 	while (ifs && std::getline(ifs, line)){
 		conv ? container_traits<C>::add_element(empty_dest, conv(std::move(line))) : container_traits<C>::add_element(empty_dest, std::move(line));
 	}
+	return static_cast<bool>(ifs);
 }
 
 // ファイルから1行ずつ読み込む
@@ -325,7 +324,7 @@ void read_line(
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // conv: 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはread_numを推奨) string or wstring -> R
 template <class C, class R = typename container_traits<C>::value_type>
-void read_line(
+bool read_line(
 	C& empty_dest,
 	FilepassString const& file_pass,
 	std::function< R(typename std::conditional<std::is_same<R, std::string>::value, std::string, std::wstring>::type)> const& conv = nullptr)
@@ -333,14 +332,15 @@ void read_line(
 	IfsSelector<R> ifs(file_pass);
 	if (!ifs){
 		FileOpenErrorPrint(file_pass);
-		return;
+		return false;
 	}
-	read_line(empty_dest, ifs, conv);
+	return read_line(empty_dest, ifs, conv);
 }
 
 // ファイルから1行ずつ読み込み、結果を返す
+// R: 返す文字列型(std::string or std::wstring)
 // ifs: std::ifstream or std::wifstream
-// 読込失敗: return -> nothing (boost非使用時はコンテナそのもの)
+// 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
 template <class R, class C = std::vector<R>>
 auto read_line(IfsSelector<R>& ifs) ->typename Just<C>::type
 {
@@ -350,8 +350,9 @@ auto read_line(IfsSelector<R>& ifs) ->typename Just<C>::type
 }
 
 // ファイルから1行ずつ読み込み、結果を返す
+// R: 返す文字列型(std::string or std::wstring)
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
-// 読込失敗: return -> nothing (boost非使用時はコンテナそのもの)
+// 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
 template <class R, class C = std::vector<R>>
 auto read_line(FilepassString const& file_pass) ->typename Just<C>::type
 {
@@ -363,20 +364,27 @@ auto read_line(FilepassString const& file_pass) ->typename Just<C>::type
 	return read_line<R, C>(ifs);
 }
 
+template <class R, class C = std::vector<R>>
+auto read_line(FilepassStringC file_pass) ->typename Just<C>::type
+{
+	return read_line<R, C>(static_cast<TString<FilepassStringC>>(file_pass));
+}
+
 
 // 数値列を読み込む
 // empty_dest: 保存先の空のコンテナ
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // delimiter: 数値間の区切り文字を指定 (デフォルトは行区切り)
+// return -> 読み込みの成否
 template <class C, class RT = typename container_traits<C>::value_type, typename std::enable_if<!container_traits<typename container_traits<C>::value_type>::exist>::type*& = enabler>
-void read_num(
+bool read_num(
 	C& empty_dest,
 	FilepassString const& file_pass,
 	std::string delimiter = "\n")
 {
 	auto read_str = read_line<std::string>(file_pass);
 
-	if (!is_container_valid(read_str)) return;
+	if (!is_container_valid(read_str)) return false;
 
 	if (delimiter == "\n"){
 		for (auto const& line : fromJust(read_str)){
@@ -387,20 +395,22 @@ void read_num(
 		auto sp = split(fromJust(read_str)[0], delimiter);
 		for (auto v : sp) container_traits<C>::add_element(empty_dest, Str2NumSelector<RT>()(v));
 	}
+	return true;
 }
 
 // 2次元配列の数値(ex:行列)を読み込む
 // empty_dest: 保存先の空のコンテナのコンテナ
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // delimiter: 数値間の区切り文字を指定
+// return -> 読み込みの成否
 template <class CC, class RC = typename container_traits<CC>::value_type, class RT = typename container_traits<RC>::value_type>
-void read_num(
+bool read_num(
 	CC& empty_dest,
 	FilepassString const& file_pass, 
 	std::string delimiter)
 {
 	auto read_str = read_line<std::string>(file_pass);
-	if (!is_container_valid(read_str)) return;
+	if (!is_container_valid(read_str)) return false;
 
 	for (auto const& line : fromJust(read_str)){
 		RC tmp;
@@ -411,11 +421,13 @@ void read_num(
 		}
 		container_traits<CC>::add_element(empty_dest, std::move(tmp));
 	}
+	return true;
 }
 
 // 数値列を読み込み、結果のコンテナを返す
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // delimiter: 数値間の区切り文字を指定 (デフォルトは行区切り)
+// 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
 template <class C, typename std::enable_if<container_traits<C>::exist && !container_traits<typename container_traits<C>::value_type>::exist>::type*& = enabler>
 auto read_num(
 	FilepassString const& file_pass,
@@ -430,6 +442,7 @@ auto read_num(
 // 2次元配列の数値(ex:行列)を読み込む
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // delimiter: 数値間の区切り文字を指定
+// 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
 template <class CC, typename std::enable_if<container_traits<typename container_traits<CC>::value_type>::exist>::type*& = enabler>
 auto read_num(
 	FilepassString const& file_pass,

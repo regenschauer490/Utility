@@ -129,10 +129,14 @@ namespace sig{
 // ファイルパスの文字型の指定
 #if SIG_MSVC_ENV
 	using FilepassString = std::wstring;
+	using FilepassStringC = wchar_t const*;
 	inline void FileOpenErrorPrint(FilepassString const& pass){ std::wcout << L"file open error: " << pass << std::endl; }
+	#define SIG_USE_BOOST_FILESYSTEM 0
 #else
 	using FilepassString = std::string;
+	using FilepassStringC = char const*;
 	inline void FileOpenErrorPrint(FilepassString const& pass){ std::cout << "file open error: " << pass << std::endl; }
+	#define SIG_USE_BOOST_FILESYSTEM 1
 #endif
 
 }
