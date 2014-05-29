@@ -18,6 +18,7 @@ http://opensource.org/licenses/mit-license.php
 
 #if SIG_MSVC_ENV
 #include <windows.h>
+#pragma warning ( disable : 4996 )
 #endif
 
 #if (__GLIBCXX__ || __GLIBCPP__)

@@ -8,6 +8,8 @@
 
 /*------------------------------------------------------------------------------------------------------------------------*/
 
+#define SIG_UTIL_VERSION 100
+
 #if defined(_WIN32) || defined(_WIN64) // windows env
 	#ifdef _MSC_VER
 	#define SIG_MSVC_ENV 1

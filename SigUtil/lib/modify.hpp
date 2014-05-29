@@ -68,7 +68,7 @@ auto sort_with_index(
 	F const& binary_op = std::less<typename sequence_container_traits<C>::value_type>())
 {
 	using Tp = std::tuple<typename sequence_container_traits<C>::value_type, uint>;
-	auto result = zip(container, seq(0, 1, container.size()));
+	auto result = zip(container, seq(0u, 1u, container.size()));
 
 	sort(result, [&](Tp const& l, Tp const& r){ return binary_op(std::get<0>(l), std::get<0>(r)); });
 

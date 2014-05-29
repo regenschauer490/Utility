@@ -20,7 +20,6 @@ http://opensource.org/licenses/mit-license.php
 
 #if SIG_ENABLE_BOOST
 #include <boost/filesystem.hpp>
-
 namespace fs = boost::filesystem;
 #endif
 
