@@ -148,7 +148,7 @@ SIG_MakeBinaryOperation(divides, / );
 
 	// 正規化(Normalization)
 	template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
-	void normalize(C& data)
+	bool normalize(C& data)
 	{
 		using T = typename container_traits<C>::value_type;
 		T min = *std::begin(data);
@@ -160,6 +160,7 @@ SIG_MakeBinaryOperation(divides, / );
 		}
 		T diff = max - min;
 		for_each([min, max, diff](T& e){ e = (e - min) / (diff); }, data);
+		return true;
 	}
 
 	template <class RT = double, class C = void>
@@ -174,13 +175,14 @@ SIG_MakeBinaryOperation(divides, / );
 
 	// 標準化(Standardization)
 	template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
-	void standardize(C& data)
+	bool standardize(C& data)
 	{
 		using T = typename container_traits<C>::value_type;
 		double mean = average(data);
 		double var = variance(data);
 
 		for_each([mean, var](T& e){ e = (e - mean) / var; }, data);
+		return true;
 	}
 
 	template <class RT = double, class C = void>

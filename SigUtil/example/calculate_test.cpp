@@ -144,7 +144,7 @@ void ArithmeticOperationsTest()
 	double v2 = sig::variance(data8);
 	sig::array<double, 5> standard_test2{ (data8[0] - m2) / v2, (data8[1] - m2) / v2, (data8[2] - m2) / v2, (data8[3] - m2) / v2, (data8[4] - m2) / v2 };
 
-	sig::normalize(data5);
+	assert(sig::normalize(data5));		// 適切なオーバーロードか確認
 	auto normal1 = sig::normalize(data7);
 	auto normal2 = sig::normalize(data8);	// sig::array<int, 5> -> sig::array<double, 5>
 
@@ -152,7 +152,7 @@ void ArithmeticOperationsTest()
 	sig::for_each(sig::DebugEqual(), normal1, normal_test1);
 	sig::for_each(sig::DebugEqual(), normal2, normal_test2);
 
-	sig::standardize(data6);
+	assert(sig::standardize(data6));		// 適切なオーバーロードか確認
 	auto standard1 = sig::standardize(data7);
 	auto standard2 = sig::standardize(data8);	// sig::array<int, 5> -> sig::array<double, 5>
 
