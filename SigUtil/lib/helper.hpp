@@ -41,13 +41,13 @@ constexpr bool Or(B1 cond, Bs... conds){
 
 // xor
 template <class B1, class B2>
-constexpr bool xor(B1 a, B2 b){
+constexpr bool Xor(B1 a, B2 b){
 	return (a && !b) || (!a && b); 
 }
 
 // AとBの真偽一致でtrueを返す (⇔ !xor)
 template <class B1, class B2>
-constexpr bool consistency(B1 a, B2 b){
+constexpr bool Consistency(B1 a, B2 b){
 	return (a && b) || (!a && !b); 
 }
 

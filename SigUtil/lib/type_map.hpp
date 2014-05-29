@@ -88,19 +88,5 @@ struct StringId<wchar_t const*>{ typedef std::wstring type; static const bool va
 template <class T>
 using TString = typename StringId<typename std::decay<T>::type>::type;
 
-//string type to associated in regex type
-template <class T>
-struct Str2RegexSelector{};
-template <>
-struct Str2RegexSelector<std::string>{
-	typedef SIG_Regex regex;
-	typedef SIG_SMatch smatch;
-};
-template <>
-struct Str2RegexSelector<std::wstring>{
-	typedef SIG_WRegex regex;
-	typedef SIG_WSMatch smatch;
-};
-
 }
 #endif

@@ -35,7 +35,7 @@ void MapTest()
 	auto it2 = data2.begin();
 	auto itr2 = r2.begin();
 	for(unsigned i=0; i<data2.size(); ++i, ++it2, ++itr2){
-		assert(sig::consistency(*it2 < th, (*itr2)(th)));
+		assert(sig::Consistency(*it2 < th, (*itr2)(th)));
 	}
 	}
 #endif

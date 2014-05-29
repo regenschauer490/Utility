@@ -135,24 +135,6 @@ namespace sig{
 	inline void FileOpenErrorPrint(FilepassString const& pass){ std::cout << "file open error: " << pass << std::endl; }
 #endif
 
-
-// 正規表現ライブラリの指定 (gcc標準はバグが多いため避ける)
-#if !SIG_MSVC_ENV && SIG_ENABLE_BOOST
-using SIG_Regex = boost::regex;
-using SIG_WRegex = boost::wregex;
-using SIG_SMatch = boost::smatch;
-using SIG_WSMatch = boost::wsmatch;
-#define SIG_RegexSearch boost::regex_search
-#define SIG_RegexReplace boost::regex_replace
-#else
-using SIG_Regex = std::regex;
-using SIG_WRegex = std::wregex;
-using SIG_SMatch = std::smatch;
-using SIG_WSMatch = std::wsmatch;
-#define SIG_RegexSearch std::regex_search
-#define SIG_RegexReplace std::regex_replace
-#endif
-
 }
 
 #endif
