@@ -109,6 +109,7 @@ void ArithmeticOperationsTest()
 		sig::zipWith(std::divides<double>(), data2, data0)
 	);
 
+	// accumulation (sum, product)
 	int sum1 = sig::sum(data0);
 	double sum2 = sig::sum(data2);
 
@@ -120,4 +121,42 @@ void ArithmeticOperationsTest()
 
 	assert(sig::equal(pi1, std::accumulate(std::begin(data0), std::end(data0), 0, std::multiplies<int>{})));
 	assert(sig::equal(pi2, std::accumulate(std::begin(data2), std::end(data2), 0.0, std::multiplies<double>{})));
+
+	// average, variance
+	double ave = sig::average(data2);
+	double var = sig::variance(data3);
+
+	assert(sig::equal(ave, 1.0));
+	assert(sig::equal(var, 32.0 / 3));
+
+	// normalization, Standardization
+	std::list<double> data5{ -5, -1.5, 0, 0.5, 5 };
+	std::vector<double> data6{ -5, -1.5, 0, 0.5, 5 };
+	const sig::array<double, 5> data7{ -5, -1.5, 0, 0.5, 5 };
+	sig::array<int, 5> data8{ -5, -2, 0, 1, 5 };
+
+	sig::array<double, 5> normal_test1{ 0, 0.35, 0.5, 0.55, 1 };
+	sig::array<double, 5> normal_test2{ 0, 0.3, 0.5, 0.6, 1 };
+	double m1 = sig::average(data6);
+	double v1 = sig::variance(data6);
+	sig::array<double, 5> standard_test1{ (data6[0] - m1) / v1, (data6[1] - m1) / v1, (data6[2] - m1) / v1, (data6[3] - m1) / v1, (data6[4] - m1) / v1 };
+	double m2 = sig::average(data8);
+	double v2 = sig::variance(data8);
+	sig::array<double, 5> standard_test2{ (data8[0] - m2) / v2, (data8[1] - m2) / v2, (data8[2] - m2) / v2, (data8[3] - m2) / v2, (data8[4] - m2) / v2 };
+
+	sig::normalize(data5);
+	auto normal1 = sig::normalize(data7);
+	auto normal2 = sig::normalize(data8);	// sig::array<int, 5> -> sig::array<double, 5>
+
+	sig::for_each(sig::DebugEqual(), data5, normal_test1);
+	sig::for_each(sig::DebugEqual(), normal1, normal_test1);
+	sig::for_each(sig::DebugEqual(), normal2, normal_test2);
+
+	sig::standardize(data6);
+	auto standard1 = sig::standardize(data7);
+	auto standard2 = sig::standardize(data8);	// sig::array<int, 5> -> sig::array<double, 5>
+
+	sig::for_each(sig::DebugEqual(), data6, standard_test1);
+	sig::for_each(sig::DebugEqual(), standard1, standard_test1);
+	sig::for_each(sig::DebugEqual(), standard2, standard_test2);
 }

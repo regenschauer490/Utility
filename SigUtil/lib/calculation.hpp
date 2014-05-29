@@ -10,6 +10,7 @@ http://opensource.org/licenses/mit-license.php
 
 #include "sigutil.hpp"
 #include "functional.hpp"
+#include "iteration.hpp"
 
 
 /* スカラ変数とベクトル変数(+コンテナの種類)を気にせず使える演算関数 */
@@ -113,20 +114,84 @@ SIG_MakeBinaryOperation(multiplies, *);
 
 SIG_MakeBinaryOperation(divides, / );
 
-	// 総和を求める
+	// 総和
 	template <class C>
-	auto sum(C const& container)
+	auto sum(C const& data)
 	{
 		using R = typename container_traits<C>::value_type;
-		return std::accumulate(std::begin(container), std::end(container), static_cast<R>(0), std::plus<R>{});
+		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(0), std::plus<R>{});
 	}
 
-	// 総乗を求める
+	// 総乗
 	template <class C>
-	auto product(C const& container)
+	auto product(C const& data)
 	{
 		using R = typename container_traits<C>::value_type;
-		return std::accumulate(std::begin(container), std::end(container), static_cast<R>(0), std::multiplies<R>{});
+		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(0), std::multiplies<R>{});
 	}
+
+	// 平均
+	template <class C>
+	double average(C const& data)
+	{
+		return static_cast<double>(sum(data)) / data.size();
+	}
+
+	// 分散
+	template <class C>
+	double variance(C const& data)
+	{
+		using T = typename container_traits<C>::value_type;
+		double mean = average(data);
+		return std::accumulate(std::begin(data), std::end(data), 0.0, [mean](double sum, T e){ return sum + std::pow(e - mean, 2); }) / data.size();
+	}
+
+	// 正規化(Normalization)
+	template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
+	void normalize(C& data)
+	{
+		using T = typename container_traits<C>::value_type;
+		T min = *std::begin(data);
+		T max = *std::begin(data);
+
+		for (auto e : data){
+			if (e < min) min = e;
+			else if (e > max) max = e;
+		}
+		T diff = max - min;
+		for_each([min, max, diff](T& e){ e = (e - min) / (diff); }, data);
+	}
+
+	template <class RT = double, class C = void>
+	auto normalize(C const& data)
+	{
+		using OutputType = typename container_traits<C>::template rebind<RT>;
+
+		auto result = sig::copy<OutputType>(data);
+		normalize(result);
+		return result;
+	}
+
+	// 標準化(Standardization)
+	template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
+	void standardize(C& data)
+	{
+		using T = typename container_traits<C>::value_type;
+		double mean = average(data);
+		double var = variance(data);
+
+		for_each([mean, var](T& e){ e = (e - mean) / var; }, data);
+	}
+
+	template <class RT = double, class C = void>
+	auto standardize(C const& data)
+	{
+		using OutputType = typename container_traits<C>::template rebind<RT>;
+
+		auto result = sig::copy<OutputType>(data);
+		standardize(result);
+		return result;
+	}
+
 }
 #endif

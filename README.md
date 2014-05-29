@@ -56,6 +56,10 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 * divides: 汎用的な除算関数
 * sum: 総和を求める関数
 * product: 総乗を求める関数
+* average: 平均を求める関数
+* variance: 分散を求める関数
+* normalize: 正規化を行う関数
+* standardize: 標準化を行う関数
 
 **\<modify.hpp>**
 　コンテナに対する変更操作
