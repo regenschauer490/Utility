@@ -110,6 +110,16 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 * class Histgram: ヒストグラム(データ型指定、ビン数指定、値域指定、出力・保存機能)
 * class Percent: パーセント型
 
+**\<distance.hpp>** 
+　距離・類似度関数
+* norm: Pノルム(L1, L2,...), 最大ノルム
+* minkowski_distance: ミンコフスキー距離(マンハッタン距離, ユークリッド距離,...)
+* canberra_distance: キャンベラ距離
+* binary_distance: バイナリ距離
+* cosine_similarity: コサイン類似度
+* KL_divergence: KL情報量
+* JS_divergence: JS情報量
+
 **\<helper.hpp>**
 　雑多な補助モジュール
 * And: constexpr 可変長and

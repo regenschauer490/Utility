@@ -12,6 +12,7 @@
 #include "example/functional_test.h"
 #include "example/calculate_test.h"
 #include "example/iteration_test.h"
+#include "example/distance_test.h"
 
 /// test completed
 // Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
@@ -65,6 +66,15 @@ int main()
 	HistgramTest();
 	PercentTest();
 //	TimeWatchTest();	//処理環境のスペック依存
+
+	//distance.hpp
+	NormTest(); 
+	MinkowskiDistanceTest();
+	CosineSimilarityTest();
+	CanberraDistanceTest();
+	BinaryDistanceTest();
+	KL_DivergenceTest();
+	JS_DivergenceTest();
 
 	return 0;
 }

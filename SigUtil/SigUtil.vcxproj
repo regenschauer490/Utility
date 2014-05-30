@@ -85,6 +85,7 @@
   <ItemGroup>
     <ClCompile Include="example\array_test.cpp" />
     <ClCompile Include="example\calculate_test.cpp" />
+    <ClCompile Include="example\distance_test.cpp" />
     <ClCompile Include="example\iteration_test.cpp" />
     <ClCompile Include="example\helper_test.cpp" />
     <ClCompile Include="example\modify_test.cpp" />
@@ -98,6 +99,7 @@
     <ClInclude Include="example\array_test.h" />
     <ClInclude Include="example\calculate_test.h" />
     <ClInclude Include="example\debug.hpp" />
+    <ClInclude Include="example\distance_test.h" />
     <ClInclude Include="example\iteration_test.h" />
     <ClInclude Include="example\helper_test.h" />
     <ClInclude Include="example\modify_test.h" />
@@ -108,6 +110,14 @@
     <ClInclude Include="lib\array.hpp" />
     <ClInclude Include="lib\calculation.hpp" />
     <ClInclude Include="lib\container_helper.hpp" />
+    <ClInclude Include="lib\distance.hpp" />
+    <ClInclude Include="lib\distance\binary_distance.hpp" />
+    <ClInclude Include="lib\distance\canberra_distance.hpp" />
+    <ClInclude Include="lib\distance\cosine_similarity.hpp" />
+    <ClInclude Include="lib\distance\JS_divergence.hpp" />
+    <ClInclude Include="lib\distance\KL_divergence.hpp" />
+    <ClInclude Include="lib\distance\minkowski_distance.hpp" />
+    <ClInclude Include="lib\distance\norm.hpp" />
     <ClInclude Include="lib\external\container traits\container_traits.hpp" />
     <ClInclude Include="lib\external\container traits\eval.hpp" />
     <ClInclude Include="lib\helper.hpp" />

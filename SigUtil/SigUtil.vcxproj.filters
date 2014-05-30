@@ -22,6 +22,9 @@
     <Filter Include="ヘッダー ファイル\external">
       <UniqueIdentifier>{10265700-d179-4782-8ed3-69d373b73052}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\distance">
+      <UniqueIdentifier>{d1b65559-2b91-4a40-9c75-3ed609aadf8e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -55,6 +58,9 @@
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
     <ClCompile Include="example\array_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
+    <ClCompile Include="example\distance_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
   </ItemGroup>
@@ -136,6 +142,33 @@
     </ClInclude>
     <ClInclude Include="lib\tmp\others.hpp">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\distance.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\distance\cosine_similarity.hpp">
+      <Filter>ヘッダー ファイル\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\distance\JS_divergence.hpp">
+      <Filter>ヘッダー ファイル\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\distance\KL_divergence.hpp">
+      <Filter>ヘッダー ファイル\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\distance\minkowski_distance.hpp">
+      <Filter>ヘッダー ファイル\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\distance\norm.hpp">
+      <Filter>ヘッダー ファイル\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\distance\binary_distance.hpp">
+      <Filter>ヘッダー ファイル\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\distance\canberra_distance.hpp">
+      <Filter>ヘッダー ファイル\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="example\distance_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
