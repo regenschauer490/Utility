@@ -10,7 +10,7 @@ http://opensource.org/licenses/mit-license.php
 
 #include <numeric>
 #include "norm.hpp"
-#include "../sigutil.hpp"
+#include "comparable_check.hpp"
 
 namespace sig
 {
@@ -18,13 +18,12 @@ struct CosineSimilarity
 {
 	//コサイン類似度
 	//値域：[-1, 1]
-	//失敗時：return 0
 	template<class C1, class C2>
 	double operator()(C1 const& vec1, C2 const& vec2) const
 	{
-		using T = std::common_type<typename sig::container_traits<C1>::value_type, typename sig::container_traits<C2>::value_type>::type;
+		using T = typename std::common_type<typename container_traits<C1>::value_type, typename container_traits<C2>::value_type>::type;
 
-		if (vec1.size() != vec2.size()) return 0;
+		assert(is_comparable(vec1, vec2, NumericVectorTag()));
 
 		return std::inner_product(std::begin(vec1), std::end(vec1), std::begin(vec2), static_cast<T>(0)) / (norm_L2(vec1) * norm_L2(vec2));
 	}
@@ -33,13 +32,13 @@ struct CosineSimilarity
 	//値域：[-1, 1]
 	//失敗時：boost::none (if not use boost, return 0)
 	template<class C1, class C2>
-	auto operator()(C1 const& vec1, C2 const& vec2) const ->typename sig::Just<double>::type
+	auto operator()(C1 const& vec1, C2 const& vec2) const ->typename Just<double>::type
 	{
-		using T = std::common_type<typename sig::container_traits<C1>::value_type, typename sig::container_traits<C2>::value_type>::type;
+		using T = std::common_type<typename container_traits<C1>::value_type, typename container_traits<C2>::value_type>::type;
 
-		if(vec1.size() != vec2.size()) return sig::Nothing(0);
+		if(!is_comparable(vec1, vec2, NumericVectorTag())) return Nothing(0);
 
-		return typename sig::Just<double>::type(std::inner_product(std::begin(vec1), std::end(vec1), std::begin(vec2), static_cast<T>(0)) / (L2Norm(vec1) * L2Norm(vec2)));
+		return typename Just<double>::type(std::inner_product(std::begin(vec1), std::end(vec1), std::begin(vec2), static_cast<T>(0)) / (norm_L2(vec1) * norm_L2(vec2)));
 	}
 */
 };

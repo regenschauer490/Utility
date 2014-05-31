@@ -9,6 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_BINARY_DISTANCE_HPP
 
 #include "../functional.hpp"
+#include "comparable_check.hpp"
 
 namespace sig
 {
@@ -22,6 +23,8 @@ struct BinaryDistance
 	>
 	double operator()(C1 const& vec1, C2 const& vec2) const
 	{
+		assert(is_comparable(vec1, vec2, NumericVectorTag()));
+
 		int ether = 0, both = 0;
 		auto it1 = std::begin(vec1), end1 = std::end(vec1);
 		auto it2 = std::begin(vec2), end2 = std::end(vec2);

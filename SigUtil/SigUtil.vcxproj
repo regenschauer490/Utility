@@ -113,6 +113,7 @@
     <ClInclude Include="lib\distance.hpp" />
     <ClInclude Include="lib\distance\binary_distance.hpp" />
     <ClInclude Include="lib\distance\canberra_distance.hpp" />
+    <ClInclude Include="lib\distance\comparable_check.hpp" />
     <ClInclude Include="lib\distance\cosine_similarity.hpp" />
     <ClInclude Include="lib\distance\JS_divergence.hpp" />
     <ClInclude Include="lib\distance\KL_divergence.hpp" />

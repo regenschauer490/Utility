@@ -9,6 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_NORM_HPP
 
 #include "../calculation.hpp"
+#include "comparable_check.hpp"
 #include <numeric>
 #undef max
 #undef min
@@ -19,7 +20,7 @@ namespace sig
 template <size_t P, class C>
 double norm(C const& vec)
 {
-	using T = typename sig::container_traits<C>::value_type;
+	using T = typename container_traits<C>::value_type;
 
 	return std::pow(
 		std::accumulate(std::begin(vec), std::end(vec), static_cast<T>(0), [&](T sum, T val){ return sum + std::pow(std::abs(val), P); }),
@@ -36,7 +37,8 @@ double norm_L1(C const& vec)
 template <class C1, class C2>
 double norm_L1(C1 const& vec1, C2 const& vec2)
 {
-	return norm<1>(sig::minus(vec1, vec2));
+	assert(is_comparable(vec1, vec2, NumericVectorTag()));
+	return norm<1>(minus(vec1, vec2));
 }
 
 template <class C>
@@ -48,13 +50,14 @@ double norm_L2(C const& vec)
 template <class C1, class C2>
 double norm_L2(C1 const& vec1, C2 const& vec2)
 {
-	return norm<2>(sig::minus(vec1, vec2));
+	assert(is_comparable(vec1, vec2, NumericVectorTag()));
+	return norm<2>(minus(vec1, vec2));
 }
 
 template <class C>
 double norm_max(C const& vec)
 {
-	using T = typename sig::container_traits<C>::value_type;
+	using T = typename container_traits<C>::value_type;
 
 	T max = *std::begin(vec);
 	for(auto e : vec){
@@ -66,7 +69,8 @@ double norm_max(C const& vec)
 template <class C1, class C2>
 double norm_max(C1 const& vec1, C2 const& vec2)
 {
-	return norm_max(sig::minus(vec1, vec2));
+	assert(is_comparable(vec1, vec2, NumericVectorTag()));
+	return norm_max(minus(vec1, vec2));
 }
 
 }

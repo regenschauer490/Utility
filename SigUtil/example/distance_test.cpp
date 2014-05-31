@@ -10,7 +10,7 @@ void NormTest()
 	double n2 = sig::norm_L2(data1);
 	double n3 = sig::norm<3>(data1);
 	double nmax = sig::norm_max(data1);
-
+	
 	assert(sig::equal(n1, 7));
 	assert(sig::equal(n2, std::sqrt(15)));
 	assert(sig::equal(n3, std::pow(37, 1/3.0)));
@@ -80,12 +80,50 @@ void BinaryDistanceTest()
 	assert(sig::equal(bindist, 0.75));
 }
 
+const sig::array<double, 5> dist1{ 0.2, 0.1, 0, 0.4, 0.3 };
+const std::list<double> dist2{ 0.1, 0.3, 0.1, 0.4, 0.1 };
+const std::vector<double> dist3{ 0.2, 0.1, 0.1, 0.4, 0.2 };
+
 void KL_DivergenceTest()
 {
+	double kl12 = sig::kl_divergence(dist1, dist2);
+	//double kl21 = sig::kl_divergence(dist2, dist1);	// error because dist1 has element whose value is 0
+	double kl23 = sig::kl_divergence(dist2, dist3);
+	double kl32 = sig::kl_divergence(dist3, dist2);
 
+	double test12 = 0;
+	double test23 = 0;
+	double test32 = 0;
+	sig::for_each(
+		[&](double d1, double d2, double d3){
+			test12 += d1 ? d1 * std::log2(d1 / d2) : 0;
+			test23 += d2 * std::log2(d2 / d3);
+			test32 += d3 * std::log2(d3 / d2);
+		},
+		dist1, dist2, dist3
+	);
+
+	assert(sig::equal(kl12, test12));
+	assert(sig::equal(kl23, test23));
+	assert(sig::equal(kl32, test32));
+	assert(!sig::equal(kl23, kl32));
 }
 
 void JS_DivergenceTest()
 {
+	double js12 = sig::js_divergence(dist1, dist2);
+	double js21 = sig::js_divergence(dist2, dist1);
 
+	double test = 0;
+	sig::for_each(
+		[&](double d1, double d2){
+		auto r = (d1 + d2) * 0.5;
+		test += (d1 ? d1 * std::log2(d1 / r) : 0) + (d2 ? d2 * std::log2(d2 / r) : 0);
+		},
+		dist1, dist2
+	);
+	test /= 2;
+
+	assert(sig::equal(js12, test));
+	assert(sig::equal(js12, js21));
 }

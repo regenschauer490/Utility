@@ -170,5 +170,8 @@
     <ClInclude Include="example\distance_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
+    <ClInclude Include="lib\distance\comparable_check.hpp">
+      <Filter>ヘッダー ファイル\distance</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
