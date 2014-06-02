@@ -114,104 +114,110 @@ SIG_MakeBinaryOperation(multiplies, *);
 
 SIG_MakeBinaryOperation(divides, / );
 
-	// 総和
-	template <class C>
-	auto sum(C const& data)
-	{
-		using R = typename container_traits<C>::value_type;
-		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(0), std::plus<R>{});
+
+// 総和
+// R: 戻り値型（桁あふれの可能性がある場合に明示的に指定する）
+template <class R = void, class C = void>
+auto sum(C const& data)
+{
+	using RT = typename SameIf<R, void, typename container_traits<C>::value_type, R>::type;
+	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(0), std::plus<RT>{});
+}
+
+// access_func: コンテナの要素にアクセスし、そのオブジェクトから値を取得する関数を指定
+template <class R = void, class C = void, class Pred = void>
+auto sum(C const& data, Pred const& access_func)
+{
+	using T = typename container_traits<C>::value_type;
+	using RT = typename SameIf<R, void, decltype(eval(access_func, std::declval<T>())), R>::type;
+
+	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(0), [&](RT sum, T const& e){ return sum + access_func(e); });
+}
+
+// 総乗
+// R: 戻り値型（桁あふれの可能性がある場合に明示的に指定する）
+template <class R = void, class C = void>
+auto product(C const& data)
+{
+	using RT = typename SameIf<R, void, typename container_traits<C>::value_type, R>::type;
+	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(1), std::multiplies<RT>{});
+}
+
+// access_func: コンテナの要素にアクセスし、そのオブジェクトから値を取得する関数を指定
+template <class R = void, class C = void, class Pred = void>
+auto product(C const& data, Pred const& access_func)
+{
+	using T = typename container_traits<C>::value_type;
+	using RT = typename SameIf<R, void, decltype(eval(access_func, std::declval<T>())), R>::type;
+
+	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(1), [&](RT sum, T const& e){ return sum * access_func(e); });
+}
+
+
+// 平均
+template <class C>
+double average(C const& data)
+{
+	return static_cast<double>(sum(data)) / data.size();
+}
+
+// 分散
+template <class C>
+double variance(C const& data)
+{
+	using T = typename container_traits<C>::value_type;
+	double mean = average(data);
+	return std::accumulate(std::begin(data), std::end(data), 0.0, [mean](double sum, T e){ return sum + std::pow(e - mean, 2); }) / data.size();
+}
+
+// 正規化(Normalization)
+template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
+bool normalize(C& data)
+{
+	using T = typename container_traits<C>::value_type;
+	T min = *std::begin(data);
+	T max = *std::begin(data);
+
+	for (auto e : data){
+		if (e < min) min = e;
+		else if (e > max) max = e;
 	}
+	T diff = max - min;
+	for_each([min, max, diff](T& e){ e = (e - min) / (diff); }, data);
+	return true;
+}
 
-	template <class C, class Pred>
-	auto sum(C const& data, Pred const& access_func)
-	{
-		using T = typename container_traits<C>::value_type;
-		using R = decltype(eval(access_func, std::declval<T>()));
+template <class RT = double, class C = void>
+auto normalize(C const& data)
+{
+	using OutputType = typename container_traits<C>::template rebind<RT>;
 
-		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(0), [&](R sum, T const& e){ return sum + access_func(e); });
-	}
+	auto result = sig::copy<OutputType>(data);
+	normalize(result);
+	return result;
+}
 
-	// 総乗
-	template <class C>
-	auto product(C const& data)
-	{
-		using R = typename container_traits<C>::value_type;
-		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(1), std::multiplies<R>{});
-	}
+// 標準化(Standardization)
+template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
+bool standardize(C& data)
+{
+	using T = typename container_traits<C>::value_type;
+	double mean = average(data);
+	double var = variance(data);
 
-	template <class C, class Pred>
-	auto product(C const& data, Pred const& access_func)
-	{
-		using T = typename container_traits<C>::value_type;
-		using R = decltype(eval(access_func, std::declval<T>()));
+	for_each([mean, var](T& e){ e = (e - mean) / var; }, data);
+	return true;
+}
 
-		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(1), [&](R sum, T const& e){ return sum * access_func(e); });
-	}
+template <class RT = double, class C = void>
+auto standardize(C const& data)
+{
+	using OutputType = typename container_traits<C>::template rebind<RT>;
 
-	// 平均
-	template <class C>
-	double average(C const& data)
-	{
-		return static_cast<double>(sum(data)) / data.size();
-	}
-
-	// 分散
-	template <class C>
-	double variance(C const& data)
-	{
-		using T = typename container_traits<C>::value_type;
-		double mean = average(data);
-		return std::accumulate(std::begin(data), std::end(data), 0.0, [mean](double sum, T e){ return sum + std::pow(e - mean, 2); }) / data.size();
-	}
-
-	// 正規化(Normalization)
-	template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
-	bool normalize(C& data)
-	{
-		using T = typename container_traits<C>::value_type;
-		T min = *std::begin(data);
-		T max = *std::begin(data);
-
-		for (auto e : data){
-			if (e < min) min = e;
-			else if (e > max) max = e;
-		}
-		T diff = max - min;
-		for_each([min, max, diff](T& e){ e = (e - min) / (diff); }, data);
-		return true;
-	}
-
-	template <class RT = double, class C = void>
-	auto normalize(C const& data)
-	{
-		using OutputType = typename container_traits<C>::template rebind<RT>;
-
-		auto result = sig::copy<OutputType>(data);
-		normalize(result);
-		return result;
-	}
-
-	// 標準化(Standardization)
-	template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
-	bool standardize(C& data)
-	{
-		using T = typename container_traits<C>::value_type;
-		double mean = average(data);
-		double var = variance(data);
-
-		for_each([mean, var](T& e){ e = (e - mean) / var; }, data);
-		return true;
-	}
-
-	template <class RT = double, class C = void>
-	auto standardize(C const& data)
-	{
-		using OutputType = typename container_traits<C>::template rebind<RT>;
-
-		auto result = sig::copy<OutputType>(data);
-		standardize(result);
-		return result;
-	}
+	auto result = sig::copy<OutputType>(data);
+	standardize(result);
+	return result;
+}
 
 }
 #endif
