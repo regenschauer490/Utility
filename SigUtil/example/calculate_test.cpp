@@ -1,6 +1,17 @@
 #include "calculate_test.h"
 #include "debug.hpp"
 
+class Tes
+{
+	int v_;
+
+public:
+	Tes() = default;
+	explicit Tes(int v) : v_(v){};
+
+	int get() const{ return v_; }
+};
+
 void ArithmeticOperationsTest()
 {
 	const sig::array<int, 4> data0{1, 2, 3, 4 };
@@ -113,14 +124,29 @@ void ArithmeticOperationsTest()
 	int sum1 = sig::sum(data0);
 	double sum2 = sig::sum(data2);
 
-	assert(sig::equal(sum1, std::accumulate(std::begin(data0), std::end(data0), 0)));
+	assert(sig::equal(sum1, data0[0] + data0[1] + data0[2] + data0[3]));
 	assert(sig::equal(sum2, std::accumulate(std::begin(data2), std::end(data2), 0.0)));
+
+	auto ddata1 = std::vector<sig::array<int, 3>>{ sig::array<int, 3>{ 1, 2, 3 }, sig::array<int, 3>{ 4, 5, 6 }};
+	auto ddata2 = sig::array<Tes, 3>{ Tes(1), Tes(2), Tes(3) };
+
+	int sum3 = sig::sum(ddata1, [](sig::array<int, 3> const& e){ return e[1]; });
+	int sum4 = sig::sum(ddata2, [](Tes const& e){ return e.get(); });
+
+	assert(sig::equal(sum3, ddata1[0][1] + ddata1[1][1]));
+	assert(sig::equal(sum4, ddata2[0].get() + ddata2[1].get() + ddata2[2].get()));
 
 	int pi1 = sig::product(data0);
 	double pi2 = sig::product(data2);
 
-	assert(sig::equal(pi1, std::accumulate(std::begin(data0), std::end(data0), 0, std::multiplies<int>{})));
-	assert(sig::equal(pi2, std::accumulate(std::begin(data2), std::end(data2), 0.0, std::multiplies<double>{})));
+	assert(sig::equal(pi1, data0[0] * data0[1] * data0[2] * data0[3]));
+	assert(sig::equal(pi2, std::accumulate(std::begin(data2), std::end(data2), 1.0, std::multiplies<double>{})));
+
+	int pi3 = sig::product(ddata1, [](sig::array<int, 3> const& e){ return e[1]; });
+	int pi4 = sig::sum(ddata2, [](Tes const& e){ return e.get(); });
+
+	assert(sig::equal(pi3, ddata1[0][1] * ddata1[1][1]));
+	assert(sig::equal(pi4, ddata2[0].get() * ddata2[1].get() * ddata2[2].get()));
 
 	// average, variance
 	double ave = sig::average(data2);

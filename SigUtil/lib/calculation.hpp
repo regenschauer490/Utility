@@ -122,12 +122,30 @@ SIG_MakeBinaryOperation(divides, / );
 		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(0), std::plus<R>{});
 	}
 
+	template <class C, class Pred>
+	auto sum(C const& data, Pred const& access_func)
+	{
+		using T = typename container_traits<C>::value_type;
+		using R = decltype(eval(access_func, std::declval<T>()));
+
+		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(0), [&](R sum, T const& e){ return sum + access_func(e); });
+	}
+
 	// 総乗
 	template <class C>
 	auto product(C const& data)
 	{
 		using R = typename container_traits<C>::value_type;
-		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(0), std::multiplies<R>{});
+		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(1), std::multiplies<R>{});
+	}
+
+	template <class C, class Pred>
+	auto product(C const& data, Pred const& access_func)
+	{
+		using T = typename container_traits<C>::value_type;
+		using R = decltype(eval(access_func, std::declval<T>()));
+
+		return std::accumulate(std::begin(data), std::end(data), static_cast<R>(1), [&](R sum, T const& e){ return sum * access_func(e); });
 	}
 
 	// 平均
