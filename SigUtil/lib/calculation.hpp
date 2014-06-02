@@ -126,7 +126,7 @@ SIG_MakeBinaryOperation(divides, / );
 	auto product(C const& container)
 	{
 		using R = typename container_traits<C>::value_type;
-		return std::accumulate(std::begin(container), std::end(container), static_cast<R>(0), std::multiplies<R>{});
+		return std::accumulate(std::begin(container), std::end(container), static_cast<R>(1), std::multiplies<R>{});
 	}
 }
 #endif

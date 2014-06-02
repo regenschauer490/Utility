@@ -118,6 +118,6 @@ void ArithmeticOperationsTest()
 	int pi1 = sig::product(data0);
 	double pi2 = sig::product(data2);
 
-	assert(sig::equal(pi1, std::accumulate(std::begin(data0), std::end(data0), 0, std::multiplies<int>{})));
-	assert(sig::equal(pi2, std::accumulate(std::begin(data2), std::end(data2), 0.0, std::multiplies<double>{})));
+	assert(sig::equal(pi1, std::accumulate(std::begin(data0), std::end(data0), 1, std::multiplies<int>{})));
+	assert(sig::equal(pi2, std::accumulate(std::begin(data2), std::end(data2), 1.0, std::multiplies<double>{})));
 }
