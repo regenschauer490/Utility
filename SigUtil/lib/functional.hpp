@@ -19,13 +19,13 @@ namespace sig
 template <class F, class C1, class... Cs>
 auto variadicZipWith(F const& func, C1 const& container1, Cs const&... containers)
 {
-	using OutputType = typename container_traits<C1>::template rebind<decltype(eval(
+	using RT = typename container_traits<C1>::template rebind<decltype(eval(
 		func,
 		std::declval<typename container_traits<C1>::value_type>(),
 		std::declval<typename container_traits<Cs>::value_type>()...
 	))>;
 
-	OutputType result;
+	RT result;
 	const uint length = min(container1.size(), containers.size()...);
 	iterative_make(length, result, func, std::begin(container1), std::begin(containers)...);
 
@@ -52,7 +52,7 @@ auto zipWith(F const& func, C1 const& container1, C2 const& container2)
 // (a -> b -> a) -> a -> [b] -> a
 // コンテナの先頭からたたみ込み
 template <class F, class T, class C>
-auto foldl(F func, T init, C container)
+auto foldl(F func, T init, C const& container)
 {
 	using R = decltype(eval(func, init, std::declval<typename container_traits<C>::value_type>()));
 	return std::accumulate(std::begin(container), std::end(container), static_cast<R>(init), func);
@@ -62,12 +62,39 @@ auto foldl(F func, T init, C container)
 // (a -> b -> b) -> b -> [a] -> b
 // コンテナの末尾からたたみ込み
 template <class F, class T, class C>
-auto foldr(F func, T init, C container)
+auto foldr(F func, T init, C const& container)
 {
 	using R = decltype(eval(func, init, std::declval<typename container_traits<C>::value_type>()));
 	return std::accumulate(std::rbegin(container), std::rend(container), static_cast<R>(init), std::bind(func, _2, _1));
 }
 #endif
+
+
+// (a -> Bool) -> [a] -> [a]
+// コンテナから指定条件を満たす要素を抽出する
+template <class F, class C>
+auto filter(F const& pred, C const& container)
+{
+	C result;
+	for (auto const& e : container){
+		if (pred(e)) container_traits<C>::add_element(result, e);
+	}
+	return result;
+}
+
+// (a -> Bool) -> [a] -> ([a], [a])
+template <class F, class C>
+auto partition(F const& pred, C const& container)
+{
+	C result1, result2;
+
+	for (auto const& e : container){
+		if (pred(e)) container_traits<C>::add_element(result1, e);
+		else container_traits<C>::add_element(result2, e);
+	}
+	return std::make_tuple(std::move(result1), std::move(result2));
+}
+
 
 // [a] -> [b] -> ... -> [(a, b, ...)]
 // 複数のコンテナから、タプルのコンテナを作る (第1引数のコンテナが戻り値のコンテナとなる)
@@ -92,12 +119,12 @@ template <class C1, class... Cs,
 >
 auto zip(C1&& container1, Cs&&... containers)
 {
-	using OutputType = typename container_traits<C1>::template rebind<
+	using RT = typename container_traits<C1>::template rebind<
 		std::tuple<typename container_traits<C1>::value_type, typename container_traits<Cs>::value_type...>
 	>;
 
 	const uint length = min(container1.size(), containers.size()...);
-	OutputType result;
+	RT result;
 	iterative_make(length, result, [](typename container_traits<C1>::value_type&& v1, typename container_traits<Cs>::value_type&&... vs){
 		return std::make_tuple(std::move(v1), std::move(vs)...);
 	}, std::make_move_iterator(std::begin(container1)), std::make_move_iterator(std::begin(containers))...);
