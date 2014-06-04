@@ -1,4 +1,4 @@
-SigUtil (version 1.00)
+SigUtil (現在開発中 version 1.xx)
 =======
 汎用性と使いやすさを重視したC++11ユーティリティ(template ライブラリ).   
 コンテナに対してはboost::rangeのようにイテレータを介さず使用できる.  
@@ -29,6 +29,7 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 * variadicZipWith: map,zipWith の可変長化　(a -> b -> ...) -> [a] -> [b] -> ...
 * foldl: コンテナの先頭からたたみ込み (a -> b -> a) -> a -> [b] -> a
 * foldr: コンテナの末尾からたたみ込み (a -> b -> b) -> b -> [a] -> b
+* filter: コンテナから指定条件の要素を抽出する　(a -> Bool) -> [a] -> [a]
 * zip: 複数のコンテナから、タプルのコンテナを作る　[a] -> [b] -> ... -> [(a, b, ...)]
 * zip: コンテナのタプルから、タプルのコンテナを作る　([a], [b], ...) -> [(a, b, ...)]
 * unzip: タプルのコンテナから、リストのタプルを作る　[(a, b, ...)] -> ([a], [b], ...)
