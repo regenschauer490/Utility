@@ -187,12 +187,12 @@ bool normalize(C& data)
 	return true;
 }
 
-template <class RT = double, class C = void>
+template <class R = double, class C = void>
 auto normalize(C const& data)
 {
-	using OutputType = typename container_traits<C>::template rebind<RT>;
+	using RT = typename container_traits<C>::template rebind<R>;
 
-	auto result = sig::copy<OutputType>(data);
+	auto result = sig::copy<RT>(data);
 	normalize(result);
 	return result;
 }
@@ -209,12 +209,12 @@ bool standardize(C& data)
 	return true;
 }
 
-template <class RT = double, class C = void>
+template <class R = double, class C = void>
 auto standardize(C const& data)
 {
-	using OutputType = typename container_traits<C>::template rebind<RT>;
+	using RT = typename container_traits<C>::template rebind<R>;
 
-	auto result = sig::copy<OutputType>(data);
+	auto result = sig::copy<RT>(data);
 	standardize(result);
 	return result;
 }

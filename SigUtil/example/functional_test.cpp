@@ -92,11 +92,11 @@ void FunctionalTest()
 	const std::unordered_multiset<int> data4{ 1, -3, 5, 2, 10 };
 
 	/// fold function
-	int fl1 = sig::foldl(std::plus<int>(), 0, data1);
-	double fl2 = sig::foldl([](double sum, int v){ return sum + v * 0.5; }, 0, data1); //note:init value's type is int, but return's value is double because lambda-function returns double.
+	int fl1 = sig::foldl(std::plus<int>(), 0, data0);
+	double fl2 = sig::foldl([](double sum, int v){ return sum + v * 0.5; }, 0, data2); //note:init value's type is int, but return's value is double because lambda-function returns double.
 
-	assert(fl1 == sig::sum(data1));
-	assert(fl2 == std::accumulate(std::begin(data1), std::end(data1), 0.0, [](double sum, int v){ return sum + v * 0.5; }));
+	assert(fl1 == sig::sum(data0));
+	assert(fl2 == std::accumulate(std::begin(data2), std::end(data2), 0.0, [](double sum, int v){ return sum + v * 0.5; }));
 
 #if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || SIG_MSVC_ENV
 
@@ -106,6 +106,20 @@ void FunctionalTest()
 	assert(fl0 == ((1-2)-3)-4);
 	assert(fr0 == 1-(2-(3-4)));
 #endif
+
+	/// filter, partition
+	auto filt1 = sig::filter([](int v){ return v%2; }, data0);
+	auto filt2 = sig::filter([](int v){ return v < 0; }, data2);
+	auto part1 = sig::partition([](int v){ return v % 2; }, data0);
+	auto part2 = sig::partition([](int v){ return v < 0; }, data2);
+
+	sig::for_each(sig::DebugEqual(), filt1, std::vector<int>{1, 3, 5});
+	sig::for_each(sig::DebugEqual(), filt2, std::vector<int>{-3});
+	sig::for_each(sig::DebugEqual(), std::get<0>(part1), std::vector<int>{1, 3, 5});
+	sig::for_each(sig::DebugEqual(), std::get<1>(part1), std::vector<int>{2, 4});
+	sig::for_each(sig::DebugEqual(), std::get<0>(part2), std::vector<int>{-3});
+	sig::for_each(sig::DebugEqual(), std::get<1>(part2), std::vector<int>{1, 5, 2});
+
 
 	/// zip, unzip (move and const& ver)
 #if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || _MSC_VER >= 1900
