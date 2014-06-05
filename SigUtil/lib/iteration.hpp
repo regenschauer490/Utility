@@ -22,7 +22,7 @@ namespace sig
 // 複数コンテナを反復処理 (先頭から順番、インデックスは共通)
 // 引数で渡す関数オブジェクト(やラムダ)の引数を参照(&)にすることで変更操作も可能
 template <class F, class... Cs>
-auto for_each(F const& func, Cs&... containers)
+void for_each(F const& func, Cs&... containers)
 {
 	const uint length = min(containers.size()...);
 	iterative_assign(length, func, std::begin(containers)...);
@@ -32,12 +32,22 @@ auto for_each(F const& func, Cs&... containers)
 // 1反復毎に1ずつインクリメントされる変数もある (initはその初期値)
 // 引数で渡す関数オブジェクト(やラムダ)の引数を参照(&)にすることで変更操作も可能
 template <class F, class... Cs>
-auto for_each(F const& func, int init, Cs&... containers)
+void for_each(F const& func, int init, Cs&... containers)
 {
 	const uint length = min(containers.size()...);
 	iterative_assign(length, init, func, std::begin(containers)...);
 }
 
+template <class F, class C>
+auto filter(F const& pred, C const& container, int init)
+{
+	C result;
+	for (auto const& e : container){
+		if (pred(init, e)) container_traits<C>::add_element(result, e);
+		++init;
+	}
+	return result;
+}
 
 // コンテナへの代入演算 (element-wise: container and container)
 template <class OP, class C1, class C2, typename std::enable_if<container_traits<C1>::exist && container_traits<C2>::exist>::type*& = enabler>

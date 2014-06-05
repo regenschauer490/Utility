@@ -116,6 +116,18 @@ public:
 		return *this;
 	}
 
+	bool operator==(array const& obj){
+		if (tail_ != obj.tail_) return false;
+		bool same = true;
+		for (size_type i = 0; i < tail_; ++i) same = same && (array_[i] == obj.array_[i]);
+		return same;
+	}
+
+	bool operator!=(array const& obj){
+		return !(*this == obj);
+	}
+
+
 	iterator begin() noexcept{ return array_.begin(); }
 	const_iterator begin() const noexcept{ return array_.begin(); }
 	const_iterator cbegin() const noexcept{ return array_.cbegin(); }

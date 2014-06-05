@@ -28,6 +28,13 @@ void ArrayTest()
 	ar1 = stdar;
 	sig::for_each(sig::DebugEqual(), ar1, stdar);
 
+	//equal
+	auto ar6 = ar5;
+	assert(ar5 == ar6);
+	assert(ar6 == ar5);
+	assert(ar1 != ar6);
+	assert(ar6 != ar1);
+
 	//member functions
 	assert(*ar2.begin() == 1);
 	assert(*(ar2.end()-1) == 3);
