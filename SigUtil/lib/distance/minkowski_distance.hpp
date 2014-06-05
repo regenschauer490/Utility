@@ -25,7 +25,7 @@ struct MinkowskiDistance
 		assert(is_comparable(vec1, vec2, NumericVectorTag()));
 
 		return std::pow(
-			std::inner_product(std::begin(vec1), std::end(vec1), std::begin(vec2), T(), std::plus<T>(), [&](T v1, T v2){ return pow(abs_delta(v1, v2), P); }),
+			std::inner_product(std::begin(vec1), std::end(vec1), std::begin(vec2), 0.0, std::plus<double>(), [&](T v1, T v2){ return std::pow(std::abs(v1 - v2), P); }),
 			1.0 / P
 		);
 	}
