@@ -85,6 +85,7 @@
   <ItemGroup>
     <ClCompile Include="example\array_test.cpp" />
     <ClCompile Include="example\calculate_test.cpp" />
+    <ClCompile Include="example\container_specialize_test.cpp" />
     <ClCompile Include="example\distance_test.cpp" />
     <ClCompile Include="example\iteration_test.cpp" />
     <ClCompile Include="example\helper_test.cpp" />
@@ -98,6 +99,7 @@
   <ItemGroup>
     <ClInclude Include="example\array_test.h" />
     <ClInclude Include="example\calculate_test.h" />
+    <ClInclude Include="example\container_specialize_test.h" />
     <ClInclude Include="example\debug.hpp" />
     <ClInclude Include="example\distance_test.h" />
     <ClInclude Include="example\iteration_test.h" />
@@ -119,8 +121,6 @@
     <ClInclude Include="lib\distance\KL_divergence.hpp" />
     <ClInclude Include="lib\distance\minkowski_distance.hpp" />
     <ClInclude Include="lib\distance\norm.hpp" />
-    <ClInclude Include="lib\external\container traits\container_traits.hpp" />
-    <ClInclude Include="lib\external\container traits\eval.hpp" />
     <ClInclude Include="lib\helper.hpp" />
     <ClInclude Include="lib\iteration.hpp" />
     <ClInclude Include="lib\modify.hpp" />
@@ -131,7 +131,9 @@
     <ClInclude Include="lib\tmp\botsu.hpp" />
     <ClInclude Include="lib\tmp\others.hpp" />
     <ClInclude Include="lib\tool.hpp" />
-    <ClInclude Include="lib\type_map.hpp" />
+    <ClInclude Include="lib\traits\container_traits.hpp" />
+    <ClInclude Include="lib\traits\eval.hpp" />
+    <ClInclude Include="lib\traits\type_map.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,7 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_HELPER_HPP
 
 #include "sigutil.hpp"
-#include "type_map.hpp"
+#include "traits/type_map.hpp"
 #include <sstream> 
 
 /* 補助モジュール */

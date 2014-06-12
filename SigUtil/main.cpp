@@ -4,6 +4,7 @@
 #include "lib/modify.hpp"
 #include "lib/functional.hpp"
 
+#include "example/container_specialize_test.h"
 #include "example/helper_test.h"
 #include "example/string_test.h"
 #include "example/file_test.h"
@@ -24,6 +25,8 @@ int main()
 	setlocale(LC_ALL, "Japanese");
 
 	//StrConvertPerformanceTest();
+
+	ContainerSpecializeTest();
 
 	//helper.hpp test
 	TestHelperModules();

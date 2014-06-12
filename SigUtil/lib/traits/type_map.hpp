@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef _SIG_UTIL_TYPEMAP_HPP
 #define _SIG_UTIL_TYPEMAP_HPP
 
-#include "sigutil.hpp"
+#include "../sigutil.hpp"
 
 namespace sig
 {

@@ -19,11 +19,11 @@
     <Filter Include="ソース ファイル\example">
       <UniqueIdentifier>{da3541e8-21e4-4577-90d4-4588f86c4cd4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\external">
-      <UniqueIdentifier>{10265700-d179-4782-8ed3-69d373b73052}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\distance">
       <UniqueIdentifier>{d1b65559-2b91-4a40-9c75-3ed609aadf8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\traits">
+      <UniqueIdentifier>{7816978e-fefc-4cd8-b0ad-50f0894fcd6a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +63,9 @@
     <ClCompile Include="example\distance_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
+    <ClCompile Include="example\container_specialize_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\string.hpp">
@@ -95,9 +98,6 @@
     <ClInclude Include="lib\container_helper.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="lib\type_map.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="lib\modify.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -121,12 +121,6 @@
     </ClInclude>
     <ClInclude Include="example\calculate_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\external\container traits\container_traits.hpp">
-      <Filter>ヘッダー ファイル\external</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\external\container traits\eval.hpp">
-      <Filter>ヘッダー ファイル\external</Filter>
     </ClInclude>
     <ClInclude Include="example\helper_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
@@ -172,6 +166,18 @@
     </ClInclude>
     <ClInclude Include="lib\distance\comparable_check.hpp">
       <Filter>ヘッダー ファイル\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\traits\container_traits.hpp">
+      <Filter>ヘッダー ファイル\traits</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\traits\eval.hpp">
+      <Filter>ヘッダー ファイル\traits</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\traits\type_map.hpp">
+      <Filter>ヘッダー ファイル\traits</Filter>
+    </ClInclude>
+    <ClInclude Include="example\container_specialize_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

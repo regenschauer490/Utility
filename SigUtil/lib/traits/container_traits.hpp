@@ -30,7 +30,7 @@ http://opensource.org/licenses/mit-license.php
 #include <initializer_list>
 
 #include "eval.hpp"
-#include "../../array.hpp"
+#include "../array.hpp"
 
 
 namespace sig{
@@ -269,5 +269,31 @@ struct container_traits<std::basic_string<T,K<T>,A>>
     }
 };
 */
+
+namespace ct
+{
+	template <class T>
+	struct is_valid : public std::false_type
+	{};
+
+	template <class T>
+	struct is_valid<container_traits<T>> : public std::true_type
+	{};
+
+	template <class T>
+	struct is_sequence : public std::false_type
+	{};
+
+	template <class T>
+	struct is_sequence<static_container_traits<T>> : public std::true_type
+	{};
+
+	template <class T>
+	struct is_sequence<sequence_container_traits<T>> : public std::true_type
+	{};
+
+
+} //ct
+
 }
 #endif
