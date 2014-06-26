@@ -36,7 +36,7 @@ namespace sig
 		}
 	};
 
-	// “Áê‰»‚µ‚½ƒNƒ‰ƒX‚ğcontainer_traits‚ÉŒp³
+	// “Áê‰»‚µ‚½ƒNƒ‰ƒX‚ğcontainer_traits‚ÉŒp³(“o˜^ì‹Æ)
 	template<class... Args>
 	struct container_traits<MyVector3<Args...>> : public static_container_traits<MyVector3<Args...>>
 	{};

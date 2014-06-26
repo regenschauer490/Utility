@@ -55,7 +55,7 @@ void MinkowskiDistanceTest()
 
 void CosineSimilarityTest()
 {
-	double cosim = sig::cosine_similarity(data1, data2);
+	double cosim = sig::fromJust(sig::cosine_similarity(data1, data2));
 
 	double test = std::inner_product(std::begin(data1), std::end(data1), std::begin(data2), 0.0, std::plus<double>(), std::multiplies<double>()) / (sig::norm_L2(data1) * sig::norm_L2(data2));
 
@@ -86,10 +86,10 @@ const std::vector<double> dist3{ 0.2, 0.1, 0.1, 0.4, 0.2 };
 
 void KL_DivergenceTest()
 {
-	double kl12 = sig::kl_divergence(dist1, dist2);
+	double kl12 = sig::fromJust(sig::kl_divergence(dist1, dist2));
 	//double kl21 = sig::kl_divergence(dist2, dist1);	// error because dist1 has element whose value is 0
-	double kl23 = sig::kl_divergence(dist2, dist3);
-	double kl32 = sig::kl_divergence(dist3, dist2);
+	double kl23 = sig::fromJust(sig::kl_divergence(dist2, dist3));
+	double kl32 = sig::fromJust(sig::kl_divergence(dist3, dist2));
 
 	double test12 = 0;
 	double test23 = 0;
@@ -111,8 +111,8 @@ void KL_DivergenceTest()
 
 void JS_DivergenceTest()
 {
-	double js12 = sig::js_divergence(dist1, dist2);
-	double js21 = sig::js_divergence(dist2, dist1);
+	double js12 = sig::fromJust(sig::js_divergence(dist1, dist2));
+	double js21 = sig::fromJust(sig::js_divergence(dist2, dist1));
 
 	double test = 0;
 	sig::for_each(

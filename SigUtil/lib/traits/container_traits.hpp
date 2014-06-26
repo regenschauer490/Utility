@@ -45,6 +45,9 @@ struct container_traits
 	// void concat(C&,C)
 };
 
+
+/// static_container_traits
+
 template<class C>
 struct static_container_traits;
 
@@ -73,6 +76,8 @@ struct container_traits<sig::array<T, N>> : public static_container_traits<sig::
 {};
 
 
+/// temp_container_traits
+
 template<class C>
 struct temp_container_traits;
 
@@ -91,6 +96,8 @@ template<class T>
 struct container_traits<std::initializer_list<T>> : public temp_container_traits<std::initializer_list<T>>
 {};
 
+
+/// sequence_container_traits
 
 template<class C>
 struct sequence_container_traits;
@@ -127,6 +134,9 @@ struct container_traits<std::list<Args...>> : public sequence_container_traits<s
 template<class... Args>
 struct container_traits<std::vector<Args...>> : public sequence_container_traits<std::vector<Args...>>
 {};
+
+
+/// associative_container_traits
 
 template<class C>
 struct associative_container_traits;
@@ -186,6 +196,9 @@ template<class... Args>
 struct container_traits<std::multimap<Args...>> : public associative_container_traits<std::multimap<Args...>>
 {};	// only ::value_type
 #endif
+
+
+/// hash_container_traits
 
 template<class C>
 struct hash_container_traits;
@@ -270,6 +283,7 @@ struct container_traits<std::basic_string<T,K<T>,A>>
 };
 */
 
+/*
 namespace ct
 {
 	template <class T>
@@ -294,6 +308,7 @@ namespace ct
 
 
 } //ct
+*/
 
 }
 #endif
