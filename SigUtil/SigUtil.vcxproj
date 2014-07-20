@@ -121,6 +121,7 @@
     <ClInclude Include="lib\distance\KL_divergence.hpp" />
     <ClInclude Include="lib\distance\minkowski_distance.hpp" />
     <ClInclude Include="lib\distance\norm.hpp" />
+    <ClInclude Include="lib\error_convergence.hpp" />
     <ClInclude Include="lib\helper.hpp" />
     <ClInclude Include="lib\iteration.hpp" />
     <ClInclude Include="lib\modify.hpp" />

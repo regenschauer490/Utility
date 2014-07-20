@@ -16,62 +16,54 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
-// Pノルムの一般式
-template <size_t P, class C>
-double norm(C const& vec)
-{
-	using T = typename container_traits<C>::value_type;
+// Pノルム
+template <size_t P>
+struct Norm{
+	template <class C>
+	double operator()(C const& vec) const
+	{
+		using T = typename container_traits<C>::value_type;
 
-	return std::pow(
-		std::accumulate(std::begin(vec), std::end(vec), static_cast<T>(0), [&](T sum, T val){ return sum + std::pow(std::abs(val), P); }),
-		1.0 / P
-	);
-}
-
-template <class C>
-double norm_L1(C const& vec)
-{
-	return norm<1>(vec);
-}
-
-template <class C1, class C2>
-double norm_L1(C1 const& vec1, C2 const& vec2)
-{
-	assert(is_comparable(vec1, vec2, NumericVectorTag()));
-	return norm<1>(minus(vec1, vec2));
-}
-
-template <class C>
-double norm_L2(C const& vec)
-{
-	return norm<2>(vec);
-}
-
-template <class C1, class C2>
-double norm_L2(C1 const& vec1, C2 const& vec2)
-{
-	assert(is_comparable(vec1, vec2, NumericVectorTag()));
-	return norm<2>(minus(vec1, vec2));
-}
-
-template <class C>
-double norm_max(C const& vec)
-{
-	using T = typename container_traits<C>::value_type;
-
-	T max = *std::begin(vec);
-	for(auto e : vec){
-		if(std::abs(e) > max) max = std::abs(e);
+		return std::pow(
+			std::accumulate(std::begin(vec), std::end(vec), static_cast<T>(0), [&](T sum, T val){ return sum + std::pow(std::abs(val), P); }),
+			1.0 / P
+		);
 	}
-	return max;
-}
+	
+	template <class C1, class C2>
+	double operator()(C1 const& vec1, C2 const& vec2) const
+	{
+		assert(is_comparable(vec1, vec2, NumericVectorTag()));
+		return this->operator()(minus(vec1, vec2));
+	}
+};
 
-template <class C1, class C2>
-double norm_max(C1 const& vec1, C2 const& vec2)
-{
-	assert(is_comparable(vec1, vec2, NumericVectorTag()));
-	return norm_max(minus(vec1, vec2));
-}
+const Norm<1> norm_L1;
+const Norm<2> norm_L2;
 
+
+// 最大ノルム
+struct MaxNorm{
+	template <class C>
+	double operator()(C const& vec) const
+	{
+		using T = typename container_traits<C>::value_type;
+
+		T max = *std::begin(vec);
+		for(auto e : vec){
+			if(std::abs(e) > max) max = std::abs(e);
+		}
+		return max;
+	}
+
+	template <class C1, class C2>
+	double operator()(C1 const& vec1, C2 const& vec2) const
+	{
+		assert(is_comparable(vec1, vec2, NumericVectorTag()));
+		return this->operator()(minus(vec1, vec2));
+	}
+};
+
+const MaxNorm norm_max;
 }
 #endif

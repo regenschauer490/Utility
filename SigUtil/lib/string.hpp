@@ -70,6 +70,8 @@ struct Str2RegexSelector<std::wstring>{
 	typedef SIG_WSMatch smatch;
 };
 
+
+
 // expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
 #if SIG_MSVC_ENV
 inline auto escape_regex(std::string const& expression) ->std::string
@@ -222,7 +224,7 @@ inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::strin
 // src: 変換対象の文字列が格納されたコンテナ
 // return -> 変換後の文字列が格納されたコンテナ
 template <class C, typename std::enable_if<std::is_same<typename container_traits<C>::value_type, std::wstring>::value>::type*& = enabler>
-auto wstr_to_str(C const& strvec)
+auto wstr_to_str(C const& strvec) -> typename container_traits<C>::template rebind<std::string>
 {
 	using R = typename container_traits<C>::template rebind<std::string>;
 	R result;
@@ -257,7 +259,7 @@ inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstri
 // src: 変換対象の文字列が格納されたコンテナ
 // return -> 変換後の文字列が格納されたコンテナ
 template <class C, typename std::enable_if<std::is_same<typename container_traits<C>::value_type, std::string>::value>::type*& = enabler>
-auto str_to_wstr(C const& strvec)
+auto str_to_wstr(C const& strvec) ->typename container_traits<C>::template rebind<std::wstring>
 {
 	using R = typename container_traits<C>::template rebind<std::wstring>;
 	R result;
@@ -346,6 +348,9 @@ inline auto utf8_to_sjis(std::string const& src) ->std::string
 	
 #endif
 
+template <class S> struct space{};
+template <> struct space<std::string>{ std::string operator()() const{ return " "; } };
+template <> struct space<std::wstring>{std::wstring operator()() const{ return L" "; } };
 
 //HTML風にタグをエンコード・デコードする
 //例： <TAG>text<TAG>
@@ -359,14 +364,14 @@ public:
 	//左右それぞれの囲み文字を指定(ex. left = "<", right= ">")
 	TagDealer(String tag_encloser_left, String tag_encloser_right) : tel_(tag_encloser_left), ter_(tag_encloser_right){};
 
-	String encode(String const& src, String const& tag) const{
+	String encode(String const& src, String tag) const{
 		auto tag_str = tel_ + tag + ter_;
 		return tag_str + src + tag_str;
 	}
 
-	auto decode(String const& src, String const& tag) ->typename Just<String>::type const{
+	auto decode(String const& src, String tag) ->typename Just<String>::type const{
 		auto tag_str = tel_ + tag + ter_;
-		auto parse = split(" " + src, tag_str);
+		auto parse = split(space<String>()() + src, tag_str);
 		return parse.size() < 2 ? Nothing(String()) : typename Just<String>::type(parse[1]);
 	}
 
@@ -383,7 +388,7 @@ template < template < class T_, class Allocator = std::allocator<T_>> class Cont
 String TagDealer<String>::encode(Container<String> const& src, Container<String> const& tag) const
 {
 	auto calc = zipWith([&](typename Container<String>::value_type s, typename Container<String>::value_type t){ return encode(s, t); }, src, tag);
-	return std::accumulate(calc.begin(), calc.end(), String(""));
+	return std::accumulate(calc.begin(), calc.end(), String());
 }
 
 template <class String>

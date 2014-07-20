@@ -134,6 +134,25 @@ auto sum(C const& data, Pred const& access_func)
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(0), [&](RT sum, T const& e){ return sum + access_func(e); });
 }
 
+// 行列の指定行の総和
+// R: 戻り値型（桁あふれの可能性がある場合に明示的に指定する）
+template <class R = void, class CC = void>
+auto sum_row(CC const& matrix, uint index)
+{
+	assert(index < matrix.size());
+	return sum(matrix[index]);
+}
+
+// 行列の指定列の総和
+// R: 戻り値型（桁あふれの可能性がある場合に明示的に指定する）
+template <class R = void, class CC = void>
+auto sum_col(CC const& matrix, uint index)
+{
+	using T = typename container_traits<CC>::value_type;
+	return sum(matrix, [index](T const& row){ assert(index < row.size()); return row[index]; });
+}
+
+
 // 総乗
 // R: 戻り値型（桁あふれの可能性がある場合に明示的に指定する）
 template <class R = void, class C = void>
@@ -151,6 +170,24 @@ auto product(C const& data, Pred const& access_func)
 	using RT = typename SameIf<R, void, decltype(eval(access_func, std::declval<T>())), R>::type;
 
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(1), [&](RT sum, T const& e){ return sum * access_func(e); });
+}
+
+// 行列の指定行の総乗
+// R: 戻り値型（桁あふれの可能性がある場合に明示的に指定する）
+template <class R = void, class CC = void>
+auto product_row(CC const& matrix, uint index)
+{
+	assert(index < matrix.size());
+	return product(matrix[index]);
+}
+
+// 行列の指定列の総乗
+// R: 戻り値型（桁あふれの可能性がある場合に明示的に指定する）
+template <class R = void, class CC = void>
+auto product_col(CC const& matrix, uint index)
+{
+	using T = typename container_traits<CC>::value_type;
+	return product(matrix, [index](T const& row){ assert(index < row.size()); return row[index]; });
 }
 
 
@@ -171,6 +208,7 @@ double variance(C const& data)
 }
 
 // 正規化(Normalization)
+// 最小値0、最大値1とし、各値が[0,1]の範囲に収まるように正規化
 template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
 bool normalize(C& data)
 {
@@ -197,7 +235,29 @@ auto normalize(C const& data)
 	return result;
 }
 
+// 確率密度関数の正規化
+// 各値の総和が1になるように正規化
+template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
+bool normalize_dist(C& data)
+{
+	double sum = sig::sum(data);
+
+	for (auto& e : data) e /= sum;
+	return true;
+}
+
+template <class R = double, class C = void>
+auto normalize_dist(C const& data)
+{
+	using RT = typename container_traits<C>::template rebind<R>;
+
+	auto result = sig::copy<RT>(data);
+	normalize_dist(result);
+	return result;
+}
+
 // 標準化(Standardization)
+// 正規分布N(0, 1)になるように正規化
 template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
 bool standardize(C& data)
 {

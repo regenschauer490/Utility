@@ -8,7 +8,7 @@ void NormTest()
 {
 	double n1 = sig::norm_L1(data1);	// == sig::norm<1>(data1)
 	double n2 = sig::norm_L2(data1);
-	double n3 = sig::norm<3>(data1);
+	double n3 = sig::Norm<3>{}(data1);
 	double nmax = sig::norm_max(data1);
 	
 	assert(sig::equal(n1, 7));

@@ -96,8 +96,6 @@ namespace sig{
 #if SIG_ENABLE_BOOST
 	template <typename T>
 	using maybe = boost::optional<T>;
-
-	auto const nothing = boost::none;
 #endif
 
 
@@ -113,15 +111,16 @@ namespace sig{
 // maybe(boost.optional)の有効・無効に関係なくコードを統一的に記述するための処理
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	template <class T> struct Just{ typedef maybe<T> type; };
-	template <class T> auto Nothing(T const& default_value)-> decltype(nothing){ return nothing; }
-	template <class T> T fromJust(maybe<T> const& sp){ return *sp; }
-	template <class T> T fromJust(maybe<T>&& sp){ return std::move(*sp); }
+	template <class T> auto Nothing(T const& dummy)-> decltype(boost::none){ return boost::none; }
+	template <class T> T& fromJust(maybe<T>& sp){ return *sp; }
+	template <class T> T const& fromJust(maybe<T> const& sp){ return *sp; }
+	template <class T> T&& fromJust(maybe<T>&& sp){ return std::move(*sp); }
 	template <class T> bool is_container_valid(T const& m){ return m; }
 #else
 	template <class T> struct Just{ typedef T type; };
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
-	template <class T> T fromJust(T const& sp){ return sp; }
-	template <class T> T fromJust(T&& sp){ return std::forward<T>(sp); }
+	template <class T> T const& fromJust(T const& sp){ return sp; }
+	template <class T> T&& fromJust(T&& sp){ return std::forward<T>(sp); }
 	template <class T> bool is_container_valid(T const& raw){ return !raw.empty(); }
 #endif
 
@@ -130,14 +129,16 @@ namespace sig{
 #if SIG_MSVC_ENV
 	using FilepassString = std::wstring;
 	using FilepassStringC = wchar_t const*;
-	template <class T> FilepassString to_string(T v){ return std::to_wstring(v);  }
+	template <class T> FilepassString to_fpstring(T v){ return std::to_wstring(v);  }
 	inline void FileOpenErrorPrint(FilepassString const& pass){ std::wcout << L"file open error: " << pass << std::endl; }
+	#define SIG_STR_TO_FPSTR(str) L ## str
 	#define SIG_USE_BOOST_FILESYSTEM 0
 #else
 	using FilepassString = std::string;
 	using FilepassStringC = char const*;
-	template <class T> FilepassString to_string(T v){ return std::to_string(v);  }
+	template <class T> FilepassString to_fpstring(T v){ return std::to_string(v);  }
 	inline void FileOpenErrorPrint(FilepassString const& pass){ std::cout << "file open error: " << pass << std::endl; }
+	#define SIG_STR_TO_FPSTR(str) str
 	#define SIG_USE_BOOST_FILESYSTEM 1
 #endif
 

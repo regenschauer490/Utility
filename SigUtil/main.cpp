@@ -24,6 +24,10 @@ int main()
 {
 	setlocale(LC_ALL, "Japanese");
 
+	sig::Just<std::string>::type a("tes");
+	sig::fromJust(a) = "hoge";
+	auto aa = sig::fromJust(std::move(a));
+
 	//StrConvertPerformanceTest();
 
 	ContainerSpecializeTest();

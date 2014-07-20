@@ -29,7 +29,7 @@ namespace sig
 
 namespace impl{
 // ディレクトリ・ファイルパスの末尾に'/'or'\'があるかチェックし、付けるか外すかどうか指定
-inline auto modify_dirpass_tail(FilepassString const& directory_pass, bool const has_slash)
+inline auto modify_dirpass_tail(FilepassString const& directory_pass, bool const has_slash) ->FilepassString
 {
 	if (directory_pass.empty()) return directory_pass;
 

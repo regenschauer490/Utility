@@ -89,7 +89,7 @@ public:
 
 	array(size_type size, T val) : tail_(0){ for(size_type i=0; i<size; ++i) push_back(val); }
 
-	explicit array(std::initializer_list<T> init) : tail_(0){
+	array(std::initializer_list<T> init) : tail_(0){
 		assert(init.size() <= N);
 		compound_assignment_([this](T& dest, ParamType<T> src){ dest = src; ++tail_; }, array_, init);
 	}
