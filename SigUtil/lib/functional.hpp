@@ -37,7 +37,7 @@ auto variadicZipWith(F const& func, C1 const& container1, Cs const&... container
 template <class F, class C>
 auto map(F const& func, C const& container)
 {
-	return variadicZipWith(func, container);
+	return variadicZipWith<F>(func, container);
 }
 
 // (a -> b -> c) -> [a] -> [b] -> [c]
@@ -45,7 +45,7 @@ auto map(F const& func, C const& container)
 template <class F, class C1, class C2>
 auto zipWith(F const& func, C1 const& container1, C2 const& container2)
 {
-	return variadicZipWith(func, container1, container2);
+	return variadicZipWith<F>(func, container1, container2);
 }
 
 

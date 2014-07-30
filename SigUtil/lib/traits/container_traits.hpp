@@ -61,9 +61,13 @@ struct static_container_traits<C<T, N>>
 	template<class U>
 	using rebind = C<U, N>;
 
-	static void add_element(C<T, N>& c, const T& t)
+	static void add_element(C<T, N>& c, T const& t)
 	{
 		c.push_back(t);
+	}
+	static void add_element(C<T, N>& c, T&& t)
+	{
+		c.push_back(std::move(t));
 	}
 };
 
@@ -112,16 +116,28 @@ struct sequence_container_traits<C<T,A>>
 	template<class U>
 	using rebind = C<U,typename A::template rebind<U>::other>;
 
-	static void add_element(C<T,A>& c, const T& t)
+	static void add_element(C<T,A>& c, T const& t)
 	{
 		c.push_back(t);
 	}
+	static void add_element(C<T, A>& c, T&& t)
+	{
+		c.push_back(std::move(t));
+	}
 
-	static void concat(C<T,A>& lhs, const C<T,A>& rhs)
+	static void concat(C<T,A>& lhs, C<T,A> const& rhs)
 	{
 		lhs.insert(lhs.end(),rhs.begin(),rhs.end());
 	}
+	static void concat(C<T, A>& lhs, C<T, A>&& rhs)
+	{
+		lhs.insert(lhs.end(), std::make_move_iterator(rhs.begin()), std::make_move_iterator(rhs.end()));
+	}
 };
+
+template<class... Args>
+struct container_traits<std::vector<Args...>> : public sequence_container_traits<std::vector<Args...>>
+{};
 
 template<class... Args>
 struct container_traits<std::deque<Args...>> : public sequence_container_traits<std::deque<Args...>>
@@ -129,10 +145,6 @@ struct container_traits<std::deque<Args...>> : public sequence_container_traits<
 
 template<class... Args>
 struct container_traits<std::list<Args...>> : public sequence_container_traits<std::list<Args...>>
-{};
-
-template<class... Args>
-struct container_traits<std::vector<Args...>> : public sequence_container_traits<std::vector<Args...>>
 {};
 
 
@@ -151,14 +163,23 @@ struct associative_container_traits<C<T,O<T>,A>>
 	template<class U>
 	using rebind = C<U,O<U>,typename A::template rebind<U>::other>;
 
-	static void add_element(C<T,O<T>,A>& c, const T& t)
+	static void add_element(C<T,O<T>,A>& c, T const& t)
 	{
 		c.insert(t);
 	}
+	static void add_element(C<T, O<T>, A>& c, T&& t)
+	{
+		c.insert(std::move(t));
+	}
 
-	static void concat(C<T,O<T>,A>& lhs, const C<T,O<T>,A>& rhs)
+
+	static void concat(C<T,O<T>,A>& lhs, C<T,O<T>,A> const& rhs)
 	{
 		lhs.insert(rhs.begin(),rhs.end());
+	}
+	static void concat(C<T, O<T>, A>& lhs, C<T, O<T>, A>&& rhs)
+	{
+		lhs.insert(std::make_move_iterator(rhs.begin()), std::make_move_iterator(rhs.end()));
 	}
 };
 
@@ -213,14 +234,22 @@ struct hash_container_traits<C<T,H<T>,O<T>,A>>
 	template<class U>
 	using rebind = C<U,H<U>,O<U>,typename A::template rebind<U>::other>;
 
-	static void add_element(C<T,H<T>,O<T>,A>& c, const T& t)
+	static void add_element(C<T,H<T>,O<T>,A>& c, T const& t)
 	{
 		c.insert(t);
  	}
+	static void add_element(C<T, H<T>, O<T>, A>& c, T&& t)
+	{
+		c.insert(std::move(t));
+	}
 
-	static void concat(C<T,H<T>,O<T>,A>& lhs, const C<T,H<T>,O<T>,A>& rhs)
+	static void concat(C<T,H<T>,O<T>,A>& lhs, C<T,H<T>,O<T>,A> const& rhs)
 	{
 		lhs.insert(rhs.begin(),rhs.end());
+	}
+	static void concat(C<T, H<T>, O<T>, A>& lhs, C<T, H<T>, O<T>, A>&& rhs)
+	{
+		lhs.insert(std::make_move_iterator(rhs.begin()), std::make_move_iterator(rhs.end()));
 	}
 };
 

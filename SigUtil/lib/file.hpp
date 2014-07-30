@@ -307,11 +307,7 @@ bool read_line(
 
 	typename std::conditional<std::is_same<R, std::string>::value, std::string, std::wstring>::type line;
 
-	static bool first = true;
-	if (first){
-		std::locale::global(std::locale(""));
-		first = false;
-	}
+	SIG_FILE_LOCALE_INIT
 
 	while (ifs && std::getline(ifs, line)){
 		conv ? container_traits<C>::add_element(empty_dest, conv(std::move(line))) : container_traits<C>::add_element(empty_dest, std::move(line));
@@ -331,7 +327,7 @@ bool read_line(
 {
 	IfsSelector<R> ifs(file_pass);
 	if (!ifs){
-		FileOpenErrorPrint(file_pass);
+		//FileOpenErrorPrint(file_pass);
 		return false;
 	}
 	return read_line(empty_dest, ifs, conv);
@@ -358,7 +354,7 @@ auto read_line(FilepassString const& file_pass) ->typename Just<C>::type
 {
 	IfsSelector<R> ifs(file_pass);
 	if (!ifs){
-		FileOpenErrorPrint(file_pass);
+		//FileOpenErrorPrint(file_pass);
 		return Nothing(C());
 	}
 	return read_line<R, C>(ifs);

@@ -73,6 +73,7 @@
 
 #if SIG_ENABLE_BOOST
 #include <boost/optional.hpp>
+#include <boost/pool/pool_alloc.hpp>
 #include <boost/call_traits.hpp>
 #endif
 
@@ -96,6 +97,14 @@ namespace sig{
 #if SIG_ENABLE_BOOST
 	template <typename T>
 	using maybe = boost::optional<T>;
+#endif
+
+#if SIG_ENABLE_BOOST
+	template <class T>
+	using container_allocator = boost::fast_pool_allocator<T>;
+#else
+	template <class T>
+	using container_allocator = std::allocator<T>;
 #endif
 
 

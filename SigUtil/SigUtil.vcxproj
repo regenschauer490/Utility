@@ -135,6 +135,7 @@
     <ClInclude Include="lib\traits\container_traits.hpp" />
     <ClInclude Include="lib\traits\eval.hpp" />
     <ClInclude Include="lib\traits\type_map.hpp" />
+    <ClInclude Include="lib\blas.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

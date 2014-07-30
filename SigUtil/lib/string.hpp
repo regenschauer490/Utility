@@ -183,6 +183,7 @@ CSeq<std::wstring> split(wchar_t const* const src, wchar_t const* const delimite
 // return -> 結合した文字列
 template <class C, class T>
 auto cat_str(C const& container, T delimiter, std::locale osstream_locale = std::locale(""))
+	->typename SStreamSelector<typename container_traits<C>::value_type>::string
 {
 	typename SStreamSelector<typename container_traits<C>::value_type>::ostringstream osstream;
 	if (container.empty()) return osstream.str();

@@ -86,6 +86,9 @@ auto binary_operation(OP func, T v, C const& c)
 \
 	template <class C1, class C2, class = decltype(std::declval<typename container_traits<C1>::value_type>() Operator std::declval<typename container_traits<C2>::value_type>())>\
 	auto FunctionName(C1 const& c1, C2 const& c2)\
+		->typename container_traits<C1>::template rebind<decltype(\
+		std::declval<typename container_traits<C1>::value_type>() Operator std::declval<typename container_traits<C2>::value_type>()\
+		)>\
 	{\
 		using T1 = typename container_traits<C1>::value_type;\
 		using T2 = typename container_traits<C2>::value_type;\
@@ -94,6 +97,9 @@ auto binary_operation(OP func, T v, C const& c)
 \
 	template <class C, class T, class = decltype(std::declval<typename container_traits<C>::value_type>() Operator std::declval<T>())>\
 	auto FunctionName(C const& c, T v)\
+		->typename container_traits<C>::template rebind<decltype(\
+		std::declval<typename container_traits<C>::value_type>() Operator v\
+		)>\
 	{\
 		using CT = typename container_traits<C>::value_type;\
 		return binary_operation([](CT v1, T v2){ return v1 Operator v2; }, c, v);\
@@ -101,6 +107,9 @@ auto binary_operation(OP func, T v, C const& c)
 \
 	template <class T, class C, class = decltype(std::declval<typename container_traits<C>::value_type>() Operator std::declval<T>())>\
 	auto FunctionName(T v, C const& c)\
+		->typename container_traits<C>::template rebind<decltype(\
+		std::declval<typename container_traits<C>::value_type>() Operator v\
+		)>\
 	{\
 		using CT = typename container_traits<C>::value_type; \
 		return binary_operation([](T v1, CT v2){ return v1 Operator v2; }, v, c); \

@@ -31,7 +31,7 @@ struct RelativeError
 	template <class T, class F>
 	double operator()(T const& value, T const& last_value, F const& norm_func) const
 	{
-		return norm_func(value, last_value) / norm_func(last_valu);
+		return norm_func(value, last_value) / norm_func(last_value);
 	}
 };
 
@@ -70,13 +70,14 @@ class ManageConvergence
 
 public:
 	// epsilon: 収束判定用の定数, norm_function: ノルム関数(1引数,2引数のoperator()を定義した関数オブジェクト)
-	ManageConvergence(double epsilon, F norm_func_ = sig::norm_L2) : epsilon_(epsilon), norm_func_(norm_func), last_value_(Nothing(T())) {}
+	ManageConvergence(double epsilon, F norm_func = sig::norm_L2) : epsilon_(epsilon), norm_func_(norm_func), last_value_(Nothing(T())) {}
 
 	// 状態の更新と収束判定
 	// return -> true(収束), false(未収束)
 	bool update(T value){
-		if (last_value_ && criteria_(value, sig::fromJust(last_value), norm_func_) < epsilon_) return true;
-		sig::fromJust(last_value_) = value;
+		if (last_value_ && criteria_(value, sig::fromJust(last_value_), norm_func_) < epsilon_) return true;
+		else last_value_ = sig::Just<T>::type(value);
+		std::swap(sig::fromJust(last_value_), value);
 		return false;
 	}
 };

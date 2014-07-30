@@ -31,14 +31,17 @@ template<> struct FStreamSelector<std::wstring>{
 template <class T> struct SStreamSelector{
 	typedef std::ostringstream ostringstream;
 	typedef std::istringstream istringstream;
+	typedef std::string string;
 };
 template<> struct SStreamSelector<std::wstring>{
 	typedef std::wostringstream ostringstream;
-	typedef std::istringstream istringstream;
+	typedef std::wistringstream istringstream;
+	typedef std::wstring string;
 };
 template<> struct SStreamSelector<wchar_t const*>{
 	typedef std::wostringstream ostringstream;
-	typedef std::istringstream istringstream;
+	typedef std::wistringstream istringstream;
+	typedef std::wstring string;
 };
 
 // string to Num

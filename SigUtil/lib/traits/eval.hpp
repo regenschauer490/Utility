@@ -36,7 +36,7 @@ auto eval(F&& f, Args&&... args) -> decltype(f(std::forward<Args>(args)...))
 {
     return f(std::forward<Args>(args)...);
 }
-
+	
 template<class R, class C, class... Args>
 auto eval(R(C::*f)() const, const C& c, Args&&... args) -> R
 {
