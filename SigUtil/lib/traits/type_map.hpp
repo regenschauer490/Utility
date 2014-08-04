@@ -15,14 +15,20 @@ namespace sig
 namespace impl
 {
 // out/in type to stream (mainly filestream)
-template <class FILE_STRING> struct FStreamSelector{};
-template<> struct FStreamSelector<std::string>{
+template <class FILE_STRING>
+struct FStreamSelector{
 	typedef std::ofstream ofstream;
 	typedef std::ifstream ifstream;
 	typedef std::ostreambuf_iterator<char> ostreambuf_iterator;
 	typedef std::istreambuf_iterator<char> istreambuf_iterator;
 };
 template<> struct FStreamSelector<std::wstring>{
+	typedef std::wofstream ofstream;
+	typedef std::wifstream ifstream;
+	typedef std::ostreambuf_iterator<wchar_t> ostreambuf_iterator;
+	typedef std::istreambuf_iterator<wchar_t> istreambuf_iterator;
+};
+template<> struct FStreamSelector<wchar_t const*>{
 	typedef std::wofstream ofstream;
 	typedef std::wifstream ifstream;
 	typedef std::ostreambuf_iterator<wchar_t> ostreambuf_iterator;

@@ -193,10 +193,10 @@ inline void clear_file(FilepassString const& file_pass)
 // ファイルへ1行ずつ保存
 // src: 保存対象
 // ofs: std::ofstream or std::wofstream
-template <class S>
+template <class T, typename std::enable_if<!container_traits<T>::exist>::type*& = enabler>
 inline void save_line(
-	S const& src,
-	typename impl::FStreamSelector<impl::TString<S>>::ofstream& ofs)
+	T src,
+	typename impl::FStreamSelector<T>::ofstream& ofs)
 {
 	ofs << src << std::endl;
 }
@@ -204,7 +204,7 @@ inline void save_line(
 // ファイルへ1行ずつ保存
 // src: 保存対象(コンテナ)
 // ofs: std::ofstream or std::wofstream
-template <class C>
+template <class C, typename std::enable_if<container_traits<C>::exist>::type*& = enabler>
 void save_line(
 	C const& src,
 	typename impl::FStreamSelector<typename container_traits<C>::value_type>::ofstream& ofs)
@@ -220,16 +220,16 @@ void save_line(
 // src: 保存対象
 // file_pass: 保存先のディレクトリとファイル名（フルパス）
 // open_mode: 上書き(overwrite) or 追記(append)
-template <class S, typename std::enable_if<!container_traits<impl::TString<S>>::exist>::type*& = enabler>
+template <class T, typename std::enable_if<!container_traits<T>::exist>::type*& = enabler>
 void save_line(
-	S src,
+	T src,
 	FilepassString const& file_pass,
 	WriteMode mode = WriteMode::overwrite)
 {
 	SIG_FILE_LOCALE_INIT
 
 	const auto open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-	typename impl::FStreamSelector<impl::TString<S>>::ofstream ofs(file_pass, open_mode);
+	typename impl::FStreamSelector<T>::ofstream ofs(file_pass, open_mode);
 	save_line(src, ofs);
 }
 
@@ -237,7 +237,7 @@ void save_line(
 // src: 保存対象(コンテナ)
 // file_pass: 保存先のディレクトリとファイル名（フルパス）
 // open_mode: 上書き(overwrite) or 追記(append)
-template <class C, typename std::enable_if<container_traits<impl::TString<C>>::exist>::type*& = enabler>
+template <class C, typename std::enable_if<container_traits<C>::exist>::type*& = enabler>
 void save_line(
 	C const& src,
 	FilepassString const& file_pass,
