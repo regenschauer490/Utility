@@ -127,7 +127,7 @@ constexpr auto abs_delta(T1 v1, T2 v2)
 }
 
 // 厳密な計算でない場合に使用する簡易等値比較 (浮動小数点型の誤差をある程度許容)
-template <class T1, class T2, typename std::enable_if<!(StringId<T1>::value || StringId<T2>::value)>::type*& = enabler>
+template <class T1, class T2, typename std::enable_if<!(impl::StringId<T1>::value || impl::StringId<T2>::value)>::type*& = enabler>
 bool equal(T1 v1, T2 v2)
 {
 	const uint tolerant_rate = 10000;	//許容範囲の調整 (10^-16 * tolerant_rate)
@@ -138,10 +138,10 @@ bool equal(T1 v1, T2 v2)
 	return !(abs_delta(v1, v2) > tolerant_rate * dmin);
 }
 
-template <class S1, class S2, typename std::enable_if<(StringId<S1>::value && StringId<S2>::value)>::type*& = enabler>
+template <class S1, class S2, typename std::enable_if<(impl::StringId<S1>::value && impl::StringId<S2>::value)>::type*& = enabler>
 bool equal(S1 v1, S2 v2)
 {
-	return static_cast<TString<S1>>(v1) == static_cast<TString<S2>>(v2);
+	return static_cast<impl::TString<S1>>(v1) == static_cast<impl::TString<S2>>(v2);
 }
 
 // 指定範囲内の誤差を許した等値比較

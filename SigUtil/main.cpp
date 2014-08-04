@@ -40,6 +40,7 @@ int main()
 
 	//calculation.hpp test
 	ArithmeticOperationsTest();
+	StatisticalOperationTest();
 
 	//
 	ForeachTest();
@@ -72,7 +73,7 @@ int main()
 	RandomTest();
 	HistgramTest();
 	PercentTest();
-//	TimeWatchTest();	//処理環境のスペック依存
+//	TimeWatchTest();	//テスト結果は処理環境のスペック依存
 
 	//distance.hpp
 	NormTest(); 

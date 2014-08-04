@@ -16,7 +16,7 @@ using TVecw = std::vector<std::wstring>;
 
 void GetDirectoryNamesTest()
 {
-	const auto pass = sig::impl::modify_dirpass_tail(raw_pass, true);
+	const auto pass = sig::modify_dirpass_tail(raw_pass, true);
 
 #if SIG_MSVC_ENV || SIG_ENABLE_BOOST
 
@@ -119,7 +119,7 @@ void GetDirectoryNamesTest()
 
 void FileSaveLoadTest()
 {
-	const auto pass = sig::impl::modify_dirpass_tail(raw_pass, true);
+	const auto pass = sig::modify_dirpass_tail(raw_pass, true);
 
 #if SIG_MSVC_ENV
 	const auto fpass1 = pass + L"test.txt";

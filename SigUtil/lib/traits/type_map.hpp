@@ -12,6 +12,8 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
+namespace impl
+{
 // out/in type to stream (mainly filestream)
 template <class FILE_STRING> struct FStreamSelector{};
 template<> struct FStreamSelector<std::string>{
@@ -96,6 +98,6 @@ template <class T1, class T2, class TrueT, class FalseT>
 struct SameIf{
 	using type = typename std::conditional<std::is_same<T1, T2>::value, TrueT, FalseT>::type;
 };
-
+}	// impl
 }
 #endif

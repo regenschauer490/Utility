@@ -19,13 +19,13 @@ namespace sig
 template <class F, class C1, class... Cs>
 auto variadicZipWith(F const& func, C1 const& container1, Cs const&... containers)
 {
-	using RT = typename container_traits<C1>::template rebind<decltype(eval(
+	using R = typename container_traits<C1>::template rebind<decltype(eval(
 		func,
 		std::declval<typename container_traits<C1>::value_type>(),
 		std::declval<typename container_traits<Cs>::value_type>()...
 	))>;
 
-	RT result;
+	R result;
 	const uint length = min(container1.size(), containers.size()...);
 	iterative_make(length, result, func, std::begin(container1), std::begin(containers)...);
 
@@ -49,26 +49,44 @@ auto zipWith(F const& func, C1 const& container1, C2 const& container2)
 }
 
 
-// (a -> b -> a) -> a -> [b] -> a
+// (a -> b -> a) -> a0 -> [b] -> a // a0はaに暗黙的に型変換可能
 // コンテナの先頭からたたみ込み
 template <class F, class T, class C>
-auto foldl(F func, T init, C const& container)
+auto foldl(F const& func, T init, C const& container)
 {
-	using R = decltype(eval(func, init, std::declval<typename container_traits<C>::value_type>()));
+	using R = decltype(func(init, std::declval<typename container_traits<C>::value_type>()));
 	return std::accumulate(std::begin(container), std::end(container), static_cast<R>(init), func);
 }
 
 #if SIG_GCC_GT_4_9 || SIG_CLANG_GT_3_5 || SIG_MSVC_ENV
-// (a -> b -> b) -> b -> [a] -> b
+// (a -> b -> b) -> b0 -> [a] -> b // b0はbに暗黙的に型変換可能
 // コンテナの末尾からたたみ込み
 template <class F, class T, class C>
-auto foldr(F func, T init, C const& container)
+auto foldr(F const& func, T init, C const& container)
 {
 	using R = decltype(eval(func, init, std::declval<typename container_traits<C>::value_type>()));
 	return std::accumulate(std::rbegin(container), std::rend(container), static_cast<R>(init), std::bind(func, _2, _1));
 }
 #endif
 
+// (a -> b -> ... -> a) -> a0 -> [b] -> [c] -> ... -> a  // a0はaに暗黙的に型変換可能
+// 可変長個のコンテナに対して関数適用して結果を集約する関数
+template <class F1, class F2, class T, class... Cs>
+auto dotProduct(F1 const& fold_func, F2 const& oper_func, T init, Cs const&... cotainers)
+{
+	using R = decltype(eval(
+		fold_func,
+		init,
+		eval(oper_func, std::declval<typename container_traits<Cs>::value_type>()...)
+	));
+	R result = init;
+	const uint length = min(containers.size()...);
+	
+	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
+		result = fold_func(result, eval(func, impl::dereference_iterator(iterators)...));
+	}
+	return result;
+}
 
 // (a -> Bool) -> [a] -> [a]
 // コンテナから指定条件を満たす要素を抽出する

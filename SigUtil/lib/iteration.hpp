@@ -73,5 +73,17 @@ void compound_assignment(
 	}
 }
 
+#define SIG_MakeConpoundAssignmentFunctor(Name, Operator)\
+template <class T>\
+struct assign_ ## Name \
+{\
+	void operator()(T& dest, ParamType<T> value){ dest Operator value; }\
+}
+
+SIG_MakeConpoundAssignmentFunctor(plus, += );
+SIG_MakeConpoundAssignmentFunctor(minus, -= );
+SIG_MakeConpoundAssignmentFunctor(mult, *= );
+SIG_MakeConpoundAssignmentFunctor(div, /= );
+
 }
 #endif

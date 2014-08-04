@@ -27,7 +27,6 @@ http://opensource.org/licenses/mit-license.php
 namespace sig
 {
 
-namespace impl{
 // ディレクトリ・ファイルパスの末尾に'/'or'\'があるかチェックし、付けるか外すかどうか指定
 inline auto modify_dirpass_tail(FilepassString const& directory_pass, bool const has_slash) ->FilepassString
 {
@@ -53,7 +52,6 @@ inline auto modify_dirpass_tail(FilepassString const& directory_pass, bool const
 		}
 	}
 };
-}	//impl
 
 // 指定ディレクトリにあるファイル名を取得
 // 必要条件：VisualStudio環境 または boostのインクルード
@@ -73,7 +71,7 @@ inline auto get_file_names(
 #if SIG_MSVC_ENV
 	WIN32_FIND_DATA fd;
 	auto query = extension.empty() ? L"?*" : L"*" + extension;
-	auto pass = impl::modify_dirpass_tail(directory_pass, true) + query;
+	auto pass = modify_dirpass_tail(directory_pass, true) + query;
 	auto hFind = FindFirstFile(pass.c_str(), &fd);
 
 	if (hFind == INVALID_HANDLE_VALUE){
@@ -132,7 +130,7 @@ inline auto get_folder_names(
 
 #if SIG_MSVC_ENV
 	WIN32_FIND_DATA fd;
-	auto pass = impl::modify_dirpass_tail(directory_pass, true) + L"*";
+	auto pass = modify_dirpass_tail(directory_pass, true) + L"*";
 	auto hFind = FindFirstFile(pass.c_str(), &fd);
 
 	if (hFind == INVALID_HANDLE_VALUE){
@@ -198,7 +196,7 @@ inline void clear_file(FilepassString const& file_pass)
 template <class S>
 inline void save_line(
 	S const& src,
-	typename FStreamSelector<TString<S>>::ofstream& ofs)
+	typename impl::FStreamSelector<impl::TString<S>>::ofstream& ofs)
 {
 	ofs << src << std::endl;
 }
@@ -209,9 +207,9 @@ inline void save_line(
 template <class C>
 void save_line(
 	C const& src,
-	typename FStreamSelector<typename container_traits<C>::value_type>::ofstream& ofs)
+	typename impl::FStreamSelector<typename container_traits<C>::value_type>::ofstream& ofs)
 {
-	typename FStreamSelector<typename container_traits<C>::value_type>::ostreambuf_iterator streambuf_iter(ofs);
+	typename impl::FStreamSelector<typename container_traits<C>::value_type>::ostreambuf_iterator streambuf_iter(ofs);
 	for (auto const& str : src){
 		std::copy(str.begin(), str.end(), streambuf_iter);
 		streambuf_iter = '\n';
@@ -222,7 +220,7 @@ void save_line(
 // src: 保存対象
 // file_pass: 保存先のディレクトリとファイル名（フルパス）
 // open_mode: 上書き(overwrite) or 追記(append)
-template <class S, typename std::enable_if<!container_traits<TString<S>>::exist>::type*& = enabler>
+template <class S, typename std::enable_if<!container_traits<impl::TString<S>>::exist>::type*& = enabler>
 void save_line(
 	S src,
 	FilepassString const& file_pass,
@@ -230,8 +228,8 @@ void save_line(
 {
 	SIG_FILE_LOCALE_INIT
 
-	auto const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-	typename FStreamSelector<TString<S>>::ofstream ofs(file_pass, open_mode);
+	const auto open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
+	typename impl::FStreamSelector<impl::TString<S>>::ofstream ofs(file_pass, open_mode);
 	save_line(src, ofs);
 }
 
@@ -239,7 +237,7 @@ void save_line(
 // src: 保存対象(コンテナ)
 // file_pass: 保存先のディレクトリとファイル名（フルパス）
 // open_mode: 上書き(overwrite) or 追記(append)
-template <class C, typename std::enable_if<container_traits<TString<C>>::exist>::type*& = enabler>
+template <class C, typename std::enable_if<container_traits<impl::TString<C>>::exist>::type*& = enabler>
 void save_line(
 	C const& src,
 	FilepassString const& file_pass,
@@ -247,8 +245,8 @@ void save_line(
 {
 	SIG_FILE_LOCALE_INIT
 
-	auto const open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-	typename FStreamSelector<typename container_traits<C>::value_type>::ofstream ofs(file_pass, open_mode);
+	const auto open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
+	typename impl::FStreamSelector<typename container_traits<C>::value_type>::ofstream ofs(file_pass, open_mode);
 	save_line(src, ofs);
 }
 
@@ -291,7 +289,7 @@ void save_num(
 /* Read Text */
 
 template <class R>
-using IfsSelector = typename std::conditional<std::is_same<R, std::string>::value, std::ifstream, std::wifstream>::type;
+using IfsSelector = typename impl::SameIf<R, std::string, std::ifstream, std::wifstream>::type;
 
 // ファイルから1行ずつ読み込む
 // empty_dest: 保存先の空のコンテナ
@@ -301,11 +299,11 @@ template <class C, class R = typename container_traits<C>::value_type>
 bool read_line(
 	C& empty_dest,
 	IfsSelector<R>& ifs,
-	std::function< R(typename std::conditional<std::is_same<R, std::string>::value, std::string, std::wstring>::type) > const& conv = nullptr)
+	std::function< R(typename impl::SameIf<R, std::string, std::string, std::wstring>::type) > const& conv = nullptr)
 {
 	static_assert(std::is_same<R, typename container_traits<C>::value_type>::value, "error in read_line: R and C::value_type don't match");
 
-	typename std::conditional<std::is_same<R, std::string>::value, std::string, std::wstring>::type line;
+	typename impl::SameIf<R, std::string, std::string, std::wstring>::type line;
 
 	SIG_FILE_LOCALE_INIT
 
@@ -323,7 +321,7 @@ template <class C, class R = typename container_traits<C>::value_type>
 bool read_line(
 	C& empty_dest,
 	FilepassString const& file_pass,
-	std::function< R(typename std::conditional<std::is_same<R, std::string>::value, std::string, std::wstring>::type)> const& conv = nullptr)
+	std::function< R(typename impl::SameIf<R, std::string, std::string, std::wstring>::type)> const& conv = nullptr)
 {
 	IfsSelector<R> ifs(file_pass);
 	if (!ifs){
@@ -363,7 +361,7 @@ auto read_line(FilepassString const& file_pass) ->typename Just<C>::type
 template <class R, class C = std::vector<R>>
 auto read_line(FilepassStringC file_pass) ->typename Just<C>::type
 {
-	return read_line<R, C>(static_cast<TString<FilepassStringC>>(file_pass));
+	return read_line<R, C>(static_cast<impl::TString<FilepassStringC>>(file_pass));
 }
 
 
@@ -384,12 +382,12 @@ bool read_num(
 
 	if (delimiter == "\n"){
 		for (auto const& line : fromJust(read_str)){
-			container_traits<C>::add_element(empty_dest, Str2NumSelector<RT>()(line));
+			container_traits<C>::add_element(empty_dest, impl::Str2NumSelector<RT>()(line));
 		}
 	}
 	else{
 		auto sp = split(fromJust(read_str)[0], delimiter);
-		for (auto v : sp) container_traits<C>::add_element(empty_dest, Str2NumSelector<RT>()(v));
+		for (auto v : sp) container_traits<C>::add_element(empty_dest, impl::Str2NumSelector<RT>()(v));
 	}
 	return true;
 }
@@ -413,7 +411,7 @@ bool read_num(
 		auto sp = split(line, delimiter);
 
 		for (auto const& v : sp){
-			container_traits<RC>::add_element(tmp, Str2NumSelector<RT>()(v));
+			container_traits<RC>::add_element(tmp, impl::Str2NumSelector<RT>()(v));
 		}
 		container_traits<CC>::add_element(empty_dest, std::move(tmp));
 	}

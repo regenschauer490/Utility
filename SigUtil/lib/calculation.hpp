@@ -129,7 +129,8 @@ SIG_MakeBinaryOperation(divides, / );
 template <class R = void, class C = void>
 auto sum(C const& data)
 {
-	using RT = typename SameIf<R, void, typename container_traits<C>::value_type, R>::type;
+	using RT = typename impl::SameIf<R, void, typename container_traits<C>::value_type, R>::type;
+
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(0), std::plus<RT>{});
 }
 
@@ -138,7 +139,7 @@ template <class R = void, class C = void, class Pred = void>
 auto sum(C const& data, Pred const& access_func)
 {
 	using T = typename container_traits<C>::value_type;
-	using RT = typename SameIf<R, void, decltype(eval(access_func, std::declval<T>())), R>::type;
+	using RT = typename impl::SameIf<R, void, decltype(eval(access_func, std::declval<T>())), R>::type;
 
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(0), [&](RT sum, T const& e){ return sum + access_func(e); });
 }
@@ -149,7 +150,7 @@ template <class R = void, class CC = void>
 auto sum_row(CC const& matrix, uint index)
 {
 	assert(index < matrix.size());
-	return sum(matrix[index]);
+	return sum<R>(matrix[index]);
 }
 
 // 行列の指定列の総和
@@ -158,7 +159,8 @@ template <class R = void, class CC = void>
 auto sum_col(CC const& matrix, uint index)
 {
 	using T = typename container_traits<CC>::value_type;
-	return sum(matrix, [index](T const& row){ assert(index < row.size()); return row[index]; });
+
+	return sum<R>(matrix, [index](T const& row){ assert(index < row.size()); return row[index]; });
 }
 
 
@@ -167,7 +169,8 @@ auto sum_col(CC const& matrix, uint index)
 template <class R = void, class C = void>
 auto product(C const& data)
 {
-	using RT = typename SameIf<R, void, typename container_traits<C>::value_type, R>::type;
+	using RT = typename impl::SameIf<R, void, typename container_traits<C>::value_type, R>::type;
+
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(1), std::multiplies<RT>{});
 }
 
@@ -176,7 +179,7 @@ template <class R = void, class C = void, class Pred = void>
 auto product(C const& data, Pred const& access_func)
 {
 	using T = typename container_traits<C>::value_type;
-	using RT = typename SameIf<R, void, decltype(eval(access_func, std::declval<T>())), R>::type;
+	using RT = typename impl::SameIf<R, void, decltype(eval(access_func, std::declval<T>())), R>::type;
 
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(1), [&](RT sum, T const& e){ return sum * access_func(e); });
 }
@@ -187,7 +190,7 @@ template <class R = void, class CC = void>
 auto product_row(CC const& matrix, uint index)
 {
 	assert(index < matrix.size());
-	return product(matrix[index]);
+	return product<R>(matrix[index]);
 }
 
 // 行列の指定列の総乗
@@ -196,23 +199,24 @@ template <class R = void, class CC = void>
 auto product_col(CC const& matrix, uint index)
 {
 	using T = typename container_traits<CC>::value_type;
-	return product(matrix, [index](T const& row){ assert(index < row.size()); return row[index]; });
+
+	return product<R>(matrix, [index](T const& row){ assert(index < row.size()); return row[index]; });
 }
 
 
 // 平均
-template <class C>
+template <class I = void, class C = void>
 double average(C const& data)
 {
-	return static_cast<double>(sum(data)) / data.size();
+	return static_cast<double>(sum<I>(data)) / data.size();
 }
 
 // 分散
-template <class C>
+template <class I = void, class C = void>
 double variance(C const& data)
 {
 	using T = typename container_traits<C>::value_type;
-	double mean = average(data);
+	double mean = average<I>(data);
 	return std::accumulate(std::begin(data), std::end(data), 0.0, [mean](double sum, T e){ return sum + std::pow(e - mean, 2); }) / data.size();
 }
 

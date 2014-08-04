@@ -57,6 +57,8 @@ namespace sig
 #endif
 
 // string type to associated in regex type
+namespace impl
+{
 template <class T>
 struct Str2RegexSelector{};
 template <>
@@ -69,7 +71,7 @@ struct Str2RegexSelector<std::wstring>{
 	typedef SIG_WRegex regex;
 	typedef SIG_WSMatch smatch;
 };
-
+}
 
 
 // expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
@@ -101,9 +103,9 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 #if SIG_MSVC_ENV || (SIG_USE_GLIBCPP && SIG_ENABLE_BOOST)
 // エスケープ処理を行い、std::regex or std::wregexを返す(libstdc++使用時 かつ boost使用時は boost::regex)
 template <class S>
-auto make_regex(S const& expression) ->typename Str2RegexSelector<TString<S>>::regex
+auto make_regex(S const& expression) ->typename impl::Str2RegexSelector<impl::TString<S>>::regex
 {
-	return typename Str2RegexSelector<TString<S>>::regex(escape_regex(expression));
+	return typename impl::Str2RegexSelector<impl::TString<S>>::regex(escape_regex(expression));
 }
 
 // std::regex_search のラッパ関数
@@ -115,18 +117,16 @@ auto make_regex(S const& expression) ->typename Str2RegexSelector<TString<S>>::r
 // expression = std::regex("tes(\\d)")
 // return -> [[tes1, 1], [tes2, 2]]
 template <class S>
-auto regex_search(
-	S src,
-	typename Str2RegexSelector<TString<S>>::regex const& expression
-	) ->typename Just<std::vector<std::vector<TString<S>>>>::type
+auto regex_search(S src, typename impl::Str2RegexSelector<impl::TString<S>>::regex const& expression)
+	->typename Just<std::vector<std::vector<impl::TString<S>>>>::type
 {
-	using R = std::vector<std::vector<TString<S>>>;
+	using R = std::vector<std::vector<impl::TString<S>>>;
+	typename impl::Str2RegexSelector<impl::TString<S>>::smatch match;
+	auto tmp = impl::TString<S>(src);
 	R d;
-	typename Str2RegexSelector<TString<S>>::smatch match;
-	auto tmp = TString<S>(src);
 
 	while (SIG_RegexSearch(tmp, match, expression)){
-		d.push_back(std::vector<TString<S>>());
+		d.push_back(std::vector<impl::TString<S>>());
 		for (auto const& m : match) d.back().push_back(m);
 		tmp = match.suffix().str();
 	}
@@ -142,10 +142,7 @@ auto regex_search(
 // 例：
 // src="one, 2, 参 ", delim="," -> return vector<string>{"one", " 2", " 参 "}
 template <template <class T_, class = std::allocator<T_>> class CSeq = std::vector, class S = std::string >
-auto split(
-	S src,
-	TString<S> const& delimiter
-	) ->CSeq<TString<S>>
+auto split(S src, impl::TString<S> const& delimiter) ->CSeq<impl::TString<S>>
 {
 	CSeq<S> result;
 	const uint mag = delimiter.size();
@@ -165,39 +162,62 @@ auto split(
 }
 
 template < template <class T_, class = std::allocator<T_>> class CSeq = std::vector >
-CSeq<std::string> split(char const* const src, char const* const delimiter)
+auto split(char const* const src, char const* const delimiter) ->CSeq<std::string>
 {
 	return split<CSeq>(std::string(src), std::string(delimiter));
 }
 
 template < template < class T_, class = std::allocator<T_>> class CSeq = std::vector >
-CSeq<std::wstring> split(wchar_t const* const src, wchar_t const* const delimiter)
+auto split(wchar_t const* const src, wchar_t const* const delimiter) ->CSeq<std::wstring>
 {
 	return split<CSeq>(std::wstring(src), std::wstring(delimiter));
 }
 
 
-// コンテナに格納された全文字列を結合して1つの文字列に(delimiterで区切り指定)
-// container: 文字列が格納されたコンテナ
-// delimiter: 結合する文字列間に挿入される文字列
-// return -> 結合した文字列
-template <class C, class T>
-auto cat_str(C const& container, T delimiter, std::locale osstream_locale = std::locale(""))
-	->typename SStreamSelector<typename container_traits<C>::value_type>::string
+// コンテナに格納された各文字列(数値の場合は文字列に変換)を順番に結合して1つの文字列に(delimiterで区切り指定)
+namespace impl{
+
+template <class It, class S, class OSS>
+auto cat_str_impl(It begin, It end, S const& delimiter, OSS& osstream, std::locale osstream_locale = std::locale("")) ->decltype(osstream.str())
 {
-	typename SStreamSelector<typename container_traits<C>::value_type>::ostringstream osstream;
-	if (container.empty()) return osstream.str();
+	if (begin == end) return osstream.str();
 
 	std::locale::global(osstream_locale);
 	std::locale ctype_default(std::locale::classic(), osstream_locale, std::locale::ctype);
 	osstream.imbue(ctype_default);
 
-	auto it = std::begin(container);
-	osstream << *it++;
-	for (auto end = std::end(container); it != end; ++it){
-		osstream << delimiter << *it;
+	for (osstream << *begin++; begin != end; ++begin){
+		osstream << delimiter << *begin;
 	}
 	return osstream.str();
+}
+}
+
+// container: 文字列か数値が格納されたコンテナ
+// delimiter: 結合する文字列間に挿入される文字列
+// return -> 結合した文字列
+template <class C, class S>
+auto cat_str(C const& container, S const& delimiter, std::locale osstream_locale = std::locale(""))
+	->typename impl::SStreamSelector<typename container_traits<C>::value_type>::string
+{
+	return impl::cat_str_impl(
+		std::begin(container),
+		std::end(container),
+		delimiter,
+		typename impl::SStreamSelector<typename container_traits<C>::value_type>::ostringstream{},
+		osstream_locale);
+}
+
+template <class T, class S>
+auto cat_str(std::initializer_list<T> container, S const& delimiter, std::locale osstream_locale = std::locale(""))
+	->typename impl::SStreamSelector<T>::string
+{
+	return impl::cat_str_impl(
+		std::begin(container),
+		std::end(container),
+		delimiter,
+		typename impl::SStreamSelector<T>::ostringstream{},
+		osstream_locale);
 }
 
 
@@ -355,52 +375,52 @@ template <> struct space<std::wstring>{std::wstring operator()() const{ return L
 
 //HTML風にタグをエンコード・デコードする
 //例： <TAG>text<TAG>
-template <class String>
+template <class S>
 class TagDealer
 {
-	const String tel_;
-	const String ter_;
+	const S tel_;
+	const S ter_;
 
 public:
 	//左右それぞれの囲み文字を指定(ex. left = "<", right= ">")
-	TagDealer(String tag_encloser_left, String tag_encloser_right) : tel_(tag_encloser_left), ter_(tag_encloser_right){};
+	TagDealer(S tag_encloser_left, S tag_encloser_right) : tel_(tag_encloser_left), ter_(tag_encloser_right){};
 
-	String encode(String const& src, String tag) const{
+	S encode(S const& src, S tag) const{
 		auto tag_str = tel_ + tag + ter_;
 		return tag_str + src + tag_str;
 	}
 
-	auto decode(String const& src, String tag) ->typename Just<String>::type const{
+	auto decode(S const& src, S tag) ->typename Just<S>::type const{
 		auto tag_str = tel_ + tag + ter_;
-		auto parse = split(space<String>()() + src, tag_str);
-		return parse.size() < 2 ? Nothing(String()) : typename Just<String>::type(parse[1]);
+		auto parse = split(space<S>()() + src, tag_str);
+		return parse.size() < 2 ? Nothing(S()) : typename Just<S>::type(parse[1]);
 	}
 
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-	String encode(Container<String> const& src, Container<String> const& tag) const;
+	S encode(Container<S> const& src, Container<S> const& tag) const;
 
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-	auto decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const;
+	auto decode(S const& src, Container<S> const& tag) ->typename Just<Container<S>>::type const;
 
 };
 
-template <class String>
+template <class S>
 template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-String TagDealer<String>::encode(Container<String> const& src, Container<String> const& tag) const
+S TagDealer<S>::encode(Container<S> const& src, Container<S> const& tag) const
 {
-	auto calc = zipWith([&](typename Container<String>::value_type s, typename Container<String>::value_type t){ return encode(s, t); }, src, tag);
-	return std::accumulate(calc.begin(), calc.end(), String());
+	auto calc = zipWith([&](typename Container<S>::value_type s, typename Container<S>::value_type t){ return encode(s, t); }, src, tag);
+	return std::accumulate(calc.begin(), calc.end(), S());
 }
 
-template <class String>
+template <class S>
 template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-auto TagDealer<String>::decode(String const& src, Container<String> const& tag) ->typename Just<Container<String>>::type const
+auto TagDealer<S>::decode(S const& src, Container<S> const& tag) ->typename Just<Container<S>>::type const
 {
-	Container<String> result;
+	Container<S> result;
 	for (auto const& e : tag){
 		if (auto d = decode(src, e)) result.push_back(*d);
 	}
-	return result.empty() ? Nothing(String()) : typename Just<Container<String>>::type(std::move(result));
+	return result.empty() ? Nothing(S()) : typename Just<Container<S>>::type(std::move(result));
 }
 
 //全角・半角文字の置換処理を行う

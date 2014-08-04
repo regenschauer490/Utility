@@ -12,14 +12,14 @@ public:
 	int get() const{ return v_; }
 };
 
+const sig::array<int, 4> data0{1, 2, 3, 4 };
+const std::vector<int> data1{ 1, -3, 5 };
+const std::list<double> data2{ 1.0, -3.0, 5.0 };
+const std::multiset<int, std::greater<int>> data3{ 1, -3, 5 };
+const std::unordered_multiset<int> data4{ 1, -3, 5, -7 };
+
 void ArithmeticOperationsTest()
 {
-	const sig::array<int, 4> data0{1, 2, 3, 4 };
-	const std::vector<int> data1{ 1, -3, 5 };
-	const std::list<double> data2{ 1.0, -3.0, 5.0 };
-	const std::multiset<int, std::greater<int>> data3{ 1, -3, 5 };
-	const std::unordered_multiset<int> data4{ 1, -3, 5, -7 };
-
 	// スカラー + スカラー
 	assert(sig::plus(1, 1.0) == 2.0);
 
@@ -119,22 +119,31 @@ void ArithmeticOperationsTest()
 		sig::divides(data2, data0),
 		sig::zipWith(std::divides<double>(), data2, data0)
 	);
+}
 
+void StatisticalOperationTest()
+{
 	// accumulation (sum, product)
 	const sig::array<Tes, 3> dataT{ Tes(1), Tes(2), Tes(3) };
 	const sig::array<sig::array<int, 3>, 2> dmat1{ { 1, 2, 3 }, { 4, 5, 6 } };
 	const std::vector<std::vector<double>> dmat2{ { 1.1, 2.2, 3.3 }, { -1.1, -2.2, -3.3 } };
+	const int64_t tt1 = 100000, tt2 = 100000;
+	const std::vector<int> data_big1(tt1, tt2);
+	const int64_t tt3 = 10, tt4 = 10;
+	const std::vector<int> data_big2(tt3, tt4);
 
 	int sum1 = sig::sum(data0);
 	double sum2 = sig::sum(data2);
 	int sum3 = sig::sum(dmat1, [](sig::array<int, 3> const& e){ return e[1]; });
 	int sum4 = sig::sum(dataT, [](Tes const& e){ return e.get(); });
+	int64_t sum5 = sig::sum<int64_t>(data_big1);
 
 	assert(sig::equal(sum1, data0[0] + data0[1] + data0[2] + data0[3]));
 	assert(sig::equal(sum2, std::accumulate(std::begin(data2), std::end(data2), 0.0)));
 	assert(sig::equal(sum3, dmat1[0][1] + dmat1[1][1]));
 	assert(sig::equal(sum4, dataT[0].get() + dataT[1].get() + dataT[2].get()));
-	
+	assert(sig::equal(sum5, tt1 * tt2));
+
 
 	int sum_row1 = sig::sum_row(dmat1, 0);
 	double sum_row2 = sig::sum_row(dmat2, 1);
@@ -151,13 +160,15 @@ void ArithmeticOperationsTest()
 	double pi2 = sig::product(data2);
 	int pi3 = sig::product(dmat1, [](sig::array<int, 3> const& e){ return e[1]; });
 	int pi4 = sig::sum(dataT, [](Tes const& e){ return e.get(); });
+	int64_t pi5 = sig::product<int64_t>(data_big2);
 
 	assert(sig::equal(pi1, data0[0] * data0[1] * data0[2] * data0[3]));
 	assert(sig::equal(pi2, std::accumulate(std::begin(data2), std::end(data2), 1.0, std::multiplies<double>{})));
 	assert(sig::equal(pi3, dmat1[0][1] * dmat1[1][1]));
 	assert(sig::equal(pi4, dataT[0].get() * dataT[1].get() * dataT[2].get()));
+	assert(sig::equal(pi5, std::pow(tt4, tt3)));
 
-	
+
 	int pi_row1 = sig::product_row(dmat1, 0);
 	double pi_row2 = sig::product_row(dmat2, 1);
 	int pi_col1 = sig::product_col(dmat1, 0);
@@ -188,11 +199,13 @@ void ArithmeticOperationsTest()
 	double m2 = sig::average(data8);
 	double v1 = sig::variance(data6);
 	double v2 = sig::variance(data8);
+	int m3 = sig::average<int64_t>(data_big1);
 
 	sig::array<double, 5> normal_test1{ 0, 0.35, 0.5, 0.55, 1 };
 	sig::array<double, 5> normal_test2{ 0, 0.3, 0.5, 0.6, 1 };
 	sig::array<double, 5> standard_test1{ (data6[0] - m1) / v1, (data6[1] - m1) / v1, (data6[2] - m1) / v1, (data6[3] - m1) / v1, (data6[4] - m1) / v1 };
 	sig::array<double, 5> standard_test2{ (data8[0] - m2) / v2, (data8[1] - m2) / v2, (data8[2] - m2) / v2, (data8[3] - m2) / v2, (data8[4] - m2) / v2 };
+	assert(sig::equal(m3, tt2));
 
 	auto normal1 = sig::normalize(data7);
 	auto normal2 = sig::normalize(data8);	// sig::array<int, 5> -> sig::array<double, 5>
@@ -209,4 +222,15 @@ void ArithmeticOperationsTest()
 	sig::for_each(sig::DebugEqual(), data6, standard_test1);
 	sig::for_each(sig::DebugEqual(), standard1, standard_test1);
 	sig::for_each(sig::DebugEqual(), standard2, standard_test2);
+
+
+	sig::array<double, 5> data_dist1{ 1, 2, 3, 4, 5 };
+	const sig::array<int, 5> data_dist2{ 1, 2, 3, 4, 5 };
+
+	bool f = sig::normalize_dist(data_dist1);
+	auto normal_dist2 = sig::normalize_dist(data_dist2);
+
+	assert(f);
+	assert(sig::equal(sig::sum(data_dist1), 1.0));
+	assert(sig::equal(sig::sum(normal_dist2), 1.0));
 }

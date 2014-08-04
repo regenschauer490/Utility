@@ -43,25 +43,25 @@ std::cout << std::endl;
 
 // 複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用して結果をdestに格納
 template <class C, class F, class... Its>
-void iterative_make(std::size_t loop, C& dest, F const& func, Its... iterators)
+void iterative_make(uint loop, C& dest, F const& func, Its... iterators)
 {
-	for (std::size_t i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
+	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
 		container_traits<C>::add_element(dest, eval(func, impl::dereference_iterator(iterators)...));
 	}
 }
 
 // 複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用(副作用あり)
 template <class F, class... Its>
-void iterative_assign(std::size_t loop, F const& func, Its... iterators)
+void iterative_assign(uint loop, F const& func, Its... iterators)
 {
-	for (std::size_t i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
+	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
 		func(impl::dereference_iterator(iterators)...);
 	}
 }
 template <class F, class... Its>
-void iterative_assign(std::size_t loop, int init, F const& func, Its... iterators)
+void iterative_assign(uint loop, int init, F const& func, Its... iterators)
 {
-	for (std::size_t i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
+	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
 		func(i + init, impl::dereference_iterator(iterators)...);
 	}
 }
