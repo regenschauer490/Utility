@@ -149,17 +149,17 @@ public:
 	//指定した区間までのトータル時間(スプリットタイム)を取得
 	//template引数で時間の単位を指定
 	template<class TimeUnit = std::chrono::milliseconds>
-	auto get_split_time(uint index) ->typename Just<long>::type{
+	auto get_split_time(uint index) ->Just<long>{
 		return index < laps.size()
-			? typename Just<long>::type(std::chrono::duration_cast<TimeUnit>(d_accumulate(laps, index+1)).count())
+			? Just<long>(std::chrono::duration_cast<TimeUnit>(d_accumulate(laps, index+1)).count())
 			: Nothing(-1);
 	}
 
 	//指定した区間の時間(ラップタイム)を取得
 	//template引数で時間の単位を指定
 	template<class TimeUnit = std::chrono::milliseconds>
-	auto get_lap_time(uint index) ->typename Just<long>::type{
-		return index < laps.size() ? typename Just<long>::type(std::chrono::duration_cast<TimeUnit>(laps[index]).count()) : Nothing(-1);
+	auto get_lap_time(uint index) ->Just<long>{
+		return index < laps.size() ? Just<long>(std::chrono::duration_cast<TimeUnit>(laps[index]).count()) : Nothing(-1);
 	}
 };
 
@@ -274,9 +274,9 @@ public:
 
 	//bin番目(0 ～ BIN_NUM-1)の頻度を取得
 	//return -> tuple<頻度, 範囲最小値(以上), 範囲最大値(未満)>
-	auto get_count(uint bin) const -> typename Just<std::tuple<uint, int, int>>::type{
+	auto get_count(uint bin) const ->Just<std::tuple<uint, int, int>>{
 		return bin < BIN_NUM
-			? typename Just<std::tuple<uint, int, int>>::type(std::make_tuple(_count[bin + 1], _delta*bin + _min, _delta*(bin + 1) + _min))
+			? Just<std::tuple<uint, int, int>>(std::make_tuple(_count[bin + 1], _delta*bin + _min, _delta*(bin + 1) + _min))
 			: Nothing(std::make_tuple(0u, 0, 0));
 	}
 		

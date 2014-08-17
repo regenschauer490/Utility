@@ -116,7 +116,7 @@ auto invert_matrix(matrix_u<T> const& mat) ->maybe<matrix_u<T>>
 
 	lu_substitute(tmp, pm, result);
 
-	return typename sig::Just<matrix_u<T>>::type(std::move(result));
+	return sig::Just<matrix_u<T>>(std::move(result));
 }
 
 }

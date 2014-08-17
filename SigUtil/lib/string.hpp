@@ -118,7 +118,7 @@ auto make_regex(S const& expression) ->typename impl::Str2RegexSelector<impl::TS
 // return -> [[tes1, 1], [tes2, 2]]
 template <class S>
 auto regex_search(S src, typename impl::Str2RegexSelector<impl::TString<S>>::regex const& expression)
-	->typename Just<std::vector<std::vector<impl::TString<S>>>>::type
+	->Just<std::vector<std::vector<impl::TString<S>>>>
 {
 	using R = std::vector<std::vector<impl::TString<S>>>;
 	typename impl::Str2RegexSelector<impl::TString<S>>::smatch match;
@@ -131,7 +131,7 @@ auto regex_search(S src, typename impl::Str2RegexSelector<impl::TString<S>>::reg
 		tmp = match.suffix().str();
 	}
 
-	return d.empty() ? Nothing(std::move(d)) : typename Just<R>::type(std::move(d));
+	return d.empty() ? Nothing(std::move(d)) : Just<R>(std::move(d));
 }
 #endif
 
@@ -224,7 +224,7 @@ auto cat_str(std::initializer_list<T> container, S const& delimiter, std::locale
 // ワイド文字 -> マルチバイト文字 (ex: Windows環境では UTF-16 -> Shift-JIS)
 // src:	変換対象の文字列
 // return -> 変換後の文字列
-inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::string>::type
+inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::string>
 {
 	size_t mbs_size = src.length() * MB_CUR_MAX + 1;
 	if (mbs_size < 2 || src == L"\0") return std::string();
@@ -239,7 +239,7 @@ inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::strin
 	std::string dest(mbs);
 	delete[] mbs;
 
-	return error == -1 ? std::string() : dest; //error ? Nothing(dest) : Just<std::string>::type(std::move(dest));
+	return error == -1 ? std::string() : dest; //error ? Nothing(dest) : Just<std::string>(std::move(dest));
 }
 
 // src: 変換対象の文字列が格納されたコンテナ
@@ -260,7 +260,7 @@ auto wstr_to_str(C const& strvec) -> typename container_traits<C>::template rebi
 // マルチバイト文字 -> ワイド文字 (ex: Windows環境では Shift-JIS -> UTF-16)
 // src:	変換対象の文字列
 // return -> 変換後の文字列
-inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstring>::type
+inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstring>
 {
 	size_t wcs_size = src.length() + 1;
 	if (wcs_size < 2 || src == "\0") return std::wstring();
@@ -274,7 +274,7 @@ inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstri
 #endif
 	std::wstring dest(wcs);
 	delete[] wcs;
-	return error == -1 ? std::wstring() : dest; //error ? Nothing(dest) : Just<std::wstring>::type(std::move(dest));
+	return error == -1 ? std::wstring() : dest; //error ? Nothing(dest) : Just<std::wstring>(std::move(dest));
 }
 
 // src: 変換対象の文字列が格納されたコンテナ
@@ -329,7 +329,7 @@ inline auto utf32_to_utf8(std::u32string const& src) ->std::string
 #if SIG_MSVC_ENV
 
 // ShiftJIS -> UTF-16
-inline auto sjis_to_utf16(std::string const& src) ->std::u16string //Just<std::u16string>::type
+inline auto sjis_to_utf16(std::string const& src) ->std::u16string //Just<std::u16string>
 {
 	const int dest_size = ::MultiByteToWideChar(CP_ACP, 0, src.c_str(), -1, NULL, 0);
 	BYTE* buf = new BYTE[dest_size * 2 + 2];
@@ -338,11 +338,11 @@ inline auto sjis_to_utf16(std::string const& src) ->std::u16string //Just<std::u
 	std::u16string dest(reinterpret_cast<char16_t*>(buf));
 	delete[] buf;
 
-	return is_succeed ? dest : std::u16string(); //is_succeed ? Just<std::u16string>::type(std::move(dest)) : Nothing(std::u16string());
+	return is_succeed ? dest : std::u16string(); //is_succeed ? Just<std::u16string>(std::move(dest)) : Nothing(std::u16string());
 }
 
 // UTF-16 -> ShiftJIS
-inline auto utf16_to_sjis(std::u16string const& src) ->std::string //Just<std::string>::type
+inline auto utf16_to_sjis(std::u16string const& src) ->std::string //Just<std::string>
 {
 	LPCWSTR srcp = reinterpret_cast<LPCWSTR>(src.c_str());
 	const int dest_size = ::WideCharToMultiByte(CP_ACP, 0, srcp, -1, NULL, 0, NULL, NULL);
@@ -352,7 +352,7 @@ inline auto utf16_to_sjis(std::u16string const& src) ->std::string //Just<std::s
 	std::string dest(reinterpret_cast<char*>(buf));
 	delete[] buf;
 
-	return is_succeed ? dest : std::string(); //is_succeed ? Just<std::string>::type(std::move(dest)) : Nothing(std::string());
+	return is_succeed ? dest : std::string(); //is_succeed ? Just<std::string>(std::move(dest)) : Nothing(std::string());
 }
 
 // ShiftJIS -> UTF-8
@@ -390,17 +390,17 @@ public:
 		return tag_str + src + tag_str;
 	}
 
-	auto decode(S const& src, S tag) ->typename Just<S>::type const{
+	auto decode(S const& src, S tag) ->Just<S> const{
 		auto tag_str = tel_ + tag + ter_;
 		auto parse = split(space<S>()() + src, tag_str);
-		return parse.size() < 2 ? Nothing(S()) : typename Just<S>::type(parse[1]);
+		return parse.size() < 2 ? Nothing(S()) : Just<S>(parse[1]);
 	}
 
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
 	S encode(Container<S> const& src, Container<S> const& tag) const;
 
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-	auto decode(S const& src, Container<S> const& tag) ->typename Just<Container<S>>::type const;
+	auto decode(S const& src, Container<S> const& tag) ->Just<Container<S>> const;
 
 };
 
@@ -414,13 +414,13 @@ S TagDealer<S>::encode(Container<S> const& src, Container<S> const& tag) const
 
 template <class S>
 template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-auto TagDealer<S>::decode(S const& src, Container<S> const& tag) ->typename Just<Container<S>>::type const
+auto TagDealer<S>::decode(S const& src, Container<S> const& tag) ->Just<Container<S>> const
 {
 	Container<S> result;
 	for (auto const& e : tag){
 		if (auto d = decode(src, e)) result.push_back(*d);
 	}
-	return result.empty() ? Nothing(S()) : typename Just<Container<S>>::type(std::move(result));
+	return result.empty() ? Nothing(S()) : Just<Container<S>>(std::move(result));
 }
 
 //全角・半角文字の置換処理を行う

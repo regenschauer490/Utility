@@ -42,7 +42,7 @@ const RelativeError relative_error;
 class ManageConvergenceSimple
 {
 	const double epsilon_;
-	sig::Just<double>::type last_value_;
+	Just<double> last_value_;
 
 public:
 	// epsilon: 収束判定用の定数
@@ -66,7 +66,7 @@ class ManageConvergence
 	const double epsilon_;
 	const F norm_func_;
 	const C criteria_;
-	typename sig::Just<T>::type last_value_;
+	Just<T> last_value_;
 
 public:
 	// epsilon: 収束判定用の定数, norm_function: ノルム関数(1引数,2引数のoperator()を定義した関数オブジェクト)
@@ -76,7 +76,7 @@ public:
 	// return -> true(収束), false(未収束)
 	bool update(T value){
 		if (last_value_ && criteria_(value, sig::fromJust(last_value_), norm_func_) < epsilon_) return true;
-		else last_value_ = sig::Just<T>::type(value);
+		else last_value_ = Just<T>(value);
 		std::swap(sig::fromJust(last_value_), value);
 		return false;
 	}

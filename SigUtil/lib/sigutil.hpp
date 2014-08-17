@@ -119,14 +119,16 @@ namespace sig{
 
 // maybe(boost.optional)の有効・無効に関係なくコードを統一的に記述するための処理
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-	template <class T> struct Just{ typedef maybe<T> type; };
+	template <class T> struct Just_{ typedef maybe<T> type; };
+	template <class T> using Just = typename Just_<T>::type;
 	template <class T> auto Nothing(T const& dummy)-> decltype(boost::none){ return boost::none; }
 	template <class T> T& fromJust(maybe<T>& sp){ return *sp; }
 	template <class T> T const& fromJust(maybe<T> const& sp){ return *sp; }
 	template <class T> T&& fromJust(maybe<T>&& sp){ return std::move(*sp); }
 	template <class T> bool is_container_valid(T const& m){ return m; }
 #else
-	template <class T> struct Just{ typedef T type; };
+	template <class T> struct Just_{ typedef T type; };
+	template <class T> using Just = typename Just_<T>::type;
 	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
 	template <class T> T const& fromJust(T const& sp){ return sp; }
 	template <class T> T&& fromJust(T&& sp){ return std::forward<T>(sp); }

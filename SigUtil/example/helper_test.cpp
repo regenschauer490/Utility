@@ -48,8 +48,8 @@ void TestHelperModules()
 	/* é¿çséû */
 
 	//boost::optional or pointer (SIG_ENABLE_BOOST Ç≈êÿÇËë÷Ç¶)
-	const sig::Just<int>::type maybe_true(1);
-	const sig::Just<int>::type maybe_false(sig::Nothing(0));
+	const sig::Just<int> maybe_true(1);
+	const sig::Just<int> maybe_false(sig::Nothing(0));
 
 #if !SIG_MSVC_ENV
 	assert(sig::And(maybe_true, maybe_true));

@@ -63,7 +63,7 @@ inline auto get_file_names(
 	FilepassString const& directory_pass,
 	bool hidden_file,
 	std::wstring extension = L""
-	) ->Just<std::vector<std::wstring>>::type
+	) ->Just<std::vector<std::wstring>>
 {
 	typedef std::vector<std::wstring> ResultType;
 	ResultType result;
@@ -86,7 +86,7 @@ inline auto get_file_names(
 		} while (FindNextFile(hFind, &fd));
 
 		FindClose(hFind);
-		return Just<ResultType>::type(std::move(result));
+		return Just<ResultType>(std::move(result));
 	}
 #elif SIG_ENABLE_BOOST
 	auto IsHidden = [](fs::path const& p){
@@ -123,7 +123,7 @@ inline auto get_file_names(
 inline auto get_folder_names(
 	FilepassString const& directory_pass,
 	bool hidden_file
-	) ->Just<std::vector<std::wstring>>::type
+	) ->Just<std::vector<std::wstring>>
 {
 	typedef std::vector<std::wstring> ResultType;
 	ResultType result;
@@ -146,7 +146,7 @@ inline auto get_folder_names(
 		} while (FindNextFile(hFind, &fd));
 
 		FindClose(hFind);
-		return Just<ResultType>::type(std::move(result));
+		return Just<ResultType>(std::move(result));
 	}
 #elif SIG_ENABLE_BOOST
 	auto IsHidden = [](fs::path const& p){
@@ -162,7 +162,7 @@ inline auto get_folder_names(
 			result.push_back(sig::split(it->path().wstring(), L"/").back());
 		}
 	}
-	return Just<ResultType>::type(std::move(result));
+	return Just<ResultType>(std::move(result));
 #else
 	std::cout << "I don't support this envirnment which is default. please include boost if any." << std::endl; 
 	assert(false);
@@ -336,11 +336,11 @@ bool read_line(
 // ifs: std::ifstream or std::wifstream
 // 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
 template <class R, class C = std::vector<R>>
-auto read_line(IfsSelector<R>& ifs) ->typename Just<C>::type
+auto read_line(IfsSelector<R>& ifs) ->Just<C>
 {
 	C tmp;
 	read_line(tmp, ifs);
-	return tmp.size() ? typename Just<C>::type(std::move(tmp)) : Nothing(std::move(tmp));
+	return tmp.size() ? Just<C>(std::move(tmp)) : Nothing(std::move(tmp));
 }
 
 // ファイルから1行ずつ読み込み、結果を返す
@@ -348,7 +348,7 @@ auto read_line(IfsSelector<R>& ifs) ->typename Just<C>::type
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
 template <class R, class C = std::vector<R>>
-auto read_line(FilepassString const& file_pass) ->typename Just<C>::type
+auto read_line(FilepassString const& file_pass) ->Just<C>
 {
 	IfsSelector<R> ifs(file_pass);
 	if (!ifs){
@@ -359,7 +359,7 @@ auto read_line(FilepassString const& file_pass) ->typename Just<C>::type
 }
 
 template <class R, class C = std::vector<R>>
-auto read_line(FilepassStringC file_pass) ->typename Just<C>::type
+auto read_line(FilepassStringC file_pass) ->Just<C>
 {
 	return read_line<R, C>(static_cast<impl::TString<FilepassStringC>>(file_pass));
 }
@@ -426,11 +426,11 @@ template <class C, typename std::enable_if<container_traits<C>::exist && !contai
 auto read_num(
 	FilepassString const& file_pass,
 	std::string delimiter = "\n"
-	) ->typename Just<C>::type
+	) ->Just<C>
 {
 	C tmp;
 	read_num(tmp, file_pass, delimiter);
-	return tmp.size() ? typename Just<C>::type(std::move(tmp)) : Nothing(std::move(tmp));
+	return tmp.size() ? Just<C>(std::move(tmp)) : Nothing(std::move(tmp));
 }
 
 // 2次元配列の数値(ex:行列)を読み込む
@@ -441,11 +441,11 @@ template <class CC, typename std::enable_if<container_traits<typename container_
 auto read_num(
 	FilepassString const& file_pass,
 	std::string delimiter
-	) ->typename Just<CC>::type
+	) ->Just<CC>
 {
 	CC tmp;
 	read_num(tmp, file_pass, delimiter);
-	return tmp.size() ? typename Just<CC>::type(std::move(tmp)) : Nothing(std::move(tmp));
+	return tmp.size() ? Just<CC>(std::move(tmp)) : Nothing(std::move(tmp));
 }
 
 	/*
