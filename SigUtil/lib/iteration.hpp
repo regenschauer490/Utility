@@ -77,7 +77,7 @@ void compound_assignment(
 template <class T>\
 struct assign_ ## Name \
 {\
-	void operator()(T& dest, ParamType<T> value){ dest Operator value; }\
+	void operator()(T& dest, ParamType<T> value) const{ dest Operator value; }\
 }
 
 SIG_MakeConpoundAssignmentFunctor(plus, += );
