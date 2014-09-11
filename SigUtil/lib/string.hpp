@@ -334,7 +334,7 @@ inline auto sjis_to_utf16(std::string const& src) ->std::u16string //Just<std::u
 	const int dest_size = ::MultiByteToWideChar(CP_ACP, 0, src.c_str(), -1, NULL, 0);
 	BYTE* buf = new BYTE[dest_size * 2 + 2];
 
-	bool is_succeed = ::MultiByteToWideChar(CP_ACP, 0, src.c_str(), -1, reinterpret_cast<LPWSTR>(buf), dest_size);
+	bool is_succeed = ::MultiByteToWideChar(CP_ACP, 0, src.c_str(), -1, reinterpret_cast<LPWSTR>(buf), dest_size) > 0 ? true : false;
 	std::u16string dest(reinterpret_cast<char16_t*>(buf));
 	delete[] buf;
 
@@ -348,7 +348,7 @@ inline auto utf16_to_sjis(std::u16string const& src) ->std::string //Just<std::s
 	const int dest_size = ::WideCharToMultiByte(CP_ACP, 0, srcp, -1, NULL, 0, NULL, NULL);
 	BYTE* buf = new BYTE[dest_size * 2];
 
-	bool is_succeed = ::WideCharToMultiByte(CP_ACP, 0, srcp, -1, reinterpret_cast<LPSTR>(buf), dest_size, NULL, NULL);
+	bool is_succeed = ::WideCharToMultiByte(CP_ACP, 0, srcp, -1, reinterpret_cast<LPSTR>(buf), dest_size, NULL, NULL) > 0 ? true : false;
 	std::string dest(reinterpret_cast<char*>(buf));
 	delete[] buf;
 
