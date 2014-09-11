@@ -9,7 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTILCONTAINER_TRAITS_H
 
 
-#include "traits/container_traits.hpp"
+#include "../traits/container_traits.hpp"
 
 namespace sig
 {
@@ -49,6 +49,16 @@ void iterative_make(uint loop, C& dest, F const& func, Its... iterators)
 		container_traits<C>::add_element(dest, eval(func, impl::dereference_iterator(iterators)...));
 	}
 }
+
+// 複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用して結果をdestに集約
+template <class T, class F1, class F2, class... Its>
+void iterative_fold(uint loop, T& dest, F1 const& zip, F2 const& fold, Its... iterators)
+{
+	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
+		dest = fold(dest, eval(zip, impl::dereference_iterator(iterators)...));
+	}
+}
+
 
 // 複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用(副作用あり)
 template <class F, class... Its>

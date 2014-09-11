@@ -156,6 +156,6 @@ void TestHelperModules()
 	auto cpy_list = sig::copy<std::list<int>>(orig);
 	auto cpy_set = sig::copy<std::set<int>>(orig);
 
-	sig::for_each(sig::DebugEqual(), cpy_list, orig);
-	sig::for_each(sig::DebugEqual(), cpy_set, sig::array<int,4>{1,2,3,4});
+	sig::assert_foreach(sig::Identity(), cpy_list, orig);
+	sig::assert_foreach(sig::Identity(), cpy_set, sig::array<int, 4>{1, 2, 3, 4});
 }

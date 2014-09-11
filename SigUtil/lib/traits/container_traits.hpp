@@ -74,9 +74,15 @@ struct static_container_traits<C<T, N>>
 template<class T, size_t N>
 struct container_traits<std::array<T, N>> : public static_container_traits<std::array<T, N>>
 {};
+template<class T, size_t N>
+struct container_traits<const std::array<T, N>> : public static_container_traits<std::array<T, N>>
+{};
 
 template<class T, size_t N>
 struct container_traits<sig::array<T, N>> : public static_container_traits<sig::array<T, N>>
+{};
+template<class T, size_t N>
+struct container_traits<const sig::array<T, N>> : public static_container_traits<sig::array<T, N>>
 {};
 
 
@@ -138,13 +144,22 @@ struct sequence_container_traits<C<T,A>>
 template<class... Args>
 struct container_traits<std::vector<Args...>> : public sequence_container_traits<std::vector<Args...>>
 {};
+template<class... Args>
+struct container_traits<const std::vector<Args...>> : public sequence_container_traits<std::vector<Args...>>
+{};
 
 template<class... Args>
 struct container_traits<std::deque<Args...>> : public sequence_container_traits<std::deque<Args...>>
 {};
+template<class... Args>
+struct container_traits<const std::deque<Args...>> : public sequence_container_traits<std::deque<Args...>>
+{};
 
 template<class... Args>
 struct container_traits<std::list<Args...>> : public sequence_container_traits<std::list<Args...>>
+{};
+template<class... Args>
+struct container_traits<const std::list<Args...>> : public sequence_container_traits<std::list<Args...>>
 {};
 
 
@@ -194,27 +209,45 @@ struct associative_container_traits<C<K,T,O<K>,A>>
 template<class... Args>
 struct container_traits<std::multiset<Args...>> : public associative_container_traits<std::multiset<Args...>>
 {};
+template<class... Args>
+struct container_traits<const std::multiset<Args...>> : public associative_container_traits<std::multiset<Args...>>
+{};
 
 template<class... Args>
 struct container_traits<std::set<Args...>> : public associative_container_traits<std::set<Args...>>
+{};
+template<class... Args>
+struct container_traits<const std::set<Args...>> : public associative_container_traits<std::set<Args...>>
 {};
 
 #if SIG_MSVC_ENV
 template<class K, class T, class... Args>
 struct container_traits<std::map<K, T, Args...>> : public associative_container_traits<std::map<K, T, Args...>>
 {};	// only ::value_type
+template<class K, class T, class... Args>
+struct container_traits<const std::map<K, T, Args...>> : public associative_container_traits<std::map<K, T, Args...>>
+{};	// only ::value_type
 
 template<class K, class T, class... Args>
 struct container_traits<std::multimap<K, T, Args...>> : public associative_container_traits<std::multimap<K, T, Args...>>
+{};	// only ::value_type
+template<class K, class T, class... Args>
+struct container_traits<const std::multimap<K, T, Args...>> : public associative_container_traits<std::multimap<K, T, Args...>>
 {};	// only ::value_type
 
 #else
 template<class... Args>
 struct container_traits<std::map<Args...>> : public associative_container_traits<std::map<Args...>>
 {};	// only ::value_type
+template<class... Args>
+struct container_traits<const std::map<Args...>> : public associative_container_traits<std::map<Args...>>
+{};	// only ::value_type
 
 template<class... Args>
 struct container_traits<std::multimap<Args...>> : public associative_container_traits<std::multimap<Args...>>
+{};	// only ::value_type
+template<class... Args>
+struct container_traits<const std::multimap<Args...>> : public associative_container_traits<std::multimap<Args...>>
 {};	// only ::value_type
 #endif
 
@@ -264,27 +297,45 @@ struct hash_container_traits<C<K,T,H<K>,O<K>,A>>
 template<class... Args>
 struct container_traits<std::unordered_multiset<Args...>> : public hash_container_traits<std::unordered_multiset<Args...>>
 {};
+template<class... Args>
+struct container_traits<const std::unordered_multiset<Args...>> : public hash_container_traits<std::unordered_multiset<Args...>>
+{};
 
 template<class... Args>
 struct container_traits<std::unordered_set<Args...>> : public hash_container_traits<std::unordered_set<Args...>>
+{};
+template<class... Args>
+struct container_traits<const std::unordered_set<Args...>> : public hash_container_traits<std::unordered_set<Args...>>
 {};
 
 #if SIG_MSVC_ENV
 template<class K, class T, class... Args>
 struct container_traits<std::unordered_map<K, T, Args...>> : public hash_container_traits<std::unordered_map<K, T, Args...>>
 {};	// only ::value_type
+template<class K, class T, class... Args>
+struct container_traits<const std::unordered_map<K, T, Args...>> : public hash_container_traits<std::unordered_map<K, T, Args...>>
+{};	// only ::value_type
 
 template<class K, class T, class... Args>
 struct container_traits<std::unordered_multimap<K, T, Args...>> : public hash_container_traits<std::unordered_multimap<K, T, Args...>>
+{};	// only ::value_type
+template<class K, class T, class... Args>
+struct container_traits<const std::unordered_multimap<K, T, Args...>> : public hash_container_traits<std::unordered_multimap<K, T, Args...>>
 {};	// only ::value_type
 
 #else
 template<class... Args>
 struct container_traits<std::unordered_map<Args...>> : public hash_container_traits<std::unordered_map<Args...>>
 {};	// only ::value_type
+template<class... Args>
+struct container_traits<const std::unordered_map<Args...>> : public hash_container_traits<std::unordered_map<Args...>>
+{};	// only ::value_type
 
 template<class... Args>
 struct container_traits<std::unordered_multimap<Args...>> : public hash_container_traits<std::unordered_multimap<Args...>>
+{};	// only ::value_type
+template<class... Args>
+struct container_traits<const std::unordered_multimap<Args...>> : public hash_container_traits<std::unordered_multimap<Args...>>
 {};	// only ::value_type
 #endif
 

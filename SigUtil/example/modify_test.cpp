@@ -17,14 +17,14 @@ void SortTest()
 	const auto original_index1 = std::get<1>(swi1);
 	const auto test1 = std::make_tuple(TVec<int>{ 0, 0, 1, 1, 3, 3, 3, 4, 5}, TVec<sig::uint>{ 4, 6, 0, 7, 2, 3, 8, 5, 1 });
 
-	sig::for_each(sig::DebugEqual(), sorted1, std::get<0>(test1));
-	sig::for_each(sig::DebugEqual(), original_index1, std::get<1>(test1));
+	sig::assert_foreach(sig::Identity(), sorted1, std::get<0>(test1));
+	sig::assert_foreach(sig::Identity(), original_index1, std::get<1>(test1));
 
 	//ソート基準を指定する場合
 	const auto swi2 = sig::sort_with_index(data2, [](int l, int r){ return l > r; });
 	const auto sorted2 = std::get<0>(swi2);
 
-	sig::for_each(sig::DebugEqual(), sorted2, sig::reverse(std::get<0>(test1)));
+	sig::assert_foreach(sig::Identity(), sorted2, sig::reverse(std::get<0>(test1)));
 }
 
 void ShuffleTest()
@@ -40,7 +40,7 @@ void ShuffleTest()
 	//ex: c1[1, 2, 3, 4], c2[1, 2, 3, 4] -> c1'[3, 1, 4, 2], c2'[3, 1, 4, 2]
 	sig::shuffle(data1, data2);
 
-	sig::for_each(sig::DebugEqual(), data1, data2);
+	sig::assert_foreach(sig::Identity(), data1, data2);
 }
 
 void RemoveDuplicateTest()
@@ -64,13 +64,13 @@ void RemoveDuplicateTest()
 		assert(removed[5] == 0);
 	};
 
-	sig::for_each(sig::DebugEqual(), data1, TVec<int>{ 1, 5, 3, 0, 4 });
+	sig::assert_foreach(sig::Identity(), data1, TVec<int>{ 1, 5, 3, 0, 4 });
 	test_remove_duplicates(removed1);
 
-	sig::for_each(sig::DebugEqual(), data2, TVec<int>{ 1, 5, 3, 0, 4 });
+	sig::assert_foreach(sig::Identity(), data2, TVec<int>{ 1, 5, 3, 0, 4 });
 	test_remove_duplicates(removed2);
 
-	sig::for_each(sig::DebugEqual(), data3, TVec<int>{ 5, 4, 3, 1, 0 });
+	sig::assert_foreach(sig::Identity(), data3, TVec<int>{ 5, 4, 3, 1, 0 });
 	test_remove_duplicates(removed3);
 
 	auto testd4 = { 1, 5, 3, 0, 4 };
@@ -82,7 +82,7 @@ void RemoveDuplicateTest()
 	auto removed5 = sig::remove_duplicates(data5);
 
 	std::multimap<int, std::string> testd5{ { 1, "a"}, {5, "b"}, {3, "c"}, {3, "d"}, {0, "e"}, {4, "f"}, {0, "g"}, {1, "h"} };
-	sig::for_each(sig::DebugEqual(), data5, testd5);
+	sig::assert_foreach(sig::Identity(), data5, testd5);
 	assert(removed5.size() == 8);
 	assert(removed5[std::make_pair(1, "a")] == 0);
 	assert(removed5[std::make_pair(5, "b")] == 0);
@@ -108,11 +108,11 @@ void RemoveTest()
 	assert( sig::remove_one(data3, 3) );
 	assert( sig::remove_one(data4, 3) );
 
-	sig::for_each(sig::DebugEqual(), data1, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
+	sig::assert_foreach(sig::Identity(), data1, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
 
-	sig::for_each(sig::DebugEqual(), data2, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
+	sig::assert_foreach(sig::Identity(), data2, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
 
-	sig::for_each(sig::DebugEqual(), data3, TVec<int>{ 5, 4, 3, 3, 1, 1, 0, 0 });
+	sig::assert_foreach(sig::Identity(), data3, TVec<int>{ 5, 4, 3, 3, 1, 1, 0, 0 });
 
 	auto testd4 = { 1, 1, 5, 3, 3, 0, 0, 4 };
 	assert(std::accumulate(data4.begin(), data4.end(), 0.0) == std::accumulate(testd4.begin(), testd4.end(), 0.0));
@@ -124,11 +124,11 @@ void RemoveTest()
 	assert( sig::remove_all(data3, 3) );
 	assert( sig::remove_all(data4, 3) );
 
-	sig::for_each(sig::DebugEqual(), data1, TVec<int>{ 1, 5, 0, 4, 0, 1 });
+	sig::assert_foreach(sig::Identity(), data1, TVec<int>{ 1, 5, 0, 4, 0, 1 });
 
-	sig::for_each(sig::DebugEqual(), data2, TVec<int>{ 1, 5, 0, 4, 0, 1 });
+	sig::assert_foreach(sig::Identity(), data2, TVec<int>{ 1, 5, 0, 4, 0, 1 });
 
-	sig::for_each(sig::DebugEqual(), data3, TVec<int>{ 5, 4, 1, 1, 0, 0 });
+	sig::assert_foreach(sig::Identity(), data3, TVec<int>{ 5, 4, 1, 1, 0, 0 });
 
 	auto testda4 = { 1, 1, 5, 0, 0, 4 };
 	assert(std::accumulate(data4.begin(), data4.end(), 0.0) == std::accumulate(testda4.begin(), testda4.end(), 0.0));

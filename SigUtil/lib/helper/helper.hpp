@@ -8,8 +8,8 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_HELPER_HPP
 #define SIG_UTIL_HELPER_HPP
 
-#include "sigutil.hpp"
-#include "traits/type_map.hpp"
+#include "../sigutil.hpp"
+#include "../traits/type_map.hpp"
 #include <sstream> 
 
 /* 補助モジュール */
@@ -103,13 +103,21 @@ auto max(T v1, Ts... vs)
 	return max(v1, max(vs...));
 }
 
-// V1 > V2 -> true
-template <class T1, class T2>
-constexpr bool greater(T1 v1, T2 v2){ return v1 > v2 ? true : false; };
+// test if not a NAN
+template <class T>
+bool is_number(T x)
+{
+	// This looks like it should always be true, 
+	// but it's false if x is a NaN.
+	return (x == x);
+}
 
-// V1 < V2 -> true
-template <class T1, class T2>
-constexpr bool less(T1 v1, T2 v2){ return v1 < v2 ? true : false; };
+// test if not a NaN and not an infinity
+template <class T>
+bool is_finite_number(T x)
+{
+	return (x <= DBL_MAX && x >= -DBL_MAX);
+}
 
 
 // 2変数の差の絶対値を返す
@@ -167,16 +175,30 @@ bool modify_range(T& val, U const& min, U const& max)
 	return true;
 }
 
+// V1 > V2 -> true
+template <class T1, class T2>
+constexpr bool greater(T1 v1, T2 v2){ return v1 > v2 ? true : false; };
+
+// V1 < V2 -> true
+template <class T1, class T2>
+constexpr bool less(T1 v1, T2 v2){ return v1 < v2 ? true : false; };
+
 
 /* 関数オブジェクト */
 
-struct increment
+struct Identity
+{
+	template <class T>
+	T operator()(T v) const{ return v; }
+};
+
+struct Increment
 {
 	template <class T>
 	T operator()(T v) const{ return ++v; }
 };
 
-struct decrement
+struct Decrement
 {
 	template <class T>
 	T operator()(T v) const{ return --v; }
