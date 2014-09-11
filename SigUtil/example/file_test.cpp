@@ -198,10 +198,10 @@ void FileSaveLoadTest()
 
 	if (read1){
 		const auto test1 = sig::merge(TVecw{ L"test write 0" }, blghost_text1);
-		sig::for_each([&](std::string s1, std::wstring s2){ assert(sig::str_to_wstr(s1) == s2); return 0; }, *read1, test1);
+		sig::assert_foreach(sig::Identity(), sig::str_to_wstr(sig::fromJust(read1)), test1);
 	}
 	if (read2){
-		sig::for_each(sig::DebugEqual(), *read2, TVecw{ L"test write 壱", L"test write 弐" });
+		sig::assert_foreach(sig::Identity(), sig::fromJust(read2), TVecw{ L"test write 壱", L"test write 弐" });
 	}
 	if (read_num){
 		const auto test = std::accumulate(list_num.begin(), list_num.end(), 0.0) + std::accumulate(uset_num.begin(), uset_num.end(), 0.0);
@@ -210,7 +210,7 @@ void FileSaveLoadTest()
 	}
 	if (read_mat){
 		for(unsigned i=0; i<read_mat->size(); ++i){
-			sig::for_each(sig::DebugEqual(), (*read_mat)[i], mat[i]);
+			sig::assert_foreach(sig::Identity(), sig::fromJust(read_mat)[i], mat[i]);
 		}
 	}
 #endif
@@ -224,16 +224,16 @@ void FileSaveLoadTest()
 	sig::read_num(read_num2, fpass4);
 	sig::read_num(read_mat2, fpass5, ",");
 	
-	const auto test1 = sig::merge(TVecw{L"test write 0"}, blghost_text1);
-	sig::for_each([&](std::string s1, std::wstring s2){ assert(sig::str_to_wstr(s1) == s2); return 0; }, read3, test1);
+	const auto test1 = sig::merge(TVec{"test write 0"}, sig::wstr_to_str(blghost_text1));
+	sig::assert_foreach(sig::Identity(), read3, test1);
 
-	sig::for_each(sig::DebugEqual(), read4, TVecw{ L"test write 壱", L"test write 弐" });
+	sig::assert_foreach(sig::Identity(), read4, TVecw{ L"test write 壱", L"test write 弐" });
 
 	const auto test2 = std::accumulate(list_num.begin(), list_num.end(), 0.0) + std::accumulate(uset_num.begin(), uset_num.end(), 0.0);
 	//保存前がunorderedで順不同となるので、読み取り後のdouble値の合計と一致するかで判断
 	assert(sig::equal(std::accumulate(read_num2.begin(), read_num2.end(), 0.0), test2));
 	
 	for (unsigned i = 0; i<read_mat2.size(); ++i){
-		sig::for_each(sig::DebugEqual(), read_mat2[i], mat[i]);
+		sig::assert_foreach(sig::Identity(), read_mat2[i], mat[i]);
 	}
 }

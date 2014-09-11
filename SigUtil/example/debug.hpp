@@ -9,21 +9,14 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_DEBUG_HPP
 
 #include <assert.h>
-#include "../lib/helper.hpp"
-#include "../lib/functional.hpp"
-#include "../lib/iteration.hpp"
+#include "../lib/helper/helper.hpp"
+#include "../lib/helper/container_helper.hpp"
 
 /* デバッグ用ツール */
 
 namespace sig
 {
-	//debug用
-	template <class F, class... Cs>
-	auto for_each(F const& func, Cs const&... containers)
-	{
-		const uint length = min(containers.size()...);
-		iterative_assign(length, func, std::begin(containers)...);
-	}
+#undef min
 
 	struct DebugEqual{
 		template <class T1, class T2, typename std::enable_if<!(std::is_floating_point<T1>::value) && !(std::is_floating_point<T2>::value)>::type *& = enabler>
@@ -38,6 +31,24 @@ namespace sig
 			assert(equal(v1, v2));
 		}
 	};
+
+	const DebugEqual debug_equal;
+
+	template <class F, class C, class... Cs>
+	auto assert_foreach(F const& func, C const& test, Cs const&... origs)
+	{
+		C calc;
+		const uint length = min(origs.size()...);
+		iterative_make(length, calc, func, std::begin(origs)...);
+		assert(test.size() == calc.size()); 
+
+		auto it1 = std::begin(test), end1 = std::end(test);
+		auto it2 = std::begin(calc), end2 = std::end(calc);
+
+		for (; it1!=end1 && it2!=end2; ++it1, ++it2){
+			debug_equal(*it1, *it2);
+		}
+	}
 };
 
 #endif

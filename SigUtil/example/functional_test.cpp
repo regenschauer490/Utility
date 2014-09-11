@@ -11,7 +11,7 @@ void MapTest()
 	const std::multiset<int, std::greater<int>> data3{ 1, -3, 5 };
 	const std::unordered_multiset<int> data4{ 1, -3, 5, -7 };
 
-	auto r0 = sig::map(sig::increment(), data0);
+	auto r0 = sig::map(sig::Increment(), data0);
 
 	auto r1 = sig::map([](int v){ return v * 2; }, data1);
 

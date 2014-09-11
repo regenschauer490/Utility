@@ -9,7 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_FILE_HPP
 
 #include "string.hpp"
-#include "helper.hpp"
+#include "helper/helper.hpp"
 
 #include <fstream>
 #include <locale>

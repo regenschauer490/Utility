@@ -111,7 +111,6 @@
     <ClInclude Include="example\tool_test.h" />
     <ClInclude Include="lib\array.hpp" />
     <ClInclude Include="lib\calculation.hpp" />
-    <ClInclude Include="lib\container_helper.hpp" />
     <ClInclude Include="lib\distance.hpp" />
     <ClInclude Include="lib\distance\binary_distance.hpp" />
     <ClInclude Include="lib\distance\canberra_distance.hpp" />
@@ -122,7 +121,8 @@
     <ClInclude Include="lib\distance\minkowski_distance.hpp" />
     <ClInclude Include="lib\distance\norm.hpp" />
     <ClInclude Include="lib\error_convergence.hpp" />
-    <ClInclude Include="lib\helper.hpp" />
+    <ClInclude Include="lib\helper\container_helper.hpp" />
+    <ClInclude Include="lib\helper\helper.hpp" />
     <ClInclude Include="lib\iteration.hpp" />
     <ClInclude Include="lib\modify.hpp" />
     <ClInclude Include="lib\file.hpp" />

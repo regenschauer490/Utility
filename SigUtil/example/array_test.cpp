@@ -13,20 +13,20 @@ void ArrayTest()
 
 	sig::array<int, 5> ar5{ ar2 };
 
-	sig::for_each(sig::DebugEqual(), ar2, std::vector<int>{1, 2, 3});	//test elements
-	sig::for_each(sig::DebugEqual(), ar3, std::vector<int>{1, 1, 1});
-	sig::for_each(sig::DebugEqual(), ar4, stdar);
-	sig::for_each(sig::DebugEqual(), ar5, ar2);
+	sig::assert_foreach(sig::Identity(), ar2, std::vector<int>{1, 2, 3});	//test elements
+	sig::assert_foreach(sig::Identity(), ar3, std::vector<int>{1, 1, 1});
+	sig::assert_foreach(sig::Identity(), ar4, stdar);
+	sig::assert_foreach(sig::Identity(), ar5, ar2);
 
 	//copy assignment
 	ar1 = ar2;
-	sig::for_each(sig::DebugEqual(), ar1, ar2);
+	sig::assert_foreach(sig::Identity(), ar1, ar2);
 
 	ar1 = { 3, 2, 1 };
-	sig::for_each(sig::DebugEqual(), ar1, std::vector<int>{3, 2, 1});
+	sig::assert_foreach(sig::Identity(), ar1, std::vector<int>{3, 2, 1});
 
 	ar1 = stdar;
-	sig::for_each(sig::DebugEqual(), ar1, stdar);
+	sig::assert_foreach(sig::Identity(), ar1, stdar);
 
 	//equal
 	auto ar6 = ar5;
@@ -69,10 +69,10 @@ void ArrayTest()
 	std::array<int, 5> stdar2 = ar2.std_array();
 
 	ar3.fill(2);
-	sig::for_each(sig::DebugEqual(), ar3, std::vector<int>{2, 2, 2, 2, 2});
+	sig::assert_foreach(sig::Identity(), ar3, std::vector<int>{2, 2, 2, 2, 2});
 
 	ar1.swap(ar2);
-	sig::for_each(sig::DebugEqual(), ar1, ar5);
+	sig::assert_foreach(sig::Identity(), ar1, ar5);
 	assert(ar2.empty());
 
 	ar1.clear();

@@ -38,8 +38,9 @@ int main()
 	ArithmeticOperationsTest();
 	StatisticalOperationTest();
 
-	//
+	//iteration.hpp test
 	ForeachTest();
+	FoldZipWithTest();
 	CompoundAssignmentTest();
 
 	//functional.hpp test

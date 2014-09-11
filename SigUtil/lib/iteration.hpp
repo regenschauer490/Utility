@@ -8,8 +8,8 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_FOREACH_HPP
 #define SIG_UTIL_FOREACH_HPP
 
-#include "helper.hpp"
-#include "container_helper.hpp"
+#include "helper/helper.hpp"
+#include "helper/container_helper.hpp"
 
 
 /* かゆいところに手が届く反復処理関数 */
@@ -40,6 +40,29 @@ void for_each(F const& func, int init, Cs&... containers)
 	iterative_assign(length, init, func, std::begin(containers)...);
 }
 
+// containersの各要素に対して、zip関数を適用しつつfoldで結果を集約
+// fold_zipWith f1 f2 y xs = foldl f1 y (zipWith f2 xs)
+template <class F1, class F2, class T, class... Cs>
+auto fold_zipWith(F1 const& zip, F2 const& fold, T init, Cs&... containers)
+{
+	using TR = decltype(eval(
+		zip,
+		std::declval<typename container_traits<Cs>::value_type>()...
+	));
+	using R = decltype(eval(
+		fold,
+		init,
+		std::declval<T>()
+	));
+
+	TR result = init;
+	const uint length = min(containers.size()...);
+	iterative_fold(length, result, zip, fold, std::begin(containers)...);
+	return result;
+}
+
+// コンテナから指定条件を満たす要素を抽出する
+// pred: 添字と要素値を取り、boolを返す関数
 template <class F, class C>
 auto filter(F const& pred, C const& container, int init)
 {

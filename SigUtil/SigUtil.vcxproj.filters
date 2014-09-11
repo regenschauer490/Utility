@@ -25,6 +25,9 @@
     <Filter Include="ヘッダー ファイル\traits">
       <UniqueIdentifier>{7816978e-fefc-4cd8-b0ad-50f0894fcd6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\helper">
+      <UniqueIdentifier>{d9b050ec-e651-4d2b-8eba-2863c9650d8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -95,9 +98,6 @@
     <ClInclude Include="example\functional_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
-    <ClInclude Include="lib\container_helper.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="lib\modify.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -108,9 +108,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="lib\calculation.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\helper.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="lib\iteration.hpp">
@@ -184,6 +181,12 @@
     </ClInclude>
     <ClInclude Include="lib\blas.hpp">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\helper\helper.hpp">
+      <Filter>ヘッダー ファイル\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\helper\container_helper.hpp">
+      <Filter>ヘッダー ファイル\helper</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

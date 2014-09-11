@@ -8,8 +8,8 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_FUNCTIONAL_HPP
 #define SIG_UTIL_FUNCTIONAL_HPP
 
-#include "helper.hpp"
-#include "container_helper.hpp"
+#include "helper/helper.hpp"
+#include "helper/container_helper.hpp"
 
 /* 関数型プログラミング サポート */
 
@@ -19,8 +19,8 @@ namespace sig
 template <class F, class C1, class... Cs>
 auto variadicZipWith(F const& func, C1 const& container1, Cs const&... containers)
 {
-	using R = typename container_traits<C1>::template rebind<decltype(eval(
-		func,
+	using R = typename container_traits<C1>::template rebind<decltype(
+		func(
 		std::declval<typename container_traits<C1>::value_type>(),
 		std::declval<typename container_traits<Cs>::value_type>()...
 	))>;
