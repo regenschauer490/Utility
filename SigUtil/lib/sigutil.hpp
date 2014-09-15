@@ -1,4 +1,11 @@
-﻿#ifndef SIG_UTIL_HPP
+﻿/*
+Copyright(c) 2014 Akihiro Nishimura
+
+This software is released under the MIT License.
+http://opensource.org/licenses/mit-license.php
+*/
+
+#ifndef SIG_UTIL_HPP
 #define SIG_UTIL_HPP
 
 /*--------------------------------------- User Option --------------------------------------------------------------------*/
@@ -125,7 +132,7 @@ namespace sig{
 	template <class T> T& fromJust(maybe<T>& sp){ return *sp; }
 	template <class T> T const& fromJust(maybe<T> const& sp){ return *sp; }
 	template <class T> T&& fromJust(maybe<T>&& sp){ return std::move(*sp); }
-	template <class T> bool is_container_valid(T const& m){ return m; }
+	template <class T> bool is_container_valid(T const& m){ return static_cast<bool>(m); }
 #else
 	template <class T> struct Just_{ typedef T type; };
 	template <class T> using Just = typename Just_<T>::type;
