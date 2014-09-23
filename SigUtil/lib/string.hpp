@@ -1,5 +1,5 @@
 ﻿/*
-Copyright(c) 2014 Akihiro Nishimura
+Copyright© 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
@@ -8,9 +8,9 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_STRING_HPP
 #define SIG_UTIL_STRING_HPP
 
-#include "sigutil.hpp"
+#include "traits/type_map.hpp"
 #include "functional.hpp"
-
+//#include "tool.hpp"
 #include <regex>
 #include <stdlib.h>
 #include <sstream>
@@ -33,46 +33,11 @@ http://opensource.org/licenses/mit-license.php
 #include <boost/regex.hpp>
 #endif
 
-#include "tool.hpp"
 
 /* 文字列処理関連 */
 
 namespace sig
 {
-// 正規表現ライブラリの指定 (gcc標準はバグが多いため避ける)
-#if !SIG_MSVC_ENV && SIG_ENABLE_BOOST
-	using SIG_Regex = boost::regex;
-	using SIG_WRegex = boost::wregex;
-	using SIG_SMatch = boost::smatch;
-	using SIG_WSMatch = boost::wsmatch;
-	#define SIG_RegexSearch boost::regex_search
-	#define SIG_RegexReplace boost::regex_replace
-#else
-	using SIG_Regex = std::regex;
-	using SIG_WRegex = std::wregex;
-	using SIG_SMatch = std::smatch;
-	using SIG_WSMatch = std::wsmatch;
-	#define SIG_RegexSearch std::regex_search
-	#define SIG_RegexReplace std::regex_replace
-#endif
-
-// string type to associated in regex type
-namespace impl
-{
-template <class T>
-struct Str2RegexSelector{};
-template <>
-struct Str2RegexSelector<std::string>{
-	typedef SIG_Regex regex;
-	typedef SIG_SMatch smatch;
-};
-template <>
-struct Str2RegexSelector<std::wstring>{
-	typedef SIG_WRegex regex;
-	typedef SIG_WSMatch smatch;
-};
-}
-
 
 // expressionに含まれる文字に関して、正規表現の特殊文字をエスケープする
 #if SIG_MSVC_ENV

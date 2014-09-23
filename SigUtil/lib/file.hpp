@@ -1,5 +1,5 @@
 ﻿/*
-Copyright(c) 2014 Akihiro Nishimura
+Copyright© 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
@@ -279,6 +279,7 @@ void save_num(
 	WriteMode mode = WriteMode::overwrite)
 {
 	std::vector<std::string> tmp;
+
 	for (auto const& line : src){
 		tmp.push_back(cat_str(line, delimiter));
 	}
@@ -386,6 +387,7 @@ bool read_num(
 		}
 	}
 	else{
+		// 遅いので注意
 		auto sp = split(fromJust(read_str)[0], delimiter);
 		for (auto v : sp) container_traits<C>::add_element(empty_dest, impl::Str2NumSelector<RT>()(v));
 	}

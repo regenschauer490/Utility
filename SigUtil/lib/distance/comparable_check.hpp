@@ -1,5 +1,5 @@
-/*
-Copyright(c) 2014 Akihiro Nishimura
+ï»¿/*
+CopyrightÂ© 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
@@ -15,14 +15,14 @@ namespace sig
 struct NumericVectorTag{};
 struct DistributionTag{};
 
-// 2‚Â‚ÌƒRƒ“ƒeƒi‚ÌƒTƒCƒY‚ª“¯‚¶‚©Šm”F
+// 2ã¤ã®ã‚³ãƒ³ãƒ†ãƒŠã®ã‚µã‚¤ã‚ºãŒåŒã˜ã‹ç¢ºèª
 template <class C1, class C2>
 bool is_same_size(C1 const& v1, C2 const& v2)
 {
 	return v1.size() == v2.size();	//todo: define like sig::size()
 }
 
-// —£UŠm—¦•ª•z‚Ì«¿‚ğ–‚½‚µ‚Ä‚¢‚é‚©
+// é›¢æ•£ç¢ºç‡åˆ†å¸ƒã®æ€§è³ªã‚’æº€ãŸã—ã¦ã„ã‚‹ã‹
 template <class C1, class C2>
 bool is_valid_distribution(C1 const& v1, C2 const& v2)
 {
@@ -36,14 +36,14 @@ bool has_zero(C const& v)
 	return !std::accumulate(std::begin(v), std::end(v), true, [](bool s, bool e){ return s && e != 0; });
 }
 
-// 2‚Â‚ÌƒxƒNƒgƒ‹‚ª”äŠr‰Â”\‚©Šm”F
+// 2ã¤ã®ãƒ™ã‚¯ãƒˆãƒ«ãŒæ¯”è¼ƒå¯èƒ½ã‹ç¢ºèª
 template <class C1, class C2>
 bool is_comparable(C1 const& v1, C2 const& v2, NumericVectorTag)
 {
 	return is_same_size(v1, v2);
 }
 
-// 2‚Â‚ÌŠm—¦•ª•z‚ª”äŠr‰Â”\‚©Šm”F
+// 2ã¤ã®ç¢ºç‡åˆ†å¸ƒãŒæ¯”è¼ƒå¯èƒ½ã‹ç¢ºèª
 template <class C1, class C2>
 bool is_comparable(C1 const& v1, C2 const& v2, DistributionTag)
 {

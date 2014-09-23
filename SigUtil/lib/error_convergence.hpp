@@ -1,5 +1,5 @@
-/*
-Copyright(c) 2014 Akihiro Nishimura
+ï»¿/*
+CopyrightÂ© 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
@@ -13,7 +13,7 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
-// Œë·Šî€(â‘Î)
+// èª¤å·®åŸºæº–(çµ¶å¯¾)
 struct AbsoluteError
 {
 	template <class T, class F>
@@ -25,7 +25,7 @@ struct AbsoluteError
 
 const AbsoluteError absolute_error;
 
-// Œë·Šî€(‘Š‘Î)
+// èª¤å·®åŸºæº–(ç›¸å¯¾)
 struct RelativeError
 {
 	template <class T, class F>
@@ -38,18 +38,18 @@ struct RelativeError
 const RelativeError relative_error;
 
 
-// û‘©”»’è‚ÌŠÇ—
+// åæŸåˆ¤å®šã®ç®¡ç†
 class ManageConvergenceSimple
 {
 	const double epsilon_;
 	Just<double> last_value_;
 
 public:
-	// epsilon: û‘©”»’è—p‚Ì’è”
+	// epsilon: åæŸåˆ¤å®šç”¨ã®å®šæ•°
 	ManageConvergenceSimple(double epsilon) : epsilon_(epsilon), last_value_(Nothing(0)) {}
 
-	// ó‘Ô‚ÌXV‚Æû‘©”»’è
-	// return -> true(û‘©), false(–¢û‘©)
+	// çŠ¶æ…‹ã®æ›´æ–°ã¨åæŸåˆ¤å®š
+	// return -> true(åæŸ), false(æœªåæŸ)
 	bool update(double value){
 		if (last_value_ && sig::abs_delta(value, sig::fromJust(last_value_)) < epsilon_) return true;
 		sig::fromJust(last_value_) = value;
@@ -59,7 +59,7 @@ public:
 	double get_value() const{ return last_value_ ? *last_value_ : -1; }
 };
 
-// û‘©”»’è‚ÌŒvZ‚ÆŠÇ—
+// åæŸåˆ¤å®šã®è¨ˆç®—ã¨ç®¡ç†
 template <class T, class C = RelativeError, class F = sig::Norm<2>>
 class ManageConvergence
 {
@@ -69,11 +69,11 @@ class ManageConvergence
 	Just<T> last_value_;
 
 public:
-	// epsilon: û‘©”»’è—p‚Ì’è”, norm_function: ƒmƒ‹ƒ€ŠÖ”(1ˆø”,2ˆø”‚Ìoperator()‚ğ’è‹`‚µ‚½ŠÖ”ƒIƒuƒWƒFƒNƒg)
+	// epsilon: åæŸåˆ¤å®šç”¨ã®å®šæ•°, norm_function: ãƒãƒ«ãƒ é–¢æ•°(1å¼•æ•°,2å¼•æ•°ã®operator()ã‚’å®šç¾©ã—ãŸé–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ)
 	ManageConvergence(double epsilon, F norm_func = sig::norm_L2) : epsilon_(epsilon), norm_func_(norm_func), last_value_(Nothing(T())) {}
 
-	// ó‘Ô‚ÌXV‚Æû‘©”»’è
-	// return -> true(û‘©), false(–¢û‘©)
+	// çŠ¶æ…‹ã®æ›´æ–°ã¨åæŸåˆ¤å®š
+	// return -> true(åæŸ), false(æœªåæŸ)
 	bool update(T value){
 		if (last_value_ && criteria_(value, sig::fromJust(last_value_), norm_func_) < epsilon_) return true;
 		else last_value_ = Just<T>(value);

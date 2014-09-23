@@ -1,5 +1,5 @@
-/*
-Copyright(c) 2014 Akihiro Nishimura
+ï»¿/*
+CopyrightÂ© 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
@@ -18,7 +18,7 @@ http://opensource.org/licenses/mit-license.php
 #include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/triangular.hpp>
 
-/* boost::numeric::ublas‚ğ—˜—p‚µ‚½ƒ†[ƒeƒŠƒeƒBŠÖ”ŒQ */
+/* boost::numeric::ublasã‚’åˆ©ç”¨ã—ãŸãƒ¦ãƒ¼ãƒ†ãƒªãƒ†ã‚£é–¢æ•°ç¾¤ */
 
 namespace sig
 {

@@ -12,7 +12,7 @@
  */
 
 /*
-Copyright(c) 2014 Akihiro Nishimura
+Copyright© 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
@@ -27,6 +27,7 @@ http://opensource.org/licenses/mit-license.php
 #include <set>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 #include <initializer_list>
 
 #include "eval.hpp"

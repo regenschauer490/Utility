@@ -1,5 +1,5 @@
 ﻿/*
-Copyright(c) 2014 Akihiro Nishimura
+Copyright© 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
@@ -9,7 +9,6 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_ARRAY_HPP
 
 #include "sigutil.hpp"
-
 #include <array>
 #include <initializer_list>
 

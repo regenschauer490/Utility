@@ -1,5 +1,5 @@
-/*
-Copyright(c) 2014 Akihiro Nishimura
+ï»¿/*
+CopyrightÂ© 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
@@ -12,7 +12,7 @@ http://opensource.org/licenses/mit-license.php
 #include "../lib/helper/helper.hpp"
 #include "../lib/helper/container_helper.hpp"
 
-/* ƒfƒoƒbƒO—pƒc[ƒ‹ */
+/* ãƒ‡ãƒãƒƒã‚°ç”¨ãƒ„ãƒ¼ãƒ« */
 
 namespace sig
 {

@@ -1,5 +1,6 @@
 ﻿#include "string_test.h"
 #include "../lib/file.hpp"
+#include "../lib/tools/time_watch.hpp"
 
 //sigutil.hpp の SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 

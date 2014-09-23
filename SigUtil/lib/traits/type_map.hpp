@@ -1,5 +1,5 @@
 ﻿/*
-Copyright(c) 2014 Akihiro Nishimura
+Copyright© 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
@@ -14,7 +14,23 @@ namespace sig
 {
 namespace impl
 {
-// out/in type to stream (mainly filestream)
+
+/// string type to associated in regex type
+template <class T>
+struct Str2RegexSelector{};
+template <>
+struct Str2RegexSelector<std::string>{
+	typedef SIG_Regex regex;
+	typedef SIG_SMatch smatch;
+};
+template <>
+struct Str2RegexSelector<std::wstring>{
+	typedef SIG_WRegex regex;
+	typedef SIG_WSMatch smatch;
+};
+
+
+/// out/in type to stream (mainly filestream)
 template <class FILE_STRING>
 struct FStreamSelector{
 	typedef std::ofstream ofstream;
@@ -35,7 +51,7 @@ template<> struct FStreamSelector<wchar_t const*>{
 	typedef std::istreambuf_iterator<wchar_t> istreambuf_iterator;
 };
 
-// out/in type to stringstream
+/// out/in type to stringstream
 template <class T> struct SStreamSelector{
 	typedef std::ostringstream ostringstream;
 	typedef std::istringstream istringstream;
@@ -52,7 +68,7 @@ template<> struct SStreamSelector<wchar_t const*>{
 	typedef std::wstring string;
 };
 
-// string to Num
+/// string to each number type
 template <class NUM> struct Str2NumSelector{};
 template <> struct Str2NumSelector<int>{
 	int operator()(std::string s){ return std::stoi(s); }
@@ -79,7 +95,7 @@ template <> struct Str2NumSelector<double>{
 	double operator()(std::string s){ return std::stod(s); }
 };
 
-// convert string-related type T into STL string type
+/// convert string-related type T into STL string type
 template <class T>
 struct StringId{ typedef T type; static const bool value = false; };
 template <>
@@ -95,15 +111,17 @@ struct StringId<wchar_t*>{ typedef std::wstring type; static const bool value = 
 template <>
 struct StringId<wchar_t const*>{ typedef std::wstring type; static const bool value = true; };
 
-// preset to use StringId 
+/// preset to use StringId 
 template <class T>
 using TString = typename StringId<typename std::decay<T>::type>::type;
 
-// combine std::conditional and std::same
+/// combine std::conditional and std::same
 template <class T1, class T2, class TrueT, class FalseT>
 struct SameIf{
 	using type = typename std::conditional<std::is_same<T1, T2>::value, TrueT, FalseT>::type;
 };
+
 }	// impl
-}
+
+}	// sig
 #endif

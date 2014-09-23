@@ -210,7 +210,7 @@ void StatisticalOperationTest()
 	auto normal1 = sig::normalize(data7);
 	auto normal2 = sig::normalize(data8);	// sig::array<int, 5> -> sig::array<double, 5>
 
-	assert(sig::normalize(data5));		// 適切なオーバーロードか確認
+	sig::normalize(data5);	
 	sig::for_each(sig::DebugEqual(), data5, normal_test1);
 	sig::for_each(sig::DebugEqual(), normal1, normal_test1);
 	sig::for_each(sig::DebugEqual(), normal2, normal_test2);
@@ -218,7 +218,7 @@ void StatisticalOperationTest()
 	auto standard1 = sig::standardize(data7);
 	auto standard2 = sig::standardize(data8);	// sig::array<int, 5> -> sig::array<double, 5>
 
-	assert(sig::standardize(data6));		// 適切なオーバーロードか確認
+	sig::standardize(data6);	
 	sig::for_each(sig::DebugEqual(), data6, standard_test1);
 	sig::for_each(sig::DebugEqual(), standard1, standard_test1);
 	sig::for_each(sig::DebugEqual(), standard2, standard_test2);
@@ -227,10 +227,9 @@ void StatisticalOperationTest()
 	sig::array<double, 5> data_dist1{ 1, 2, 3, 4, 5 };
 	const sig::array<int, 5> data_dist2{ 1, 2, 3, 4, 5 };
 
-	bool f = sig::normalize_dist(data_dist1);
+	sig::normalize_dist(data_dist1);
 	auto normal_dist2 = sig::normalize_dist(data_dist2);
 
-	assert(f);
 	assert(sig::equal(sig::sum(data_dist1), 1.0));
 	assert(sig::equal(sig::sum(normal_dist2), 1.0));
 }

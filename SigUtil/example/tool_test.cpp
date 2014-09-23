@@ -1,4 +1,4 @@
-#include "tool_test.h"
+﻿#include "tool_test.h"
 #include "../lib/calculation.hpp"
 
 #if SIG_MSVC_ENV
@@ -15,7 +15,7 @@ void RandomTest()
 	
 	std::cout << "make random number in [-10, 10]:" << rand_maker() << std::endl;
 
-	auto rints = sig::random_unique_numbers(10, 0, 20, true);	//[0, 20]の一様分布から10個重複無くサンプル
+	auto rints = sig::make_unique_numbers(10, 0, 20, true);	//[0, 20]の一様分布から10個重複無くサンプル
 
 	std::cout << "make 10 random numbers in [0, 20]" << std::endl;
 	for (auto v : rints) std::cout << v << std::endl;

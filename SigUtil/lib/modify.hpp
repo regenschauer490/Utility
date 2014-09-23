@@ -1,5 +1,5 @@
 ﻿/*
-Copyright(c) 2014 Akihiro Nishimura
+Copyright© 2014 Akihiro Nishimura
 
 This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
@@ -18,6 +18,9 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
+#undef min
+#undef max
+
 // 標準ソート関数のラッパ (シーケンスコンテナのみ対応)
 // container: ソートするコンテナ
 // binary_op: 大小比較を行う関数オブジェクト(STLと同様)
@@ -111,7 +114,7 @@ template <class... Cs>
 void shuffle(Cs&... containers)
 {
 	uint size = min(containers.size()...);
-	auto rseq = random_unique_numbers(size, 0, size - 1, false);
+	auto rseq = make_unique_numbers(size, 0, size - 1, false);
 		
 	impl::shuffle_impl(size, rseq, std::begin(containers)...);
 }

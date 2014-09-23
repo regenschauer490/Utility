@@ -178,6 +178,8 @@
     <ClInclude Include="example\tool_test.h" />
     <ClInclude Include="lib\array.hpp" />
     <ClInclude Include="lib\calculation.hpp" />
+    <ClInclude Include="lib\calculation\binary_operation.hpp" />
+    <ClInclude Include="lib\calculation\statistics_util.hpp" />
     <ClInclude Include="lib\distance.hpp" />
     <ClInclude Include="lib\distance\binary_distance.hpp" />
     <ClInclude Include="lib\distance\canberra_distance.hpp" />
@@ -196,9 +198,14 @@
     <ClInclude Include="lib\functional.hpp" />
     <ClInclude Include="lib\sigutil.hpp" />
     <ClInclude Include="lib\string.hpp" />
+    <ClInclude Include="lib\string\regex.hpp" />
     <ClInclude Include="lib\tmp\botsu.hpp" />
     <ClInclude Include="lib\tmp\others.hpp" />
     <ClInclude Include="lib\tool.hpp" />
+    <ClInclude Include="lib\tools\histgram.hpp" />
+    <ClInclude Include="lib\tools\percent.hpp" />
+    <ClInclude Include="lib\tools\random.hpp" />
+    <ClInclude Include="lib\tools\time_watch.hpp" />
     <ClInclude Include="lib\traits\container_traits.hpp" />
     <ClInclude Include="lib\traits\eval.hpp" />
     <ClInclude Include="lib\traits\type_map.hpp" />

@@ -28,6 +28,15 @@
     <Filter Include="ヘッダー ファイル\helper">
       <UniqueIdentifier>{d9b050ec-e651-4d2b-8eba-2863c9650d8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\tools">
+      <UniqueIdentifier>{e32b5ea4-cae9-4ef6-bfb7-38235b0fde9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\calculation">
+      <UniqueIdentifier>{1d2064d3-2c36-46c4-a90c-87e0df5c65eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\string">
+      <UniqueIdentifier>{37bd051e-5b1e-48b0-bf0d-3f4e272a87fa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -187,6 +196,27 @@
     </ClInclude>
     <ClInclude Include="lib\helper\container_helper.hpp">
       <Filter>ヘッダー ファイル\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\calculation\binary_operation.hpp">
+      <Filter>ヘッダー ファイル\calculation</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\calculation\statistics_util.hpp">
+      <Filter>ヘッダー ファイル\calculation</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tools\histgram.hpp">
+      <Filter>ヘッダー ファイル\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tools\percent.hpp">
+      <Filter>ヘッダー ファイル\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tools\random.hpp">
+      <Filter>ヘッダー ファイル\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tools\time_watch.hpp">
+      <Filter>ヘッダー ファイル\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\string\regex.hpp">
+      <Filter>ヘッダー ファイル\string</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
