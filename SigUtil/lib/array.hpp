@@ -173,7 +173,8 @@ public:
 	*/
 	array& operator=(array const& src)
 	{
-		swap(array(src));
+		auto tmp = array(src);
+		swap(tmp);
 		return *this;
 	}
 
