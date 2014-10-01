@@ -33,7 +33,7 @@ struct Norm{
 	template <class C1, class C2>
 	double operator()(C1 const& vec1, C2 const& vec2) const
 	{
-		assert(is_comparable(vec1, vec2, NumericVectorTag()));
+		assert(is_comparable(vec1, vec2, impl::NumericVectorTag()));
 		return this->operator()(minus(vec1, vec2));
 	}
 };
@@ -59,7 +59,7 @@ struct MaxNorm{
 	template <class C1, class C2>
 	double operator()(C1 const& vec1, C2 const& vec2) const
 	{
-		assert(is_comparable(vec1, vec2, NumericVectorTag()));
+		assert(is_comparable(vec1, vec2, impl::NumericVectorTag()));
 		return this->operator()(minus(vec1, vec2));
 	}
 };

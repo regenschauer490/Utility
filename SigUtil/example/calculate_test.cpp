@@ -18,6 +18,7 @@ const std::list<double> data2{ 1.0, -3.0, 5.0 };
 const std::multiset<int, std::greater<int>> data3{ 1, -3, 5 };
 const std::unordered_multiset<int> data4{ 1, -3, 5, -7 };
 
+
 void ArithmeticOperationsTest()
 {
 	// スカラー + スカラー
@@ -88,13 +89,13 @@ void ArithmeticOperationsTest()
 
 	sig::for_each(
 		sig::DebugEqual(),
-		sig::multiplies(2.5, data1),
+		sig::mult(2.5, data1),
 		sig::zipWith(std::multiplies<double>(), sig::replicate(data1.size(), 2.5), data1)
 	);
 
 	sig::for_each(
 		sig::DebugEqual(),
-		sig::multiplies(data2, data0),
+		sig::mult(data2, data0),
 		sig::zipWith(std::multiplies<double>(), data2, data0)
 	);
 
@@ -110,13 +111,13 @@ void ArithmeticOperationsTest()
 
 	sig::for_each(
 		sig::DebugEqual(),
-		sig::divides(3.0, data1),
+		sig::div(3.0, data1),
 		sig::zipWith(std::divides<double>(), sig::replicate(data1.size(), 3.0), data1)
 	);
 
 	sig::for_each(
 		sig::DebugEqual(),
-		sig::divides(data2, data0),
+		sig::div(data2, data0),
 		sig::zipWith(std::divides<double>(), data2, data0)
 	);
 }
@@ -192,14 +193,14 @@ void StatisticalOperationTest()
 	std::list<double> data5{ -5, -1.5, 0, 0.5, 5 };
 	std::vector<double> data6{ -5, -1.5, 0, 0.5, 5 };
 	const sig::array<double, 5> data7{ -5, -1.5, 0, 0.5, 5 };
-	sig::array<int, 5> data8{ -5, -2, 0, 1, 5 };
+	sig::array<double, 5> data8{ -5, -2, 0, 1, 5 };
 
 
 	double m1 = sig::average(data6);
 	double m2 = sig::average(data8);
 	double v1 = sig::variance(data6);
 	double v2 = sig::variance(data8);
-	int m3 = sig::average<int64_t>(data_big1);
+	int m3 = sig::average(data_big1);
 
 	sig::array<double, 5> normal_test1{ 0, 0.35, 0.5, 0.55, 1 };
 	sig::array<double, 5> normal_test2{ 0, 0.3, 0.5, 0.6, 1 };
@@ -208,17 +209,17 @@ void StatisticalOperationTest()
 	assert(sig::equal(m3, tt2));
 
 	auto normal1 = sig::normalize(data7);
-	auto normal2 = sig::normalize(data8);	// sig::array<int, 5> -> sig::array<double, 5>
-
+	auto normal2 = sig::normalize(data8, 0);	// 第2引数はダミー(data8はconstでないため、戻り値ありの関数を呼び出すために必要)
 	sig::normalize(data5);	
+
 	sig::for_each(sig::DebugEqual(), data5, normal_test1);
 	sig::for_each(sig::DebugEqual(), normal1, normal_test1);
 	sig::for_each(sig::DebugEqual(), normal2, normal_test2);
 
 	auto standard1 = sig::standardize(data7);
-	auto standard2 = sig::standardize(data8);	// sig::array<int, 5> -> sig::array<double, 5>
-
+	auto standard2 = sig::standardize(data8, 0);	// 第2引数はダミー
 	sig::standardize(data6);	
+
 	sig::for_each(sig::DebugEqual(), data6, standard_test1);
 	sig::for_each(sig::DebugEqual(), standard1, standard_test1);
 	sig::for_each(sig::DebugEqual(), standard2, standard_test2);
@@ -226,10 +227,13 @@ void StatisticalOperationTest()
 
 	sig::array<double, 5> data_dist1{ 1, 2, 3, 4, 5 };
 	const sig::array<int, 5> data_dist2{ 1, 2, 3, 4, 5 };
+	sig::array<double, 5> normal_dist_test{ 1.0/15, 2.0/15, 3.0/15, 4.0/15, 5.0/15  };
 
 	sig::normalize_dist(data_dist1);
 	auto normal_dist2 = sig::normalize_dist(data_dist2);
 
 	assert(sig::equal(sig::sum(data_dist1), 1.0));
 	assert(sig::equal(sig::sum(normal_dist2), 1.0));
+	sig::for_each(sig::DebugEqual(), data_dist1, normal_dist_test);
+	sig::for_each(sig::DebugEqual(), normal_dist2, normal_dist_test);
 }

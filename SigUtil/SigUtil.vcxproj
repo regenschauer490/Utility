@@ -198,7 +198,11 @@
     <ClInclude Include="lib\functional.hpp" />
     <ClInclude Include="lib\sigutil.hpp" />
     <ClInclude Include="lib\string.hpp" />
+    <ClInclude Include="lib\string\convert.hpp" />
+    <ClInclude Include="lib\string\manipulate.hpp" />
     <ClInclude Include="lib\string\regex.hpp" />
+    <ClInclude Include="lib\string\replace.hpp" />
+    <ClInclude Include="lib\string\tag_dealer.hpp" />
     <ClInclude Include="lib\tmp\botsu.hpp" />
     <ClInclude Include="lib\tmp\others.hpp" />
     <ClInclude Include="lib\tool.hpp" />

@@ -20,6 +20,7 @@
 // g++ (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1
 // Ubuntu clang version 3.4-1~exp1 (trunk) (based on LLVM 3.4)
 
+
 int main()
 {
 	setlocale(LC_ALL, "Japanese");
@@ -50,8 +51,8 @@ int main()
 
 	//string.hpp test
 	RegexTest();
-	TagDealerTest();
 	SplitTest();
+	TagDealerTest();
 	CatStrTest();
 	StrConvertTest();
 	ZenHanTest();

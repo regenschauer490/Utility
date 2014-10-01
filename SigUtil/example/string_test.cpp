@@ -13,7 +13,9 @@ using sig::SIG_Regex;
 
 void RegexTest()
 {
+// GCC以外のコンパイラ or Boostが使えることが必要条件
 #if !((__GLIBCXX__ || __GLIBCPP__) && !SIG_ENABLE_BOOST)
+
 	auto raw1 = "? or (lol) must be escaped";
 
 	//エスケープ処理した文字列を取得
@@ -50,39 +52,6 @@ void RegexTest()
 #endif
 }
 
-void TagDealerTest()
-{
-	sig::TagDealer<std::string> tag_dealer("<", ">");
-
-	auto encoded = tag_dealer.encode("test", "TAG");
-	
-	assert(encoded == "<TAG>test<TAG>");					
-
-	auto decoded = tag_dealer.decode(encoded, "TAG");
-	auto ignored = tag_dealer.decode(encoded, "HOO");
-
-	assert(sig::fromJust(decoded) == "test");
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-	if (ignored) assert(false);				//ignored == nothing
-#else
-	assert(ignored == "");
-#endif
-	
-	//まとめてエンコード
-	//encoded_vec = "<TAG1>str1<TAG1><TAG2>str2<TAG2><TAG3>str3<TAG3>"
-	auto encoded_vec = tag_dealer.encode(std::list<std::string>{"str1", "str2", "str3"}, std::list<std::string>{"TAG1", "TAG2", "TAG3"});
-
-	TVec test{ "str1", "str3" };
-
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-	//まとめてデコード
-	auto decoded_vec = tag_dealer.decode(encoded_vec, std::deque<std::string>{"TAG1", "TAG3"});
-
-	if (decoded){
-		for (uint i=0; i< decoded_vec->size(); ++i) assert((*decoded_vec)[i] == test[i]);
-	}
-#endif
-}
 
 void SplitTest()
 {
@@ -122,15 +91,25 @@ void SplitTest()
 #else
 	auto split5 = sig::split(sentence, "\n");
 #endif
+
 	TVec test5 = { "1", "2", "4" };
 	for (uint i = 0; i<split5.size(); ++i){
 		assert(split5[i] == test5[i]);
 	}
+
+	// 処理時間のテスト
+	auto long_text = *sig::read_line<std::string>(SIG_TO_FPSTR("../SigUtil/example/test_file/long_text.txt"));
+
+	sig::TimeWatch tw;
+	auto split6 = sig::split(long_text[0], ",");
+	tw.save();
+	std::cout << "split time(ms): " << tw.get_total_time() << std::endl;
 }
+
 
 void CatStrTest()
 {
-	//文字列の結合
+	// 文字列の結合
 	auto cat1 = sig::cat_str(std::vector<std::string>{"eins", "zwei", "drei"}, "");
 	auto cat2 = sig::cat_str(std::list<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
 	auto cat3 = sig::cat_str(std::set<int>{1, 2, 3}, "\n");
@@ -143,34 +122,34 @@ void CatStrTest()
 
 void StrConvertTest()
 {
-#if SIG_MSVC_ENV	//windows + VisualStudio環境
+#if SIG_MSVC_ENV	// windows + VisualStudio 環境
 
 	const auto sjis = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/shift_jis.txt"));
 	const auto utf8 = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/utf8.txt"));
 
-	//マルチ文字 <-> ワイド文字 変換
+	// マルチ文字 <-> ワイド文字 変換
 	std::wstring	wstr = sig::str_to_wstr(sjis[1]);
 	std::string		str = sig::wstr_to_str(wstr);
 
 	assert(str == sjis[1]);
 
-	//まとめて変換
+	// まとめて変換
 	auto wstr_vec = sig::str_to_wstr(sjis);
 
-	//Shift-JIS <-> UTF-8
+	// Shift-JIS <-> UTF-8
 	std::string	utf8_from_sjis = sig::sjis_to_utf8(sjis[1]);
 	std::string	sjis_from_utf8 = sig::utf8_to_sjis(utf8[1]);
 
 	assert(utf8_from_sjis == utf8[1]);
 	assert(sjis_from_utf8 == sjis[1]);
 
-	//Shift-Jis <-> UTF-16
+	// Shift-Jis <-> UTF-16
 	std::u16string	utf16_from_sjis = sig::sjis_to_utf16(sjis[1]);
 	std::string		sjis_from_utf16 = sig::utf16_to_sjis(utf16_from_sjis);
 
 	assert(sjis_from_utf16 == sjis[1]);
 
-	//UTF-8 <-> UTF-16
+	// UTF-8 <-> UTF-16
 	std::u16string	utf16_from_utf8 = sig::utf8_to_utf16(utf8[1]);
 	std::string		utf8_from_utf16 = sig::utf16_to_utf8(utf16_from_utf8);
 
@@ -178,25 +157,26 @@ void StrConvertTest()
 
 	assert(utf16_from_utf8 == utf16_from_sjis);
 	
-#elif SIG_GCC_ENV	//g++
+#elif SIG_GCC_ENV	// g++
 	const auto utf8 = sig::fromJust( sig::read_line<std::string>("../SigUtil/example/test_file/utf8.txt"));
 
-	//マルチ文字 <-> ワイド文字 変換
+	// マルチ文字 <-> ワイド文字 変換
 	std::wstring	wstr = sig::str_to_wstr(utf8[1]);
 	std::string	str = sig::wstr_to_str(wstr);
 
 	assert(str == utf8[1]);
 
-	//まとめて変換
+	// まとめて変換
 	auto wstr_vec = sig::str_to_wstr(utf8);
 #else
 #endif
 }
 
+
 void ZenHanTest()
 {
-	//全角 <-> 半角 変換クラス
-	auto& replacer = sig::ZenHanReplace::GetInstance();
+	// 全角 <-> 半角 変換クラス
+	auto& replacer = sig::ZenHanReplace::getInstance();
 
 	std::wstring sentence1 = L"ＡBＣアｲウ１2３ギｶﾞﾍﾟポ";
 
@@ -221,6 +201,43 @@ void ZenHanTest()
 	replacer.number_han2zen(sentence2);
 	assert(sentence2 == L"ＡＢＣアイウ１２３ギガペポ");
 }
+
+
+void TagDealerTest()
+{
+	sig::TagDealer<std::string> tag_dealer("<", ">");
+
+	auto encoded = tag_dealer.encode("test", "TAG");
+
+	assert(encoded == "<TAG>test<TAG>");
+
+	auto decoded = tag_dealer.decode(encoded, "TAG");
+	auto ignored = tag_dealer.decode(encoded, "HOO");
+
+	assert(sig::fromJust(decoded) == "test");
+
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
+	if (ignored) assert(false);				//ignored == nothing
+#else
+	assert(ignored == "");
+#endif
+
+	//まとめてエンコード
+	//encoded_vec = "<TAG1>str1<TAG1><TAG2>str2<TAG2><TAG3>str3<TAG3>"
+	auto encoded_vec = tag_dealer.encode(std::list<std::string>{"str1", "str2", "str3"}, std::list<std::string>{"TAG1", "TAG2", "TAG3"});
+
+	TVec test{ "str1", "str3" };
+
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
+	//まとめてデコード
+	auto decoded_vec = tag_dealer.decode(encoded_vec, std::deque<std::string>{"TAG1", "TAG3"});
+
+	if (decoded){
+		for (uint i = 0; i< decoded_vec->size(); ++i) assert((*decoded_vec)[i] == test[i]);
+	}
+#endif
+}
+
 
 void StrConvertPerformanceTest()
 {

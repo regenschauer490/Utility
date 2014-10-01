@@ -218,5 +218,17 @@
     <ClInclude Include="lib\string\regex.hpp">
       <Filter>ヘッダー ファイル\string</Filter>
     </ClInclude>
+    <ClInclude Include="lib\string\convert.hpp">
+      <Filter>ヘッダー ファイル\string</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\string\manipulate.hpp">
+      <Filter>ヘッダー ファイル\string</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\string\tag_dealer.hpp">
+      <Filter>ヘッダー ファイル\string</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\string\replace.hpp">
+      <Filter>ヘッダー ファイル\string</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

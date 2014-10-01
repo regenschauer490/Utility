@@ -14,6 +14,8 @@ http://opensource.org/licenses/mit-license.php
 #include <fstream>
 #include <locale>
 
+#define NOMINMAX
+
 #if SIG_MSVC_ENV
 	#include <windows.h>
 #elif SIG_USE_BOOST_FILESYSTEM

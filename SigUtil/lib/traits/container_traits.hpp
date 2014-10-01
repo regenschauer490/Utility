@@ -86,7 +86,7 @@ template<class T, size_t N>
 struct container_traits<const sig::array<T, N>> : public static_container_traits<sig::array<T, N>>
 {};
 
-
+/*
 /// temp_container_traits
 
 template<class C>
@@ -106,7 +106,7 @@ struct temp_container_traits<C<T>>
 template<class T>
 struct container_traits<std::initializer_list<T>> : public temp_container_traits<std::initializer_list<T>>
 {};
-
+*/
 
 /// sequence_container_traits
 

@@ -11,19 +11,25 @@ http://opensource.org/licenses/mit-license.php
 #include "../functional.hpp"
 
 
-/* スカラ変数とベクトル変数(+コンテナの種類)を気にせず使える二項演算関数 */
+/// \file binary_operation.hpp スカラ変数とベクトル変数(+コンテナの種類)を気にせず使える二項演算関数
 
 namespace sig
 {
 
-// 二項演算 (scalar and scalar)
+/// 二項演算 (scalar and scalar)
+/**
+	\param func 二項演算関数
+	\param v1 引数1
+	\param v2 引数2
+	\return 演算結果
+*/
 template <class OP, class T1, class T2>
 auto binary_operation(OP func, T1 v1, T2 v2) ->decltype(v1 + v2)
 {
 	return func(v1, v2);
 }
 
-// 二項演算 (element-wise: container and container)
+/// 二項演算 (element-wise: container and container)
 template <class OP, class C1, class C2>
 auto binary_operation(OP func, C1 const& c1, C2 const& c2)
 	->typename container_traits<C1>::template rebind<decltype(eval(
@@ -37,7 +43,7 @@ auto binary_operation(OP func, C1 const& c1, C2 const& c2)
 	return zipWith([&](ParamType<T1> v1, ParamType<T2> v2){ return func(v1, v2); }, c1, c2);
 }
 
-// 二項演算 (element-wise: container and scalar)
+/// 二項演算 (element-wise: container and scalar)
 template <class OP, class C, class T, class = typename container_traits<C>::value_type>
 auto binary_operation(OP func, C const& c, T v)
 	->typename container_traits<C>::template rebind<decltype(eval(
@@ -55,7 +61,7 @@ auto binary_operation(OP func, C const& c, T v)
 	return r;
 }
 
-// 二項演算 (element-wise: scalar and container)
+/// 二項演算 (element-wise: scalar and container)
 template <class OP, class T, class C, class = typename container_traits<C>::value_type>
 auto binary_operation(OP func, T v, C const& c)
 	->typename container_traits<C>::template rebind<decltype(eval(
@@ -74,7 +80,7 @@ auto binary_operation(OP func, T v, C const& c)
 }
 
 
-/* 加減乗除の演算を一般的に記述するための関数群 */
+///  四則演算を一般的に記述するための関数群
 
 #define SIG_MakeBinaryOperation(FunctionName, Operator)\
 	template <class T1, class T2>\
@@ -114,12 +120,24 @@ auto binary_operation(OP func, T v, C const& c)
 		return binary_operation([](T v1, CT v2){ return v1 Operator v2; }, v, c); \
 	}\
 
+
+/// 加法関数plusの自動生成
+/**
+	ex: plus(1.5, {1,2,3}). return : {2.5, 3.5, 4.5}
+*/
 SIG_MakeBinaryOperation(plus, +);
 
+/// 減法関数minusの自動生成
 SIG_MakeBinaryOperation(minus, -);
 
+/// 乗法関数multの自動生成
+SIG_MakeBinaryOperation(mult, *);
+/// 乗法関数multipliesの自動生成
 SIG_MakeBinaryOperation(multiplies, *);
 
+/// 除法関数divの自動生成
+SIG_MakeBinaryOperation(div, / );
+/// 除法関数dividesの自動生成
 SIG_MakeBinaryOperation(divides, / );
 
 }

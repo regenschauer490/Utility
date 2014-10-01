@@ -22,7 +22,7 @@ struct MinkowskiDistance
 	{
 		using T = typename std::common_type<typename container_traits<C1>::value_type, typename container_traits<C2>::value_type>::type;
 		
-		assert(is_comparable(vec1, vec2, NumericVectorTag()));
+		assert(is_comparable(vec1, vec2, impl::NumericVectorTag()));
 
 		return std::pow(
 			std::inner_product(std::begin(vec1), std::end(vec1), std::begin(vec2), 0.0, std::plus<double>(), [&](T v1, T v2){ return std::pow(std::abs(v1 - v2), P); }),

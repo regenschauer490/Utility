@@ -25,7 +25,7 @@ struct JS_Divergence
 		using T1 = typename container_traits<C1>::value_type;
 		using T2 = typename container_traits<C2>::value_type;
 
-		if (!is_comparable(dist1, dist2, DistributionTag())) return Nothing(-1);
+		if (!is_comparable(dist1, dist2, impl::DistributionTag())) return Nothing(-1);
 
 		return Just<double>(
 			0.5 * std::inner_product(std::begin(dist1), std::end(dist1), std::begin(dist2), 0.0, std::plus<double>(),

@@ -8,11 +8,7 @@
 using TVec = std::vector<std::string>;
 using TVecw = std::vector<std::wstring>;
 
-#if SIG_MSVC_ENV
-	auto raw_pass = L"../SigUtil/example/test_file";
-#else
-	auto raw_pass = "../SigUtil/example/test_file";
-#endif
+auto raw_pass = SIG_TO_FPSTR("../SigUtil/example/test_file");
 
 void GetDirectoryNamesTest()
 {
@@ -52,7 +48,8 @@ void GetDirectoryNamesTest()
 		L"histgram2.txt",
 		L"shift_jis.txt",
 		L"utf8.txt",
-		L".hidden file linux.txt"
+		L".hidden file linux.txt",
+		L"long_text.txt"
 	};
 	const std::set<std::wstring> t_hidden{};
 	const std::set<std::wstring> t_old_text{ L"test.old.txt" };
@@ -117,23 +114,16 @@ void GetDirectoryNamesTest()
 	std::cout << std::endl;
 }
 
+
 void FileSaveLoadTest()
 {
 	const auto pass = sig::modify_dirpass_tail(raw_pass, true);
 
-#if SIG_MSVC_ENV
-	const auto fpass1 = pass + L"test.txt";
-	const auto fpass2 = pass + L"test2.txt";
-	const auto fpass3 = pass + L"test3.txt";
-	const auto fpass4 = pass + L"test4.txt";
-	const auto fpass5 = pass + L"test5.txt";
-#else
-	const auto fpass1 = pass + "test.txt";
-	const auto fpass2 = pass + "test2.txt";
-	const auto fpass3 = pass + "test3.txt";
-	const auto fpass4 = pass + "test4.txt";
-	const auto fpass5 = pass + "test5.txt";
-#endif
+	const auto fpass1 = pass + SIG_TO_FPSTR("test.txt");
+	const auto fpass2 = pass + SIG_TO_FPSTR("test2.txt");
+	const auto fpass3 = pass + SIG_TO_FPSTR("test3.txt");
+	const auto fpass4 = pass + SIG_TO_FPSTR("test4.txt");
+	const auto fpass5 = pass + SIG_TO_FPSTR("test5.txt");
 
 	const std::vector<std::wstring> blghost_text1{
 		L"O.K.",

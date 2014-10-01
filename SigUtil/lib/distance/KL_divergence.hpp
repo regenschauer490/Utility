@@ -25,7 +25,7 @@ template<class C1, class C2>
 		using T1 = typename container_traits<C1>::value_type;
 		using T2 = typename container_traits<C2>::value_type;
 
-		if(!is_comparable(dist1, dist2, DistributionTag()) || has_zero(dist2)) return Nothing(-1);
+		if(!is_comparable(dist1, dist2, impl::DistributionTag()) || has_zero(dist2)) return Nothing(-1);
 
 		return Just<double>(
 			std::inner_product(std::begin(dist1), std::end(dist1), std::begin(dist2), 0.0, std::plus<double>(),
