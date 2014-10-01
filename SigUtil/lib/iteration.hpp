@@ -45,11 +45,11 @@ void for_each(F const& func, int init, Cs&... containers)
 template <class F1, class F2, class T, class... Cs>
 auto fold_zipWith(F1 const& zip, F2 const& fold, T init, Cs&... containers)
 {
-	using TR = decltype(eval(
+	using TR = decltype(impl::eval(
 		zip,
 		std::declval<typename container_traits<Cs>::value_type>()...
 	));
-	using R = decltype(eval(
+	using R = decltype(impl::eval(
 		fold,
 		init,
 		std::declval<T>()

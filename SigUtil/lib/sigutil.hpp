@@ -11,7 +11,7 @@ http://opensource.org/licenses/mit-license.php
 /*--------------------------------------- User Option --------------------------------------------------------------------*/
 
 #define SIG_ENABLE_BOOST 1		// boostが使用可能か
-#define SIG_USE_OPTIONAL 1		// boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが発生する可能性あり)
+#define SIG_USE_OPTIONAL 1		// boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが影響する可能性あり)
 
 /*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -40,21 +40,23 @@ http://opensource.org/licenses/mit-license.php
 
 	#if _MSC_VER < 1800
 	static_assert(false, "require \"Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)\" to compile on msvc");
+	#elif _MSC_VER >= 1900
+	#define SIG_MSVC_GT140 1
+	#elif _MSC_VER >= 1800
+	#define SIG_MSVC_GT120 1
 	#endif
 
 #elif SIG_GCC_ENV
 	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)
 	#define SIG_GCC_GT4_9_0 1
-	#endif
-	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
+	#elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
 	#define SIG_GCC_GT4_8_0 1
 	#endif
 
 #elif SIG_CLANG_ENV
 	#if __clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 4)
 	#define SIG_CLANG_GT_3_4 1
-	#endif
-	#if __clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 5)
+	#elif __clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 5)
 	#define SIG_CLANG_GT_3_5 1
 	#endif
 #endif

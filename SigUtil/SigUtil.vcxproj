@@ -159,6 +159,7 @@
     <ClCompile Include="example\modify_test.cpp" />
     <ClCompile Include="example\file_test.cpp" />
     <ClCompile Include="example\functional_test.cpp" />
+    <ClCompile Include="example\performance_test.cpp" />
     <ClCompile Include="example\string_test.cpp" />
     <ClCompile Include="example\tool_test.cpp" />
     <ClCompile Include="main.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="example\modify_test.h" />
     <ClInclude Include="example\file_test.h" />
     <ClInclude Include="example\functional_test.h" />
+    <ClInclude Include="example\performance_test.h" />
     <ClInclude Include="example\string_test.h" />
     <ClInclude Include="example\tool_test.h" />
     <ClInclude Include="lib\array.hpp" />
@@ -191,6 +193,7 @@
     <ClInclude Include="lib\distance\norm.hpp" />
     <ClInclude Include="lib\error_convergence.hpp" />
     <ClInclude Include="lib\helper\container_helper.hpp" />
+    <ClInclude Include="lib\helper\eval.hpp" />
     <ClInclude Include="lib\helper\helper.hpp" />
     <ClInclude Include="lib\iteration.hpp" />
     <ClInclude Include="lib\modify.hpp" />
@@ -205,13 +208,12 @@
     <ClInclude Include="lib\string\tag_dealer.hpp" />
     <ClInclude Include="lib\tmp\botsu.hpp" />
     <ClInclude Include="lib\tmp\others.hpp" />
-    <ClInclude Include="lib\tool.hpp" />
+    <ClInclude Include="lib\tools.hpp" />
     <ClInclude Include="lib\tools\histgram.hpp" />
     <ClInclude Include="lib\tools\percent.hpp" />
     <ClInclude Include="lib\tools\random.hpp" />
     <ClInclude Include="lib\tools\time_watch.hpp" />
     <ClInclude Include="lib\traits\container_traits.hpp" />
-    <ClInclude Include="lib\traits\eval.hpp" />
     <ClInclude Include="lib\traits\type_map.hpp" />
     <ClInclude Include="lib\blas.hpp" />
   </ItemGroup>

@@ -13,10 +13,15 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
-//ミンコフスキー距離
+/// ミンコフスキー距離
+/**
+	boost.optional有効時には値がラップされて返される
+*/
 template <size_t P>
 struct MinkowskiDistance
 {
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
+#else
 	template <class C1, class C2>
 	double operator()(C1 const& vec1, C2 const& vec2) const
 	{
@@ -29,6 +34,7 @@ struct MinkowskiDistance
 			1.0 / P
 		);
 	}
+#endif
 };
 
 

@@ -44,10 +44,10 @@ auto sum(C const& data)
 */
 template <class R = void, class C = void, class Pred = void>
 auto sum(C const& data, Pred const& access_func)
-	->typename impl::SameIf<R, void, decltype(eval(access_func, std::declval<typename container_traits<C>::value_type>())), R>::type
+	->typename impl::SameIf<R, void, decltype(impl::eval(access_func, std::declval<typename container_traits<C>::value_type>())), R>::type
 {
 	using T = typename container_traits<C>::value_type;
-	using RT = typename impl::SameIf<R, void, decltype(eval(access_func, std::declval<T>())), R>::type;
+	using RT = typename impl::SameIf<R, void, decltype(impl::eval(access_func, std::declval<T>())), R>::type;
 
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(0), [&](RT sum, T const& e){ return sum + access_func(e); });
 }
@@ -114,10 +114,10 @@ auto product(C const& data)
 */
 template <class R = void, class C = void, class Pred = void>
 auto product(C const& data, Pred const& access_func)
-	->typename impl::SameIf<R, void, decltype(eval(access_func, std::declval<typename container_traits<C>::value_type>())), R>::type
+	->typename impl::SameIf<R, void, decltype(impl::eval(access_func, std::declval<typename container_traits<C>::value_type>())), R>::type
 {
 	using T = typename container_traits<C>::value_type;
-	using RT = typename impl::SameIf<R, void, decltype(eval(access_func, std::declval<T>())), R>::type;
+	using RT = typename impl::SameIf<R, void, decltype(impl::eval(access_func, std::declval<T>())), R>::type;
 
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(1), [&](RT sum, T const& e){ return sum * access_func(e); });
 }

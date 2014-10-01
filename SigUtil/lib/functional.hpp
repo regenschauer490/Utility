@@ -19,8 +19,8 @@ namespace sig
 template <class F, class C1, class... Cs>
 auto variadicZipWith(F const& func, C1 const& container1, Cs const&... containers)
 {
-	using R = typename container_traits<C1>::template rebind<decltype(
-		func(
+	using R = typename container_traits<C1>::template rebind<decltype(impl::eval(
+		func,
 		std::declval<typename container_traits<C1>::value_type>(),
 		std::declval<typename container_traits<Cs>::value_type>()...
 	))>;
@@ -64,7 +64,7 @@ auto foldl(F const& func, T init, C const& container)
 template <class F, class T, class C>
 auto foldr(F const& func, T init, C const& container)
 {
-	using R = decltype(eval(func, init, std::declval<typename container_traits<C>::value_type>()));
+	using R = typename std::result_of<F(T, typename container_traits<C>::value_type)>::type;//decltype(impl::eval(func, init, std::declval<typename container_traits<C>::value_type>()));
 	return std::accumulate(std::rbegin(container), std::rend(container), static_cast<R>(init), std::bind(func, _2, _1));
 }
 #endif
@@ -74,16 +74,16 @@ auto foldr(F const& func, T init, C const& container)
 template <class F1, class F2, class T, class... Cs>
 auto dotProduct(F1 const& fold_func, F2 const& oper_func, T init, Cs const&... cotainers)
 {
-	using R = decltype(eval(
+	using R = decltype(impl::eval(
 		fold_func,
 		init,
-		eval(oper_func, std::declval<typename container_traits<Cs>::value_type>()...)
+		impl::eval(oper_func, std::declval<typename container_traits<Cs>::value_type>()...)
 	));
 	R result = init;
 	const uint length = min(containers.size()...);
 	
 	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
-		result = fold_func(result, eval(func, impl::dereference_iterator(iterators)...));
+		result = fold_func(result, impl::eval(func, impl::dereference_iterator(iterators)...));
 	}
 	return result;
 }

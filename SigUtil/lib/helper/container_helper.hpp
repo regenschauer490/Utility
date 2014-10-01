@@ -9,6 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTILCONTAINER_TRAITS_H
 
 
+#include "eval.hpp"
 #include "../traits/container_traits.hpp"
 
 namespace sig
@@ -46,7 +47,7 @@ template <class C, class F, class... Its>
 void iterative_make(uint loop, C& dest, F const& func, Its... iterators)
 {
 	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
-		container_traits<C>::add_element(dest, eval(func, impl::dereference_iterator(iterators)...));
+		container_traits<C>::add_element(dest, impl::eval(func, impl::dereference_iterator(iterators)...));
 	}
 }
 
@@ -55,7 +56,7 @@ template <class T, class F1, class F2, class... Its>
 void iterative_fold(uint loop, T& dest, F1 const& zip, F2 const& fold, Its... iterators)
 {
 	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
-		dest = fold(dest, eval(zip, impl::dereference_iterator(iterators)...));
+		dest = fold(dest, impl::eval(zip, impl::dereference_iterator(iterators)...));
 	}
 }
 

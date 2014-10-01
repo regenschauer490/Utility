@@ -96,14 +96,6 @@ void SplitTest()
 	for (uint i = 0; i<split5.size(); ++i){
 		assert(split5[i] == test5[i]);
 	}
-
-	// 処理時間のテスト
-	auto long_text = *sig::read_line<std::string>(SIG_TO_FPSTR("../SigUtil/example/test_file/long_text.txt"));
-
-	sig::TimeWatch tw;
-	auto split6 = sig::split(long_text[0], ",");
-	tw.save();
-	std::cout << "split time(ms): " << tw.get_total_time() << std::endl;
 }
 
 
@@ -238,43 +230,3 @@ void TagDealerTest()
 #endif
 }
 
-
-void StrConvertPerformanceTest()
-{
-	const int N = 1000;
-	const auto str = "test string";
-
-	sig::TimeWatch tw;
-	for (int loop=0; loop<10; ++loop){
-		sig::array<std::wstring, N> ar;
-
-		for (int i=0; i<N; ++i){
-			ar.push_back(sig::str_to_wstr(str));
-		}
-
-		tw.save();
-	}
-
-	std::cout << "str_to_wstr time: " << tw.get_total_time<std::chrono::milliseconds>() << std::endl;
-
-	/*
-
-	<VC++>
-	[debug]
-	raw	174077 / 10000
-	maybe	182437 / 10000
-
-	[release]
-	raw	57379 / 10000
-	maybe	114191 / 10000
-
-	<wandbox gcc 4.10.0>
-	raw	850 / 10000
-	maybe	1215 / 10000
-
-	<wandbox clang 3.5>
-	raw	900 / 10000
-	maybe	1489 / 10000
-
-	*/
-}

@@ -159,3 +159,37 @@ void TestHelperModules()
 	sig::assert_foreach(sig::Identity(), cpy_list, orig);
 	sig::assert_foreach(sig::Identity(), cpy_set, sig::array<int, 4>{1, 2, 3, 4});
 }
+
+
+struct TestA{};
+struct TestB{};
+
+TestA func1(){ return TestA{}; }
+TestA func2(int){ return TestA{}; }
+
+struct FO
+{
+	TestA a_;
+	TestB b_;
+
+	TestA operator()(){ return a_; }
+	TestB operator()() const{ return b_; }
+
+	TestA mf(){ return a_; }
+	TestB mf() const{ return b_; }
+};
+
+void TestEval()
+{
+	static_assert(std::is_same<decltype(sig::impl::eval(func1)), TestA>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(func2, 0)), TestA>::value, "");
+
+	FO fo;
+	const FO cfo;
+	static_assert(std::is_same<decltype(sig::impl::eval(fo)), TestA>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(cfo)), TestB>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(static_cast<TestA(FO::*)()>(&FO::mf), fo)), TestA>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(static_cast<TestB(FO::*)() const>(&FO::mf), cfo)), TestB>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(&FO::a_, fo)), TestA&>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(&FO::b_, cfo)), TestB const&>::value, "");
+}

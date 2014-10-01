@@ -78,6 +78,9 @@
     <ClCompile Include="example\container_specialize_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
+    <ClCompile Include="example\performance_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\string.hpp">
@@ -87,9 +90,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="lib\file.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\tool.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="example\file_test.h">
@@ -176,9 +176,6 @@
     <ClInclude Include="lib\traits\container_traits.hpp">
       <Filter>ヘッダー ファイル\traits</Filter>
     </ClInclude>
-    <ClInclude Include="lib\traits\eval.hpp">
-      <Filter>ヘッダー ファイル\traits</Filter>
-    </ClInclude>
     <ClInclude Include="lib\traits\type_map.hpp">
       <Filter>ヘッダー ファイル\traits</Filter>
     </ClInclude>
@@ -229,6 +226,15 @@
     </ClInclude>
     <ClInclude Include="lib\string\replace.hpp">
       <Filter>ヘッダー ファイル\string</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\helper\eval.hpp">
+      <Filter>ヘッダー ファイル\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="example\performance_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tools.hpp">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

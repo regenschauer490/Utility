@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../lib/tool.hpp"
+#include "../lib/tools.hpp"
 #include "../lib/array.hpp"
 
 void RandomTest();

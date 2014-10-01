@@ -32,7 +32,7 @@ auto binary_operation(OP func, T1 v1, T2 v2) ->decltype(v1 + v2)
 /// 二項演算 (element-wise: container and container)
 template <class OP, class C1, class C2>
 auto binary_operation(OP func, C1 const& c1, C2 const& c2)
-	->typename container_traits<C1>::template rebind<decltype(eval(
+	->typename container_traits<C1>::template rebind<decltype(impl::eval(
 	func,
 	std::declval<typename container_traits<C1>::value_type>(),
 	std::declval<typename container_traits<C2>::value_type>()
@@ -46,14 +46,14 @@ auto binary_operation(OP func, C1 const& c1, C2 const& c2)
 /// 二項演算 (element-wise: container and scalar)
 template <class OP, class C, class T, class = typename container_traits<C>::value_type>
 auto binary_operation(OP func, C const& c, T v)
-	->typename container_traits<C>::template rebind<decltype(eval(
+	->typename container_traits<C>::template rebind<decltype(impl::eval(
 	func,
 	std::declval<typename container_traits<C>::value_type>(),
 	v
 	))>
 {
 	using CT = typename container_traits<C>::value_type;
-	using RT = decltype(eval(func, std::declval<typename container_traits<C>::value_type>(), v));
+	using RT = decltype(impl::eval(func, std::declval<typename container_traits<C>::value_type>(), v));
 	using R = typename container_traits<C>::template rebind<RT>;
 
 	R r;
@@ -64,14 +64,14 @@ auto binary_operation(OP func, C const& c, T v)
 /// 二項演算 (element-wise: scalar and container)
 template <class OP, class T, class C, class = typename container_traits<C>::value_type>
 auto binary_operation(OP func, T v, C const& c)
-	->typename container_traits<C>::template rebind<decltype(eval(
+	->typename container_traits<C>::template rebind<decltype(impl::eval(
 	func,
 	std::declval<typename container_traits<C>::value_type>(),
 	v
 	))>
 {
 	using CT = typename container_traits<C>::value_type;
-	using RT = decltype(eval(func, std::declval<typename container_traits<C>::value_type>(), v));
+	using RT = decltype(impl::eval(func, std::declval<typename container_traits<C>::value_type>(), v));
 	using R = typename container_traits<C>::template rebind<RT>;
 
 	R r;

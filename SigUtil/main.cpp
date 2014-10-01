@@ -1,6 +1,6 @@
 ﻿#include "lib/string.hpp"
 #include "lib/file.hpp"
-#include "lib/tool.hpp"
+#include "lib/tools.hpp"
 #include "lib/modify.hpp"
 #include "lib/functional.hpp"
 
@@ -14,6 +14,7 @@
 #include "example/calculate_test.h"
 #include "example/iteration_test.h"
 #include "example/distance_test.h"
+#include "example/performance_test.h"
 
 /// test completed
 // Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
@@ -25,11 +26,14 @@ int main()
 {
 	setlocale(LC_ALL, "Japanese");
 
-	//StrConvertPerformanceTest();
+	//performance test
+	SplitPerformanceTest();
+	OptionalPerformanceTest();
 
 	ContainerSpecializeTest();
 
 	//helper.hpp test
+	TestEval();
 	TestHelperModules();
 
 	//array.hpp test

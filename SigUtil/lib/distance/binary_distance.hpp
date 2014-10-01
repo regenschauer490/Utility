@@ -15,9 +15,42 @@ namespace sig
 {
 
 /// バイナリ距離
+/**
+	boost.optional有効時には値がラップされて返される
+*/
 struct BinaryDistance
 {
+#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	/**
+	boost.optional有効時
+
+	\param vec1 データ点1の座標ベクトル
+	\param vec2 データ点2の座標ベクトル
+
+	\return データ点間の距離（ラップされている）．失敗時にはboost::none
+	*/
+	template <class C1, class C2,
+		typename = typename std::enable_if<std::is_integral<typename container_traits<C1>::value_type>::value>::type,
+		typename = typename std::enable_if<std::is_integral<typename container_traits<C2>::value_type>::value>::type
+	>
+	auto operator()(C1 const& vec1, C2 const& vec2) const->Just<double>
+	{
+		if(!is_comparable(vec1, vec2, impl::NumericVectorTag())) return boost::none;
+
+		int ether = 0, both = 0;
+		auto it1 = std::begin(vec1), end1 = std::end(vec1);
+		auto it2 = std::begin(vec2), end2 = std::end(vec2);
+
+		for (; it1 != end1 && it2 != end2; ++it1, ++it2){
+			if (*it1 == 1 && *it2 == 1) ++both;
+			else if (*it1 == 1 || *it2 == 1) ++ether;
+		}
+		return Just<double>(static_cast<double>(ether) / (ether + both));
+	}
+#else
+	/**
+	boost.optional無効時
+
 	\param vec1 データ点1の座標ベクトル
 	\param vec2 データ点2の座標ベクトル
 
@@ -41,6 +74,7 @@ struct BinaryDistance
 		}
 		return static_cast<double>(ether) / (ether + both);
 	}
+#endif
 };
 
 /// バイナリ距離を求める関数（関数オブジェクト）
@@ -48,7 +82,7 @@ struct BinaryDistance
 	\param vec1 データ点1の座標ベクトル
 	\param vec2 データ点2の座標ベクトル
 
-	\return データ点間の距離
+	\return データ点間の距離（boost.optional有効時には値がラップされている）
 */
 const BinaryDistance binary_distance;
 
