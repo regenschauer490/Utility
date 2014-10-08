@@ -35,6 +35,14 @@ namespace sig
 
 	/// 値コンストラクタ
 	/**
+		\code
+		auto n = Nothing();	// :: Maybe<int>
+		\endcode
+	*/
+	inline auto Nothing()-> decltype(boost::none){ return boost::none; }
+
+	/// 値コンストラクタ
+	/**
 		引数はダミー（optional無効時にも統一的に記述できるようにするために存在）
 
 		\code
@@ -47,7 +55,7 @@ namespace sig
 	/// Justであるか調べる関数．Maybe a -> Bool
 	template <class T> bool isJust(Maybe<T> const& m){ return m; }
 	constexpr bool isJust(boost::none_t m){ return false; }
-
+	
 
 	/// Nothingであるか調べる関数．Maybe a -> Bool
 	template <class T> bool isNothing(Maybe<T> const& m){ return !m; }
@@ -58,14 +66,42 @@ namespace sig
 	/**
 		Maybeの正体がNothingオブジェクトの場合、未定義動作
 
+		\sa operator*(Maybe<T>& m)
+
 		\code
 		auto m = Just<int>(1);
-		int v = fromJust(m);	// v == 1
+		const auto cm = Just<int>(2);
+
+		int v1 = fromJust(m);		// v == 1
+
+		auto& v2 = fromJust(m);		// int&
+		rv = 5;
+		assert(*m == 5);
+
+		auto& v3 = sig::fromJust(cm);	// const int&
+		auto v4 = sig::fromJust(cm);	// int
 		\endcode
 	*/
 	template <class T> T& fromJust(Maybe<T>& m){ return *m; }
 	template <class T> T const& fromJust(Maybe<T> const& m){ return *m; }
 	template <class T> T&& fromJust(Maybe<T>&& m){ return std::move(*m); }
+
+
+	/// fromJust演算子
+	/**
+		fromJust関数の演算子版．\n
+		Maybeの正体がNothingオブジェクトの場合、未定義動作
+
+		\sa fromJust(Maybe<T>& m)
+
+		\code
+		auto m = Just<int>(1);
+		int v = *m;		// v == 1
+		\endcode
+	*/
+	template <class T> T& operator*(Maybe<T>& m){ return *m; }
+	template <class T> T const& operator*(Maybe<T> const& m){ return *m; }
+	template <class T> T&& operator*(Maybe<T>&& m){ return *std::move(m); }
 
 
 	/// Maybeから値を取り出す関数．もしNothingなら引数のデフォルト値を返す．a -> Maybe a -> a
@@ -92,6 +128,14 @@ namespace sig
 		\param list \ref sig_container
 
 		\return 結果を格納したlistと同じ種類のコンテナ
+
+		\code
+		std::vector<int> vec{ 1, 2, 3 };
+		auto vecd = mapMaybe([](int v){ return v != 2 ? Just<double>(v *1.5) : Nothing(0); }, vec);
+		vecd[0];		// 1.5
+		vecd[1];		// 4.5
+		vecf[2];		// out of range. undefined behavior
+		\endcode
 	*/
 	template <class F, class C> auto mapMaybe(F const& f, C const& list)
 		->typename impl::container_traits<C>::template rebind<
@@ -114,17 +158,59 @@ namespace sig
 	}
 
 
-	/// bind演算子. Maybe m => m a -> (a -> m b) -> m b
+	/// Haskell風のbind演算子. Maybe m => m a -> (a -> m b) -> m b
 	/**
-		\param ma maybe<T>型オブジェクト
+		C++では operator>>= は右結合であるため、連鎖させる際には明示的に()を使う必要あり（以下のサンプルコード参照）
+
+		\param ma Maybeオブジェクト
 		\param f 適用する関数
 
-		\return
+		\return 関数適用結果が格納されたMaybeオブジェクト
+
+		\sa operator<<=(F const& f, Maybe<T> const& m)
+
+		\code
+		// using sig::operator>>=;	// required in global namespace
+
+		auto m = Just<int>(1);
+		auto f = [&](int v){ return sig::Just<double>(v * 1.5); };	// (a -> m b)
+
+		auto mm = (m >>= f) >>= [&](double v){ return sig::Just<bool>(v < 10); };	// Haskell Style
+		assert(*mm);	// mm == true
+		\endcode
+	*/
+	template <class T, class F>
+	auto operator>>=(Maybe<T> const& m, F const& f) ->decltype(impl::eval(f, std::declval<T>()))
+	{
+		if (m) return f(*m);
+		else return boost::none;
+	}
+
+	/// C++に合わせたbind演算子. Maybe m => (a -> m b) -> m a -> m b
+	/**
+		C++では operator>>= と operator<<= は右結合であるため、処理が右端から順番に流れていく方が自然に記述できる（以下のサンプルコード参照）
+
+		\param f 適用する関数
+		\param ma Maybeオブジェクト
+
+		\return 関数適用結果が格納されたMaybeオブジェクト
+
+		\sa operator>>=(Maybe<T> const& m, F const& f)
+
+		\code
+		// using sig::operator<<=;	// required in global namespace
+
+		auto m = Just<int>(1);
+		auto f = [&](int v){ return sig::Just<double>(v * 1.5); };	// (a -> m b)
+
+		auto mm = [&](double v){ return sig::Just<bool>(v < 10); } <<= f <<= m;		// suitable style for C++
+		assert(*mm);	// mm == true
+		\endcode
 	*/
 	template <class F, class T>
-	auto operator>>=(Maybe<T> const& ma, F const& f) ->Maybe<decltype(impl::eval(f, std::declval<T>()))>
+	auto operator<<=(F const& f, Maybe<T> const& m) ->decltype(impl::eval(f, std::declval<T>()))
 	{
-		if (ma) return f(*ma);
+		if (m) return f(*m);
 		else return boost::none;
 	}
 
@@ -132,12 +218,21 @@ namespace sig
 	/// Maybeオブジェクトへの再代入を行う演算子
 	/**
 		関数型言語では再代入は不可能な機能であるが、C++では無いと不便なのでこの関数を作成．\n
-		Maybeオブジェクトへの再代入を統一的に記述することが目的
+		Maybeオブジェクトへの再代入をJust, Nothingに関係なく統一的に記述することが目的
 
 		\param m Maybeオブジェクト
 		\param v 代入したい値
 
 		\return mへの参照
+
+		\code
+		// using sig::operator<<=;	// required in global namespace
+
+		auto m = Just<int>(1);
+		m <<= 2;
+
+		int v = *m;	// v == 2
+		\endcode
 	*/
 	template <class T1, class T2>
 	auto operator<<=(Maybe<T1>& m, T2 const& v) ->Maybe<T1>&
@@ -149,6 +244,8 @@ namespace sig
 	
 #else
 	// optionalが使えない場合の代替処理
+	// 当ライブラリコードを統一的に記述するために用いているため、ユーザコードでの使用は非推奨
+
 	template <class I, class D = void> using Maybe = std::tuple<I, bool>;
 
 	template <class I> Maybe<I> Just(I v){ return std::make_tuple(v, true); }
@@ -156,17 +253,23 @@ namespace sig
 	template <class I> Maybe<I> Nothing(I&& dummy){ return std::make_tuple(dummy, false); }
 	template <class I> Maybe<I> Nothing(I const& dummy){ return std::make_tuple(dummy, false); }
 
-	template <class I> bool isJust(Maybe<I> const& m){ return std::get<1>(m) ? true : false; }
-	//template <class P, typename std::enable_if<std::is_pod<P>::value>::type*& = enabler> bool isJust(P m){ return m; }
-	//template <class C, typename std::enable_if<impl::container_traits<C>::exist>::type*& = enabler> bool isJust(C const& m){ return !m.empty(); }
-	//template <class T, typename std::enable_if<!std::is_pod<T>::value && !impl::container_traits<T>::exist>::type*& = enabler> bool isJust(T const& m){ return T() == m; }
+	template <class I> bool isJust(Maybe<I> const& m){ return std::get<1>(m); }
 
+	template <class I> bool isNothing(Maybe<I> const& m){ return !std::get<1>(m); }
 
-	template <class T> T const& fromJust(Maybe<T> const& m){
+	template <class T> T& fromJust(Maybe<T>& m){ return *m; }
+	template <class T> T const& fromJust(Maybe<T> const& m){ return *m; }
+	template <class T> T&& fromJust(Maybe<T>&& m){ return *std::move(m); }
+
+	template <class T> T& operator*(Maybe<T>& m){
 		if (!std::get<1>(m)) std::abort();
 		return std::get<0>(m);
 	}
-	template <class T> T&& fromJust(Maybe<T>&& m){
+	template <class T> T const& operator*(Maybe<T> const& m){
+		if (!std::get<1>(m)) std::abort();
+		return std::get<0>(m);
+	}
+	template <class T> T&& operator*(Maybe<T>&& m){
 		if (!std::get<1>(m)) std::abort();
 		return std::move(std::get<0>(m));
 	}
