@@ -16,13 +16,22 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
-// Pノルム
+/// Pノルム
+/**
+	\tparam P Pノルムを指定
+*/
 template <size_t P>
-struct Norm{
+struct Norm
+{
+	/**
+	\param vec データ点の座標ベクトル
+
+	\return データ点のノルム
+	*/
 	template <class C>
 	double operator()(C const& vec) const
 	{
-		using T = typename container_traits<C>::value_type;
+		using T = typename impl::container_traits<C>::value_type;
 
 		return std::pow(
 			std::accumulate(std::begin(vec), std::end(vec), static_cast<T>(0), [&](T sum, T val){ return sum + std::pow(std::abs(val), P); }),
@@ -30,6 +39,12 @@ struct Norm{
 		);
 	}
 	
+	/**
+	\param vec1 データ点1の座標ベクトル
+	\param vec2 データ点2の座標ベクトル
+
+	\return データ点間のノルム
+	*/
 	template <class C1, class C2>
 	double operator()(C1 const& vec1, C2 const& vec2) const
 	{
@@ -38,16 +53,37 @@ struct Norm{
 	}
 };
 
+/// L1ノルムを求める関数（関数オブジェクト）
+/**
+	\param vec1 データ点1の座標ベクトル
+	\param vec2 [option] データ点2の座標ベクトル
+
+	\return データ点のノルム（vec2を指定時はデータ点間のノルム）
+*/
 const Norm<1> norm_L1;
+
+/// L2ノルムを求める関数（関数オブジェクト）
+/**
+	\param vec1 データ点1の座標ベクトル
+	\param vec2 [option] データ点2の座標ベクトル
+
+	\return データ点のノルム（vec2を指定時はデータ点間のノルム）
+*/
 const Norm<2> norm_L2;
 
 
-// 最大ノルム
-struct MaxNorm{
+/// 最大ノルム
+struct MaxNorm
+{
+	/**
+	\param vec データ点の座標ベクトル
+
+	\return データ点のノルム
+	*/
 	template <class C>
 	double operator()(C const& vec) const
 	{
-		using T = typename container_traits<C>::value_type;
+		using T = typename impl::container_traits<C>::value_type;
 
 		T max = *std::begin(vec);
 		for(auto e : vec){
@@ -56,6 +92,12 @@ struct MaxNorm{
 		return max;
 	}
 
+	/**
+	\param vec1 データ点1の座標ベクトル
+	\param vec2 データ点2の座標ベクトル
+
+	\return データ点間のノルム
+	*/
 	template <class C1, class C2>
 	double operator()(C1 const& vec1, C2 const& vec2) const
 	{
@@ -64,6 +106,13 @@ struct MaxNorm{
 	}
 };
 
+/// 最大ノルムを求める関数（関数オブジェクト）
+/**
+	\param vec1 データ点1の座標ベクトル
+	\param vec2 [option] データ点2の座標ベクトル
+
+	\return データ点のノルム（vec2を指定時はデータ点間のノルム）
+*/
 const MaxNorm norm_max;
 }
 #endif

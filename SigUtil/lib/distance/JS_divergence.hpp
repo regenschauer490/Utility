@@ -33,8 +33,8 @@ struct JS_Divergence
 	template<class C1, class C2>
 	auto operator()(C1 const& dist1, C2 const& dist2) const ->Just<double>
 	{
-		using T1 = typename container_traits<C1>::value_type;
-		using T2 = typename container_traits<C2>::value_type;
+		using T1 = typename impl::container_traits<C1>::value_type;
+		using T2 = typename impl::container_traits<C2>::value_type;
 
 		if (!is_comparable(dist1, dist2, impl::DistributionTag())) return Nothing(-1);
 
@@ -62,8 +62,8 @@ struct JS_Divergence
 	template<class C1, class C2>
 	double operator()(C1 const& dist1, C2 const& dist2) const
 	{
-		using T1 = typename container_traits<C1>::value_type;
-		using T2 = typename container_traits<C2>::value_type;
+		using T1 = typename impl::container_traits<C1>::value_type;
+		using T2 = typename impl::container_traits<C2>::value_type;
 
 		assert(is_comparable(dist1, dist2, impl::DistributionTag()));
 

@@ -11,7 +11,7 @@ http://opensource.org/licenses/mit-license.php
 /*--------------------------------------- User Option --------------------------------------------------------------------*/
 
 #define SIG_ENABLE_BOOST 1		// boostが使用可能か
-#define SIG_USE_OPTIONAL 1		// boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが影響する可能性あり)
+#define SIG_USE_OPTIONAL 0		// boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが影響する可能性あり)
 
 /*------------------------------------------------------------------------------------------------------------------------*/
 
@@ -74,7 +74,6 @@ http://opensource.org/licenses/mit-license.php
 #endif
 
 #if SIG_ENABLE_BOOST
-#include <boost/optional.hpp>
 #include <boost/pool/pool_alloc.hpp>
 #include <boost/call_traits.hpp>
 #endif
@@ -98,11 +97,6 @@ using std::placeholders::_2;
 
 
 #if SIG_ENABLE_BOOST
-	template <typename T>
-	using maybe = boost::optional<T>;
-#endif
-
-#if SIG_ENABLE_BOOST
 	template <class T>
 	using container_allocator = boost::fast_pool_allocator<T>;
 #else
@@ -119,25 +113,6 @@ using std::placeholders::_2;
 	using ParamType = typename std::conditional<std::is_class<T>::value, T const&, T>::type;
 #endif
 		
-
-// maybe(boost.optional)の有効・無効に関係なくコードを統一的に記述するための処理
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-	template <class T> struct Just_{ typedef maybe<T> type; };
-	template <class T> using Just = typename Just_<T>::type;
-	template <class T> auto Nothing(T const& dummy)-> decltype(boost::none){ return boost::none; }
-	template <class T> T& fromJust(maybe<T>& sp){ return *sp; }
-	template <class T> T const& fromJust(maybe<T> const& sp){ return *sp; }
-	template <class T> T&& fromJust(maybe<T>&& sp){ return std::move(*sp); }
-	template <class T> bool is_container_valid(T const& m){ return static_cast<bool>(m); }
-#else
-	template <class T> struct Just_{ typedef T type; };
-	template <class T> using Just = typename Just_<T>::type;
-	template <class T> T Nothing(T&& default_value){ return std::forward<T>(default_value); }
-	template <class T> T const& fromJust(T const& sp){ return sp; }
-	template <class T> T&& fromJust(T&& sp){ return std::forward<T>(sp); }
-	template <class T> bool is_container_valid(T const& raw){ return !raw.empty(); }
-#endif
-
 
 // ファイルパスの文字型の指定
 #if SIG_MSVC_ENV

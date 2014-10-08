@@ -1,5 +1,7 @@
 #include "helper_test.h"
 #include "debug.hpp"
+#include "../lib/calculation/statistics_util.hpp"
+#include "../lib/functional.hpp"
 
 void TestHelperModules()
 {
@@ -48,8 +50,8 @@ void TestHelperModules()
 	/* é¿çséû */
 
 	//boost::optional or pointer (SIG_ENABLE_BOOST Ç≈êÿÇËë÷Ç¶)
-	const sig::Just<int> maybe_true(1);
-	const sig::Just<int> maybe_false(sig::Nothing(0));
+	const auto maybe_true = sig::Just(1);
+	const auto maybe_false = sig::Nothing(0);
 
 #if !SIG_MSVC_ENV
 	assert(sig::And(maybe_true, maybe_true));
@@ -93,6 +95,21 @@ void TestHelperModules()
 	std::vector<int> v{ 1, 2, 3 };
 	assert(sig::min(1, -1, 0, (int)v.size(), 2) == -1);
 	assert(sig::max(1, -1, 0, (int)v.size(), 2) == (int)v.size());
+
+	//check NaN
+	double zero = 0;
+	double nan = std::numeric_limits<double>::quiet_NaN();
+	assert(sig::is_number(0));
+	assert(!sig::is_number(nan));
+	assert(!sig::is_number(zero/zero));
+	assert(!sig::is_number(std::sqrt(-1)));
+
+	//check Inf
+	double inf = std::numeric_limits<double>::infinity();
+	double inf2 = sig::product(sig::replicate<double>(1000, 10));	// 10^1000
+	assert(sig::is_finite_number(0));
+	assert(!sig::is_finite_number(inf));
+	assert(!sig::is_finite_number(inf2));
 
 	//generic |a - b|
 	static_assert(sig::abs_delta(1, 3) == 2, "");

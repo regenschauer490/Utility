@@ -151,6 +151,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="example\array_test.cpp" />
+    <ClCompile Include="example\convergence_test.cpp" />
+    <ClCompile Include="example\maybe_test.cpp" />
+    <ClCompile Include="example\ublas_test.cpp" />
     <ClCompile Include="example\calculate_test.cpp" />
     <ClCompile Include="example\container_specialize_test.cpp" />
     <ClCompile Include="example\distance_test.cpp" />
@@ -166,6 +169,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="example\array_test.h" />
+    <ClInclude Include="example\convergence_test.h" />
+    <ClInclude Include="example\maybe_test.h" />
+    <ClInclude Include="example\ublas_test.h" />
     <ClInclude Include="example\calculate_test.h" />
     <ClInclude Include="example\container_specialize_test.h" />
     <ClInclude Include="example\debug.hpp" />
@@ -182,6 +188,7 @@
     <ClInclude Include="lib\calculation.hpp" />
     <ClInclude Include="lib\calculation\binary_operation.hpp" />
     <ClInclude Include="lib\calculation\statistics_util.hpp" />
+    <ClInclude Include="lib\calculation\ublas.hpp" />
     <ClInclude Include="lib\distance.hpp" />
     <ClInclude Include="lib\distance\binary_distance.hpp" />
     <ClInclude Include="lib\distance\canberra_distance.hpp" />
@@ -191,10 +198,12 @@
     <ClInclude Include="lib\distance\KL_divergence.hpp" />
     <ClInclude Include="lib\distance\minkowski_distance.hpp" />
     <ClInclude Include="lib\distance\norm.hpp" />
-    <ClInclude Include="lib\error_convergence.hpp" />
     <ClInclude Include="lib\helper\container_helper.hpp" />
+    <ClInclude Include="lib\helper\container_traits.hpp" />
     <ClInclude Include="lib\helper\eval.hpp" />
     <ClInclude Include="lib\helper\helper.hpp" />
+    <ClInclude Include="lib\helper\maybe.hpp" />
+    <ClInclude Include="lib\helper\type_map.hpp" />
     <ClInclude Include="lib\iteration.hpp" />
     <ClInclude Include="lib\modify.hpp" />
     <ClInclude Include="lib\file.hpp" />
@@ -209,13 +218,11 @@
     <ClInclude Include="lib\tmp\botsu.hpp" />
     <ClInclude Include="lib\tmp\others.hpp" />
     <ClInclude Include="lib\tools.hpp" />
+    <ClInclude Include="lib\tools\convergence.hpp" />
     <ClInclude Include="lib\tools\histgram.hpp" />
     <ClInclude Include="lib\tools\percent.hpp" />
     <ClInclude Include="lib\tools\random.hpp" />
     <ClInclude Include="lib\tools\time_watch.hpp" />
-    <ClInclude Include="lib\traits\container_traits.hpp" />
-    <ClInclude Include="lib\traits\type_map.hpp" />
-    <ClInclude Include="lib\blas.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

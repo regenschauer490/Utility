@@ -26,18 +26,18 @@ namespace sig
 // binary_op: 大小比較を行う関数オブジェクト(STLと同様)
 #if SIG_MSVC_LT1800
 
-template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<has_random_access_op<C>::value>::type*& = enabler>
+template <class C, class F = std::less<typename impl::sequence_container_traits<C>::value_type>, typename std::enable_if<has_random_access_op<C>::value>::type*& = enabler>
 void sort(
 	C& container,
-	F const& binary_op = std::less<typename container_traits<C>::value_type>())
+	F const& binary_op = std::less<typename impl::container_traits<C>::value_type>())
 {
 	std::sort(std::begin(container), std::end(container), binary_op);
 }
 // メンバ関数にsort()がある場合
-template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<!has_random_access_op<C>::value>::type*& = enabler>
+template <class C, class F = std::less<typename impl::sequence_container_traits<C>::value_type>, typename std::enable_if<!has_random_access_op<C>::value>::type*& = enabler>
 void sort(
 	C& container,
-	F const& binary_op = std::less<typename container_traits<C>::value_type>())
+	F const& binary_op = std::less<typename impl::container_traits<C>::value_type>())
 {
 	container.sort(binary_op);
 }
@@ -51,10 +51,10 @@ void sort(
 	std::sort(std::begin(container), std::end(container), binary_op);
 }
 
-template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>, typename std::enable_if<!has_random_access_op<C>::value>::type*& = enabler>
+template <class C, class F = std::less<typename impl::sequence_container_traits<C>::value_type>, typename std::enable_if<!has_random_access_op<C>::value>::type*& = enabler>
 void sort(
 	C& container,
-	F const& binary_op = std::less<typename sequence_container_traits<C>::value_type>())
+	F const& binary_op = std::less<typename impl::sequence_container_traits<C>::value_type>())
 {
 	container.sort(binary_op);
 }
@@ -65,12 +65,12 @@ void sort(
 // container: ソート対象のデータ
 // binary_op: 大小比較を行う関数オブジェクト(STLと同様)
 // return -> std::tuple<(ソート後のコンテナ), (ソート前のindexを記録したコンテナ)>
-template <class C, class F = std::less<typename sequence_container_traits<C>::value_type>>
+template <class C, class F = std::less<typename impl::sequence_container_traits<C>::value_type>>
 auto sort_with_index(
 	C const& container,
-	F const& binary_op = std::less<typename sequence_container_traits<C>::value_type>())
+	F const& binary_op = std::less<typename impl::sequence_container_traits<C>::value_type>())
 {
-	using Tp = std::tuple<typename sequence_container_traits<C>::value_type, uint>;
+	using Tp = std::tuple<typename impl::sequence_container_traits<C>::value_type, uint>;
 	auto result = zip(container, seq(0u, 1u, container.size()));
 
 	sort(result, [&](Tp const& l, Tp const& r){ return binary_op(std::get<0>(l), std::get<0>(r)); });
@@ -126,7 +126,7 @@ void shuffle(Cs&... containers)
 template <class C>
 auto remove_duplicates(C& container)
 {
-	using T = typename container_traits<C>::value_type;
+	using T = typename impl::container_traits<C>::value_type;
 	std::map<T, uint> removed;
 
 	for (auto it = std::begin(container), end = std::end(container); it != end;){
@@ -145,9 +145,9 @@ auto remove_duplicates(C& container)
 }
 
 #if SIG_ENABLE_BOOST
-#define Sig_Eraser_ParamType1 typename boost::call_traits<typename container_traits<C>::value_type>::param_type
+#define Sig_Eraser_ParamType1 typename boost::call_traits<typename impl::container_traits<C>::value_type>::param_type
 #else
-#define Sig_Eraser_ParamType1 typename std::common_type<typename container_traits<C>::value_type>::type const&
+#define Sig_Eraser_ParamType1 typename std::common_type<typename impl::container_traits<C>::value_type>::type const&
 #endif
 
 // コンテナから指定要素を1つ削除

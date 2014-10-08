@@ -9,6 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_TIMEWATCH_HPP
 
 #include "../sigutil.hpp"
+#include "../helper/maybe.hpp"
 #include <chrono>
 
 
@@ -93,7 +94,7 @@ public:
 	//　指定した区間までのトータル時間(スプリットタイム)を取得
 	//　template引数で時間の単位を指定
 	template<class TimeUnit = std::chrono::milliseconds>
-	auto get_split_time(uint index) ->Just<long>
+	auto get_split_time(uint index) ->Maybe<long>
 	{
 		return index < laps.size()
 			? Just<long>(std::chrono::duration_cast<TimeUnit>(d_accumulate(laps, index+1)).count())
@@ -103,9 +104,11 @@ public:
 	//　指定した区間の時間(ラップタイム)を取得
 	//　template引数で時間の単位を指定
 	template<class TimeUnit = std::chrono::milliseconds>
-	auto get_lap_time(uint index) ->Just<long>
+	auto get_lap_time(uint index) ->Maybe<long>
 	{
-		return index < laps.size() ? Just<long>(std::chrono::duration_cast<TimeUnit>(laps[index]).count()) : Nothing(-1);
+		return index < laps.size()
+			? Just<long>(std::chrono::duration_cast<TimeUnit>(laps[index]).count())
+			: Nothing(-1);
 	}
 };
 

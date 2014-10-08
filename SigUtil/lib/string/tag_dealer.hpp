@@ -56,7 +56,7 @@ public:
 		\param tag 囲み文字の内側のタグ文字
 		\return 指定タグに囲まれた本文の文字列
 	*/
-	auto decode(S const& src, S const& tag) ->Just<S> const{
+	auto decode(S const& src, S const& tag) ->Maybe<S> const{
 		auto tag_str = tel_ + tag + ter_;
 		auto parse = split(impl::space<S>()() + src, tag_str);
 		return parse.size() < 2 ? Nothing(S()) : Just<S>(parse[1]);
@@ -66,7 +66,7 @@ public:
 	S encode(Container<S> const& src, Container<S> const& tag) const;
 
 	template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-	auto decode(S const& src, Container<S> const& tag)->Just<Container<S>> const;
+	auto decode(S const& src, Container<S> const& tag)->Maybe<Container<S>> const;
 
 };
 
@@ -80,13 +80,14 @@ S TagDealer<S>::encode(Container<S> const& src, Container<S> const& tag) const
 
 template <class S>
 template < template < class T_, class Allocator = std::allocator<T_>> class Container >
-auto TagDealer<S>::decode(S const& src, Container<S> const& tag) ->Just<Container<S>> const
+auto TagDealer<S>::decode(S const& src, Container<S> const& tag) ->Maybe<Container<S>> const
 {
 	Container<S> result;
 	for (auto const& e : tag){
-		if (auto d = decode(src, e)) result.push_back(*d);
+		auto d = decode(src, e);
+		if (sig::isJust(d)) result.push_back(sig::fromJust(std::move(d)));
 	}
-	return result.empty() ? Nothing(S()) : Just<Container<S>>(std::move(result));
+	return result.empty() ? Nothing(result) : Just<Container<S>>(std::move(result));
 }
 
 }

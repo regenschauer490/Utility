@@ -26,9 +26,9 @@ namespace sig
 */
 template <class R = void, class C = void>
 auto sum(C const& data)
-	->typename impl::SameIf<R, void, typename container_traits<C>::value_type, R>::type
+	->typename impl::SameIf<R, void, typename impl::container_traits<C>::value_type, R>::type
 {
-	using RT = typename impl::SameIf<R, void, typename container_traits<C>::value_type, R>::type;
+	using RT = typename impl::SameIf<R, void, typename impl::container_traits<C>::value_type, R>::type;
 
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(0), std::plus<RT>{});
 }
@@ -44,9 +44,9 @@ auto sum(C const& data)
 */
 template <class R = void, class C = void, class Pred = void>
 auto sum(C const& data, Pred const& access_func)
-	->typename impl::SameIf<R, void, decltype(impl::eval(access_func, std::declval<typename container_traits<C>::value_type>())), R>::type
+	->typename impl::SameIf<R, void, decltype(impl::eval(access_func, std::declval<typename impl::container_traits<C>::value_type>())), R>::type
 {
-	using T = typename container_traits<C>::value_type;
+	using T = typename impl::container_traits<C>::value_type;
 	using RT = typename impl::SameIf<R, void, decltype(impl::eval(access_func, std::declval<T>())), R>::type;
 
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(0), [&](RT sum, T const& e){ return sum + access_func(e); });
@@ -80,7 +80,7 @@ auto sum_row(CC const& matrix, uint index)
 template <class R = void, class CC = void>
 auto sum_col(CC const& matrix, uint index)
 {
-	using T = typename container_traits<CC>::value_type;
+	using T = typename impl::container_traits<CC>::value_type;
 
 	return sum<R>(matrix, [index](T const& row){ assert(index < row.size()); return row[index]; });
 }
@@ -96,9 +96,9 @@ auto sum_col(CC const& matrix, uint index)
 */
 template <class R = void, class C = void>
 auto product(C const& data)
-	->typename impl::SameIf<R, void, typename container_traits<C>::value_type, R>::type
+	->typename impl::SameIf<R, void, typename impl::container_traits<C>::value_type, R>::type
 {
-	using RT = typename impl::SameIf<R, void, typename container_traits<C>::value_type, R>::type;
+	using RT = typename impl::SameIf<R, void, typename impl::container_traits<C>::value_type, R>::type;
 
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(1), std::multiplies<RT>{});
 }
@@ -114,9 +114,9 @@ auto product(C const& data)
 */
 template <class R = void, class C = void, class Pred = void>
 auto product(C const& data, Pred const& access_func)
-	->typename impl::SameIf<R, void, decltype(impl::eval(access_func, std::declval<typename container_traits<C>::value_type>())), R>::type
+	->typename impl::SameIf<R, void, decltype(impl::eval(access_func, std::declval<typename impl::container_traits<C>::value_type>())), R>::type
 {
-	using T = typename container_traits<C>::value_type;
+	using T = typename impl::container_traits<C>::value_type;
 	using RT = typename impl::SameIf<R, void, decltype(impl::eval(access_func, std::declval<T>())), R>::type;
 
 	return std::accumulate(std::begin(data), std::end(data), static_cast<RT>(1), [&](RT sum, T const& e){ return sum * access_func(e); });
@@ -150,7 +150,7 @@ auto product_row(CC const& matrix, uint index)
 template <class R = void, class CC = void>
 auto product_col(CC const& matrix, uint index)
 {
-	using T = typename container_traits<CC>::value_type;
+	using T = typename impl::container_traits<CC>::value_type;
 
 	return product<R>(matrix, [index](T const& row){ assert(index < row.size()); return row[index]; });
 }
@@ -177,7 +177,7 @@ double average(C const& data)
 template <class C>
 double variance(C const& data)
 {
-	using T = typename container_traits<C>::value_type;
+	using T = typename impl::container_traits<C>::value_type;
 	double mean = average(data);
 	return std::accumulate(std::begin(data), std::end(data), 0.0, [mean](double sum, T e){ return sum + std::pow(e - mean, 2); }) / data.size();
 }
@@ -190,10 +190,10 @@ double variance(C const& data)
 
 	\return なし
 */
-template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
+template <class C, typename std::enable_if<std::is_floating_point<typename impl::container_traits<C>::value_type>::value>::type*& = enabler>
 void normalize(C& data)
 {
-	using T = typename container_traits<C>::value_type;
+	using T = typename impl::container_traits<C>::value_type;
 	T min = *std::begin(data);
 	T max = *std::begin(data);
 
@@ -216,9 +216,9 @@ void normalize(C& data)
 */
 template <class R = double, class C = void>
 auto normalize(C const& data, int dummy = 0)
-	->typename container_traits<C>::template rebind<R>
+	->typename impl::container_traits<C>::template rebind<R>
 {
-	using RT = typename container_traits<C>::template rebind<R>;
+	using RT = typename impl::container_traits<C>::template rebind<R>;
 
 	auto result = sig::copy<RT>(data);
 	normalize(result);
@@ -233,10 +233,10 @@ auto normalize(C const& data, int dummy = 0)
 
 	\return なし
 */
-template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
+template <class C, typename std::enable_if<std::is_floating_point<typename impl::container_traits<C>::value_type>::value>::type*& = enabler>
 void standardize(C& data)
 {
-	using T = typename container_traits<C>::value_type;
+	using T = typename impl::container_traits<C>::value_type;
 	double mean = average(data);
 	double var = variance(data);
 
@@ -254,9 +254,9 @@ void standardize(C& data)
 */ 
 template <class R = double, class C = void>
 auto standardize(C const& data, int dummy = 0)
-	->typename container_traits<C>::template rebind<R>
+	->typename impl::container_traits<C>::template rebind<R>
 {
-	using RT = typename container_traits<C>::template rebind<R>;
+	using RT = typename impl::container_traits<C>::template rebind<R>;
 
 	auto result = sig::copy<RT>(data);
 	standardize(result);
@@ -271,7 +271,7 @@ auto standardize(C const& data, int dummy = 0)
 
 	\return なし
 */
-template <class C, typename std::enable_if<std::is_floating_point<typename container_traits<C>::value_type>::value>::type*& = enabler>
+template <class C, typename std::enable_if<std::is_floating_point<typename impl::container_traits<C>::value_type>::value>::type*& = enabler>
 void normalize_dist(C& data)
 {
 	double sum = sig::sum(data);
@@ -290,9 +290,9 @@ void normalize_dist(C& data)
 */
 template <class R = double, class C = void>
 auto normalize_dist(C const& data, int dummy = 0)
-->typename container_traits<C>::template rebind<R>
+->typename impl::container_traits<C>::template rebind<R>
 {
-	using RT = typename container_traits<C>::template rebind<R>;
+	using RT = typename impl::container_traits<C>::template rebind<R>;
 
 	auto result = sig::copy<RT>(data);
 	normalize_dist(result);

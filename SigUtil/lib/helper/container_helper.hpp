@@ -10,7 +10,7 @@ http://opensource.org/licenses/mit-license.php
 
 
 #include "eval.hpp"
-#include "../traits/container_traits.hpp"
+#include "../helper/container_traits.hpp"
 
 namespace sig
 {
@@ -47,7 +47,7 @@ template <class C, class F, class... Its>
 void iterative_make(uint loop, C& dest, F const& func, Its... iterators)
 {
 	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
-		container_traits<C>::add_element(dest, impl::eval(func, impl::dereference_iterator(iterators)...));
+		impl::container_traits<C>::add_element(dest, impl::eval(func, impl::dereference_iterator(iterators)...));
 	}
 }
 
@@ -82,27 +82,27 @@ template <class T, class D = void> struct has_random_access_op{ static const boo
 template <class T> struct has_random_access_op<T, decltype(std::declval<typename T::iterator>()[0], void())>{ static const bool value = true; };
 
 template <class C>
-void erase(C& container, typename sequence_container_traits<C>::value_type const& t)
+void erase(C& container, typename impl::sequence_container_traits<C>::value_type const& t)
 {
 	container.erase(std::remove(std::begin(container), std::end(container), t), std::end(container));
 }
 template <class C>
-void erase(C& container, typename associative_container_traits<C>::value_type const& t)
+void erase(C& container, typename impl::associative_container_traits<C>::value_type const& t)
 {
 	container.erase(t);
 }
 template <class C>
-void erase(C& container, typename hash_container_traits<C>::value_type const& t)
+void erase(C& container, typename impl::hash_container_traits<C>::value_type const& t)
 {
 	container.erase(t);
 }
 
-template <class C, class F, typename std::enable_if<sequence_container_traits<C>::exist>::type*& = enabler>
+template <class C, class F, typename std::enable_if<impl::sequence_container_traits<C>::exist>::type*& = enabler>
 void erase_if(C& container, F const& remove_pred)
 {
 	container.erase(std::remove_if(std::begin(container), std::end(container), remove_pred), std::end(container));
 }
-template <class C, class F, typename std::enable_if<associative_container_traits<C>::exist>::type*& = enabler>
+template <class C, class F, typename std::enable_if<impl::associative_container_traits<C>::exist>::type*& = enabler>
 void erase_if(C& container, F const& remove_pred)
 {
 	for (auto it = std::begin(container), end = std::end(container); it != end;){
@@ -112,7 +112,7 @@ void erase_if(C& container, F const& remove_pred)
 		else ++it;
 	}
 }
-template <class C, class F, typename std::enable_if<hash_container_traits<C>::exist>::type*& = enabler>
+template <class C, class F, typename std::enable_if<impl::hash_container_traits<C>::exist>::type*& = enabler>
 void erase_if(C& container, F const& remove_pred)
 {
 	for (auto it = std::begin(container), end = std::end(container); it != end;){
@@ -128,7 +128,7 @@ template <class RC, class C>
 auto copy(C const& src) ->RC
 {
 	RC dest;
-	for (auto const& e : src) container_traits<RC>::add_element(dest, e);
+	for (auto const& e : src) impl::container_traits<RC>::add_element(dest, e);
 	return dest;
 }
 	

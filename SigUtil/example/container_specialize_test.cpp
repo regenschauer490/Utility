@@ -1,5 +1,6 @@
 #include "container_specialize_test.h"
-#include "../lib/traits/container_traits.hpp"
+#include "../lib/helper/container_traits.hpp"
+
 
 // ユーザ定義クラスにイテレータを返すbegin, endメンバ関数を定義し、
 // sig名前空間で特殊化することでライブラリ内のコンテナを受け取る関数が使用可能になる
@@ -21,7 +22,7 @@ namespace sig
 {
 	// コンテナの性質に合わせて、適切に特殊化するクラスを選ぶことを推奨
 	template<template<class> class C, class T>
-	struct static_container_traits<C<T>>
+	struct impl::static_container_traits<C<T>>
 	{
 		static const bool exist = true;		// 特殊化できているか
 
@@ -38,7 +39,7 @@ namespace sig
 
 	// 特殊化したクラスをcontainer_traitsに継承(登録作業)
 	template<class... Args>
-	struct container_traits<MyVector3<Args...>> : public static_container_traits<MyVector3<Args...>>
+	struct impl::container_traits<MyVector3<Args...>> : public static_container_traits<MyVector3<Args...>>
 	{};
 }
 

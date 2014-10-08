@@ -8,8 +8,8 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_MANIPULATE_HPP
 #define SIG_UTIL_MANIPULATE_HPP
 
-#include "../traits/type_map.hpp"
-#include "../traits/container_traits.hpp"
+#include "../helper/type_map.hpp"
+#include "../helper/container_traits.hpp"
 
 
 /// \file manipulate.hpp 文字列処理ユーティリティ
@@ -50,7 +50,7 @@ auto split(S const& src, impl::TString<S> const& delimiter) ->CSeq<impl::TString
 
 			if (cf){
 				if (pos - ppos > 0) result.push_back(src.substr(ppos, pos - ppos));
-				//container_traits<CSeq>::add_element(result, src.substr(ppos, pos));
+				//impl::container_traits<CSeq>::add_element(result, src.substr(ppos, pos));
 				pos += mag;
 				ppos = pos;
 			}
@@ -120,13 +120,13 @@ auto cat_str_impl(It begin, It end, S const& delimiter, OSS& osstream, std::loca
 */
 template <class C, class S>
 auto cat_str(C const& container, S const& delimiter, std::locale osstream_locale = std::locale(""))
-	->typename impl::SStreamSelector<typename container_traits<C>::value_type>::string
+	->typename impl::SStreamSelector<typename impl::container_traits<C>::value_type>::string
 {
 	return impl::cat_str_impl(
 		std::begin(container),
 		std::end(container),
 		delimiter,
-		typename impl::SStreamSelector<typename container_traits<C>::value_type>::ostringstream{},
+		typename impl::SStreamSelector<typename impl::container_traits<C>::value_type>::ostringstream{},
 		osstream_locale);
 }
 

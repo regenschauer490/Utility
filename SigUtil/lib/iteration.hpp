@@ -47,7 +47,7 @@ auto fold_zipWith(F1 const& zip, F2 const& fold, T init, Cs&... containers)
 {
 	using TR = decltype(impl::eval(
 		zip,
-		std::declval<typename container_traits<Cs>::value_type>()...
+		std::declval<typename impl::container_traits<Cs>::value_type>()...
 	));
 	using R = decltype(impl::eval(
 		fold,
@@ -68,14 +68,14 @@ auto filter(F const& pred, C const& container, int init)
 {
 	C result;
 	for (auto const& e : container){
-		if (pred(init, e)) container_traits<C>::add_element(result, e);
+		if (pred(init, e)) impl::container_traits<C>::add_element(result, e);
 		++init;
 	}
 	return result;
 }
 
 // コンテナへの代入演算 (element-wise: container and container)
-template <class OP, class C1, class C2, typename std::enable_if<container_traits<C1>::exist && container_traits<C2>::exist>::type*& = enabler>
+template <class OP, class C1, class C2, typename std::enable_if<impl::container_traits<C1>::exist && impl::container_traits<C2>::exist>::type*& = enabler>
 void compound_assignment(
 	OP const& assign_op,
 	C1& dest,
@@ -85,7 +85,7 @@ void compound_assignment(
 }
 
 // コンテナへの代入演算 (element-wise: container and scalar)
-template <class OP, class C, class T, typename std::enable_if<container_traits<C>::exist && !container_traits<T>::exist>::type*& = enabler>
+template <class OP, class C, class T, typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<T>::exist>::type*& = enabler>
 void compound_assignment(
 	OP const& assign_op,
 	C& dest,

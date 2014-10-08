@@ -16,34 +16,9 @@ namespace sig
 {
 
 /// コサイン類似度（Cosine Similarity）
-/**
-	boost.optional有効時には値がラップされて返される
-*/
 struct CosineSimilarity
 {
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	/**
-	boost.optional有効時
-
-	\param vec1 データ点1の座標ベクトル
-	\param vec2 データ点2の座標ベクトル
-
-	\return データ点間のコサイン距離（ラップされている）．失敗時にはboost::none
-	\post 値域：[-1, 1]
-	*/
-	template<class C1, class C2>
-	auto operator()(C1 const& vec1, C2 const& vec2) const ->Just<double>
-	{
-		using T = std::common_type<typename container_traits<C1>::value_type, typename container_traits<C2>::value_type>::type;
-
-		if (!is_comparable(vec1, vec2, impl::NumericVectorTag())) return boost::none;
-
-		return Just<double>(std::inner_product(std::begin(vec1), std::end(vec1), std::begin(vec2), static_cast<T>(0)) / (norm_L2(vec1) * norm_L2(vec2)));
-	}
-#else
-	/**
-	boost.optional無効時
-
 	\param vec1 データ点1の座標ベクトル
 	\param vec2 データ点2の座標ベクトル
 
@@ -53,13 +28,12 @@ struct CosineSimilarity
 	template<class C1, class C2>
 	double operator()(C1 const& vec1, C2 const& vec2) const
 	{
-		using T = typename std::common_type<typename container_traits<C1>::value_type, typename container_traits<C2>::value_type>::type;
+		using T = typename std::common_type<typename impl::container_traits<C1>::value_type, typename impl::container_traits<C2>::value_type>::type;
 
 		assert(is_comparable(vec1, vec2, impl::NumericVectorTag()));
 
 		return std::inner_product(std::begin(vec1), std::end(vec1), std::begin(vec2), static_cast<T>(0)) / (norm_L2(vec1) * norm_L2(vec2));
 	}
-#endif
 };
 
 /// コサイン類似度を求める関数（関数オブジェクト）
@@ -67,7 +41,7 @@ struct CosineSimilarity
 	\param vec1 データ点1の座標ベクトル
 	\param vec2 データ点2の座標ベクトル
 
-	\return データ点間のコサイン距離（boost.optional有効時には値がラップされている）
+	\return データ点間のコサイン距離
 	\post 値域：[-1, 1]
 */
 const CosineSimilarity cosine_similarity;

@@ -14,9 +14,9 @@ http://opensource.org/licenses/mit-license.php
 #include <fstream>
 #include <locale>
 
-#define NOMINMAX
 
 #if SIG_MSVC_ENV
+#define NOMINMAX
 	#include <windows.h>
 #elif SIG_USE_BOOST_FILESYSTEM
 	#include <boost/filesystem.hpp>
@@ -65,7 +65,7 @@ inline auto get_file_names(
 	FilepassString const& directory_pass,
 	bool hidden_file,
 	std::wstring extension = L""
-	) ->Just<std::vector<std::wstring>>
+	) ->Maybe<std::vector<std::wstring>>
 {
 	typedef std::vector<std::wstring> ResultType;
 	ResultType result;
@@ -125,7 +125,7 @@ inline auto get_file_names(
 inline auto get_folder_names(
 	FilepassString const& directory_pass,
 	bool hidden_file
-	) ->Just<std::vector<std::wstring>>
+	) ->Maybe<std::vector<std::wstring>>
 {
 	typedef std::vector<std::wstring> ResultType;
 	ResultType result;
@@ -195,7 +195,7 @@ inline void clear_file(FilepassString const& file_pass)
 // ファイルへ1行ずつ保存
 // src: 保存対象
 // ofs: std::ofstream or std::wofstream
-template <class T, typename std::enable_if<!container_traits<T>::exist>::type*& = enabler>
+template <class T, typename std::enable_if<!impl::container_traits<T>::exist>::type*& = enabler>
 inline void save_line(
 	T src,
 	typename impl::FStreamSelector<T>::ofstream& ofs)
@@ -206,12 +206,12 @@ inline void save_line(
 // ファイルへ1行ずつ保存
 // src: 保存対象(コンテナ)
 // ofs: std::ofstream or std::wofstream
-template <class C, typename std::enable_if<container_traits<C>::exist>::type*& = enabler>
+template <class C, typename std::enable_if<impl::container_traits<C>::exist>::type*& = enabler>
 void save_line(
 	C const& src,
-	typename impl::FStreamSelector<typename container_traits<C>::value_type>::ofstream& ofs)
+	typename impl::FStreamSelector<typename impl::container_traits<C>::value_type>::ofstream& ofs)
 {
-	typename impl::FStreamSelector<typename container_traits<C>::value_type>::ostreambuf_iterator streambuf_iter(ofs);
+	typename impl::FStreamSelector<typename impl::container_traits<C>::value_type>::ostreambuf_iterator streambuf_iter(ofs);
 	for (auto const& str : src){
 		std::copy(str.begin(), str.end(), streambuf_iter);
 		streambuf_iter = '\n';
@@ -222,7 +222,7 @@ void save_line(
 // src: 保存対象
 // file_pass: 保存先のディレクトリとファイル名（フルパス）
 // open_mode: 上書き(overwrite) or 追記(append)
-template <class T, typename std::enable_if<!container_traits<T>::exist>::type*& = enabler>
+template <class T, typename std::enable_if<!impl::container_traits<T>::exist>::type*& = enabler>
 void save_line(
 	T src,
 	FilepassString const& file_pass,
@@ -239,7 +239,7 @@ void save_line(
 // src: 保存対象(コンテナ)
 // file_pass: 保存先のディレクトリとファイル名（フルパス）
 // open_mode: 上書き(overwrite) or 追記(append)
-template <class C, typename std::enable_if<container_traits<C>::exist>::type*& = enabler>
+template <class C, typename std::enable_if<impl::container_traits<C>::exist>::type*& = enabler>
 void save_line(
 	C const& src,
 	FilepassString const& file_pass,
@@ -248,7 +248,7 @@ void save_line(
 	SIG_FILE_LOCALE_INIT
 
 	const auto open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-	typename impl::FStreamSelector<typename container_traits<C>::value_type>::ofstream ofs(file_pass, open_mode);
+	typename impl::FStreamSelector<typename impl::container_traits<C>::value_type>::ofstream ofs(file_pass, open_mode);
 	save_line(src, ofs);
 }
 
@@ -258,7 +258,7 @@ void save_line(
 // file_pass: 保存先のディレクトリとファイル名（フルパス）
 // delimiter: 数値間の区切り文字を指定（ex: delimiter = "," で簡易CSV）
 // open_mode: 上書き(overwrite) or 追記(append)
-template <class C, typename std::enable_if<container_traits<C>::exist && !container_traits<typename container_traits<C>::value_type>::exist>::type*& = enabler>
+template <class C, typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler>
 void save_num(
 	C const& src,
 	FilepassString const& file_pass,
@@ -273,7 +273,7 @@ void save_num(
 // file_pass: 保存先のディレクトリとファイル名（フルパス）
 // delimiter: 数値間の区切り文字を指定
 // open_mode: 上書き(overwrite) or 追記(append)
-template <class CC, typename std::enable_if<container_traits<typename container_traits<CC>::value_type>::exist>::type*& = enabler>
+template <class CC, typename std::enable_if<impl::container_traits<typename impl::container_traits<CC>::value_type>::exist>::type*& = enabler>
 void save_num(
 	CC const& src,
 	FilepassString const& file_pass,
@@ -298,20 +298,20 @@ using IfsSelector = typename impl::SameIf<R, std::string, std::ifstream, std::wi
 // empty_dest: 保存先の空のコンテナ
 // ifs: std::ifstream or std::wifstream
 // conv: 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはread_numを推奨) string or wstring -> R
-template <class C, class R = typename container_traits<C>::value_type>
+template <class C, class R = typename impl::container_traits<C>::value_type>
 bool read_line(
 	C& empty_dest,
 	IfsSelector<R>& ifs,
 	std::function< R(typename impl::SameIf<R, std::string, std::string, std::wstring>::type) > const& conv = nullptr)
 {
-	static_assert(std::is_same<R, typename container_traits<C>::value_type>::value, "error in read_line: R and C::value_type don't match");
+	static_assert(std::is_same<R, typename impl::container_traits<C>::value_type>::value, "error in read_line: R and C::value_type don't match");
 
 	typename impl::SameIf<R, std::string, std::string, std::wstring>::type line;
 
 	SIG_FILE_LOCALE_INIT
 
 	while (ifs && std::getline(ifs, line)){
-		conv ? container_traits<C>::add_element(empty_dest, conv(std::move(line))) : container_traits<C>::add_element(empty_dest, std::move(line));
+		conv ? impl::container_traits<C>::add_element(empty_dest, conv(std::move(line))) : impl::container_traits<C>::add_element(empty_dest, std::move(line));
 	}
 	return static_cast<bool>(ifs);
 }
@@ -320,7 +320,7 @@ bool read_line(
 // empty_dest: 保存先の空のコンテナ
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // conv: 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはread_numを推奨) string or wstring -> R
-template <class C, class R = typename container_traits<C>::value_type>
+template <class C, class R = typename impl::container_traits<C>::value_type>
 bool read_line(
 	C& empty_dest,
 	FilepassString const& file_pass,
@@ -339,7 +339,7 @@ bool read_line(
 // ifs: std::ifstream or std::wifstream
 // 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
 template <class R, class C = std::vector<R>>
-auto read_line(IfsSelector<R>& ifs) ->Just<C>
+auto read_line(IfsSelector<R>& ifs) ->Maybe<C>
 {
 	C tmp;
 	read_line(tmp, ifs);
@@ -351,7 +351,7 @@ auto read_line(IfsSelector<R>& ifs) ->Just<C>
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
 template <class R, class C = std::vector<R>>
-auto read_line(FilepassString const& file_pass) ->Just<C>
+auto read_line(FilepassString const& file_pass) ->Maybe<C>
 {
 	IfsSelector<R> ifs(file_pass);
 	if (!ifs){
@@ -362,7 +362,7 @@ auto read_line(FilepassString const& file_pass) ->Just<C>
 }
 
 template <class R, class C = std::vector<R>>
-auto read_line(FilepassStringC file_pass) ->Just<C>
+auto read_line(FilepassStringC file_pass) ->Maybe<C>
 {
 	return read_line<R, C>(static_cast<impl::TString<FilepassStringC>>(file_pass));
 }
@@ -373,7 +373,7 @@ auto read_line(FilepassStringC file_pass) ->Just<C>
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // delimiter: 数値間の区切り文字を指定 (デフォルトは行区切り)
 // return -> 読み込みの成否
-template <class C, class RT = typename container_traits<C>::value_type, typename std::enable_if<!container_traits<typename container_traits<C>::value_type>::exist>::type*& = enabler>
+template <class C, class RT = typename impl::container_traits<C>::value_type, typename std::enable_if<!impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler>
 bool read_num(
 	C& empty_dest,
 	FilepassString const& file_pass,
@@ -381,17 +381,17 @@ bool read_num(
 {
 	auto read_str = read_line<std::string>(file_pass);
 
-	if (!is_container_valid(read_str)) return false;
+	if (!isJust(read_str)) return false;
 
 	if (delimiter == "\n"){
 		for (auto const& line : fromJust(read_str)){
-			container_traits<C>::add_element(empty_dest, impl::Str2NumSelector<RT>()(line));
+			impl::container_traits<C>::add_element(empty_dest, impl::Str2NumSelector<RT>()(line));
 		}
 	}
 	else{
 		// 遅いので注意
 		auto sp = split(fromJust(read_str)[0], delimiter);
-		for (auto v : sp) container_traits<C>::add_element(empty_dest, impl::Str2NumSelector<RT>()(v));
+		for (auto v : sp) impl::container_traits<C>::add_element(empty_dest, impl::Str2NumSelector<RT>()(v));
 	}
 	return true;
 }
@@ -401,23 +401,23 @@ bool read_num(
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // delimiter: 数値間の区切り文字を指定
 // return -> 読み込みの成否
-template <class CC, class RC = typename container_traits<CC>::value_type, class RT = typename container_traits<RC>::value_type>
+template <class CC, class RC = typename impl::container_traits<CC>::value_type, class RT = typename impl::container_traits<RC>::value_type>
 bool read_num(
 	CC& empty_dest,
 	FilepassString const& file_pass, 
 	std::string delimiter)
 {
 	auto read_str = read_line<std::string>(file_pass);
-	if (!is_container_valid(read_str)) return false;
+	if (!isJust(read_str)) return false;
 
 	for (auto const& line : fromJust(read_str)){
 		RC tmp;
 		auto sp = split(line, delimiter);
 
 		for (auto const& v : sp){
-			container_traits<RC>::add_element(tmp, impl::Str2NumSelector<RT>()(v));
+			impl::container_traits<RC>::add_element(tmp, impl::Str2NumSelector<RT>()(v));
 		}
-		container_traits<CC>::add_element(empty_dest, std::move(tmp));
+		impl::container_traits<CC>::add_element(empty_dest, std::move(tmp));
 	}
 	return true;
 }
@@ -426,11 +426,11 @@ bool read_num(
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // delimiter: 数値間の区切り文字を指定 (デフォルトは行区切り)
 // 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
-template <class C, typename std::enable_if<container_traits<C>::exist && !container_traits<typename container_traits<C>::value_type>::exist>::type*& = enabler>
+template <class C, typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler>
 auto read_num(
 	FilepassString const& file_pass,
 	std::string delimiter = "\n"
-	) ->Just<C>
+	) ->Maybe<C>
 {
 	C tmp;
 	read_num(tmp, file_pass, delimiter);
@@ -441,11 +441,11 @@ auto read_num(
 // file_pass: 読み込み先のディレクトリとファイル名（フルパス）
 // delimiter: 数値間の区切り文字を指定
 // 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
-template <class CC, typename std::enable_if<container_traits<typename container_traits<CC>::value_type>::exist>::type*& = enabler>
+template <class CC, typename std::enable_if<impl::container_traits<typename impl::container_traits<CC>::value_type>::exist>::type*& = enabler>
 auto read_num(
 	FilepassString const& file_pass,
 	std::string delimiter
-	) ->Just<CC>
+	) ->Maybe<CC>
 {
 	CC tmp;
 	read_num(tmp, file_pass, delimiter);

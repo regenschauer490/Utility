@@ -55,7 +55,7 @@ void MinkowskiDistanceTest()
 
 void CosineSimilarityTest()
 {
-	double cosim = sig::fromJust(sig::cosine_similarity(data1, data2));
+	double cosim = sig::cosine_similarity(data1, data2);
 
 	double test = std::inner_product(std::begin(data1), std::end(data1), std::begin(data2), 0.0, std::plus<double>(), std::multiplies<double>()) / (sig::norm_L2(data1) * sig::norm_L2(data2));
 
@@ -64,7 +64,7 @@ void CosineSimilarityTest()
 
 void CanberraDistanceTest()
 {
-	double candist = sig::fromJust(sig::canberra_distance(data1, data2));
+	double candist = sig::canberra_distance(data1, data2);
 
 	assert(sig::equal(candist, 22 / 9.0));
 }
@@ -75,7 +75,7 @@ void BinaryDistanceTest()
 	const sig::array<sig::uint, 4> bdata1{ 1, 1, 0, 0 };
 	const std::list<bool> bdata2{ true, false, true, true };
 
-	double bindist = sig::fromJust(sig::binary_distance(bdata1, bdata2));
+	double bindist = sig::binary_distance(bdata1, bdata2);
 
 	assert(sig::equal(bindist, 0.75));
 }

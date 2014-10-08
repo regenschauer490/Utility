@@ -30,11 +30,44 @@ http://opensource.org/licenses/mit-license.php
 #include <unordered_map>
 #include <initializer_list>
 
-//#include "impl::eval.hpp"
 #include "../array.hpp"
 
 
-namespace sig{
+/** \page sig_container 対応コンテナ
+\verbatim
+	　[ STL ]
+	<static_container>
+	・array
+
+	<sequence_container>
+	・vector
+	・deque
+	・list
+
+	<associative_container>
+	・set
+	・multiset
+	・map
+	・multimap
+
+	<hash_container>
+	・unordered_set
+	・unordered_multiset
+	・unordered_map
+	・unordered_multimap
+
+	　[ SigUtil ]
+	<static_container>
+	・array
+
+	※その他コンテナもクラスtemplateの特殊化を定義することで利用可能
+\endverbatim
+*/
+
+namespace sig
+{
+namespace impl
+{
 
 template <class C>
 struct container_traits
@@ -390,6 +423,6 @@ namespace ct
 
 } //ct
 */
-
+}
 }
 #endif

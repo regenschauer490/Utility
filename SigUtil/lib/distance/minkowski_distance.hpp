@@ -15,17 +15,21 @@ namespace sig
 {
 /// ミンコフスキー距離
 /**
-	boost.optional有効時には値がラップされて返される
+	\tparam P P=1はマンハッタン距離、P=2はユークリッド距離に等しい
 */
 template <size_t P>
 struct MinkowskiDistance
 {
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-#else
+	/**
+	\param vec1 データ点1の座標ベクトル
+	\param vec2 データ点2の座標ベクトル
+
+	\return データ点間の距離
+	*/
 	template <class C1, class C2>
 	double operator()(C1 const& vec1, C2 const& vec2) const
 	{
-		using T = typename std::common_type<typename container_traits<C1>::value_type, typename container_traits<C2>::value_type>::type;
+		using T = typename std::common_type<typename impl::container_traits<C1>::value_type, typename impl::container_traits<C2>::value_type>::type;
 		
 		assert(is_comparable(vec1, vec2, impl::NumericVectorTag()));
 
@@ -34,18 +38,28 @@ struct MinkowskiDistance
 			1.0 / P
 		);
 	}
-#endif
 };
 
-
-//マンハッタン距離
 using ManhattanDistance = MinkowskiDistance<1>;
 
+/// マンハッタン距離を求める関数（関数オブジェクト）
+/**
+	\param vec1 データ点1の座標ベクトル
+	\param vec2 データ点2の座標ベクトル
+
+	\return データ点間の距離
+*/
 const ManhattanDistance manhattan_distance;
 
-//ユークリッド距離
-using EuclideanDistance = MinkowskiDistance<2>;
 
+using EuclideanDistance = MinkowskiDistance<2>;
+/// ユークリッド距離を求める関数（関数オブジェクト）
+/**
+	\param vec1 データ点1の座標ベクトル
+	\param vec2 データ点2の座標ベクトル
+
+	\return データ点間の距離
+*/
 const EuclideanDistance euclidean_distance;
 
 }

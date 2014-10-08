@@ -8,12 +8,13 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_REGEX_HPP
 #define SIG_UTIL_REGEX_HPP
 
-#include "../traits/type_map.hpp"
+#include "../helper/type_map.hpp"
+#include "../helper/maybe.hpp"
 #include <regex>
 
-#define NOMINMAX
 
 #if SIG_MSVC_ENV
+#define NOMINMAX
 #include <windows.h>
 #pragma warning ( disable : 4996 )
 #endif
@@ -98,7 +99,7 @@ auto make_regex(S const& expression) ->typename impl::Str2RegexSelector<impl::TS
 */
 template <class S>
 auto regex_search(S src, typename impl::Str2RegexSelector<impl::TString<S>>::regex const& expression)
-	->Just<std::vector<std::vector<impl::TString<S>>>>
+	->Maybe<std::vector<std::vector<impl::TString<S>>>>
 {
 	using R = std::vector<std::vector<impl::TString<S>>>;
 	typename impl::Str2RegexSelector<impl::TString<S>>::smatch match;

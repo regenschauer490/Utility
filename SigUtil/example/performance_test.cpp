@@ -66,7 +66,7 @@ void OptionalPerformanceTest()
 		sig::array<double, M> ar;
 
 		for (int i = 0; i < M; ++i){
-			ar[i] = sig::fromJust(sig::cosine_similarity(dot1, dot2));
+			ar[i] = sig::cosine_similarity(dot1, dot2);
 		}
 		tw2.save();
 	}

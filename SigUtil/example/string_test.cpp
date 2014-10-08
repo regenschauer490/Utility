@@ -41,14 +41,14 @@ void RegexTest()
 	TVec2 test3 = { { "tes1a", "1", "a" }, { "tes2b", "2", "b" } };
 	for (uint i=0; i < sig::fromJust(matches1).size(); ++i){
 		for (uint j = 0; j < sig::fromJust(matches1)[i].size(); ++j){
-			assert(sig::is_container_valid(matches1) && sig::fromJust(matches1)[i][j] == test3[i][j]);
+			assert(sig::isJust(matches1) && sig::fromJust(matches1)[i][j] == test3[i][j]);
 		}
 	}
 
 	//正規表現で検索 (エスケープ済みの文字列を使用)
 	auto matches2 = sig::regex_search("search「? or (lol) must be escaped」", SIG_Regex(escaped1));
 	
-	assert(sig::is_container_valid(matches2) && sig::fromJust(matches2)[0][0] == raw1);
+	assert(sig::isJust(matches2) && sig::fromJust(matches2)[0][0] == raw1);
 #endif
 }
 
@@ -208,11 +208,7 @@ void TagDealerTest()
 
 	assert(sig::fromJust(decoded) == "test");
 
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-	if (ignored) assert(false);				//ignored == nothing
-#else
-	assert(ignored == "");
-#endif
+	assert(!sig::isJust(ignored));				//ignored == nothing
 
 	//まとめてエンコード
 	//encoded_vec = "<TAG1>str1<TAG1><TAG2>str2<TAG2><TAG3>str3<TAG3>"
@@ -220,13 +216,12 @@ void TagDealerTest()
 
 	TVec test{ "str1", "str3" };
 
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	//まとめてデコード
 	auto decoded_vec = tag_dealer.decode(encoded_vec, std::deque<std::string>{"TAG1", "TAG3"});
 
-	if (decoded){
-		for (uint i = 0; i< decoded_vec->size(); ++i) assert((*decoded_vec)[i] == test[i]);
+	if (sig::isJust(decoded)){
+		auto dec_v = sig::fromJust(decoded_vec);
+		for (uint i = 0; i< dec_v.size(); ++i) assert((dec_v)[i] == test[i]);
 	}
-#endif
 }
 

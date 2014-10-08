@@ -1,7 +1,9 @@
 ﻿#include "tool_test.h"
 #include "../lib/calculation.hpp"
 
+
 #if SIG_MSVC_ENV
+#define NOMINMAX
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -60,11 +62,9 @@ void TimeWatchTest()
 	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(1)), 200, moe));		//200 ± moe (ms)
 	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(2)), 300, moe));		//300 ± moe (ms)
 	assert(sig::equal_tolerant(sig::fromJust(tw.get_lap_time(3)), 400, moe));		//400 ± moe (ms)
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-	assert(! tw.get_lap_time(4));
-#else
-	assert(tw.get_lap_time(4) == -1);
-#endif
+
+	assert(! sig::isJust(tw.get_lap_time(4)));	// no data
+
 	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(0)), 100, moe));	//100 ± moe (ms)
 	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(1)), 300, moe));	//300 ± moe (ms)
 	assert(sig::equal_tolerant(sig::fromJust(tw.get_split_time(2)), 600, moe));	//600 ± moe (ms)
@@ -114,25 +114,15 @@ void HistgramTest()
 	auto count = hist.get_count();		//0 ～ BIN_NUM-1 の頻度を取得
 	assert(count[2] == 2);				//[ -6, -4)の個数
 
-	auto c2 = hist.get_count(2);
-	auto c100 = hist.get_count(100);
+	auto c2 = hist.get_count(2);	// maybe<uint>
+	auto c100 = hist.get_count(100);	// maybe<uint>
 
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-	if(c2){
-		assert(std::get<1>(*c2) == -6);
-		assert(std::get<2>(*c2) == -4);
-		assert(std::get<0>(*c2) == 2);
+	if(sig::isJust(c2)){
+		assert(std::get<1>(sig::fromJust(c2)) == -6);
+		assert(std::get<2>(sig::fromJust(c2)) == -4);
+		assert(std::get<0>(sig::fromJust(c2)) == 2);
 	}
-	assert(!c100);
-#else
-	assert(std::get<1>(c2) == -6);
-	assert(std::get<2>(c2) == -4);
-	assert(std::get<0>(c2) == 2);
-
-	assert(std::get<1>(c100) == 0);
-	assert(std::get<2>(c100) == 0);
-	assert(std::get<0>(c100) == 0);
-#endif
+	assert(!sig::isJust(c100));
 
 	bool over = hist.is_over_range();	//初期設定の範囲外の値が存在したか
 	assert(over == 1);				//範囲外の値の個数：1

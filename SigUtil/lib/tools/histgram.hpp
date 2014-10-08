@@ -134,7 +134,7 @@ public:
 
 	// bin番目(0 ～ Bin-1)の頻度を取得
 	// return -> tuple<頻度, 範囲最小値(以上), 範囲最大値(未満)>
-	auto get_count(uint bin) const ->Just<std::tuple<uint, int, int>>
+	auto get_count(uint bin) const ->Maybe<std::tuple<uint, int, int>>
 	{
 		return bin < Bin
 			? Just<std::tuple<uint, int, int>>(std::make_tuple(count_[bin + 1], delta_*bin + min_, delta_*(bin + 1) + min_))

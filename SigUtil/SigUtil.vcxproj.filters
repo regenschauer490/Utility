@@ -22,9 +22,6 @@
     <Filter Include="ヘッダー ファイル\distance">
       <UniqueIdentifier>{d1b65559-2b91-4a40-9c75-3ed609aadf8e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\traits">
-      <UniqueIdentifier>{7816978e-fefc-4cd8-b0ad-50f0894fcd6a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\helper">
       <UniqueIdentifier>{d9b050ec-e651-4d2b-8eba-2863c9650d8a}</UniqueIdentifier>
     </Filter>
@@ -79,6 +76,15 @@
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
     <ClCompile Include="example\performance_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
+    <ClCompile Include="example\ublas_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
+    <ClCompile Include="example\convergence_test.cpp">
+      <Filter>ソース ファイル\example</Filter>
+    </ClCompile>
+    <ClCompile Include="example\maybe_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
   </ItemGroup>
@@ -173,20 +179,8 @@
     <ClInclude Include="lib\distance\comparable_check.hpp">
       <Filter>ヘッダー ファイル\distance</Filter>
     </ClInclude>
-    <ClInclude Include="lib\traits\container_traits.hpp">
-      <Filter>ヘッダー ファイル\traits</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\traits\type_map.hpp">
-      <Filter>ヘッダー ファイル\traits</Filter>
-    </ClInclude>
     <ClInclude Include="example\container_specialize_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\error_convergence.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\blas.hpp">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="lib\helper\helper.hpp">
       <Filter>ヘッダー ファイル\helper</Filter>
@@ -235,6 +229,30 @@
     </ClInclude>
     <ClInclude Include="lib\tools.hpp">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="example\ublas_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\calculation\ublas.hpp">
+      <Filter>ヘッダー ファイル\calculation</Filter>
+    </ClInclude>
+    <ClInclude Include="example\convergence_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\tools\convergence.hpp">
+      <Filter>ヘッダー ファイル\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\helper\type_map.hpp">
+      <Filter>ヘッダー ファイル\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\helper\container_traits.hpp">
+      <Filter>ヘッダー ファイル\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\helper\maybe.hpp">
+      <Filter>ヘッダー ファイル\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="example\maybe_test.h">
+      <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,11 +8,11 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_CONVERT_HPP
 #define SIG_UTIL_CONVERT_HPP
 
-#include "../traits/container_traits.hpp"
+#include "../helper/container_traits.hpp"
 
-#define NOMINMAX
 
 #if SIG_MSVC_ENV
+#define NOMINMAX
 #include <windows.h>
 #pragma warning ( disable : 4996 )
 #endif
@@ -67,14 +67,14 @@ inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::strin
 	\return 変換後の文字列集合が格納されたコンテナ
 	\sa wstr_to_str(std::wstring const& src)
 */
-template <class C, typename std::enable_if<std::is_same<typename container_traits<C>::value_type, std::wstring>::value>::type*& = enabler>
-auto wstr_to_str(C const& strvec) -> typename container_traits<C>::template rebind<std::string>
+template <class C, typename std::enable_if<std::is_same<typename impl::container_traits<C>::value_type, std::wstring>::value>::type*& = enabler>
+auto wstr_to_str(C const& strvec) -> typename impl::container_traits<C>::template rebind<std::string>
 {
-	using R = typename container_traits<C>::template rebind<std::string>;
+	using R = typename impl::container_traits<C>::template rebind<std::string>;
 	R result;
 	for (auto const& str : strvec){
 		std::string r = wstr_to_str(str);
-		if (!r.empty()) container_traits<R>::add_element(result, std::move(r));
+		if (!r.empty()) impl::container_traits<R>::add_element(result, std::move(r));
 	}
 	return result;
 }
@@ -112,14 +112,14 @@ inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstri
 	\return 変換後の文字列が格納されたコンテナ
 	\sa  str_to_wstr(std::string const& src)
 */
-template <class C, typename std::enable_if<std::is_same<typename container_traits<C>::value_type, std::string>::value>::type*& = enabler>
-auto str_to_wstr(C const& strvec) ->typename container_traits<C>::template rebind<std::wstring>
+template <class C, typename std::enable_if<std::is_same<typename impl::container_traits<C>::value_type, std::string>::value>::type*& = enabler>
+auto str_to_wstr(C const& strvec) ->typename impl::container_traits<C>::template rebind<std::wstring>
 {
-	using R = typename container_traits<C>::template rebind<std::wstring>;
+	using R = typename impl::container_traits<C>::template rebind<std::wstring>;
 	R result;
 	for (auto const& str : strvec){
 		std::wstring r = str_to_wstr(str);
-		if (!r.empty()) container_traits<R>::add_element(result, std::move(r));
+		if (!r.empty()) impl::container_traits<R>::add_element(result, std::move(r));
 	}
 	return result;
 }

@@ -224,7 +224,7 @@ void StatisticalOperationTest()
 	sig::for_each(sig::DebugEqual(), standard1, standard_test1);
 	sig::for_each(sig::DebugEqual(), standard2, standard_test2);
 
-
+	// normalize distribution
 	sig::array<double, 5> data_dist1{ 1, 2, 3, 4, 5 };
 	const sig::array<int, 5> data_dist2{ 1, 2, 3, 4, 5 };
 	sig::array<double, 5> normal_dist_test{ 1.0/15, 2.0/15, 3.0/15, 4.0/15, 5.0/15  };

@@ -10,6 +10,7 @@ http://opensource.org/licenses/mit-license.php
 
 #include "helper/helper.hpp"
 #include "helper/container_helper.hpp"
+#include "helper/maybe.hpp"
 
 /* 関数型プログラミング サポート */
 
@@ -19,10 +20,10 @@ namespace sig
 template <class F, class C1, class... Cs>
 auto variadicZipWith(F const& func, C1 const& container1, Cs const&... containers)
 {
-	using R = typename container_traits<C1>::template rebind<decltype(impl::eval(
+	using R = typename impl::container_traits<C1>::template rebind<decltype(impl::eval(
 		func,
-		std::declval<typename container_traits<C1>::value_type>(),
-		std::declval<typename container_traits<Cs>::value_type>()...
+		std::declval<typename impl::container_traits<C1>::value_type>(),
+		std::declval<typename impl::container_traits<Cs>::value_type>()...
 	))>;
 
 	R result;
@@ -54,7 +55,7 @@ auto zipWith(F const& func, C1 const& container1, C2 const& container2)
 template <class F, class T, class C>
 auto foldl(F const& func, T init, C const& container)
 {
-	using R = decltype(func(init, std::declval<typename container_traits<C>::value_type>()));
+	using R = decltype(func(init, std::declval<typename impl::container_traits<C>::value_type>()));
 	return std::accumulate(std::begin(container), std::end(container), static_cast<R>(init), func);
 }
 
@@ -64,7 +65,7 @@ auto foldl(F const& func, T init, C const& container)
 template <class F, class T, class C>
 auto foldr(F const& func, T init, C const& container)
 {
-	using R = typename std::result_of<F(T, typename container_traits<C>::value_type)>::type;//decltype(impl::eval(func, init, std::declval<typename container_traits<C>::value_type>()));
+	using R = typename std::result_of<F(T, typename impl::container_traits<C>::value_type)>::type;//decltype(impl::eval(func, init, std::declval<typename impl::container_traits<C>::value_type>()));
 	return std::accumulate(std::rbegin(container), std::rend(container), static_cast<R>(init), std::bind(func, _2, _1));
 }
 #endif
@@ -77,7 +78,7 @@ auto dotProduct(F1 const& fold_func, F2 const& oper_func, T init, Cs const&... c
 	using R = decltype(impl::eval(
 		fold_func,
 		init,
-		impl::eval(oper_func, std::declval<typename container_traits<Cs>::value_type>()...)
+		impl::eval(oper_func, std::declval<typename impl::container_traits<Cs>::value_type>()...)
 	));
 	R result = init;
 	const uint length = min(containers.size()...);
@@ -95,7 +96,7 @@ auto filter(F const& pred, C const& container)
 {
 	C result;
 	for (auto const& e : container){
-		if (pred(e)) container_traits<C>::add_element(result, e);
+		if (pred(e)) impl::container_traits<C>::add_element(result, e);
 	}
 	return result;
 }
@@ -107,8 +108,8 @@ auto partition(F const& pred, C const& container)
 	C result1, result2;
 
 	for (auto const& e : container){
-		if (pred(e)) container_traits<C>::add_element(result1, e);
-		else container_traits<C>::add_element(result2, e);
+		if (pred(e)) impl::container_traits<C>::add_element(result1, e);
+		else impl::container_traits<C>::add_element(result2, e);
 	}
 	return std::make_tuple(std::move(result1), std::move(result2));
 }
@@ -119,12 +120,12 @@ auto partition(F const& pred, C const& container)
 // for variadic parameter, const lvalue reference
 template <class... Cs
 #if !SIG_MSVC_ENV || !(MSC_VER < 1900)
-	, typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
+	, typename std::enable_if< And(impl::container_traits<Cs>::exist...) >::type*& = enabler
 #endif
 	>
 auto zip(Cs const&... containers)
 {
-	return variadicZipWith([](typename container_traits<Cs>::value_type const&... vs){
+	return variadicZipWith([](typename impl::container_traits<Cs>::value_type const&... vs){
 		return std::make_tuple(vs...);
 	}, containers...);
 }
@@ -133,17 +134,17 @@ auto zip(Cs const&... containers)
 // for variadic parameter, rvalue reference
 template <class C1, class... Cs,
 	typename std::enable_if<!std::is_lvalue_reference<C1>::value && !And(std::is_lvalue_reference<Cs>::value...)>::type*& = enabler,
-	typename std::enable_if< And(container_traits<Cs>::exist...) >::type*& = enabler
+	typename std::enable_if< And(impl::container_traits<Cs>::exist...) >::type*& = enabler
 >
 auto zip(C1&& container1, Cs&&... containers)
 {
-	using RT = typename container_traits<C1>::template rebind<
-		std::tuple<typename container_traits<C1>::value_type, typename container_traits<Cs>::value_type...>
+	using RT = typename impl::container_traits<C1>::template rebind<
+		std::tuple<typename impl::container_traits<C1>::value_type, typename impl::container_traits<Cs>::value_type...>
 	>;
 
 	const uint length = min(container1.size(), containers.size()...);
 	RT result;
-	iterative_make(length, result, [](typename container_traits<C1>::value_type&& v1, typename container_traits<Cs>::value_type&&... vs){
+	iterative_make(length, result, [](typename impl::container_traits<C1>::value_type&& v1, typename impl::container_traits<Cs>::value_type&&... vs){
 		return std::make_tuple(std::move(v1), std::move(vs)...);
 	}, std::make_move_iterator(std::begin(container1)), std::make_move_iterator(std::begin(containers))...);
 
@@ -185,12 +186,12 @@ auto zip(std::tuple<Cs...>&& t_containers)
 template <size_t Index, class CT>
 auto unzip(CT const& c_tuple)
 {
-	using T = typename std::tuple_element<Index, typename container_traits<CT>::value_type>::type;
+	using T = typename std::tuple_element<Index, typename impl::container_traits<CT>::value_type>::type;
 	using C = std::vector<T>;
 	C result;
 
 	for (auto const& e : c_tuple){
-		container_traits<C>::add_element(result, std::get<Index>(e));
+		impl::container_traits<C>::add_element(result, std::get<Index>(e));
 	}
 	return result;
 }
@@ -198,33 +199,33 @@ auto unzip(CT const& c_tuple)
 template <uint Index, class CT, typename std::enable_if<!std::is_lvalue_reference<CT>::value>::type*& = enabler>
 auto unzip(CT&& c_tuple)
 {
-	using T = typename std::tuple_element<Index, typename container_traits<CT>::value_type>::type;
+	using T = typename std::tuple_element<Index, typename impl::container_traits<CT>::value_type>::type;
 	using C = std::vector<T>;
 	C result;
 
 	for (auto& t : c_tuple){
-		container_traits<C>::add_element(result, std::get<Index>(std::move(t)));
+		impl::container_traits<C>::add_element(result, std::get<Index>(std::move(t)));
 	}
 	return result;
 }
 
-template<class CT, size_t I = 0, typename std::enable_if<I + 1 == std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
+template<class CT, size_t I = 0, typename std::enable_if<I + 1 == std::tuple_size<typename impl::container_traits<CT>::value_type>::value, void>::type*& = enabler>
 auto UnzipImpl_(CT const& c_tuple)
 {
 	return std::make_tuple(unzip<I>(c_tuple));
 }
-template<class CT, size_t I = 0, typename std::enable_if<I + 1 < std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
+template<class CT, size_t I = 0, typename std::enable_if<I + 1 < std::tuple_size<typename impl::container_traits<CT>::value_type>::value, void>::type*& = enabler>
 auto UnzipImpl_(CT const& c_tuple)
 {
 	return std::tuple_cat(std::make_tuple(unzip<I>(c_tuple)), UnzipImpl_<CT, I + 1>(c_tuple));
 }
 
-template<class CT, uint I = 0, typename std::enable_if<I + 1 == std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
+template<class CT, uint I = 0, typename std::enable_if<I + 1 == std::tuple_size<typename impl::container_traits<CT>::value_type>::value, void>::type*& = enabler>
 auto UnzipImpl_(CT&& c_tuple)
 {
 	return std::make_tuple(unzip<I>(std::forward<CT>(c_tuple)));
 }
-template<class CT, uint I = 0, typename std::enable_if<I + 1 < std::tuple_size<typename container_traits<CT>::value_type>::value, void>::type*& = enabler>
+template<class CT, uint I = 0, typename std::enable_if<I + 1 < std::tuple_size<typename impl::container_traits<CT>::value_type>::value, void>::type*& = enabler>
 auto UnzipImpl_(CT&& c_tuple)
 {
 	return std::tuple_cat(std::make_tuple(unzip<I>(std::forward<CT>(c_tuple))), UnzipImpl_<CT, I + 1>(std::forward<CT>(c_tuple)));
@@ -250,7 +251,7 @@ template <class T, class C = std::vector<T>>
 C replicate(uint n, T const& value)
 {
 	C result;
-	for (uint i = 0; i<n; ++i) container_traits<C>::add_element(result, value);
+	for (uint i = 0; i<n; ++i) impl::container_traits<C>::add_element(result, value);
 	return result;
 }
 
@@ -261,7 +262,7 @@ C seq(T1 st, T2 d, uint n)
 {
 	using R = typename std::common_type<T1, T2>::type;
 	C result;
-	for (uint i = 0; i<n; ++i) container_traits<C>::add_element(result, static_cast<R>(st) + i * static_cast<R>(d));
+	for (uint i = 0; i<n; ++i) impl::container_traits<C>::add_element(result, static_cast<R>(st) + i * static_cast<R>(d));
 	return result;
 }
 
@@ -281,7 +282,7 @@ template <class C>
 C merge(C const& container1, C const& container2)
 {
 	auto result = container1;
-	container_traits<C>::concat(result, container2);
+	impl::container_traits<C>::concat(result, container2);
 	return result;
 }
 
@@ -291,8 +292,8 @@ template <class C, class C1, class C2>
 C merge(C1 const& container1, C2 const& container2)
 {
 	C result;
-	for (auto v : container1) container_traits<C>::add_element(result, v);
-	for (auto v : container2) container_traits<C>::add_element(result, v);
+	for (auto v : container1) impl::container_traits<C>::add_element(result, v);
+	for (auto v : container2) impl::container_traits<C>::add_element(result, v);
 	return result;
 }
 
@@ -303,7 +304,7 @@ C take(uint n, C const& container)
 {
 	C result;
 	uint i = 0;
-	for (auto it = std::begin(container); i < n; ++i, ++it) container_traits<C>::add_element(result, *it);
+	for (auto it = std::begin(container); i < n; ++i, ++it) impl::container_traits<C>::add_element(result, *it);
 	return result;
 }
 
@@ -316,7 +317,7 @@ C drop(uint n, C const& container)
 	uint i = 0;
 	auto it = std::begin(container), end = std::end(container);
 	for (; i < n && it != end; ++i, ++it) ;
-	for (; it != end; ++i, ++it) container_traits<C>::add_element(result, *it);
+	for (; it != end; ++i, ++it) impl::container_traits<C>::add_element(result, *it);
 	return result;
 }
 
