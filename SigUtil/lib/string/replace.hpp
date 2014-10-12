@@ -18,6 +18,11 @@ namespace sig
 {
 
 /// 全角・半角文字の置換処理を行う
+/**
+	\code
+	auto& zhr = ZenHanReplace::get_instance();
+	\endcode
+*/
 class ZenHanReplace
 {
 	std::unordered_map<wchar_t, wchar_t> alphabet_;			// 全角アルファベット -> 半角アルファベット
@@ -116,10 +121,13 @@ private:
 	ZenHanReplace(const ZenHanReplace&) = delete;
 
 public:
+	/// インスタンスの参照を取得
 	/**
-		インスタンスの参照を取得
+		\code
+		auto& zhr = ZenHanReplace::get_instance();
+		\endcode
 	*/
-	static ZenHanReplace& getInstance(){
+	static ZenHanReplace& get_instance(){
 		static ZenHanReplace instance;
 		return instance;
 	}

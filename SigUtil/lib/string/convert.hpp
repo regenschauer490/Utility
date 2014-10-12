@@ -38,7 +38,14 @@ namespace sig
 	ex: Windows環境では UTF-16 -> Shift-JIS
 
 	\param src 変換対象の文字列
+
 	\return 変換後の文字列
+
+	\code
+	const std::wstring wstr(L"aあ亜");
+
+	std::string str = wstr_to_str(wstr);
+	\endcode
 */
 inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::string>
 {
@@ -63,9 +70,17 @@ inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::strin
 	コンテナの全要素をまとめて変換
 	ex: Windows環境では UTF-16 -> Shift-JIS
 
-	\param src 変換対象の文字列集合が格納されたコンテナ
+	\param src 変換対象の文字列集合が格納されたコンテナ（\ref sig_container ）
+
 	\return 変換後の文字列集合が格納されたコンテナ
+
 	\sa wstr_to_str(std::wstring const& src)
+
+	\code
+	const std::vector<std::wstring> wsvec{L"a", L"あ", L"亜");
+
+	auto svec = wstr_to_str(wsvec);	// std::vector<std::string>
+	\endcode
 */
 template <class C, typename std::enable_if<std::is_same<typename impl::container_traits<C>::value_type, std::wstring>::value>::type*& = enabler>
 auto wstr_to_str(C const& strvec) -> typename impl::container_traits<C>::template rebind<std::string>
@@ -84,7 +99,14 @@ auto wstr_to_str(C const& strvec) -> typename impl::container_traits<C>::templat
 	ex: Windows環境では Shift-JIS -> UTF-16
 	
 	\param src 変換対象の文字列
+
 	\return 変換後の文字列
+
+	\code
+	const std::string str = "aあ亜";
+
+	std::wstring wstr = str_to_wstr(str);
+	\endcode
 */
 inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstring>
 {
@@ -108,9 +130,17 @@ inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstri
 	コンテナの全要素をまとめて変換
 	ex: Windows環境では Shift-JIS -> UTF-16
 
-	\param src 変換対象の文字列が格納されたコンテナ
+	\param src 変換対象の文字列が格納されたコンテナ（\ref sig_container ）
+
 	\return 変換後の文字列が格納されたコンテナ
+
 	\sa  str_to_wstr(std::string const& src)
+
+	\code
+	const std::vector<std::string> svec{"a", "あ", "亜");
+
+	auto wsvec = str_to_wstr(svec);		// std::vector<std::wstring>
+	\endcode
 */
 template <class C, typename std::enable_if<std::is_same<typename impl::container_traits<C>::value_type, std::string>::value>::type*& = enabler>
 auto str_to_wstr(C const& strvec) ->typename impl::container_traits<C>::template rebind<std::wstring>
@@ -128,7 +158,9 @@ auto str_to_wstr(C const& strvec) ->typename impl::container_traits<C>::template
 /// UTF-8 -> UTF-16
 /**
 	\pre <codecvt>が必要
+
 	\param src 変換対象の文字列
+
 	\return 変換後の文字列
 */
 inline auto utf8_to_utf16(std::string const& src) ->std::u16string
@@ -141,7 +173,9 @@ inline auto utf8_to_utf16(std::string const& src) ->std::u16string
 /// UTF-16 -> UTF-8
 /**
 	\pre <codecvt>が必要
+
 	\param src 変換対象の文字列
+
 	\return 変換後の文字列
 */
 inline auto utf16_to_utf8(std::u16string const& src) ->std::string
@@ -154,7 +188,9 @@ inline auto utf16_to_utf8(std::u16string const& src) ->std::string
 /// UTF-8 -> UTF-32
 /**
 	\pre <codecvt>が必要
+
 	\param src 変換対象の文字列
+
 	\return 変換後の文字列
 */
 inline auto utf8_to_utf32(std::string const& src) ->std::u32string
@@ -167,7 +203,9 @@ inline auto utf8_to_utf32(std::string const& src) ->std::u32string
 /// UTF-32 -> UTF-8
 /**
 	\pre <codecvt>が必要
+
 	\param src 変換対象の文字列
+
 	\return 変換後の文字列
 */
 inline auto utf32_to_utf8(std::u32string const& src) ->std::string
@@ -183,7 +221,9 @@ inline auto utf32_to_utf8(std::u32string const& src) ->std::string
 /// ShiftJIS -> UTF-16
 /**
 	\pre Windows環境のみ
+
 	\param src 変換対象の文字列
+
 	\return 変換後の文字列
 */
 inline auto sjis_to_utf16(std::string const& src) ->std::u16string //Just<std::u16string>
@@ -201,7 +241,9 @@ inline auto sjis_to_utf16(std::string const& src) ->std::u16string //Just<std::u
 /// UTF-16 -> ShiftJIS
 /**
 	\pre Windows環境のみ
+
 	\param src 変換対象の文字列
+
 	\return 変換後の文字列
 */
 inline auto utf16_to_sjis(std::u16string const& src) ->std::string //Just<std::string>
@@ -220,7 +262,9 @@ inline auto utf16_to_sjis(std::u16string const& src) ->std::string //Just<std::s
 /// ShiftJIS -> UTF-8
 /**
 	\pre Windows環境のみ
+
 	\param src 変換対象の文字列
+
 	\return 変換後の文字列
 */
 inline auto sjis_to_utf8(std::string const& src) ->std::string
@@ -231,7 +275,9 @@ inline auto sjis_to_utf8(std::string const& src) ->std::string
 /// UTF-8 -> ShiftJIS
 /**
 	\pre Windows環境のみ
+
 	\param src 変換対象の文字列
+
 	\return 変換後の文字列
 */
 inline auto utf8_to_sjis(std::string const& src) ->std::string

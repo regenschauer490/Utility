@@ -7,7 +7,7 @@
 // splitŠÖ”‚Ìˆ—ŠÔ‚ÌŠm”F
 void SplitPerformanceTest()
 {
-	auto long_text = sig::fromJust(sig::read_line<std::string>(SIG_TO_FPSTR("../SigUtil/example/test_file/long_text.txt")));
+	auto long_text = sig::fromJust(sig::load_line<std::string>(SIG_TO_FPSTR("../SigUtil/example/test_file/long_text.txt")));
 
 	sig::TimeWatch tw;
 	auto split = sig::split(long_text[0], ",");

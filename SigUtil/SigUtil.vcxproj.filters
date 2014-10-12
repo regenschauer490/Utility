@@ -34,6 +34,9 @@
     <Filter Include="ヘッダー ファイル\string">
       <UniqueIdentifier>{37bd051e-5b1e-48b0-bf0d-3f4e272a87fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\file">
+      <UniqueIdentifier>{ef7bf198-8b3d-4825-9a78-4a7668948f88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -79,9 +82,6 @@
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
     <ClCompile Include="example\ublas_test.cpp">
-      <Filter>ソース ファイル\example</Filter>
-    </ClCompile>
-    <ClCompile Include="example\convergence_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
     <ClCompile Include="example\maybe_test.cpp">
@@ -236,9 +236,6 @@
     <ClInclude Include="lib\calculation\ublas.hpp">
       <Filter>ヘッダー ファイル\calculation</Filter>
     </ClInclude>
-    <ClInclude Include="example\convergence_test.h">
-      <Filter>ヘッダー ファイル\example</Filter>
-    </ClInclude>
     <ClInclude Include="lib\tools\convergence.hpp">
       <Filter>ヘッダー ファイル\tools</Filter>
     </ClInclude>
@@ -253,6 +250,15 @@
     </ClInclude>
     <ClInclude Include="example\maybe_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\file\load.hpp">
+      <Filter>ヘッダー ファイル\file</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\file\pass.hpp">
+      <Filter>ヘッダー ファイル\file</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\file\save.hpp">
+      <Filter>ヘッダー ファイル\file</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

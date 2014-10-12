@@ -21,6 +21,7 @@ namespace sig
 	\param func 二項演算関数
 	\param v1 引数1
 	\param v2 引数2
+
 	\return 演算結果
 */
 template <class OP, class T1, class T2>
@@ -123,21 +124,36 @@ auto binary_operation(OP func, T v, C const& c)
 
 /// 加法関数plusの自動生成
 /**
-	ex: plus(1.5, {1,2,3}). return : {2.5, 3.5, 4.5}
+	\code
+	std::vector<int> vec{1,2,3};
+	std::list<int> list{3,2,1};
+
+	auto p1 = plus(1, 2.5);			// 3.5
+	auto p2 = plus(1.5, vec);		// vector<double>{2.5, 3.5, 4.5}
+	auto p3 = plus(list, 2);		// list<int>{5, 4, 3}
+	auto p4 = plus(vec, list);		// vector<int>{4, 4, 4}
+	\endcode
 */
 SIG_MakeBinaryOperation(plus, +);
 
 /// 減法関数minusの自動生成
+/**
+	\sa SIG_MakeBinaryOperation(plus, +)
+*/
 SIG_MakeBinaryOperation(minus, -);
 
 /// 乗法関数multの自動生成
+/**
+	\sa SIG_MakeBinaryOperation(plus, +)
+*/
 SIG_MakeBinaryOperation(mult, *);
-/// 乗法関数multipliesの自動生成
 SIG_MakeBinaryOperation(multiplies, *);
 
 /// 除法関数divの自動生成
+/**
+	\sa SIG_MakeBinaryOperation(plus, +)
+*/
 SIG_MakeBinaryOperation(div, / );
-/// 除法関数dividesの自動生成
 SIG_MakeBinaryOperation(divides, / );
 
 }

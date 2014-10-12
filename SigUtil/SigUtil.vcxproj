@@ -151,7 +151,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="example\array_test.cpp" />
-    <ClCompile Include="example\convergence_test.cpp" />
     <ClCompile Include="example\maybe_test.cpp" />
     <ClCompile Include="example\ublas_test.cpp" />
     <ClCompile Include="example\calculate_test.cpp" />
@@ -169,7 +168,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="example\array_test.h" />
-    <ClInclude Include="example\convergence_test.h" />
     <ClInclude Include="example\maybe_test.h" />
     <ClInclude Include="example\ublas_test.h" />
     <ClInclude Include="example\calculate_test.h" />
@@ -198,6 +196,9 @@
     <ClInclude Include="lib\distance\KL_divergence.hpp" />
     <ClInclude Include="lib\distance\minkowski_distance.hpp" />
     <ClInclude Include="lib\distance\norm.hpp" />
+    <ClInclude Include="lib\file\load.hpp" />
+    <ClInclude Include="lib\file\pass.hpp" />
+    <ClInclude Include="lib\file\save.hpp" />
     <ClInclude Include="lib\helper\container_helper.hpp" />
     <ClInclude Include="lib\helper\container_traits.hpp" />
     <ClInclude Include="lib\helper\eval.hpp" />

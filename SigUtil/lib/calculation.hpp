@@ -12,5 +12,6 @@ http://opensource.org/licenses/mit-license.php
 
 #include "calculation/binary_operation.hpp"
 #include "calculation/statistics_util.hpp"
+#include "calculation/ublas.hpp"
 
 #endif

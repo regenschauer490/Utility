@@ -1,4 +1,4 @@
-#include "calculate_test.h"
+ï»¿#include "calculate_test.h"
 #include "debug.hpp"
 
 class Tes
@@ -21,42 +21,44 @@ const std::unordered_multiset<int> data4{ 1, -3, 5, -7 };
 
 void ArithmeticOperationsTest()
 {
-	// ƒXƒJƒ‰[ + ƒXƒJƒ‰[
+	// ã‚¹ã‚«ãƒ©ãƒ¼ + ã‚¹ã‚«ãƒ©ãƒ¼
 	assert(sig::plus(1, 1.0) == 2.0);
 
-	// ƒxƒNƒgƒ‹ + ƒXƒJƒ‰[
+	// ãƒ™ã‚¯ãƒˆãƒ« + ã‚¹ã‚«ãƒ©ãƒ¼
 	sig::for_each(
 		sig::DebugEqual(),
 		sig::plus(data2, 1.0),
 		sig::zipWith(std::plus<double>(), data2, sig::replicate(data2.size(), 1))
 	);
 
-	// ƒXƒJƒ‰[ + ƒxƒNƒgƒ‹
+	// ã‚¹ã‚«ãƒ©ãƒ¼ + ãƒ™ã‚¯ãƒˆãƒ«
 	sig::for_each(
 		sig::DebugEqual(),
 		sig::plus(1.0, data3),
 		sig::zipWith(std::plus<double>(), sig::replicate(data3.size(), 1), data3)
 	);
+	std::vector<int> vec1{ 1, 2, 3 };
+	std::vector<int> vec2{ 3, 2, 1 };
 
-	// ƒxƒNƒgƒ‹(sequence) + ƒxƒNƒgƒ‹(sequence)
+	// ãƒ™ã‚¯ãƒˆãƒ«(sequence) + ãƒ™ã‚¯ãƒˆãƒ«(sequence)
 	sig::for_each(
 		sig::DebugEqual(),
 		sig::plus(data1, data2), 
 		sig::zipWith(std::plus<double>(), data1, data2)
 	);	
 
-	// ƒxƒNƒgƒ‹(set) + ƒxƒNƒgƒ‹(sequence)
+	// ãƒ™ã‚¯ãƒˆãƒ«(set) + ãƒ™ã‚¯ãƒˆãƒ«(sequence)
 	sig::for_each(
 		sig::DebugEqual(),
 		sig::plus(data3, data0),
 		sig::zipWith(std::plus<double>(), data3, data0)
 	);
 
-	// ƒxƒNƒgƒ‹(hash set) + ƒxƒNƒgƒ‹(sequence)
+	// ãƒ™ã‚¯ãƒˆãƒ«(hash set) + ãƒ™ã‚¯ãƒˆãƒ«(sequence)
 	assert(sig::foldl(std::plus<double>(), 0.0, sig::plus(data4, data0)) == sig::foldl(std::plus<double>(), 0.0, sig::zipWith(std::plus<double>(), data4, data0)));
 
 
-	// Œ¸Z
+	// æ¸›ç®—
 	assert(sig::minus(2, 1.0) == 1.0);
 	assert(sig::minus(1.0, 2) == -1.0);
 
@@ -78,7 +80,7 @@ void ArithmeticOperationsTest()
 		sig::zipWith(std::minus<double>(), data2, data0)
 	);
 
-	// æZ
+	// ä¹—ç®—
 	assert(sig::multiplies(2, 2.0) == 4.0);
 
 	sig::for_each(
@@ -99,7 +101,7 @@ void ArithmeticOperationsTest()
 		sig::zipWith(std::multiplies<double>(), data2, data0)
 	);
 
-	// œZ
+	// é™¤ç®—
 	assert(sig::divides(2, 1.0) == 2.0);
 	assert(sig::divides(1.0, 2) == 0.5);
 
@@ -209,7 +211,7 @@ void StatisticalOperationTest()
 	assert(sig::equal(m3, tt2));
 
 	auto normal1 = sig::normalize(data7);
-	auto normal2 = sig::normalize(data8, 0);	// ‘æ2ˆø”‚Íƒ_ƒ~[(data8‚Íconst‚Å‚È‚¢‚½‚ßA–ß‚è’l‚ ‚è‚ÌŠÖ”‚ğŒÄ‚Ño‚·‚½‚ß‚É•K—v)
+	auto normal2 = sig::normalize(data8, 0);	// ç¬¬2å¼•æ•°ã¯ãƒ€ãƒŸãƒ¼(data8ã¯constã§ãªã„ãŸã‚ã€æˆ»ã‚Šå€¤ã‚ã‚Šã®é–¢æ•°ã‚’å‘¼ã³å‡ºã™ãŸã‚ã«å¿…è¦)
 	sig::normalize(data5);	
 
 	sig::for_each(sig::DebugEqual(), data5, normal_test1);
@@ -217,7 +219,7 @@ void StatisticalOperationTest()
 	sig::for_each(sig::DebugEqual(), normal2, normal_test2);
 
 	auto standard1 = sig::standardize(data7);
-	auto standard2 = sig::standardize(data8, 0);	// ‘æ2ˆø”‚Íƒ_ƒ~[
+	auto standard2 = sig::standardize(data8, 0);	// ç¬¬2å¼•æ•°ã¯ãƒ€ãƒŸãƒ¼
 	sig::standardize(data6);	
 
 	sig::for_each(sig::DebugEqual(), data6, standard_test1);

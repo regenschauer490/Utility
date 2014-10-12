@@ -13,13 +13,42 @@ http://opensource.org/licenses/mit-license.php
 #include <array>
 
 
-/* ヒストグラム(データ型指定、ビン数指定、値域指定、出力・保存機能) */
+/// \file histgram.hpp ヒストグラム（データ型指定、ビン数指定、値域指定、出力・保存機能）
 
 namespace sig
 {
 
-// ヒストグラム
-// T: 要素の型, Bin: 度数
+/// ヒストグラム
+/**
+	\tparam T 要素の型
+	\tparam Bin 度数
+
+	\code
+	std::vector<int> data{-100, -10, -6, -5, -1, 0, 3, 5, 5, 6, 6, 6, 7, 9, 10};
+
+	sig::Histgram<int, 10> hist(-10, 10);	//int型、ビン数10、[-10～10）の範囲の数値を集計
+
+	hist.count(data);
+	hist.print();
+	\endcode
+
+	\code
+	-- Histgram --
+
+	[-∞,-10)：0
+	[-10, -8)：1 |
+	[ -8, -6)：0
+	[ -6, -4)：2 ||
+	[ -4, -2)：0
+	[ -2,  0)：1 |
+	[  0,  2)：1 |
+	[  2,  4)：1 |
+	[  4,  6)：2 ||
+	[  6,  8)：4 ||||
+	[  8, 10)：1 |
+	[ 10,+∞)：1 |
+	\endcode
+*/
 template <class T, size_t Bin>
 class Histgram
 {
@@ -94,14 +123,18 @@ private:
 	}
 
 public:
-	// 要素の範囲を指定
+	/// コンストラクタ 
+	/**
+		\param min ヒストグラムの範囲の最小値
+		\param max ヒストグラムの範囲の最大値
+	*/
 	Histgram(T min, T max) : min_(min), max_(max), delta_(((double) max - min) / Bin), num_(0)
 	{
 		assert(delta_ > 0);
 		for (auto& ct : count_) ct = 0;
 	}
 
-	// 要素をbinに振り分けてカウント
+	/// 要素をbinに振り分けてカウント
 	void count(T value)
 	{
 		for (uint i = 0; i < Bin + 1; ++i){
@@ -119,12 +152,12 @@ public:
 		for (auto const& e : values) count(e);
 	}
 
-	// bin外の要素が存在したか
+	/// bin外の要素が存在したか
 	bool is_over_range() const{	return count_[0] || count_[Bin + 1]; }
 
 	//double GetAverage() const{ return std::accumulate(count_.begin(), count_.end(), 0, [](T total, T next){ return total + next; }) / static_cast<double>(num_); }
 
-	// 頻度を取得
+	/// 頻度を取得
 	auto get_count() const -> std::array<uint, Bin>
 	{
 		std::array<uint, Bin> tmp;
@@ -132,8 +165,12 @@ public:
 		return tmp;
 	}
 
-	// bin番目(0 ～ Bin-1)の頻度を取得
-	// return -> tuple<頻度, 範囲最小値(以上), 範囲最大値(未満)>
+	/// bin番目(0 ～ Bin-1)の頻度を取得
+	/**
+		\param bin ビン番号
+
+		\return tuple<頻度, 範囲最小値(以上), 範囲最大値(未満)>
+	*/
 	auto get_count(uint bin) const ->Maybe<std::tuple<uint, int, int>>
 	{
 		return bin < Bin
@@ -141,9 +178,10 @@ public:
 			: Nothing(std::make_tuple(0u, 0, 0));
 	}
 		
+	/// 標準出力へ出力
 	void print() const{ print_base_(std::cout); }
 
-	// ファイルへ出力
+	/// ファイルへ出力
 	void print(FilepassString const& file_pass) const
 	{
 		std::ofstream ofs(file_pass);

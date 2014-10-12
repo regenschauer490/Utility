@@ -12,28 +12,40 @@ http://opensource.org/licenses/mit-license.php
 #include <random>
 
 
-/* 乱数を手軽に扱うためのユーティリティ */
+/// \file random.hpp乱数を手軽に扱うためのユーティリティ
 
 namespace sig
 {
-// 初期化時に指定した範囲の一様分布乱数を発生させるクラス
-// デフォルトの乱数生成器: メルセンヌツイスター
-template <class NumType, class Engine = std::mt19937>
+/// 初期化時に指定した範囲の一様分布乱数を発生させるクラス
+/**
+	\tparam T 発生する乱数の型
+	\tparam Engine 乱数生成器（default：メルセンヌツイスター）
+
+	\code
+	SimpleRandom<int> rand_gen(-10, 10, true);	// [-10, 10]の一様分布乱数、デバッグモード(シード固定)
+
+	std::cout << rand_gen() << std::endl;
+	\endcode
+*/
+template <class T, class Engine = std::mt19937>
 class SimpleRandom 
 {
-	Engine engine_;		// 乱数生成アルゴリズム 
+	mutable Engine engine_;		// 乱数生成アルゴリズム 
 	
 	typename std::conditional <
-		std::is_integral<NumType>::value,
+		std::is_integral<T>::value,
 		std::uniform_int_distribution<int>,
-		std::uniform_real_distribution<double>
+		std::uniform_real_distribution<T>
 	> ::type dist_;		// 一様分布
 
 public:
-	// min: 乱数最小値
-	// max: 乱数最大値
-	// debug: 乱数のシードを固定するか
-	SimpleRandom(NumType min, NumType max, bool debug) : engine_(
+	/// コンストラクタ
+	/**
+		\param min 乱数最小値
+		\param max 乱数最大値
+		\param debug 乱数のシードを固定するか
+	*/
+	SimpleRandom(T min, T max, bool debug) : engine_(
 		[debug](){
 		std::random_device rnd;
 		std::vector<unsigned long> v(10);
@@ -46,18 +58,29 @@ public:
 		),
 		dist_(min, max){}
 
-	NumType operator()()
+	/// 乱数を発生させて取得
+	T operator()() const
 	{
 		return dist_(engine_);
 	}
 };
 
 
-// 重複の無い一様分布の整数乱数を生成
-// n:	発生させる値の個数
-// min:	最小値
-// max:	最大値
-// debug:	乱数のシードを固定するか
+/// 重複の無い一様分布の整数乱数を生成
+/**
+	\param n 発生させる値の個数
+	\param min 最小値
+	\param max 最大値
+	\param debug 乱数のシードを固定するか
+
+	\return 生成した乱数を格納したコンテナ
+
+	\code
+	auto rints = make_unique_numbers(10, 0, 20, true);	// [0, 20]の一様分布から10個重複無くサンプル
+
+	for (auto v : rints) std::cout << v << std::endl;
+	\endcode
+*/
 template < template < class T, class = std::allocator<T>> class Container = std::vector >
 Container<int> make_unique_numbers(uint n, int min, int max, bool debug)
 {

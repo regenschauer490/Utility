@@ -149,6 +149,13 @@ using std::placeholders::_2;
 	#define SIG_RegexReplace std::regex_replace
 #endif
 
+
+#define SIG_FILE_LOCALE_INIT\
+	static bool first = true; \
+	if (first){\
+	std::locale::global(std::locale("")); \
+	first = false; \
+	}
 }
 
 #endif

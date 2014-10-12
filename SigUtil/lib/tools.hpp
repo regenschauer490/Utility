@@ -10,6 +10,7 @@ http://opensource.org/licenses/mit-license.php
 
 /* 便利ツール */
 
+#include "tools/convergence.hpp"
 #include "tools/random.hpp"
 #include "tools/time_watch.hpp"
 #include "tools/histgram.hpp"

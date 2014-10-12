@@ -23,6 +23,37 @@ void RandomTest()
 	for (auto v : rints) std::cout << v << std::endl;
 }
 
+void ConvergenceTest()
+{
+	const double eps = 0.001;
+
+	sig::ManageConvergenceSimple conv_simple(eps);
+	double value = 100;
+	int ct1 = 0;
+
+	while (!conv_simple.update(value)){
+		value /= 2;
+		++ct1;
+	}
+	std::cout << ct1 << std::endl;
+
+
+	const double delta = 0.1;
+
+	sig::ManageConvergence<std::vector<double>, sig::RelativeError> conv(eps, sig::norm_L2);
+	std::vector<double> data{ 0.2, 0.3, 0.5 };
+	int ct2 = 0;
+
+	while (!conv.update(data)){
+		data[0] += delta * (0.3 - data[0]);
+		data[1] += delta * (0.3 - data[1]);
+		data[2] += delta * (0.4 - data[2]);
+		++ct2;
+	}
+
+	std::cout << ct2 << std::endl;
+}
+
 void TimeWatchTest()
 {
 	sig::TimeWatch tw;		//計測開始

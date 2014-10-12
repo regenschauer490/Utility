@@ -35,6 +35,19 @@ namespace sig
 #if SIG_MSVC_ENV
 
 /// 与えられた文字中に含まれる、正規表現の特殊文字をエスケープする
+/**
+	\code
+	auto raw1 = "? or () must be escaped";
+
+	auto escaped1 = escape_regex(raw1);
+	auto escaped2 = escape_regex(L"?とか()はエスケープすべき文字");
+
+	auto test1 = R"(\? or \(\) must be escaped)";
+	assert(escaped1 == test1);
+	auto test2 = LR"(\?とか\(\)はエスケープすべき文字)";
+	assert(escaped2 == test2);
+	\endcode
+*/
 inline auto escape_regex(std::string const& expression) ->std::string
 {
 	static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
@@ -53,6 +66,9 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 #elif (SIG_USE_GLIBCPP && SIG_ENABLE_BOOST)
 
 /// 与えられた文字中に含まれる、正規表現の特殊文字をエスケープする
+/**
+	\sa escape_regex(std::string const& expression)
+*/
 inline auto escape_regex(std::string const& expression) ->std::string
 {
 	static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
@@ -75,7 +91,17 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 /// エスケープ処理を行い、regexオブジェクトを返す
 /**
 	\param expression 正規表現の文字列
+
 	\return std::regex or std::wregex (libstdc++使用時 かつ boost使用時は boost::regex)
+
+	\code
+	auto reg = make_regex(L"(笑)");
+
+	// SIG_RegexReplace is std::regex_replace or boost::regex_replace
+	auto replaced = SIG_RegexReplace(std::wstring(L"てすと(笑)です"), reg, std::wstring(L""));
+
+	assert(replaced == L"てすとです");
+	\endcode
 */
 template <class S>
 auto make_regex(S const& expression) ->typename impl::Str2RegexSelector<impl::TString<S>>::regex
@@ -86,20 +112,26 @@ auto make_regex(S const& expression) ->typename impl::Str2RegexSelector<impl::TS
 
 /// std::regex_search のラッパ関数
 /**
-	探索結果にアクセスしやすい様に二次元配列(vector<vector<string>>)に結果を格納している
+	探索結果にアクセスしやすい様に二次元配列（vector<vector<string>>）に結果を格納している
 
 	\param src 探索対象の文字列
 	\param expression: 正規表現オブジェクト
-	\return 探索成功時には、result[マッチした箇所の順番][マッチ内の参照の順番. 0は全文, 1以降は参照箇所]を内包したoptionalを返す．失敗時にはnothingを返す
 
-	例：
-	src = "test tes1 tes2".
-	expression = std::regex("tes(\\d)").
-	return : [[tes1, 1], [tes2, 2]]
+	\return 探索成功時には、result[マッチした箇所の順番][マッチ内の参照の順番. 0は全文, 1以降は参照箇所]を内包した\ref sig_maybe を返す
+
+	\code
+	auto src = "test tes1 tes2";
+
+	auto result= regex_search(src, std::regex("tes(\\d)"));		// [[tes1, 1], [tes2, 2]]
+	assert(result[0][0] == "tes1");
+	assert(result[1][0] == "tes2");
+	\endcode
 */
 template <class S>
-auto regex_search(S src, typename impl::Str2RegexSelector<impl::TString<S>>::regex const& expression)
-	->Maybe<std::vector<std::vector<impl::TString<S>>>>
+auto regex_search(
+	S src,
+	typename impl::Str2RegexSelector<impl::TString<S>>::regex const& expression
+	) ->Maybe<std::vector<std::vector<impl::TString<S>>>>
 {
 	using R = std::vector<std::vector<impl::TString<S>>>;
 	typename impl::Str2RegexSelector<impl::TString<S>>::smatch match;

@@ -164,7 +164,7 @@ void FileSaveLoadTest()
 	sig::save_line(blghost_text2, fpass3);
 
 	//数値列の保存（追記、1行ずつ保存）
-	const auto list_num = std::unordered_set<double>{-1.1, -2.2, -3.3};
+	const auto list_num = std::list<double>{-1.1, -2.2, -3.3};
 	const auto uset_num = std::unordered_set<double>{1.1, 2.2, 3.3};
 	sig::save_num(list_num, fpass4, "\n", sig::WriteMode::overwrite);
 	sig::save_num(uset_num, fpass4, "\n", sig::WriteMode::append);
@@ -181,8 +181,8 @@ void FileSaveLoadTest()
 /* 読み込み */
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-	const auto read1 = sig::read_line<std::string>(fpass1);
-	const auto read2 = sig::read_line<std::wstring, std::list<std::wstring>>(fpass2);
+	const auto read1 = sig::load_line<std::string>(fpass1);
+	const auto read2 = sig::load_line<std::wstring, std::list<std::wstring>>(fpass2);
 	const auto read_num = sig::read_num<std::set<double>>(fpass4);
 	const auto read_mat = sig::read_num<std::vector<std::vector<int>>>(fpass5, ",");
 
@@ -209,8 +209,8 @@ void FileSaveLoadTest()
 	std::set<double> read_num2;
 	std::vector<std::vector<int>> read_mat2;
 
-	sig::read_line(read3, fpass1);
-	sig::read_line(read4, fpass2);
+	sig::load_line(read3, fpass1);
+	sig::load_line(read4, fpass2);
 	sig::read_num(read_num2, fpass4);
 	sig::read_num(read_mat2, fpass5, ",");
 	

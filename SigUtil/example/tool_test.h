@@ -4,6 +4,7 @@
 #include "../lib/array.hpp"
 
 void RandomTest();
+void ConvergenceTest();
 void TimeWatchTest();
 void HistgramTest();
 void PercentTest();

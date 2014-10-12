@@ -13,7 +13,8 @@ void TestHelperModules()
 	static_assert(!sig::And(false, true), "");
 	static_assert(!sig::And(false, false), "");
 	static_assert(sig::And(true, true, true, true), "");
-	static_assert(!sig::And(false, true, false, true, false), "");
+	static_assert(!sig::And(true, false, false, true, false), "");
+
 
 	//‰Â•Ï’·or
 	static_assert(sig::Or(true, true), "");
@@ -21,9 +22,8 @@ void TestHelperModules()
 	static_assert(sig::Or(false, true), "");
 	static_assert(!sig::Or(false, false), "");
 	static_assert(!sig::Or(false, false, false), "");
-#if !SIG_MSVC_ENV
 	static_assert(sig::Or(false, true, false, true, false), "");
-#endif
+
 
 	//xor
 	static_assert(!sig::Xor(true, true), "");
@@ -41,7 +41,7 @@ void TestHelperModules()
 	static_assert(!sig::greater(0.5, 1), "");
 	static_assert(sig::less(0.5, 1), "");
 
-#if !SIG_MSVC_ENV
+#if !SIG_MSVC_GT120
 	//Å¬’l/Å‘å’l
 	static_assert(sig::min(1, -1, 0, 3, 2) == -1, "");
 	static_assert(sig::max(1, -1, 0, 3, 2) == 3, "");
@@ -53,7 +53,7 @@ void TestHelperModules()
 	const auto maybe_true = sig::Just(1);
 	const auto maybe_false = sig::Nothing(0);
 
-#if !SIG_MSVC_ENV
+#if !SIG_MSVC_GT120
 	assert(sig::And(maybe_true, maybe_true));
 	assert(sig::And(maybe_true, true));
 	assert(!sig::And(maybe_true, maybe_false));
@@ -114,8 +114,8 @@ void TestHelperModules()
 	//generic |a - b|
 	static_assert(sig::abs_delta(1, 3) == 2, "");
 	static_assert(sig::abs_delta(-2, -1) == 1, "");
-	assert(sig::equal(sig::abs_delta(3.0, 1.5), 1.5));
-	assert(sig::equal(sig::abs_delta(3, 1.5), 1.5));
+	static_assert(sig::abs_delta(3.0, 1.5) == 1.5, "");
+	static_assert(sig::abs_delta(3, 1.5) == 1.5, "");
 
 	//generic a == b
 	assert(sig::equal(1, 1));
@@ -140,10 +140,15 @@ void TestHelperModules()
 	assert(ct1 == 10);
 
 	int ct2 = 0;
-	for (double f = 0.0; f != 1; f += 0.1){
-		if (++ct2 >= 1000) break;
+	for (double f = 0.0; f != 1; f += 0.01){
+		if (++ct2 == 1000) break;
 	}
 	assert(ct2 == 1000);
+
+	int ct3 = 0;
+	for (double f = 0.0; !sig::equal(f, 1); f += 0.01, ++ct3){
+		if (ct3 >= 100) assert(false);
+	}
 
 	for(int i=0; i<10000; ++i){
 		if(!sig::equal(1.1*i, i*1 + i*(1.0/10))){
@@ -167,6 +172,15 @@ void TestHelperModules()
 	assert(mr == 5);
 	assert(!sig::modify_range(mr, 0, 3));
 	assert(mr == 3);
+
+	//greater, less test
+	static_assert(sig::greater(1, 0), "");
+	static_assert(sig::less(0, 1), "");
+
+	//function object test
+	assert(sig::Identity()(1) == 1, "");
+	assert(sig::Increment()(1) == 2);
+	assert(sig::Decrement()(1) == 0);
 
 	//copy elements (into another container)
 	std::vector<int> orig{1,4,3,2,1};

@@ -16,7 +16,6 @@
 #include "example/iteration_test.h"
 #include "example/distance_test.h"
 #include "example/ublas_test.h"
-#include "example/convergence_test.h"
 #include "example/performance_test.h"
 
 /// test completed

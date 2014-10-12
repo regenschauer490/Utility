@@ -17,12 +17,6 @@ namespace sig
 /// バイナリ距離
 struct BinaryDistance
 {
-	/**
-	\param vec1 データ点1の座標ベクトル
-	\param vec2 データ点2の座標ベクトル
-
-	\return データ点間の距離
-	*/
 	template <class C1, class C2,
 		typename = typename std::enable_if<std::is_integral<typename impl::container_traits<C1>::value_type>::value>::type,
 		typename = typename std::enable_if<std::is_integral<typename impl::container_traits<C2>::value_type>::value>::type
@@ -45,10 +39,18 @@ struct BinaryDistance
 
 /// バイナリ距離を求める関数（関数オブジェクト）
 /**
-	\param vec1 データ点1の座標ベクトル
-	\param vec2 データ点2の座標ベクトル
+	\param vec1 データ点1の座標ベクトル（\ref sig_container ）
+	\param vec2 データ点2の座標ベクトル（\ref sig_container ）
 
 	\return データ点間の距離
+
+	\code
+	const array<uint, 4> dot1{ 1, 1, 0, 0 };		// sig::array
+	const std::list<bool> dot2{ true, false, true, true };
+
+	double d = binary_distance(dot1, dot2);
+	d;		// 0.75
+	\endcode
 */
 const BinaryDistance binary_distance;
 

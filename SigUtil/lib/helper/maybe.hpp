@@ -18,6 +18,24 @@ http://opensource.org/licenses/mit-license.php
 
 /// \file maybe.hpp HaskellのData.Maybeの機能を模倣した関数と、boost.optionalのためのユーティリティ関数
 
+/** \page sig_maybe Maybe
+	　SigUtilでは，値の取得失敗や無効値が生じる可能性がある関数の返り値として，Maybe型のオブジェクトを返すことで成否を判定できるようにしている．\n
+	すなわち，処理が成功していれば返り値から値を取り出すことができ，失敗していれば値を取り出す前に失敗したことを知ることができる．\n
+	以下にサンプルコードを示す．
+
+	\code
+	if(auto result = kl_divergence(dist1, dist2)))
+	{
+		double kl_value = *result;	// or fromJust(result);
+	}
+	\endcode
+	
+	　SigUtilのMaybeに関する機能は，boost.optionalと補助的な非メンバ関数から構成されており，HaskellのData.Maybeの機能を再現することに加え，C++で扱い易い様に工夫を加えている．\n
+	boost.optionalの使用経験がある人は今まで通りの感覚で使用でき，加えてbind演算（\ref maybe_bindop1 , \ref maybe_bindop2 ）や簡潔な値の代入（\ref maybe_assignop ）などを行えるようになる．\n\n
+
+	諸々の事情でboost.optionalを使うことができない場合，Maybeの実体は std::tuple<T, bool>となる（ただし，今後変更の可能性あり）．
+*/
+
 namespace sig
 {
 	
@@ -158,10 +176,10 @@ namespace sig
 	}
 
 
-	/// Haskell風のbind演算子. Maybe m => m a -> (a -> m b) -> m b
+	/// Haskell風のbind演算子. Maybe m => m a -> (a -> m b) -> m b	\anchor maybe_bindop1
 	/**
 		C++では operator>>= は右結合であるため、連鎖させる際には明示的に()を使う必要あり（以下のサンプルコード参照）
-
+		
 		\param ma Maybeオブジェクト
 		\param f 適用する関数
 
@@ -186,10 +204,10 @@ namespace sig
 		else return boost::none;
 	}
 
-	/// C++に合わせたbind演算子. Maybe m => (a -> m b) -> m a -> m b
+	/// C++に合わせたbind演算子. Maybe m => (a -> m b) -> m a -> m b	\anchor maybe_bindop2
 	/**
 		C++では operator>>= と operator<<= は右結合であるため、処理が右端から順番に流れていく方が自然に記述できる（以下のサンプルコード参照）
-
+		
 		\param f 適用する関数
 		\param ma Maybeオブジェクト
 
@@ -215,10 +233,11 @@ namespace sig
 	}
 
 
-	/// Maybeオブジェクトへの再代入を行う演算子
+	/// Maybeオブジェクトへの再代入を行う演算子	\anchor maybe_assignop
 	/**
 		関数型言語では再代入は不可能な機能であるが、C++では無いと不便なのでこの関数を作成．\n
 		Maybeオブジェクトへの再代入をJust, Nothingに関係なく統一的に記述することが目的
+
 
 		\param m Maybeオブジェクト
 		\param v 代入したい値

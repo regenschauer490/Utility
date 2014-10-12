@@ -49,6 +49,15 @@ const RelativeError relative_error;
 /// 収束判定の管理を行うクラス
 /**
 	反復処理において、前回の値との差が指定値未満になると収束と判定する
+
+	\code
+	const double eps = 0.01;
+
+	double value = 100;
+	ManageConvergenceSimple conv(eps);
+
+	while (!conv.update(value /= 2)) ;
+	\endcode
 */
 class ManageConvergenceSimple
 {
@@ -86,8 +95,22 @@ public:
 	\tparam T 収束判定を行う数値ベクトルのデータ型
 	\tparam C 誤差基準
 	\tparam F ノルム関数
+
+	\code
+	const double eps = 0.01;
+	const double delta = 0.1;
+
+	std::vector<double> data{ 0.2, 0.3, 0.5 };
+	ManageConvergence<std::vector<double>, RelativeError> conv(eps, norm_L2);
+
+	while (!conv.update(data)){
+		data[0] += delta * (0.3 - data[0]);
+		data[1] += delta * (0.3 - data[1]);
+		data[2] += delta * (0.4 - data[2]);
+	}
+	\endcode
 */
-template <class T, class C = RelativeError, class F = sig::Norm<2>>
+template <class T, class C = RelativeError, class F = Norm<2>>
 class ManageConvergence
 {
 	const double epsilon_;
@@ -101,7 +124,7 @@ public:
 		\param epsilon 収束判定用の定数（前回のノルム値との差がこの定数未満であれば収束と判定する）
 		\param norm_function ノルム関数（1引数と2引数のoperator()を定義した関数オブジェクト）
 	*/
-	ManageConvergence(double epsilon, F norm_func = sig::norm_L2) : epsilon_(epsilon), norm_func_(norm_func), last_value_(Nothing(T())) {}
+	ManageConvergence(double epsilon, F norm_func = norm_L2) : epsilon_(epsilon), norm_func_(norm_func), last_value_(Nothing(T())) {}
 
 	/// 状態の更新とノルム計算、および収束判定
 	/**

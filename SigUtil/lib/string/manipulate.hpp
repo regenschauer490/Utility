@@ -19,15 +19,18 @@ namespace sig
 
 /// 文字列(src)をある文字列(delimiter)を目印に分割する
 /**
-	例：
-	src = "one,2, 参 "
-	delim = ","
-	return : vector<string>{"one", "2", " 参 "}
+	\tparam CSeq  returnされるシーケンスコンテナの種類
 
 	\param src 分割対象の文字列
 	\param delimiter 分割の目印となる文字列
-	\tparam CSeq  returnされるシーケンスコンテナの種類
+
 	\return 分割後の文字列が格納されたシーケンスコンテナ
+
+	\code
+	auto src = " one,2, 参 ";
+	
+	auto spl = split(src, ",");		// vector<string>{" one", "2", " 参 "}
+	\endcode
 */
 template <template <class T_, class = std::allocator<T_>> class CSeq = std::vector, class S = std::string>
 auto split(S const& src, impl::TString<S> const& delimiter) ->CSeq<impl::TString<S>>
@@ -86,11 +89,9 @@ auto split(wchar_t const* const src, wchar_t const* const delimiter) ->CSeq<std:
 }
 
 
-namespace impl{
-
-/**
-	コンテナに格納された各文字列(数値の場合は文字列に変換)を順番に結合して1つの文字列に(delimiterで区切り指定)
-*/
+namespace impl
+{
+//	コンテナに格納された各文字列(数値の場合は文字列に変換)を順番に結合して1つの文字列に(delimiterで区切り指定)
 template <class It, class S, class OSS>
 auto cat_str_impl(It begin, It end, S const& delimiter, OSS& osstream, std::locale osstream_locale = std::locale("")) ->decltype(osstream.str())
 {
@@ -113,10 +114,19 @@ auto cat_str_impl(It begin, It end, S const& delimiter, OSS& osstream, std::loca
 /**
 	conatiner中の要素が数値の場合、ostringstreamで出力される文字列に変換される
 
-	\param container 文字列か数値が格納されたコンテナ
+	\param container 文字列か数値が格納されたコンテナ（\ref sig_container ）
 	\param delimiter 結合する文字列間に挿入される文字列
 	\param osstream_locale [option] 出力に影響するロケール 
+
 	\return 結合した文字列
+
+	\code
+	auto cat1 = cat_str(std::vector<std::string>{"eins", "zwei", "drei"}, "");
+	auto cat2 = cat_str(std::list<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
+
+	assert(cat1 == "einszweidrei");
+	assert(cat2 == L"eins,zwei,drei");
+	\endcode
 */
 template <class C, class S>
 auto cat_str(C const& container, S const& delimiter, std::locale osstream_locale = std::locale(""))
@@ -131,7 +141,9 @@ auto cat_str(C const& container, S const& delimiter, std::locale osstream_locale
 }
 
 /**
-	initializer_listを渡す場合
+	containerがinitializer_listの場合
+
+	\sa cat_str(C const& container, S const& delimiter, std::locale osstream_locale)
 */
 template <class T, class S>
 auto cat_str(std::initializer_list<T> container, S const& delimiter, std::locale osstream_locale = std::locale(""))

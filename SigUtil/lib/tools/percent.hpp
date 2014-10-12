@@ -15,12 +15,24 @@ http://opensource.org/licenses/mit-license.php
 #endif
 
 
-/*  */
-
 namespace sig
 {
 
-// パーセント型
+/// パーセント型
+/**
+	Percent pc1(100);
+	Percent pc2(50);
+	Percent pc3(0);
+	Percent pc4(0);
+
+	pc3 = 1;					// copy assignment. pc4 == 1%
+	pc4 = Percent::unit();		// copy assignment. pc3 == 100%
+
+	assert(pc1.get_percent() == 100 && equal(pc1.get_double(), 1));		// 100% = 1
+	assert(pc2.get_percent() == 50 && equal(pc2.get_double(), 0.5));	// 50% = 0.5
+	assert(pc3.get_percent() == 1 && equal(pc3.get_double(), 0.01));	// 1% = 0.01
+	assert(pc1 == pc4);
+*/
 class Percent
 {
 	int percent_;

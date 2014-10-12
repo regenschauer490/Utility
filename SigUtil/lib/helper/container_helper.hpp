@@ -123,7 +123,14 @@ void erase_if(C& container, F const& remove_pred)
 	}
 }
 
-//別のコンテナに要素をコピーする
+/// 別の種類のコンテナに要素をコピーする
+/**
+	\tparam RC コピー先のコンテナ型（\ref sig_container ）
+
+	\param src コピー元のコンテナ（\ref sig_container ）
+
+	\return コピーされたコンテナ
+*/
 template <class RC, class C>
 auto copy(C const& src) ->RC
 {

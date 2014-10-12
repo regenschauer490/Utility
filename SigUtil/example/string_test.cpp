@@ -116,8 +116,8 @@ void StrConvertTest()
 {
 #if SIG_MSVC_ENV	// windows + VisualStudio 環境
 
-	const auto sjis = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/shift_jis.txt"));
-	const auto utf8 = sig::fromJust( sig::read_line<std::string>(L"../SigUtil/example/test_file/utf8.txt"));
+	const auto sjis = sig::fromJust( sig::load_line<std::string>(L"../SigUtil/example/test_file/shift_jis.txt"));
+	const auto utf8 = sig::fromJust( sig::load_line<std::string>(L"../SigUtil/example/test_file/utf8.txt"));
 
 	// マルチ文字 <-> ワイド文字 変換
 	std::wstring	wstr = sig::str_to_wstr(sjis[1]);
@@ -150,7 +150,7 @@ void StrConvertTest()
 	assert(utf16_from_utf8 == utf16_from_sjis);
 	
 #elif SIG_GCC_ENV	// g++
-	const auto utf8 = sig::fromJust( sig::read_line<std::string>("../SigUtil/example/test_file/utf8.txt"));
+	const auto utf8 = sig::fromJust( sig::load_line<std::string>("../SigUtil/example/test_file/utf8.txt"));
 
 	// マルチ文字 <-> ワイド文字 変換
 	std::wstring	wstr = sig::str_to_wstr(utf8[1]);
@@ -168,7 +168,7 @@ void StrConvertTest()
 void ZenHanTest()
 {
 	// 全角 <-> 半角 変換クラス
-	auto& replacer = sig::ZenHanReplace::getInstance();
+	auto& replacer = sig::ZenHanReplace::get_instance();
 
 	std::wstring sentence1 = L"ＡBＣアｲウ１2３ギｶﾞﾍﾟポ";
 

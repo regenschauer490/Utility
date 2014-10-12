@@ -111,7 +111,7 @@ void KL_DivergenceTest()
 
 void JS_DivergenceTest()
 {
-	double js12 = sig::fromJust(sig::js_divergence(dist1, dist2));
+	double js12 = *sig::js_divergence(dist1, dist2);
 	double js21 = sig::fromJust(sig::js_divergence(dist2, dist1));
 
 	double test = 0;

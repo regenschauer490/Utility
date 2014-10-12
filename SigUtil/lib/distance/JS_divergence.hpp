@@ -14,7 +14,9 @@ namespace sig
 {
 /// JS情報量（Jensen-Shannon Divergence）
 /**
-	boost.optional有効時には値がラップされて返される
+	値はラップされて返される
+
+	\sa js_divergence
 */
 struct JS_Divergence
 {
@@ -39,13 +41,25 @@ struct JS_Divergence
 
 /// JS情報量を求める関数（関数オブジェクト）
 /**
-		\param dist1 確率分布1
-		\param dist2 確率分布2
+		\param dist1 確率分布1（\ref sig_container ）
+		\param dist2 確率分布2（\ref sig_container ）
 
-		\pre dist1, dist2 の各要素は正の値 かつ 総和が 1
+		\pre dist1, dist2 の各要素は0以上の値 かつ 総和が 1
 
-		\return 確率分布間の非類似度（値はboost::optionalでラップされている）．失敗時にはboost::none
+		\return 確率分布間の非類似度（値は\ref sig_maybe で返される）
+
 		\post 値域：[0, ∞)
+
+		\code
+		const array<double, 5> dist1{ 0.2, 0.1, 0, 0.4, 0.3 };		// sig::array
+		const std::list<double> dist2{ 0.1, 0.3, 0.1, 0.4, 0.1 };
+
+		auto m_js12 = js_divergence(dist1, dist2));	// js12 :: Maybe<double>
+		auto m_js21 = js_divergence(dist2, dist1));	// js21 :: Maybe<double>
+
+		double js12 = fromJust(m_js12);		// 0.137744...
+		double js21 = *m_js21;				// 0.137744...
+		\endcode
 */
 const JS_Divergence js_divergence;
 

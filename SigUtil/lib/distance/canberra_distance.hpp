@@ -17,12 +17,6 @@ namespace sig
 ///キャンベラ距離
 struct CanberraDistance
 {
-	/**
-	\param vec1 データ点1の座標ベクトル
-	\param vec2 データ点2の座標ベクトル
-
-	\return データ点間の距離
-	*/
 	template <class C1, class C2>
 	double operator()(C1 const& vec1, C2 const& vec2) const
 	{
@@ -37,10 +31,18 @@ struct CanberraDistance
 
 /// キャンベラ距離を求める関数（関数オブジェクト）
 /**
-	\param vec1 データ点1の座標ベクトル
-	\param vec2 データ点2の座標ベクトル
+	\param vec1 データ点1の座標ベクトル（\ref sig_container ）
+	\param vec2 データ点2の座標ベクトル（\ref sig_container ）
 
 	\return データ点間の距離
+
+	\code
+	const array<uint, 5> dot1{  -1, 0, 1, 2, 3 };		// sig::array
+	const std::list<bool> dot2{ 1, 1.5, 2, 2.5, 3 };
+
+	double d = canberra_distance(dot1, dot2);
+	d;		// 22 / 9.0
+	\endcode
 */
 const CanberraDistance canberra_distance;
 
