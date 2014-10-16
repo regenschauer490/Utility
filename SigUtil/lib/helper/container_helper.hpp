@@ -17,20 +17,79 @@ namespace sig
 extern void* enabler;
 
 namespace impl{
+
+template <class C>
+auto begin(C&& c) ->std::move_iterator<decltype(std::begin(c))>
+{
+	return std::make_move_iterator(std::begin(c));
+}
+
+template <class C>
+auto begin(C& c) ->decltype(c.begin())
+{
+	return std::begin(c);
+}
+
+template <class C>
+auto begin(C const& c) ->decltype(c.begin())
+{
+	return std::begin(c);
+}
+
+
 template<class It>
-void increment_iterator(It& iter)
+void increment_iterator(It&& iter)
 {
 	++iter;
 }
 template<class It, class... Its>
-void increment_iterator(It& iter, Its&... iterators)
+void increment_iterator(It&& iter, Its&&... iterators)
 {
 	++iter;
 	increment_iterator(iterators...);
 }
 
+
+template <class T>
+struct remove_const_reference
+{
+	using type = typename std::remove_reference<typename std::remove_const<T>::type>::type;
+};
+
+
+// コンテナの型に対応した要素型を得る
+// ex: vector<T> const& -> T const&,	list<T>&& -> T&&
+template <class C>
+struct actual_element
+{
+private:
+	using R1 = typename std::remove_reference<C>::type;
+	using R2 = typename std::remove_const<C>::type;
+	using RR = typename std::remove_const<R1>::type;
+
+	using CT = typename std::conditional<
+		std::is_const<R1>::value,
+		typename std::add_const<typename container_traits<RR>::value_type>::type,
+		typename container_traits<RR>::value_type
+	>::type;
+
+	using CRT = typename std::conditional<
+		std::is_lvalue_reference<R2>::value,
+		typename std::add_lvalue_reference<CT>::type,
+		typename std::conditional<
+			std::is_rvalue_reference<R2>::value,
+			typename std::add_rvalue_reference<CT>::type,
+			CT
+		>::type
+	>::type;
+
+public:
+	using type = CRT;
+};
+
+
 template<class It>
-auto dereference_iterator(It& iter) ->typename std::add_rvalue_reference<decltype(*iter)>::type
+auto dereference_iterator(It&& iter) ->typename std::add_rvalue_reference<decltype(*iter)>::type
 {
 /*
 	if(std::is_same<typename std::add_rvalue_reference<decltype(*iter)>::type, typename std::iterator_traits<It>::value_type&>{}) std::cout << "lval&";
@@ -40,40 +99,41 @@ std::cout << std::endl;
 */
 	return *iter;
 }
-}
+
+}	//impl
 
 // 複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用して結果をdestに格納
 template <class C, class F, class... Its>
-void iterative_make(uint loop, C& dest, F const& func, Its... iterators)
+void iterative_make(uint loop, C& dest, F&& func, Its... iterators)
 {
 	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
-		impl::container_traits<C>::add_element(dest, impl::eval(func, impl::dereference_iterator(iterators)...));
+		impl::container_traits<C>::add_element(dest, impl::eval(std::forward<F>(func), impl::dereference_iterator(iterators)...));
 	}
 }
 
 // 複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用して結果をdestに集約
 template <class T, class F1, class F2, class... Its>
-void iterative_fold(uint loop, T& dest, F1 const& zip, F2 const& fold, Its... iterators)
+void iterative_fold(uint loop, T& dest, F1&& zip, F2&& fold, Its... iterators)
 {
 	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
-		dest = fold(dest, impl::eval(zip, impl::dereference_iterator(iterators)...));
+		dest = std::forward<F2>(fold)(dest, impl::eval(std::forward<F1>(zip), impl::dereference_iterator(iterators)...));
 	}
 }
 
 
 // 複数のイテレータに対して、loop回数だけ繰り返しデリファレンス+関数適用(副作用あり)
 template <class F, class... Its>
-void iterative_assign(uint loop, F const& func, Its... iterators)
+void iterative_assign(uint loop, F&& func, Its... iterators)
 {
 	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
-		func(impl::dereference_iterator(iterators)...);
+		std::forward<F>(func)(impl::dereference_iterator(iterators)...);
 	}
 }
 template <class F, class... Its>
-void iterative_assign(uint loop, int init, F const& func, Its... iterators)
+void iterative_assign(uint loop, int init, F&& func, Its... iterators)
 {
 	for (uint i = 0; i < loop; ++i, impl::increment_iterator(iterators...)){
-		func(i + init, impl::dereference_iterator(iterators)...);
+		std::forward<F>(func)(i + init, impl::dereference_iterator(iterators)...);
 	}
 }
 

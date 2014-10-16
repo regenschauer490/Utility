@@ -20,17 +20,18 @@ namespace sig
 	(b -> c -> ... -> a) -> [b] -> [c] -> ... -> [a] \n
 */
 template <class F, class C1, class... Cs>
-auto variadicZipWith(F const& func, C1 const& list1, Cs const&... lists)
+auto variadicZipWith(F&& func, C1&& list1, Cs&&... lists)
 {
-	using R = typename impl::container_traits<C1>::template rebind<decltype(impl::eval(
-		func,
-		std::declval<typename impl::container_traits<C1>::value_type>(),
-		std::declval<typename impl::container_traits<Cs>::value_type>()...
+	using CR1 = typename impl::remove_const_reference<C1>::type;
+	using R = typename impl::container_traits<CR1>::template rebind<decltype(impl::eval(
+		std::forward<F>(func),
+		std::declval<typename impl::actual_element<C1>::type>(),
+		std::declval<typename impl::actual_element<Cs>::type>()...
 	))>;
 
 	R result;
 	const uint length = min(list1.size(), lists.size()...);
-	iterative_make(length, result, func, std::begin(list1), std::begin(lists)...);
+	iterative_make(length, result, std::forward<F>(func), impl::begin(std::forward<C1>(list1)), impl::begin(std::forward<Cs>(lists))...);
 
 	return result;
 }
@@ -57,9 +58,9 @@ auto variadicZipWith(F const& func, C1 const& list1, Cs const&... lists)
 	\endcode
 */
 template <class F, class C>
-auto map(F const& func, C const& list)
+auto map(F&& func, C&& list)
 {
-	return variadicZipWith<F>(func, list);
+	return variadicZipWith(std::forward<F>(func), std::forward<C>(list));
 }
 
 /// 2引数高階関数
@@ -83,9 +84,9 @@ auto map(F const& func, C const& list)
 	\endcode
 */
 template <class F, class C1, class C2>
-auto zipWith(F const& func, C1 const& list1, C2 const& list2)
+auto zipWith(F&& func, C1&& list1, C2&& list2)
 {
-	return variadicZipWith<F>(func, list1, list2);
+	return variadicZipWith(std::forward<F>(func), std::forward<C1>(list1), std::forward<C2>(list2));
 }
 
 }

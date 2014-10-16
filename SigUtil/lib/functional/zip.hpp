@@ -41,104 +41,59 @@ template <class... Cs
 	, typename std::enable_if< And(impl::container_traits<Cs>::exist...) >::type*& = enabler
 #endif
 	>
-auto zip(Cs const&... lists)
+auto zip(Cs&&... lists)
 {
-	return variadicZipWith([](typename impl::container_traits<Cs>::value_type const&... vs){
-		return std::make_tuple(vs...);
-	}, lists...);
+	return variadicZipWith(
+		[&](typename impl::actual_element<Cs>::type... vs){
+			return std::make_tuple(std::forward<typename impl::actual_element<Cs>::type>(vs)...);
+		},
+		std::forward<Cs>(lists)...
+	);
 }
-
-#if !SIG_MSVC_ENV || !(_MSC_VER < 1900)
-
-/**
-	
-*/
-// for variadic parameter, rvalue reference
-template <class C1, class... Cs,
-	typename std::enable_if<!std::is_lvalue_reference<C1>::value && !And(std::is_lvalue_reference<Cs>::value...)>::type*& = enabler,
-	typename std::enable_if< And(impl::container_traits<Cs>::exist...) >::type*& = enabler
->
-auto zip(C1&& list1, Cs&&... lists)
-{
-	using RT = typename impl::container_traits<C1>::template rebind<
-		std::tuple<typename impl::container_traits<C1>::value_type, typename impl::container_traits<Cs>::value_type...>
-	>;
-
-	const uint length = min(list1.size(), lists.size()...);
-	RT result;
-	iterative_make(length, result, [](typename impl::container_traits<C1>::value_type&& v1, typename impl::container_traits<Cs>::value_type&&... vs){
-		return std::make_tuple(std::move(v1), std::move(vs)...);
-	}, std::make_move_iterator(std::begin(list1)), std::make_move_iterator(std::begin(lists))...);
-
-	return result;
-}
-#endif
 
 
 /// タプルのコンテナから、指定したindexのコンテナ(templateパラメータで指定)を取り出す
 /**
 	[(a, b, ...)] -> [a0]
 */
-template <size_t Index, class CT>
-auto unzip(CT const& c_tuple)
-{
-	using T = typename std::tuple_element<Index, typename impl::container_traits<CT>::value_type>::type;
-	using C = std::vector<T>;
-	C result;
-
-	for (auto const& e : c_tuple){
-		impl::container_traits<C>::add_element(result, std::get<Index>(e));
-	}
-	return result;
-}
-
-template <uint Index, class CT, typename std::enable_if<!std::is_lvalue_reference<CT>::value>::type*& = enabler>
+template <uint Index, class CT>
 auto unzip(CT&& c_tuple)
 {
-	using T = typename std::tuple_element<Index, typename impl::container_traits<CT>::value_type>::type;
-	using C = std::vector<T>;
-	C result;
+	using T = typename std::tuple_element<Index, typename impl::container_traits<typename impl::remove_const_reference<CT>::type>::value_type>::type;
+	using R = std::vector<T>;
+	using AT = typename impl::actual_element<CT>::type;
 
-	for (auto& t : c_tuple){
-		impl::container_traits<C>::add_element(result, std::get<Index>(std::move(t)));
+	R result;
+
+	for (auto&& t : std::forward<CT>(c_tuple)){
+		impl::container_traits<R>::add_element(result, std::get<Index>(std::forward<AT>(t)));
 	}
 	return result;
 }
 
 namespace impl
 {
-template<class CT, size_t I = 0, typename std::enable_if<I + 1 == std::tuple_size<typename impl::container_traits<CT>::value_type>::value, void>::type*& = enabler>
-auto unzipImpl_(CT const& c_tuple)
-{
-	return std::make_tuple(unzip<I>(c_tuple));
-}
-template<class CT, size_t I = 0, typename std::enable_if<I + 1 < std::tuple_size<typename impl::container_traits<CT>::value_type>::value, void>::type*& = enabler>
-auto unzipImpl_(CT const& c_tuple)
-{
-	return std::tuple_cat(std::make_tuple(unzip<I>(c_tuple)), impl::unzipImpl_<CT, I + 1>(c_tuple));
-}
-
-template<class CT, uint I = 0, typename std::enable_if<I + 1 == std::tuple_size<typename impl::container_traits<CT>::value_type>::value, void>::type*& = enabler>
+template<class CT, uint I = 0,
+	class CTR = typename impl::remove_const_reference<CT>::type,
+	typename std::enable_if<I + 1 == std::tuple_size<typename impl::container_traits<CTR>::value_type>::value, void>::type*& = enabler>
 auto unzipImpl_(CT&& c_tuple)
 {
 	return std::make_tuple(unzip<I>(std::forward<CT>(c_tuple)));
 }
-template<class CT, uint I = 0, typename std::enable_if<I + 1 < std::tuple_size<typename impl::container_traits<CT>::value_type>::value, void>::type*& = enabler>
+template<class CT, uint I = 0,
+	class CTR = typename impl::remove_const_reference<CT>::type,
+	typename std::enable_if<I + 1 < std::tuple_size<typename impl::container_traits<CTR>::value_type>::value, void>::type*& = enabler>
 auto unzipImpl_(CT&& c_tuple)
 {
 	return std::tuple_cat(std::make_tuple(unzip<I>(std::forward<CT>(c_tuple))), impl::unzipImpl_<CT, I + 1>(std::forward<CT>(c_tuple)));
 }
 }	// impl
 
-// [(a, b, ...)] -> ([a], [b], ...)
-// タプルのコンテナから、コンテナのタプルを作る
+/// タプルのコンテナから、コンテナのタプルを作る
+/**
+	[(a, b, ...)] -> ([a], [b], ...)
+*/
 template <class CT>
-auto unzip(CT const& c_tuple)
-{
-	return impl::unzipImpl_(c_tuple);
-}
-
-template <class CT, typename std::enable_if<!std::is_lvalue_reference<CT>::value>::type*& = enabler>
 auto unzip(CT&& c_tuple)
 {
 	return impl::unzipImpl_(std::forward<CT>(c_tuple));

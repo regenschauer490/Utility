@@ -40,10 +40,12 @@ namespace sig
 	\endcode
 */
 template <class F, class T, class C>
-auto foldl(F const& func, T init, C const& list)
+auto foldl(F&& func, T&& init, C&& list)
 {
-	using R = decltype(func(init, std::declval<typename impl::container_traits<C>::value_type>()));
-	return std::accumulate(std::begin(list), std::end(list), static_cast<R>(init), func);
+	using CR = typename impl::remove_const_reference<C>::type;
+	using R = decltype(std::forward<F>(func)(std::forward<T>(init), std::declval<typename impl::container_traits<CR>::value_type>()));
+
+	return std::accumulate(std::begin(std::forward<C>(list)), std::end(std::forward<C>(list)), static_cast<R>(init), std::forward<F>(func));
 }
 
 #if SIG_GCC_GT_4_9 || SIG_CLANG_GT_3_5 || SIG_MSVC_ENV
@@ -70,10 +72,12 @@ auto foldl(F const& func, T init, C const& list)
 	\endcode
 */
 template <class F, class T, class C>
-auto foldr(F const& func, T init, C const& list)
+auto foldr(F&& func, T&& init, C&& list)
 {
-	using R = decltype(impl::eval(func, init, std::declval<typename impl::container_traits<C>::value_type>()));
-	return std::accumulate(std::rbegin(list), std::rend(list), static_cast<R>(init), std::bind(func, _2, _1));
+	using CR = typename impl::remove_const_reference<C>::type;
+	using R = decltype(impl::eval(std::forward<F>(func), std::forward<T>(init), std::declval<typename impl::container_traits<CR>::value_type>()));
+
+	return std::accumulate(std::rbegin(std::forward<C>(list)), std::rend(std::forward<C>(list)), static_cast<R>(std::forward<T>(init)), std::bind(std::forward<F>(func), _2, _1));
 }
 #endif
 
@@ -105,17 +109,19 @@ auto foldr(F const& func, T init, C const& list)
 	\endcode
 */
 template <class F1, class F2, class T, class... Cs>
-auto dotProduct(F1 const& fold_func, F2 const& oper_func, T init, Cs const&... lists)
+auto dotProduct(F1&& fold_func, F2&& oper_func, T&& init, Cs&&... lists)
 {
 	using R = decltype(impl::eval(
-		fold_func,
-		init,
-		impl::eval(oper_func, std::declval<typename impl::container_traits<Cs>::value_type>()...)
+		std::forward<F1>(fold_func),
+		std::forward<T>(init),
+		impl::eval(
+			std::forward<F2>(oper_func),
+			std::declval<typename impl::container_traits<typename impl::remove_const_reference<Cs>::type>::value_type>()...)
 		));
-	R result = init;
+	R result = std::forward<T>(init);
 	const uint length = min(lists.size()...);
 
-	iterative_fold(length, result, oper_func, fold_func, std::begin(lists)...);
+	iterative_fold(length, result, std::forward<F2>(oper_func), std::forward<F1>(fold_func), std::begin(std::forward<Cs>(lists))...);
 
 	return result;
 }

@@ -83,15 +83,13 @@ void ZipWithTest()
 	}
 	}
 
-	const sig::array<int, 4> ddata1{ 1, 2, 3, 4 };		// sig::array
-	const std::vector<int> ddata2{ 1, -3, 5, 2, 10 };
-	const std::list<double> ddata3{ 1.1, -2.2, 3.3 };
-	const std::set<std::string> ddata4{ "a", "aa", "aaa" };
+	// move test
+	const std::vector<std::vector<int>> ddata1{ std::vector<int>{1, 2}, std::vector<int>{3, 4} };
+	std::vector<std::vector<int>> ddata2{ std::vector<int>{1, 2}, std::vector<int>{3, 4} };
 
-	auto zipped = sig::zip(ddata1, ddata2, ddata3, ddata4);	// std::vector< std::tuple<int, int, double, std::string>>
-
-	auto e1 = zipped[1];		// std::tuple<int, int, double, std::string>{ 2, -3, -2.2, "aa" }
-	int size = zipped.size();	// 3
+	auto ht = sig::zipWith([](std::vector<int> const& a, std::vector<int>&& b){ auto t = std::move(b); return a[0] + t[1]; }, ddata1, std::move(ddata2));
+	assert(!ddata1[0].empty());
+	assert(ddata2[1].empty());
 }
 
 void FunctionalTest()
@@ -154,7 +152,6 @@ void FunctionalTest()
 
 
 	/// zip, unzip (move and const& ver)
-#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || _MSC_VER >= 1900
 	//move ver
 	auto mdata1 = data1;
 	auto mdata2 = data2;
@@ -180,7 +177,7 @@ void FunctionalTest()
 		assert(std::get<0>(t) == v1 && std::get<1>(t) == v2); return 0;
 	}, data1, data2, rezipped);
 #endif
-#endif
+
 	//const ver
 	const auto czipped = sig::zip(data1, data2, data3, data4);	//std::vector< std::tuple<int, int, int, int>>
 
