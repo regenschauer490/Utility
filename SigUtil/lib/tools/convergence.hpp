@@ -11,7 +11,7 @@ http://opensource.org/licenses/mit-license.php
 #include "../sigutil.hpp"
 #include "../distance/norm.hpp"
 
-/// \file error_convergence.hpp 反復処理の収束判定に関するユーティリティ
+/// \file convergence.hpp 反復処理の収束判定に関するユーティリティ
 
 namespace sig
 {

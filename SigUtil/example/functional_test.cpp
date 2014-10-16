@@ -48,6 +48,7 @@ void MapTest()
 	}
 
 	assert(std::accumulate(data4.begin(), data4.end(), 0, [](int sum, int v1){ return sum + static_cast<int>(v1 < 0); }) == std::accumulate(r4.begin(), r4.end(), 0));
+
 }
 
 void ZipWithTest()
@@ -81,6 +82,16 @@ void ZipWithTest()
 		assert(h12345[i] == (*it3 ? *it5 + std::to_string(data1[i]) : std::to_string(*it4 * data2[i])));
 	}
 	}
+
+	const sig::array<int, 4> ddata1{ 1, 2, 3, 4 };		// sig::array
+	const std::vector<int> ddata2{ 1, -3, 5, 2, 10 };
+	const std::list<double> ddata3{ 1.1, -2.2, 3.3 };
+	const std::set<std::string> ddata4{ "a", "aa", "aaa" };
+
+	auto zipped = sig::zip(ddata1, ddata2, ddata3, ddata4);	// std::vector< std::tuple<int, int, double, std::string>>
+
+	auto e1 = zipped[1];		// std::tuple<int, int, double, std::string>{ 2, -3, -2.2, "aa" }
+	int size = zipped.size();	// 3
 }
 
 void FunctionalTest()
@@ -106,6 +117,27 @@ void FunctionalTest()
 	assert(fl0 == ((1-2)-3)-4);
 	assert(fr0 == 1-(2-(3-4)));
 #endif
+
+	/// dotProduct
+	double dp = sig::dotProduct(
+		[](double sum, double a){ return sum + a; },
+		[](int a, int b, int c, double d){ return std::pow(a*a + b*b + c*c + d*d, 0.25); },
+		0,
+		data0, data1, data2, sig::array<double, 4>{ 1.1, 2.2, 3.3, 4.4 }
+	);
+
+	{
+		double dp_test = 0;
+		auto it0 = data0.begin();
+		auto it1 = data1.begin();
+		auto it2 = data2.begin();
+
+		for (int i = 1, end = sig::min(data0.size(), data1.size(), data2.size(), 4); i <= end; ++i, ++it0, ++it1, ++it2){
+			dp_test += std::pow((*it0)*(*it0) + (*it1)*(*it1) + (*it2)*(*it2) + std::pow(i+0.1*i, 2), 0.25);
+		}
+
+		assert(sig::equal(dp, dp_test));
+	}
 
 	/// filter, partition
 	auto filt1 = sig::filter([](int v){ return v%2; }, data0);

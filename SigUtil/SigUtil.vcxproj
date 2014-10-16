@@ -199,6 +199,12 @@
     <ClInclude Include="lib\file\load.hpp" />
     <ClInclude Include="lib\file\pass.hpp" />
     <ClInclude Include="lib\file\save.hpp" />
+    <ClInclude Include="lib\functional\filter.hpp" />
+    <ClInclude Include="lib\functional\fold.hpp" />
+    <ClInclude Include="lib\functional\high_order.hpp" />
+    <ClInclude Include="lib\functional\list_deal.hpp" />
+    <ClInclude Include="lib\functional\rest.hpp" />
+    <ClInclude Include="lib\functional\zip.hpp" />
     <ClInclude Include="lib\helper\container_helper.hpp" />
     <ClInclude Include="lib\helper\container_traits.hpp" />
     <ClInclude Include="lib\helper\eval.hpp" />

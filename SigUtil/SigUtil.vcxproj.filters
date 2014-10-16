@@ -37,6 +37,9 @@
     <Filter Include="ヘッダー ファイル\file">
       <UniqueIdentifier>{ef7bf198-8b3d-4825-9a78-4a7668948f88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\functional">
+      <UniqueIdentifier>{f18fdd23-f9b3-4329-94e7-ec8a1b2a793a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -259,6 +262,24 @@
     </ClInclude>
     <ClInclude Include="lib\file\save.hpp">
       <Filter>ヘッダー ファイル\file</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\functional\high_order.hpp">
+      <Filter>ヘッダー ファイル\functional</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\functional\zip.hpp">
+      <Filter>ヘッダー ファイル\functional</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\functional\filter.hpp">
+      <Filter>ヘッダー ファイル\functional</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\functional\list_deal.hpp">
+      <Filter>ヘッダー ファイル\functional</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\functional\rest.hpp">
+      <Filter>ヘッダー ファイル\functional</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\functional\fold.hpp">
+      <Filter>ヘッダー ファイル\functional</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

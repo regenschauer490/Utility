@@ -21,10 +21,12 @@ namespace sig
 {
 
 /// SaveLine, SaveNum の保存に関する設定
-/**
-	overwrite：上書き, append：末尾追記
-*/
-enum class WriteMode{ overwrite, append };
+enum class WriteMode{
+	/**上書き*/
+	overwrite,
+	/**末尾追記*/
+	append
+};
 
 
 /// ファイル内容の初期化
@@ -44,6 +46,7 @@ inline void clear_file(FilepassString const& file_pass)
 	ofs << "";
 }
 
+//@{ 
 
 /// ファイルへ1行ずつ保存
 /**
@@ -75,7 +78,7 @@ void save_line(
 	}
 }
 
-/// ファイルへ1行ずつ保存（使用推奨）
+/// ファイルへ1行ずつ保存
 /**
 	file_passで指定したテキストファイルに、srcの内容を書き込み、最後に改行する．\n
 	指定したファイルが存在しない場合、新たにファイルが作成される．
@@ -106,16 +109,16 @@ template <class T, typename std::enable_if<!impl::container_traits<T>::exist>::t
 void save_line(
 	T src,
 	FilepassString const& file_pass,
-	WriteMode mode = WriteMode::overwrite)
+	WriteMode open_mode = WriteMode::overwrite)
 {
 	SIG_FILE_LOCALE_INIT
 
-	const auto open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-	typename impl::FStreamSelector<T>::ofstream ofs(file_pass, open_mode);
+	const auto mode = open_mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
+	typename impl::FStreamSelector<T>::ofstream ofs(file_pass, mode);
 	save_line(src, ofs);
 }
 
-/// ファイルへ1行ずつまとめて保存（使用推奨）
+/// ファイルへ1行ずつまとめて保存
 /**
 	file_passで指定したテキストファイルに、srcの内容をコンテナの1要素を1行として書き込む．\n
 	指定したファイルが存在しない場合、新たにファイルが作成される．
@@ -144,15 +147,18 @@ template <class C, typename std::enable_if<impl::container_traits<C>::exist>::ty
 void save_line(
 	C const& src,
 	FilepassString const& file_pass,
-	WriteMode mode = WriteMode::overwrite)
+	WriteMode open_mode = WriteMode::overwrite)
 {
 	SIG_FILE_LOCALE_INIT
 
-	const auto open_mode = mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-	typename impl::FStreamSelector<typename impl::container_traits<C>::value_type>::ofstream ofs(file_pass, open_mode);
+	const auto mode = open_mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
+	typename impl::FStreamSelector<typename impl::container_traits<C>::value_type>::ofstream ofs(file_pass, mode);
 	save_line(src, ofs);
 }
 
+//@}
+
+//@{
 
 /// 数値列(ex:ベクトル)の保存
 /**
@@ -160,7 +166,7 @@ void save_line(
 
 	\param src 保存対象（\ref sig_container ）
 	\param file_pass 保存先のパス（ファイル名含む）
-	\param delimiter 数値間の区切り文字を指定
+	\param delimiter 数値間の区切り文字
 	\param open_mode [option] 上書き(overwrite) or 追記(append)
 
 	\code
@@ -187,33 +193,54 @@ void save_num(
 	C const& src,
 	FilepassString const& file_pass,
 	std::string delimiter,
-	WriteMode mode = WriteMode::overwrite)
+	WriteMode open_mode = WriteMode::overwrite)
 {
-	save_line(cat_str(src, delimiter), file_pass, mode);
+	save_line(cat_str(src, delimiter), file_pass, open_mode);
 }
 
 /// 2次元配列の数値(ex:行列)を保存
 /**
 	\param src 保存対象の行列（\ref sig_container )
 	\param file_pass 保存先のパス（ファイル名含む）
-	\param delimiter 数値間の区切り文字を指定
+	\param delimiter 数値間の区切り文字
 	\param open_mode [option] 上書き(overwrite) or 追記(append)
+
+	\code
+	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
+
+	const array<array<int, 3>, 3> mat = {	// sig::array
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+		{ 7, 8, 9 }
+	};
+
+	save_num(mat, fpass, ",");
+	\endcode
+
+	\code
+	// test.txt
+	1,2,3
+	4,5,6
+	7,8,9
+	\endcode
 */
 template <class CC, typename std::enable_if<impl::container_traits<typename impl::container_traits<CC>::value_type>::exist>::type*& = enabler>
 void save_num(
 	CC const& src,
 	FilepassString const& file_pass,
 	std::string delimiter,
-	WriteMode mode = WriteMode::overwrite)
+	WriteMode open_mode = WriteMode::overwrite)
 {
 	std::vector<std::string> tmp;
 
 	for (auto const& line : src){
 		tmp.push_back(cat_str(line, delimiter));
 	}
-	save_line(tmp, file_pass, mode);
+	save_line(tmp, file_pass, open_mode);
 }
 
+//@}
 
 	/*
 	//csvで保存

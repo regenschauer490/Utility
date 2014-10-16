@@ -28,6 +28,7 @@ void GetDirectoryNamesTest()
 		L"test3.txt",
 		L"test4.txt",
 		L"test5.txt",
+		L"test6.txt",
 		L"histgram1.txt",
 		L"histgram2.txt",
 		L"shift_jis.txt",
@@ -44,6 +45,7 @@ void GetDirectoryNamesTest()
 		L"test3.txt",
 		L"test4.txt",
 		L"test5.txt",
+		L"test6.txt",
 		L"histgram1.txt",
 		L"histgram2.txt",
 		L"shift_jis.txt",
@@ -124,6 +126,7 @@ void FileSaveLoadTest()
 	const auto fpass3 = pass + SIG_TO_FPSTR("test3.txt");
 	const auto fpass4 = pass + SIG_TO_FPSTR("test4.txt");
 	const auto fpass5 = pass + SIG_TO_FPSTR("test5.txt");
+	const auto fpass6 = pass + SIG_TO_FPSTR("test6.txt");
 
 	const std::vector<std::wstring> blghost_text1{
 		L"O.K.",
@@ -170,21 +173,21 @@ void FileSaveLoadTest()
 	sig::save_num(uset_num, fpass4, "\n", sig::WriteMode::append);
 
 	//数値行列の保存 (上書き、各行カンマ区切りで保存)
-	const auto mat = std::array<std::array<int, 3>, 3>{{
-		std::array<int, 3>{{ 1, 2, 3 }},
-		std::array<int, 3>{{ 4, 5, 6 }},
-		std::array<int, 3>{{ 7, 8, 9 }}
-	}};
+	const sig::array<sig::array<int, 3>, 3> mat = {
+		{ 1, 2, 3 },
+		{ 4, 5, 6 },
+		{ 7, 8, 9 }
+	};
 	sig::save_num(mat, fpass5, ",");
 
 
 /* 読み込み */
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
-	const auto read1 = sig::load_line<std::string>(fpass1);
+	const auto read1 = sig::load_line(fpass1);
 	const auto read2 = sig::load_line<std::wstring, std::list<std::wstring>>(fpass2);
-	const auto read_num = sig::read_num<std::set<double>>(fpass4);
-	const auto read_mat = sig::read_num<std::vector<std::vector<int>>>(fpass5, ",");
+	const auto read_num = sig::read_num<double, std::set<double>>(fpass4);
+	const auto read_mat = sig::read_num2d<int>(fpass5, ",");
 
 	if (read1){
 		const auto test1 = sig::merge(TVecw{ L"test write 0" }, blghost_text1);
@@ -212,7 +215,7 @@ void FileSaveLoadTest()
 	sig::load_line(read3, fpass1);
 	sig::load_line(read4, fpass2);
 	sig::read_num(read_num2, fpass4);
-	sig::read_num(read_mat2, fpass5, ",");
+	sig::read_num2d(read_mat2, fpass5, ",");
 	
 	const auto test1 = sig::merge(TVec{"test write 0"}, sig::wstr_to_str(blghost_text1));
 	sig::assert_foreach(sig::Identity(), read3, test1);
@@ -226,4 +229,21 @@ void FileSaveLoadTest()
 	for (unsigned i = 0; i<read_mat2.size(); ++i){
 		sig::assert_foreach(sig::Identity(), read_mat2[i], mat[i]);
 	}
+
+
+	struct Test{
+		double a;
+		Test(double v, double p) : a(std::pow(v, p)){}
+	};
+
+	std::vector<Test> input;
+
+	sig::load_line(
+		input,
+		fpass6,
+		[&](std::string&& s)->Test{
+			auto tmp = sig::split(s, ",");		// example: s = "2.73,0.001"
+			return Test(std::stod(tmp[0]), std::stod(tmp[1]));
+		}
+	);
 }

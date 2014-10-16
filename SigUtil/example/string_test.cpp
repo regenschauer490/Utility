@@ -116,8 +116,8 @@ void StrConvertTest()
 {
 #if SIG_MSVC_ENV	// windows + VisualStudio 環境
 
-	const auto sjis = sig::fromJust( sig::load_line<std::string>(L"../SigUtil/example/test_file/shift_jis.txt"));
-	const auto utf8 = sig::fromJust( sig::load_line<std::string>(L"../SigUtil/example/test_file/utf8.txt"));
+	const auto sjis = sig::fromJust( sig::load_line(L"../SigUtil/example/test_file/shift_jis.txt"));
+	const auto utf8 = sig::fromJust( sig::load_line(L"../SigUtil/example/test_file/utf8.txt"));
 
 	// マルチ文字 <-> ワイド文字 変換
 	std::wstring	wstr = sig::str_to_wstr(sjis[1]);

@@ -11,7 +11,7 @@ http://opensource.org/licenses/mit-license.php
 #include "../iteration.hpp"
 
 
-/// \file statistics_util.hpp　基本的な統計関数、正規化・標準化などの関数
+/// \file statistics_util.hpp 基本的な統計関数、正規化・標準化などの関数
 
 namespace sig
 {

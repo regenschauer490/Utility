@@ -63,7 +63,7 @@ inline auto modify_dirpass_tail(FilepassString const& directory_pass, bool const
 
 /// 指定ディレクトリにあるファイル名を取得
 /**
-	\req VisualStudio環境 または boostのインクルード
+	\pre VisualStudio環境 または boostのインクルード
 	
 	\param directry_pass 調べたいディレクトリのパス
 	\param hidden_file true:隠しファイルのみ, false:非隠しファイルのみ (Windows, Linux環境のみ)
@@ -130,7 +130,7 @@ inline auto get_file_names(
 
 /// 指定ディレクトリにあるフォルダ名を取得
 /**
-	\req VisualStudio環境 または boostのインクルード
+	\pre VisualStudio環境 または boostのインクルード
 
 	\param directry_pass 調べたいディレクトリのパス
 	\param hidden_file true:隠しファイルのみ, false:非隠しファイルのみ (Windows, Linux環境のみ)
