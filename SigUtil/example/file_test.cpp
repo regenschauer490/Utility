@@ -186,8 +186,8 @@ void FileSaveLoadTest()
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	const auto read1 = sig::load_line(fpass1);
 	const auto read2 = sig::load_line<std::wstring, std::list<std::wstring>>(fpass2);
-	const auto read_num = sig::read_num<double, std::set<double>>(fpass4);
-	const auto read_mat = sig::read_num2d<int>(fpass5, ",");
+	const auto load_num = sig::load_num<double, std::set<double>>(fpass4);
+	const auto read_mat = sig::load_num2d<int>(fpass5, ",");
 
 	if (read1){
 		const auto test1 = sig::merge(TVecw{ L"test write 0" }, blghost_text1);
@@ -196,10 +196,10 @@ void FileSaveLoadTest()
 	if (read2){
 		sig::assert_foreach(sig::Identity(), sig::fromJust(read2), TVecw{ L"test write 壱", L"test write 弐" });
 	}
-	if (read_num){
+	if (load_num){
 		const auto test = std::accumulate(list_num.begin(), list_num.end(), 0.0) + std::accumulate(uset_num.begin(), uset_num.end(), 0.0);
 		//保存前がunorderedで順不同となるので、読み取り後のdouble値の合計と一致するかで判断
-		assert( sig::equal(std::accumulate(read_num->begin(), read_num->end(), 0.0), test) );
+		assert( sig::equal(std::accumulate(load_num->begin(), load_num->end(), 0.0), test) );
 	}
 	if (read_mat){
 		for(unsigned i=0; i<read_mat->size(); ++i){
@@ -214,8 +214,8 @@ void FileSaveLoadTest()
 
 	sig::load_line(read3, fpass1);
 	sig::load_line(read4, fpass2);
-	sig::read_num(read_num2, fpass4);
-	sig::read_num2d(read_mat2, fpass5, ",");
+	sig::load_num(read_num2, fpass4);
+	sig::load_num2d(read_mat2, fpass5, ",");
 	
 	const auto test1 = sig::merge(TVec{"test write 0"}, sig::wstr_to_str(blghost_text1));
 	sig::assert_foreach(sig::Identity(), read3, test1);

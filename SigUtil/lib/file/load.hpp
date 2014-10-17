@@ -157,7 +157,7 @@ auto load_line(FilepassStringC file_pass) ->Maybe<C>
 /**
 	\param empty_dest 保存先のコンテナ（\ref sig_container )
 	\param ifs std::ifstream or std::wifstream
-	\param conv 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはread_numを推奨)
+	\param conv 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはload_numを推奨)
 */
 template <class IFS_CT, class F, class C, class R = typename impl::container_traits<C>::value_type>
 bool load_line(
@@ -181,7 +181,7 @@ bool load_line(
 
 	\param empty_dest 保存先のコンテナ（\ref sig_container )
 	\param file_pass 保存先のパス（ファイル名含む）
-	\param conv 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはread_numを推奨)
+	\param conv 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはload_numを推奨)
 
 	\code
 	struct Test{
@@ -245,8 +245,8 @@ bool load_line(
 	std::vector<double> input1;
 	std::set<double> input2;
 
-	read_num(input1, fpass1);
-	read_num(input2, fpass2, ",");
+	load_num(input1, fpass1);
+	load_num(input2, fpass2, ",");
 	\endcode
 
 	\code
@@ -262,7 +262,7 @@ bool load_line(
 	\endcode
 */
 template <class C, class RT = typename impl::container_traits<C>::value_type, typename std::enable_if<!impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler>
-bool read_num(
+bool load_num(
 	C& empty_dest,
 	FilepassString const& file_pass,
 	std::string delimiter = "\n")
@@ -300,8 +300,8 @@ bool read_num(
 	const auto fpass1 = dir + SIG_TO_FPSTR("test1.txt");
 	const auto fpass2 = dir + SIG_TO_FPSTR("test2.txt");
 	
-	auto input1 = read_num<double>(fpass1);
-	auto input2 = read_num<double, std::set<double>>(fpass2, ",");
+	auto input1 = load_num<double>(fpass1);
+	auto input2 = load_num<double, std::set<double>>(fpass2, ",");
 	\endcode
 
 	\code
@@ -317,13 +317,13 @@ bool read_num(
 	\endcode
 */
 template <class R, class C = std::vector<R>, typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler>
-auto read_num(
+auto load_num(
 	FilepassString const& file_pass,
 	std::string delimiter = "\n"
 	) ->Maybe<C>
 {
 	C tmp;
-	read_num(tmp, file_pass, delimiter);
+	load_num(tmp, file_pass, delimiter);
 	return tmp.size() ? Just<C>(std::move(tmp)) : Nothing(std::move(tmp));
 }
 
@@ -347,7 +347,7 @@ auto read_num(
 
 	std::vector<std::vector<int>> input_mat;
 
-	read_num(input_mat, fpass, ",");
+	load_num2d(input_mat, fpass, ",");
 	assert(input_mat[2][0], 7);
 	\endcode
 
@@ -359,7 +359,7 @@ auto read_num(
 	\endcode
 */
 template <class CC, class RC = typename impl::container_traits<CC>::value_type, class RT = typename impl::container_traits<RC>::value_type>
-bool read_num2d(
+bool load_num2d(
 	CC& empty_dest,
 	FilepassString const& file_pass,
 	std::string delimiter)
@@ -396,7 +396,7 @@ bool read_num2d(
 	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
-	auto input_mat = read_mat<double>(input_mat, fpass, ",");
+	auto input_mat = load_num2d<double>(input_mat, fpass, ",");
 	assert(input_mat[2][0], 7);
 	\endcode
 
@@ -408,13 +408,13 @@ bool read_num2d(
 	\endcode
 */
 template <class R, class CC = std::vector<std::vector<R>>, typename std::enable_if<impl::container_traits<typename impl::container_traits<CC>::value_type>::exist>::type*& = enabler>
-auto read_num2d(
+auto load_num2d(
 	FilepassString const& file_pass,
 	std::string delimiter
 	) ->Maybe<CC>
 {
 	CC tmp;
-	read_num2d(tmp, file_pass, delimiter);
+	load_num2d(tmp, file_pass, delimiter);
 	return tmp.size() ? Just<CC>(std::move(tmp)) : Nothing(std::move(tmp));
 }
 

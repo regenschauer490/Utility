@@ -113,8 +113,8 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 		class CR1 = typename impl::remove_const_reference<C1>::type, \
 		class CR2 = typename impl::remove_const_reference<C2>::type, \
 		class CT1 = typename impl::container_traits<typename std::remove_reference<CR1>::type>::value_type,\
-		class CT2 = typename impl::container_traits<typename std::remove_reference<CR2>::type>::value_type,\
-		class = decltype(std::declval<CT1>() Operator std::declval<CT2>())>\
+		class CT2 = typename impl::container_traits<typename std::remove_reference<CR2>::type>::value_type\
+	>\
 	auto FunctionName(C1&& c1, C2&& c2)\
 		->typename impl::container_traits<CR1>::template rebind<decltype(\
 			std::declval<CT1>() Operator std::declval<CT2>()\
@@ -127,8 +127,8 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 \
 	template <class C, class T,\
 		class CR = typename impl::remove_const_reference<C>::type,\
-		class CT = typename impl::container_traits<CR>::value_type,\
-		class = decltype(std::declval<CT>() Operator std::declval<T>())>\
+		class CT = typename impl::container_traits<CR>::value_type\
+	>\
 	auto FunctionName(C&& c, T&& v)\
 		->typename impl::container_traits<CR>::template rebind<decltype(\
 			std::declval<CT>() Operator v\
@@ -140,8 +140,8 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 \
 	template <class T, class C,\
 		class CT = typename impl::container_traits<typename impl::remove_const_reference<C>::type>::value_type, \
-		class CR = typename impl::remove_const_reference<C>::type, \
-		class = decltype(std::declval<T>() Operator std::declval<CT>())>\
+		class CR = typename impl::remove_const_reference<C>::type\
+	>\
 	auto FunctionName(T&& v, C&& c)\
 		->typename impl::container_traits<CR>::template rebind<decltype(\
 			v Operator std::declval<CT>()\

@@ -76,11 +76,12 @@ private:
 	using CRT = typename std::conditional<
 		std::is_lvalue_reference<R2>::value,
 		typename std::add_lvalue_reference<CT>::type,
-		typename std::conditional<
+		typename std::add_rvalue_reference<CT>::type
+		/*typename std::conditional<
 			std::is_rvalue_reference<R2>::value,
 			typename std::add_rvalue_reference<CT>::type,
 			CT
-		>::type
+		>::type*/
 	>::type;
 
 public:
