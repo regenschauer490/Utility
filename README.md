@@ -1,4 +1,4 @@
-SigUtil (version 1.00)
+SigUtil (version 0.90)
 =======
 汎用性と使いやすさを重視したC++11ユーティリティ(template ライブラリ).   
 コンテナに対してはboost::rangeのようにイテレータを介さず使用できる.  
