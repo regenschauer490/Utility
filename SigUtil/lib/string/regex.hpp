@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_REGEX_HPP
 #define SIG_UTIL_REGEX_HPP
 
-#include "../helper/type_map.hpp"
+#include "../helper/type_convert.hpp"
 #include "../helper/maybe.hpp"
 #include <regex>
 
@@ -104,9 +104,9 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 	\endcode
 */
 template <class S>
-auto make_regex(S const& expression) ->typename impl::Str2RegexSelector<impl::TString<S>>::regex
+auto make_regex(S const& expression) ->typename impl::Str2RegexSelector<impl::string_t<S>>::regex
 {
-	return typename impl::Str2RegexSelector<impl::TString<S>>::regex(escape_regex(expression));
+	return typename impl::Str2RegexSelector<impl::string_t<S>>::regex(escape_regex(expression));
 }
 
 
@@ -127,24 +127,24 @@ auto make_regex(S const& expression) ->typename impl::Str2RegexSelector<impl::TS
 	assert(result[1][0] == "tes2");
 	\endcode
 */
-template <class S>
+template <class S, class TS = impl::string_t<S>>
 auto regex_search(
-	S src,
-	typename impl::Str2RegexSelector<impl::TString<S>>::regex const& expression
-	) ->Maybe<std::vector<std::vector<impl::TString<S>>>>
+	S&& src,
+	typename impl::Str2RegexSelector<TS>::regex const& expression
+	) ->Maybe<std::vector<std::vector<TS>>>
 {
-	using R = std::vector<std::vector<impl::TString<S>>>;
-	typename impl::Str2RegexSelector<impl::TString<S>>::smatch match;
-	auto tmp = impl::TString<S>(src);
+	using R = std::vector<std::vector<TS>>;
+	typename impl::Str2RegexSelector<TS>::smatch match;
+	auto tmp = static_cast<TS>(src);
 	R d;
 
 	while (SIG_RegexSearch(tmp, match, expression)){
-		d.push_back(std::vector<impl::TString<S>>());
+		d.push_back(std::vector<TS>());
 		for (auto const& m : match) d.back().push_back(m);
 		tmp = match.suffix().str();
 	}
 
-	return d.empty() ? Nothing(std::move(d)) : Just<R>(std::move(d));
+	return d.empty() ? Nothing(std::move(d)) : Just(std::move(d));
 }
 #endif
 

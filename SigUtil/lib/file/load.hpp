@@ -146,7 +146,7 @@ auto load_line(FilepassString const& file_pass) ->Maybe<C>
 template <class IST = std::string, class R = IST, class C = std::vector<R>>
 auto load_line(FilepassStringC file_pass) ->Maybe<C>
 {
-	return load_line<IST, C>(static_cast<impl::TString<FilepassStringC>>(file_pass));
+	return load_line<IST, C>(static_cast<impl::string_t<FilepassStringC>>(file_pass));
 }
 
 //@}

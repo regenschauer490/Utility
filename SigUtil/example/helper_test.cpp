@@ -6,6 +6,8 @@
 
 void TestHelperModules()
 {
+#if !(SIG_MSVC_VER == 140)
+
 	/* コンパイル時 兼 実行時 */
 
 	//可変長and
@@ -42,11 +44,13 @@ void TestHelperModules()
 	static_assert(!sig::greater(0.5, 1), "");
 	static_assert(sig::less(0.5, 1), "");
 
-#if !SIG_MSVC_GT120
+#if !(SIG_MSVC_VER <= 120)
 	//最小値/最大値
 	static_assert(sig::min(1, -1, 0, 3, 2) == -1, "");
 	static_assert(sig::max(1, -1, 0, 3, 2) == 3, "");
 #endif
+
+#endif	// #if !(SIG_MSVC_VER == 140)
 
 	/* 実行時 */
 
@@ -54,7 +58,7 @@ void TestHelperModules()
 	const auto maybe_true = sig::Just(1);
 	const auto maybe_false = sig::Nothing(0);
 
-#if !SIG_MSVC_GT120
+#if !(SIG_MSVC_VER <= 120)
 	assert(sig::And(maybe_true, maybe_true));
 	assert(sig::And(maybe_true, true));
 	assert(!sig::And(maybe_true, maybe_false));
@@ -116,7 +120,11 @@ void TestHelperModules()
 	static_assert(sig::abs_delta(1, 3) == 2, "");
 	static_assert(sig::abs_delta(-2, -1) == 1, "");
 	static_assert(sig::abs_delta(3.0, 1.5) == 1.5, "");
+#if !(SIG_MSVC_VER == 140)
 	static_assert(sig::abs_delta(3, 1.5) == 1.5, "");
+#else
+	assert(sig::equal(sig::abs_delta(3, 1.5), 1.5));
+#endif
 
 	//generic a == b
 	assert(sig::equal(1, 1));
@@ -126,12 +134,12 @@ void TestHelperModules()
 	assert(sig::equal(1, 1.0));
 	assert(sig::equal(1.0, 1));
 	assert(sig::equal('a', 'a'));
-	assert(sig::equal("tes", "tes"));
-	assert(sig::equal(L"tes", L"tes"));
-	assert(sig::equal("tes", std::string("tes")));
-	assert(sig::equal(std::string("tes"), "tes"));
-	assert(sig::equal(L"tes", std::wstring(L"tes")));
-	assert(sig::equal(std::wstring(L"tes"), L"tes"));
+	assert(sig::equal2("tes", "tes"));
+	assert(sig::equal2(L"tes", L"tes"));
+	assert(sig::equal2("tes", std::string("tes")));
+	assert(sig::equal2(std::string("tes"), "tes"));
+	assert(sig::equal2(L"tes", std::wstring(L"tes")));
+	assert(sig::equal2(std::wstring(L"tes"), L"tes"));
 
 	//誤差の蓄積にある程度対処できる(許容範囲の設定は関数定義)
 	int ct1 = 0;

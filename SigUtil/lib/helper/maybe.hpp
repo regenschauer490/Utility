@@ -46,10 +46,12 @@ namespace sig
 	/// 値コンストラクタ
 	/**
 		\code
-		auto m = Just<int>(1);	// :: Maybe<int>
+		auto m1 = Just(1);			// :: Maybe<int>
+		auto m2 = Just<double>(1);	// :: Maybe<double>
 		\endcode
 	*/
-	template <class T> using Just = Maybe<T>;
+	template <class T> Maybe<T> Just(T&& v){ return Maybe<T>(std::forward<T>(v)); }
+	template <class T> Maybe<T> Just(T const& v){ return Maybe<T>(v); }		// T is given explicitly
 
 	/// 値コンストラクタ
 	/**
@@ -71,12 +73,12 @@ namespace sig
 
 
 	/// Justであるか調べる関数．Maybe a -> Bool
-	template <class T> bool isJust(Maybe<T> const& m){ return m; }
+	template <class T> bool isJust(Maybe<T> const& m){ return static_cast<bool>(m); }
 	constexpr bool isJust(boost::none_t m){ return false; }
 	
 
 	/// Nothingであるか調べる関数．Maybe a -> Bool
-	template <class T> bool isNothing(Maybe<T> const& m){ return !m; }
+	template <class T> bool isNothing(Maybe<T> const& m){ return !static_cast<bool>(m); }
 	constexpr bool isNothing(boost::none_t m){ return true; }
 
 

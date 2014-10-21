@@ -169,7 +169,7 @@ void FunctionalTest()
 	sig::for_each(sig::DebugEqual(), data1, std::get<0>(unzipped));
 	sig::for_each(sig::DebugEqual(), data2, std::get<1>(unzipped));
 
-#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || _MSC_VER >= 1900
+#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || !(SIG_MSVC_VER <= 140)
 	//make container of tuple, from tuple of container
 	auto rezipped = sig::zip(std::move(unzipped));		//std::vector< std::tuple<int, int>>
 
@@ -192,7 +192,7 @@ void FunctionalTest()
 	sig::for_each(sig::DebugEqual(), data3, std::get<2>(cunzipped));
 	sig::for_each(sig::DebugEqual(), data4, std::get<3>(cunzipped));
 
-#if SIG_GCC_GT4_9_0 || _MSC_VER >= 1900
+#if SIG_GCC_GT4_9_0 || !(SIG_MSVC_VER <= 140)
 	auto crezipped = sig::zip(cunzipped);		//std::vector< std::tuple<int, int, int, int>>
 
 	sig::variadicZipWith([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){
@@ -262,7 +262,7 @@ void FunctionalTest()
 	sig::for_each(sig::DebugEqual(), d2, sig::array<int, 1>{ 2 });
 	sig::for_each(sig::DebugEqual(), d3, sig::array<int, 1>{ 10 });
 
-#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || _MSC_VER >= 1900
+#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || !(SIG_MSVC_VER <= 120)
 	/// sort
 	auto s0 = sig::sort(std::greater<int>(), data0);
 	auto s1 = sig::sort(std::less<int>(), data1);

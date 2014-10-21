@@ -9,8 +9,10 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_ERASER_HPP
 
 #include "sigutil.hpp"
-#include "functional.hpp"
 #include "tools.hpp"
+#include "functional/high_order.hpp"
+#include "functional/zip.hpp"
+#include "functional/rest.hpp"
 #include <iterator>
 
 

@@ -238,6 +238,24 @@ struct associative_container_traits<C<K,T,O<K>,A>>
 	static const bool exist = true;
 	
 	using value_type = std::pair<const K,T>;
+
+	template<class U, class V>
+	using rebind = C<U, V, O<U>, typename A::template rebind<std::pair<U, V>>::other>;
+
+	template<class P>
+	static void add_element(C<K, T, O<K>, A>& c, P&& pair)
+	{
+		c.insert(std::forward<P>(pair));
+	}
+
+	static void concat(C<K, T, O<K>, A>& lhs, C<K, T, O<K>, A> const& rhs)
+	{
+		lhs.insert(rhs.begin(), rhs.end());
+	}
+	static void concat(C<K, T, O<K>, A>& lhs, C<K, T, O<K>, A>&& rhs)
+	{
+		lhs.insert(std::make_move_iterator(rhs.begin()), std::make_move_iterator(rhs.end()));
+	}
 };
 
 template<class... Args>

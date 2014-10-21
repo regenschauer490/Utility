@@ -9,7 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_HELPER_HPP
 
 #include "../sigutil.hpp"
-#include "../helper/type_map.hpp"
+#include "../helper/type_convert.hpp"
 #include <sstream> 
 
 /// \file helper.hpp 補助モジュール群
@@ -18,9 +18,13 @@ namespace sig
 {
 
 template <class B>
-constexpr bool And(B cond){
-	return cond;
+#if !(SIG_MSVC_VER == 140)
+constexpr
+#endif
+bool And(B&& cond){
+	return static_cast<bool>(cond);
 }
+
 /// 可変長 and
 /**
 	\param cond,conds bool変数 または operator boolが定義されたオブジェクト
@@ -33,14 +37,20 @@ constexpr bool And(B cond){
 	\endcode
 */
 template <class B1, class... Bs>
-constexpr bool And(B1 cond, Bs... conds){
-	return And(conds...) && cond;
+#if !(SIG_MSVC_VER == 140)
+constexpr
+#endif
+bool And(B1&& cond, Bs&&... conds){
+	return And(std::forward<Bs>(conds)...) && cond;
 }
 
 
 template <class B>
-constexpr bool Or(B cond){
-	return cond;
+#if !(SIG_MSVC_VER == 140)
+constexpr
+#endif
+bool Or(B&& cond){
+	return static_cast<bool>(cond);
 }
 /// 可変長 or
 /**
@@ -54,7 +64,10 @@ constexpr bool Or(B cond){
 	\endcode
 */
 template <class B1, class... Bs>
-constexpr bool Or(B1 cond, Bs... conds){
+#if !(SIG_MSVC_VER == 140)
+constexpr
+#endif
+bool Or(B1&& cond, Bs&&... conds){
 	return Or(conds...) || cond;
 }
 
@@ -73,7 +86,10 @@ constexpr bool Or(B1 cond, Bs... conds){
 	\endcode
 */
 template <class B1, class B2>
-constexpr bool Xor(B1 a, B2 b){
+#if !(SIG_MSVC_VER == 140)
+constexpr
+#endif
+bool Xor(B1&& a, B2&& b){
 	return (a && !b) || (!a && b); 
 }
 
@@ -91,22 +107,25 @@ constexpr bool Xor(B1 a, B2 b){
 	\endcode
 */
 template <class B1, class B2>
-constexpr bool Consistency(B1 a, B2 b){
+#if !(SIG_MSVC_VER == 140)
+constexpr
+#endif
+bool Consistency(B1&& a, B2&& b){
 	return (a && b) || (!a && !b); 
 }
 
 
 template <class T>
-#if !SIG_MSVC_GT120
+#if !(SIG_MSVC_VER <= 120)
 constexpr
 #endif
-auto min(T v)
+auto min(T v) ->T
 {
 	return v;
 }
 
 template <class T1, class T2>
-#if !SIG_MSVC_GT120
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
 auto min(T1 v1, T2 v2)
@@ -125,7 +144,7 @@ auto min(T1 v1, T2 v2)
 	\endcode
 */
 template <class T, class... Ts>
-#if !SIG_MSVC_GT120
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
 auto min(T v, Ts... vs)
@@ -135,16 +154,16 @@ auto min(T v, Ts... vs)
 
 
 template <class T>
-#if !SIG_MSVC_GT120
+#if !(SIG_MSVC_VER <= 120)
 constexpr 
 #endif
-auto max(T v)
+auto max(T v) ->T
 {
 	return v;
 }
 
 template <class T1, class T2>
-#if !SIG_MSVC_GT120
+#if !(SIG_MSVC_VER <= 140)
 constexpr 
 #endif
 auto max(T1 v1, T2 v2)
@@ -163,7 +182,7 @@ auto max(T1 v1, T2 v2)
 	\endcode
 */
 template <class T, class... Ts>
-#if !SIG_MSVC_GT120
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
 auto max(T v, Ts... vs)
@@ -217,6 +236,8 @@ constexpr T abs_delta(T v1, T v2)
 
 /// 2変数の差の絶対値を返す
 /**
+	\pre operator< , operator-
+
 	\code
 	static_assert( abs_delta(1, 3) == 2, "");
 	static_assert( abs_delta(-2, -1) == 1, "");
@@ -225,10 +246,12 @@ constexpr T abs_delta(T v1, T v2)
 	\endcode
 */
 template <class T1, class T2>
-constexpr auto abs_delta(T1 v1, T2 v2)
+#if !(SIG_MSVC_VER == 140)
+constexpr
+#endif
+auto abs_delta(T1 v1, T2 v2) ->decltype(v1 < v2 ? v2 - v1 : v1 - v2)
 {
-	using T = typename std::common_type<T1, T2>::type;
-	return abs_delta(static_cast<T>(v1), static_cast<T>(v2));
+	return v1 < v2 ? v2 - v1 : v1 - v2;
 }
 
 
@@ -253,17 +276,17 @@ constexpr auto abs_delta(T1 v1, T2 v2)
 	\endcode
 */
 template <class T1, class T2, typename std::enable_if<!(impl::StringId<T1>::value || impl::StringId<T2>::value)>::type*& = enabler>
-#if !SIG_MSVC_GT120
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
-bool equal(T1 v1, T2 v2)
+bool equal(T1&& v1, T2&& v2)
 {
-	const uint tolerant_rate = 10000;	//許容範囲の調整 (10^-16 * tolerant_rate)
+	constexpr uint tolerant_rate = 10000;	//許容範囲の調整 (10^-16 * tolerant_rate)
 
 	using T = typename std::common_type<T1, T2>::type;
 	const T dmin = std::numeric_limits<T>::epsilon();
 
-	return !(abs_delta(v1, v2) > tolerant_rate * dmin);
+	return !(abs_delta(std::forward<T1>(v1), std::forward<T2>(v2)) > tolerant_rate * dmin);
 }
 
 
@@ -278,10 +301,10 @@ bool equal(T1 v1, T2 v2)
 	assert( equal(std::wstring(L"tes"), L"tes"));
 	\endcode
 */
-template <class S1, class S2, typename std::enable_if<(impl::StringId<S1>::value && impl::StringId<S2>::value)>::type*& = enabler>
-constexpr bool equal(S1 v1, S2 v2)
+template <class S1, class S2, typename std::enable_if<(impl::is_string<S1>::value && impl::is_string<S2>::value)>::type*& = enabler>
+bool equal2(S1&& v1, S2&& v2)
 {
-	return static_cast<impl::TString<S1>>(v1) == static_cast<impl::TString<S2>>(v2);
+	return static_cast<impl::string_t<S1>>(std::forward<S1>(v1)) == static_cast<impl::string_t<S2>>(std::forward<S2>(v2));
 }
 
 
@@ -378,21 +401,30 @@ constexpr bool less(T1 v1, T2 v2){ return v1 < v2 ? true : false; };
 struct Identity
 {
 	template <class T>
-	constexpr T operator()(T v) const{ return v; }
+#if !(SIG_MSVC_VER == 140)
+	constexpr
+#endif
+	T operator()(T v) const{ return v; }
 };
 
 /// 引数の値をインクリメントした値を返す関数オブジェクト
 struct Increment
 {
 	template <class T>
-	constexpr T operator()(T v) const{ return ++v; }
+#if !(SIG_MSVC_VER == 140)
+	constexpr
+#endif
+	T operator()(T v) const{ return ++v; }
 };
 
 /// 引数の値をデクリメントした値を返す関数オブジェクト
 struct Decrement
 {
 	template <class T>
-	constexpr T operator()(T v) const{ return --v; }
+#if !(SIG_MSVC_VER == 140)
+	constexpr
+#endif
+	T operator()(T v) const{ return --v; }
 };
 
 }

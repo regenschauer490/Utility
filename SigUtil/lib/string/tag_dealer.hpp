@@ -59,6 +59,7 @@ public:
 	auto decode(S const& src, S const& tag) ->Maybe<S> const{
 		auto tag_str = tel_ + tag + ter_;
 		auto parse = split(impl::space<S>()() + src, tag_str);
+
 		return parse.size() < 2 ? Nothing(S()) : Just<S>(parse[1]);
 	}
 

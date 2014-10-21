@@ -26,7 +26,7 @@ C seq(T1 st, T2 d, uint n)
 	return result;
 }
 
-#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || !(_MSC_VER < 1900)
+#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || !(SIG_MSVC_VER <= 120)
 //(a -> a -> bool) -> [a] -> [a]
 //比較関数を指定してソート
 template <class F, class C, typename std::enable_if<has_random_access_op<C>::value, void>::type*& = enabler>
@@ -38,7 +38,7 @@ auto sort(F const& binary_op, C const& data){
 template <class F, class C, typename std::enable_if<!has_random_access_op<C>::value, void>::type*& = enabler>
 auto sort(F const& binary_op, C const& data){
 	C result = data;
-	result.sort(binary_op);
+	//result.sort(binary_op);
 	return result;
 }
 #endif

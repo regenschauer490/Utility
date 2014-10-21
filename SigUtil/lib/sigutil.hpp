@@ -40,10 +40,10 @@ http://opensource.org/licenses/mit-license.php
 
 	#if _MSC_VER < 1800
 	static_assert(false, "require \"Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)\" to compile on msvc");
-	#elif _MSC_VER >= 1900
-	#define SIG_MSVC_GT140 1
-	#elif _MSC_VER >= 1800
-	#define SIG_MSVC_GT120 1
+	#elif _MSC_VER == 1800
+	#define SIG_MSVC_VER 120
+	#elif _MSC_VER == 1900
+	#define SIG_MSVC_VER 140
 	#endif
 
 #elif SIG_GCC_ENV

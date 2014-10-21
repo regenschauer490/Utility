@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_MANIPULATE_HPP
 #define SIG_UTIL_MANIPULATE_HPP
 
-#include "../helper/type_map.hpp"
+#include "../helper/type_convert.hpp"
 #include "../helper/container_traits.hpp"
 
 
@@ -32,10 +32,10 @@ namespace sig
 	auto spl = split(src, ",");		// vector<string>{" one", "2", " 参 "}
 	\endcode
 */
-template <template <class T_, class = std::allocator<T_>> class CSeq = std::vector, class S = std::string>
-auto split(S const& src, impl::TString<S> const& delimiter) ->CSeq<impl::TString<S>>
+template <template <class T_, class = std::allocator<T_>> class CSeq = std::vector, class S = std::string, class TS = impl::string_t<S>>
+auto split(S&& src, impl::string_t<S> delimiter) ->CSeq<TS>
 {
-	CSeq<S> result;
+	CSeq<TS> result;
 	const uint mag = delimiter.size();
 	const uint length = src.size();
 	uint pos = 0, ppos = 0;
@@ -71,7 +71,7 @@ auto split(S const& src, impl::TString<S> const& delimiter) ->CSeq<impl::TString
 }
 
 /**
-	\sa split(S const& src, impl::TString<S> const& delimiter)
+	\sa split(S const& src, impl::string_t<S> const& delimiter)
 */
 template < template <class T_, class = std::allocator<T_>> class CSeq = std::vector >
 auto split(char const* const src, char const* const delimiter) ->CSeq<std::string>
@@ -80,7 +80,7 @@ auto split(char const* const src, char const* const delimiter) ->CSeq<std::strin
 }
 
 /**
-	\sa split(S const& src, impl::TString<S> const& delimiter)
+	\sa split(S const& src, impl::string_t<S> const& delimiter)
 */
 template < template < class T_, class = std::allocator<T_>> class CSeq = std::vector >
 auto split(wchar_t const* const src, wchar_t const* const delimiter) ->CSeq<std::wstring>

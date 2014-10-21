@@ -10,7 +10,8 @@ http://opensource.org/licenses/mit-license.php
 
 
 #include "eval.hpp"
-#include "../helper/container_traits.hpp"
+#include "container_traits.hpp"
+#include "type_convert.hpp"
 
 namespace sig
 {
@@ -48,13 +49,6 @@ void increment_iterator(It&& iter, Its&&... iterators)
 	++iter;
 	increment_iterator(iterators...);
 }
-
-
-template <class T>
-struct remove_const_reference
-{
-	using type = typename std::remove_reference<typename std::remove_const<T>::type>::type;
-};
 
 
 // コンテナの型に対応した要素型を得る

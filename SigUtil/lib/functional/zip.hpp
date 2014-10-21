@@ -35,9 +35,9 @@ namespace sig
 	auto e1 = zipped[1];		// std::tuple<int, int, double, std::string>{ 2, -3, -2.2, "aa" }
 	\endcode
 */
-// for variadic parameter, const lvalue reference
+// for variadic parameter
 template <class... Cs
-#if !SIG_MSVC_ENV || !(MSC_VER < 1900)
+#if !SIG_MSVC_ENV || !(SIG_MSVC_VER <= 140)
 	, typename std::enable_if< And(impl::container_traits<Cs>::exist...) >::type*& = enabler
 #endif
 	>
@@ -100,36 +100,24 @@ auto unzip(CT&& c_tuple)
 }
 
 
-#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || !(_MSC_VER < 1900)
+#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || !(SIG_MSVC_VER <= 140)
 namespace impl
 {
-	template <class TC, size_t... I>
-	auto zipImpl_(TC const& t_lists, std::index_sequence<I...>)
+	template <class TC, size_t... Is>
+	auto zipImpl_(TC&& t_lists, std::index_sequence<Is...>)
 	{
-		return zip(std::get<I>(t_lists)...);
-	}
-	template <class TC, size_t... I>
-	auto zipImpl_(TC&& t_lists, std::index_sequence<I...>)
-	{
-		return zip(std::get<I>(std::forward<TC>(t_lists))...);
+		return zip(std::get<Is>(std::forward<TC>(t_lists))...);
 	}
 }	// impl
 
 // ([a], [b], ...) -> [(a, b, ...)]
 // コンテナのタプルから、タプルのコンテナを作る
-// for tuple, const lvalue reference
+// for tuple
 template <class... Cs, class Indices = std::make_index_sequence<sizeof...(Cs)>
-	auto zip(std::tuple<Cs...> const& t_lists)
-	{
-		return impl::zipImpl_(t_lists, Indices());
-	}
-
-	// for tuple, rvalue reference
-	template <class... Cs, class Indices = std::make_index_sequence<sizeof...(Cs)>
-		auto zip(std::tuple<Cs...>&& t_lists)
-		{
-			return impl::zipImpl_(std::move(t_lists), Indices());
-		}
+auto zip(std::tuple<Cs...>&& t_lists)
+{
+	return impl::zipImpl_(std::forward<Cs...>(t_lists), Indices());
+}
 #endif
 
 }

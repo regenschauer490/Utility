@@ -10,7 +10,7 @@ class MyVector3
 	std::array<T, 3> vec_;
 	
 public:
-	explicit MyVector3(T x, T y, T z) : vec_{{ x, y, z }} {}
+	explicit MyVector3(T x, T y, T z) : vec_({ x, y, z }) {}
 
 	auto begin() const ->decltype(vec_.begin()){ return vec_.begin(); }
 	auto end() const ->decltype(vec_.end()){ return vec_.end(); }

@@ -1,4 +1,5 @@
 ﻿#include "modify_test.h"
+#include "../lib/functional.hpp"
 #include "debug.hpp"
 
 template <class T>
