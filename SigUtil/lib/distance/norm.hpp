@@ -8,8 +8,9 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_NORM_HPP
 #define SIG_UTIL_NORM_HPP
 
-#include "../calculation.hpp"
 #include "comparable_check.hpp"
+#include "../calculation/binary_operation.hpp"
+
 #include <numeric>
 #undef max
 #undef min

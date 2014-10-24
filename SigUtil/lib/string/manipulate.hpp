@@ -32,8 +32,12 @@ namespace sig
 	auto spl = split(src, ",");		// vector<string>{" one", "2", " 参 "}
 	\endcode
 */
-template <template <class T_, class = std::allocator<T_>> class CSeq = std::vector, class S = std::string, class TS = impl::string_t<S>>
-auto split(S&& src, impl::string_t<S> delimiter) ->CSeq<TS>
+template <
+	template <class T_, class = std::allocator<T_>> class CSeq = std::vector,
+	class S = std::string,
+	class TS = impl::string_t<S>
+>
+auto split(S const& src, impl::string_t<S> const& delimiter) ->CSeq<TS>
 {
 	CSeq<TS> result;
 	const uint mag = delimiter.size();
@@ -121,40 +125,43 @@ auto cat_str_impl(It begin, It end, S const& delimiter, OSS& osstream, std::loca
 	\return 結合した文字列
 
 	\code
-	auto cat1 = cat_str(std::vector<std::string>{"eins", "zwei", "drei"}, "");
-	auto cat2 = cat_str(std::list<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
+	auto cat1 = cat(std::vector<std::string>{"eins", "zwei", "drei"}, "");
+	auto cat2 = cat(std::list<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
 
 	assert(cat1 == "einszweidrei");
 	assert(cat2 == L"eins,zwei,drei");
 	\endcode
 */
-template <class C, class S>
-auto cat_str(C const& container, S const& delimiter, std::locale osstream_locale = std::locale(""))
-	->typename impl::SStreamSelector<typename impl::container_traits<C>::value_type>::string
+template <class C,
+	class CR = typename impl::remove_const_reference<C>::type,
+	class S = impl::SStreamSelector< typename impl::container_traits<CR>::value_type>::string
+>
+auto cat(C&& container, typename std::identity<S>::type const& delimiter, std::locale osstream_locale = std::locale("")) ->S
 {
 	return impl::cat_str_impl(
-		std::begin(container),
-		std::end(container),
+		impl::begin(std::forward<C>(container)),
+		impl::end(std::forward<C>(container)),
 		delimiter,
-		typename impl::SStreamSelector<typename impl::container_traits<C>::value_type>::ostringstream{},
-		osstream_locale);
+		typename impl::SStreamSelector<S>::ostringstream{},
+		osstream_locale
+	);
 }
 
 /**
 	containerがinitializer_listの場合
 
-	\sa cat_str(C const& container, S const& delimiter, std::locale osstream_locale)
+	\sa cat(C const& container, S const& delimiter, std::locale osstream_locale)
 */
-template <class T, class S>
-auto cat_str(std::initializer_list<T> container, S const& delimiter, std::locale osstream_locale = std::locale(""))
-	->typename impl::SStreamSelector<T>::string
+template <class T, class S = typename impl::SStreamSelector<T>::string>
+auto cat(std::initializer_list<T> container, typename std::identity<S>::type const& delimiter, std::locale osstream_locale = std::locale("")) ->S
 {
 	return impl::cat_str_impl(
-		std::begin(container),
-		std::end(container),
+		impl::begin(container),
+		impl::end(container),
 		delimiter,
 		typename impl::SStreamSelector<T>::ostringstream{},
-		osstream_locale);
+		osstream_locale
+	);
 }
 
 }

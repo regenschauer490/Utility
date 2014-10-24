@@ -195,7 +195,7 @@ void save_num(
 	std::string delimiter,
 	WriteMode open_mode = WriteMode::overwrite)
 {
-	save_line(cat_str(src, delimiter), file_pass, open_mode);
+	save_line(cat(src, delimiter), file_pass, open_mode);
 }
 
 /// 2次元配列の数値(ex:行列)を保存
@@ -235,7 +235,7 @@ void save_num(
 	std::vector<std::string> tmp;
 
 	for (auto const& line : src){
-		tmp.push_back(cat_str(line, delimiter));
+		tmp.push_back(cat(line, delimiter));
 	}
 	save_line(tmp, file_pass, open_mode);
 }

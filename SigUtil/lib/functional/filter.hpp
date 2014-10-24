@@ -45,6 +45,34 @@ auto filter(F const& pred, C const& list)
 	return result;
 }
 
+/// コンテナから指定条件を満たす要素を抽出する(反復回数を表すindexが利用できる)
+/**
+	(int -> a -> Bool) -> int -> [a] -> [a] 
+
+	\param pred: 条件判定を行う述語関数 (int -> a -> Bool)
+	\param init indexの初期値 int
+	\param container データが格納されたコンテナ [a]（\ref sig_container ）
+
+	\return 処理結果のコンテナ [a]（コンテナはlistと同じ種類）
+
+	\code
+	const array<double, 3> data{ 1.1, 1.5, 4 };
+
+	auto filt3 = filter([](int i, double v){ return v / i < 1; }, 1, data);
+	data;		// { 1.5 }
+	\endcode
+*/
+template <class F, class C>
+auto filter(F const& pred, int init, C const& container)
+{
+	C result;
+	for (auto const& e : container){
+		if (pred(init, e)) impl::container_traits<C>::add_element(result, e);
+		++init;
+	}
+	return result;
+}
+
 
 /// コンテナから指定条件を満たす要素とそれ以外の要素とを分離する
 /**

@@ -8,7 +8,6 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_MINKOWSKI_DISTANCE_HPP
 #define SIG_UTIL_MINKOWSKI_DISTANCE_HPP
 
-#include "../functional.hpp"
 #include "comparable_check.hpp"
 
 namespace sig

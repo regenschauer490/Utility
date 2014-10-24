@@ -1,6 +1,7 @@
 ﻿#include "file_test.h"
 #include "debug.hpp"
 #include "../lib/string.hpp"
+#include "../lib/functional/list_deal.hpp"
 
 //SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
 //処理方法の優先順位は SIG_MSVC_ENV(windows.h使用) > SIG_ENABLE_BOOOST(boost::filesystem使用)
@@ -62,7 +63,8 @@ void GetDirectoryNamesTest()
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl  << "[all visible files]"<< std::endl;
 	auto all_visible = sig::fromJust(file_names);
-	auto t_all_visible = sig::merge(t_text, sig::merge(t_old_text, t_noextension));
+	auto tttmp = sig::merge(t_old_text, t_noextension);
+	auto t_all_visible = sig::merge(t_text, tttmp);
 
 	assert(all_visible.size() == t_all_visible.size());
 	for (auto fn : all_visible){

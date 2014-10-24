@@ -8,8 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_STATIC_UTIL_HPP
 #define SIG_UTIL_STATIC_UTIL_HPP
 
-#include "../iteration.hpp"
-
+#include "../calculation/foreach.hpp"
 
 /// \file statistics_util.hpp 基本的な統計関数、正規化・標準化などの関数
 

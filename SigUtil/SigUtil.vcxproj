@@ -156,7 +156,6 @@
     <ClCompile Include="example\calculate_test.cpp" />
     <ClCompile Include="example\container_specialize_test.cpp" />
     <ClCompile Include="example\distance_test.cpp" />
-    <ClCompile Include="example\iteration_test.cpp" />
     <ClCompile Include="example\helper_test.cpp" />
     <ClCompile Include="example\modify_test.cpp" />
     <ClCompile Include="example\file_test.cpp" />
@@ -174,7 +173,6 @@
     <ClInclude Include="example\container_specialize_test.h" />
     <ClInclude Include="example\debug.hpp" />
     <ClInclude Include="example\distance_test.h" />
-    <ClInclude Include="example\iteration_test.h" />
     <ClInclude Include="example\helper_test.h" />
     <ClInclude Include="example\modify_test.h" />
     <ClInclude Include="example\file_test.h" />
@@ -184,7 +182,9 @@
     <ClInclude Include="example\tool_test.h" />
     <ClInclude Include="lib\array.hpp" />
     <ClInclude Include="lib\calculation.hpp" />
+    <ClInclude Include="lib\calculation\assign_operation.hpp" />
     <ClInclude Include="lib\calculation\binary_operation.hpp" />
+    <ClInclude Include="lib\calculation\foreach.hpp" />
     <ClInclude Include="lib\calculation\statistics_util.hpp" />
     <ClInclude Include="lib\calculation\ublas.hpp" />
     <ClInclude Include="lib\distance.hpp" />
@@ -210,11 +210,13 @@
     <ClInclude Include="lib\helper\eval.hpp" />
     <ClInclude Include="lib\helper\helper.hpp" />
     <ClInclude Include="lib\helper\maybe.hpp" />
-    <ClInclude Include="lib\helper\type_map.hpp" />
-    <ClInclude Include="lib\iteration.hpp" />
+    <ClInclude Include="lib\helper\type_convert.hpp" />
     <ClInclude Include="lib\modify.hpp" />
     <ClInclude Include="lib\file.hpp" />
     <ClInclude Include="lib\functional.hpp" />
+    <ClInclude Include="lib\modify\remove.hpp" />
+    <ClInclude Include="lib\modify\shuffle.hpp" />
+    <ClInclude Include="lib\modify\sort.hpp" />
     <ClInclude Include="lib\sigutil.hpp" />
     <ClInclude Include="lib\string.hpp" />
     <ClInclude Include="lib\string\convert.hpp" />

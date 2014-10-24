@@ -29,15 +29,14 @@ namespace sig
 	const std::list<double> data3{ 1.1, -2.2, 3.3 };
 	const std::set<std::string> data4{ "a", "aa", "aaa" };
 
-	auto zipped = zip(data1, data2, data3, data4);	// array< std::tuple<int, int, double, std::string>, 4>
+	auto z = zip(data1, data2, data3, data4);	// array< std::tuple<int, int, double, std::string>, 4>
 
-	uint size = zipped.size();	// 3
-	auto e1 = zipped[1];		// std::tuple<int, int, double, std::string>{ 2, -3, -2.2, "aa" }
+	uint size = z.size();	// 3
+	auto e1 = z[1];		// std::tuple<int, int, double, std::string>{ 2, -3, -2.2, "aa" }
 	\endcode
 */
-// for variadic parameter
 template <class... Cs
-#if !SIG_MSVC_ENV || !(SIG_MSVC_VER <= 140)
+#if !(SIG_MSVC_VER <= 140)
 	, typename std::enable_if< And(impl::container_traits<Cs>::exist...) >::type*& = enabler
 #endif
 	>
@@ -52,9 +51,26 @@ auto zip(Cs&&... lists)
 }
 
 
-/// タプルのコンテナから、指定したindexのコンテナ(templateパラメータで指定)を取り出す
+/// タプルのコンテナから、指定したindexのコンテナを取り出す
 /**
 	[(a, b, ...)] -> [a0]
+
+	\tparam Index 取り出すインデックス
+
+	\param c_tuple データが格納されたタプルのコンテナ [(a, b, ...)]（\ref sig_container ）
+
+	\return 結果のコンテナ（コンテナはc_tupleと同じ種類）
+
+	\code
+	const array<std::tuple<int, std::string>, 3> data{	// sig::array
+		std::make_tuple(1, "a"),
+		std::make_tuple(2, "b"),
+		std::make_tuple(3, "c")
+	};
+
+	auto uz1 = unzip<0>(data);	// array<int, 3>{ 1, 2, 3 }
+	auto uz2 = unzip<1>(data);	// array<std::string, 3>{ "a", "b", "c" }
+	\endcode
 */
 template <uint Index, class CT>
 auto unzip(CT&& c_tuple)
@@ -92,6 +108,23 @@ auto unzipImpl_(CT&& c_tuple)
 /// タプルのコンテナから、コンテナのタプルを作る
 /**
 	[(a, b, ...)] -> ([a], [b], ...)
+
+	\param c_tuple データが格納されたタプルのコンテナ [(a, b, ...)]（\ref sig_container ）
+
+	\return 結果のコンテナを持つタプル（コンテナはc_tupleと同じ種類）
+
+	\code
+	const array<std::tuple<int, std::string>, 3> data{	// sig::array
+		std::make_tuple(1, "a"),
+		std::make_tuple(2, "b"),
+		std::make_tuple(3, "c")
+	};
+
+	auto uz = unzip(data);	// std::tuple< array<int, 3>, array<std::string, 3> >
+
+	auto e1 = std::get<0>(uz);		// array<int, 3>{ 1, 2, 3 }
+	auto e2 = std::get<1>(uz);		// array<std::string, 3>{ "a", "b", "c" }
+	\endcode
 */
 template <class CT>
 auto unzip(CT&& c_tuple)
@@ -110,9 +143,18 @@ namespace impl
 	}
 }	// impl
 
-// ([a], [b], ...) -> [(a, b, ...)]
-// コンテナのタプルから、タプルのコンテナを作る
-// for tuple
+/// コンテナのタプルから、タプルのコンテナを作る
+/**
+	([a], [b], ...) -> [(a, b, ...)] \n
+	t_listsのいずれかのコンテナが末尾に到達するまでタプルが作られる
+
+	\param t_lists... データが格納されたコンテナのタプル ([a], [b], ...)（\ref sig_container ）
+
+	\return 処理結果のコンテナ [(a, b, ...)]（コンテナはt_listsの[a]と同じ種類）
+
+	\code
+	\endcode
+*/
 template <class... Cs, class Indices = std::make_index_sequence<sizeof...(Cs)>
 auto zip(std::tuple<Cs...>&& t_lists)
 {

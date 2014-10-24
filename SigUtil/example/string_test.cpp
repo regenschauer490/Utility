@@ -102,13 +102,17 @@ void SplitTest()
 void CatStrTest()
 {
 	// 文字列の結合
-	auto cat1 = sig::cat_str(std::vector<std::string>{"eins", "zwei", "drei"}, "");
-	auto cat2 = sig::cat_str(std::list<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
-	auto cat3 = sig::cat_str(std::set<int>{1, 2, 3}, "\n");
+	auto cat1 = sig::cat(std::vector<std::string>{"eins", "zwei", "drei"}, "");
+	auto cat2 = sig::cat(std::list<std::wstring>{L"eins", L"zwei", L"drei"}, L",");
+	auto cat3 = sig::cat({1, 2, 3}, "\n");
+
+	sig::array<std::wstring, 2> d{ L"a", L"b" };
+	auto cat4 = sig::cat(std::move(d), L"-");
 
 	assert(cat1 == "einszweidrei");
 	assert(cat2 == L"eins,zwei,drei");
 	assert(cat3 == "1\n2\n3");
+	assert(cat4 == L"a-b");
 }
 
 

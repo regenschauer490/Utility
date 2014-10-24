@@ -16,9 +16,21 @@ namespace impl
 {
 
 template <class T>
+struct is_const
+{
+	static const bool value = std::is_const<typename std::remove_reference<T>::type>::value;
+};
+
+template <class T>
 struct remove_const_reference
 {
-	using type = typename std::remove_reference<typename std::remove_const<T>::type>::type;
+	using type = typename std::remove_const<typename std::remove_reference<T>::type>::type;
+};
+
+template <size_t N1, size_t N2>
+struct plus
+{
+	static const size_t value = N1 + N2;
 };
 
 // string type to associated in regex type

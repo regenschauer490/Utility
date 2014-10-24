@@ -11,7 +11,9 @@ http://opensource.org/licenses/mit-license.php
 /* 主に統計的な計算によく利用される演算関数群 */
 
 #include "calculation/binary_operation.hpp"
+#include "calculation/assign_operation.hpp"
 #include "calculation/statistics_util.hpp"
 #include "calculation/ublas.hpp"
+#include "calculation/foreach.hpp"
 
 #endif

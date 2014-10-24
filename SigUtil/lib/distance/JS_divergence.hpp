@@ -9,6 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_JS_DIVERGENCE_HPP
 
 #include "comparable_check.hpp"
+#include "../helper/maybe.hpp"
 
 namespace sig
 {

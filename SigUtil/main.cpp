@@ -13,7 +13,6 @@
 #include "example/modify_test.h"
 #include "example/functional_test.h"
 #include "example/calculate_test.h"
-#include "example/iteration_test.h"
 #include "example/distance_test.h"
 #include "example/ublas_test.h"
 #include "example/performance_test.h"
@@ -46,11 +45,9 @@ int main()
 	//calculation.hpp test
 	ArithmeticOperationsTest();
 	StatisticalOperationTest();
-
-	//iteration.hpp test
-	ForeachTest();
-	FoldZipWithTest();
 	CompoundAssignmentTest();
+	ForeachTest();
+
 
 	//functional.hpp test
 	MapTest();

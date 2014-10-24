@@ -15,8 +15,19 @@ http://opensource.org/licenses/mit-license.php
 
 namespace sig
 {
-// 等差数列
-// st:初項, d:公差, n:項数
+/// 等差数列
+/**
+	\param st 初項
+	\param d 公差
+	\param n 項数
+
+	\return 結果のコンテナ（defaultはstd::vector）
+
+	\code
+	auto as1 = seq(1, 2, 5);		// std::vector<int>{ 1, 3, 5, 7, 9 }
+	auto as2 = seq(0, -1.1, 4);		// std::vector<double>{ 0, -1.1, -2.2, -3.3 }
+	\endcode
+*/
 template <class T1, class T2, class C = std::vector<typename std::common_type<T1, T2>::type>>
 C seq(T1 st, T2 d, uint n)
 {
@@ -27,8 +38,11 @@ C seq(T1 st, T2 d, uint n)
 }
 
 #if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || !(SIG_MSVC_VER <= 120)
-//(a -> a -> bool) -> [a] -> [a]
-//比較関数を指定してソート
+
+/// 比較関数を与えてソート
+/**
+	(a -> a -> bool) -> [a] -> [a]
+*/
 template <class F, class C, typename std::enable_if<has_random_access_op<C>::value, void>::type*& = enabler>
 auto sort(F const& binary_op, C const& data){
 	C result = data;

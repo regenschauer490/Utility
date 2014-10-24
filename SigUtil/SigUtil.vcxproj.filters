@@ -40,6 +40,9 @@
     <Filter Include="ヘッダー ファイル\functional">
       <UniqueIdentifier>{f18fdd23-f9b3-4329-94e7-ec8a1b2a793a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\modify">
+      <UniqueIdentifier>{986fcb3b-c734-45f5-a371-36ee3adf0629}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -67,9 +70,6 @@
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
     <ClCompile Include="example\helper_test.cpp">
-      <Filter>ソース ファイル\example</Filter>
-    </ClCompile>
-    <ClCompile Include="example\iteration_test.cpp">
       <Filter>ソース ファイル\example</Filter>
     </ClCompile>
     <ClCompile Include="example\array_test.cpp">
@@ -128,9 +128,6 @@
     <ClInclude Include="lib\calculation.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="lib\iteration.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="example\array_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
@@ -138,9 +135,6 @@
       <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
     <ClInclude Include="example\helper_test.h">
-      <Filter>ヘッダー ファイル\example</Filter>
-    </ClInclude>
-    <ClInclude Include="example\iteration_test.h">
       <Filter>ヘッダー ファイル\example</Filter>
     </ClInclude>
     <ClInclude Include="example\debug.hpp">
@@ -242,9 +236,6 @@
     <ClInclude Include="lib\tools\convergence.hpp">
       <Filter>ヘッダー ファイル\tools</Filter>
     </ClInclude>
-    <ClInclude Include="lib\helper\type_map.hpp">
-      <Filter>ヘッダー ファイル\helper</Filter>
-    </ClInclude>
     <ClInclude Include="lib\helper\container_traits.hpp">
       <Filter>ヘッダー ファイル\helper</Filter>
     </ClInclude>
@@ -280,6 +271,24 @@
     </ClInclude>
     <ClInclude Include="lib\functional\fold.hpp">
       <Filter>ヘッダー ファイル\functional</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\helper\type_convert.hpp">
+      <Filter>ヘッダー ファイル\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\modify\remove.hpp">
+      <Filter>ヘッダー ファイル\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\modify\sort.hpp">
+      <Filter>ヘッダー ファイル\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\modify\shuffle.hpp">
+      <Filter>ヘッダー ファイル\modify</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\calculation\assign_operation.hpp">
+      <Filter>ヘッダー ファイル\calculation</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\calculation\foreach.hpp">
+      <Filter>ヘッダー ファイル\calculation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

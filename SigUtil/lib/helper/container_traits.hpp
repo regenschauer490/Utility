@@ -73,17 +73,16 @@ template <class C>
 struct container_traits
 {
 	static const bool exist = false;
-	// Type value_type
-	// Type rebind<U>
-	// void add_element(C&,T)
-	// void concat(C&,C)
 };
 
 
 /// static_container_traits
 
 template<class C>
-struct static_container_traits;
+struct static_container_traits
+{
+	static const bool exist = false;
+};
 
 template<template<class, size_t> class C, class T, size_t N>
 struct static_container_traits<C<T, N>>
@@ -91,9 +90,16 @@ struct static_container_traits<C<T, N>>
 	static const bool exist = true;
 	
 	using value_type = T;
+	static const size_t size = N;
 
 	template<class U>
 	using rebind = C<U, N>;
+
+	template<class U, size_t M>
+	using rebind_t = C<U, M>;
+
+	template<size_t M>
+	using rebind_n = C<T, M>;
 
 	static void add_element(C<T, N>& c, T const& t)
 	{

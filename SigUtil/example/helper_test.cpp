@@ -6,7 +6,7 @@
 
 void TestHelperModules()
 {
-#if !(SIG_MSVC_VER == 140)
+#if !(SIG_MSVC_VER <= 140)
 
 	/* コンパイル時 兼 実行時 */
 

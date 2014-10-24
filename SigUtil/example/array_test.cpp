@@ -1,49 +1,36 @@
 #include "array_test.h"
 #include "debug.hpp"
 
-struct Int
-{
-	std::vector<int> v;
-
-	Int() : v(0){}
-	Int(int i) : v(1,i){}
-	Int(Int const& s) : v(s.v){}
-	Int(Int&& s) : v(std::move(s.v)){}
-
-	Int& operator=(Int const& s){ v = s.v; return *this; }
-	Int& operator=(Int&& s){ v = std::move(s.v); return *this; }
-
-	bool operator==(Int s) const{ return s.v == v; }
-};
+using namespace sig;
 
 void ArrayTest()
 {
 	//constructor
-	sig::array<Int, 5> ar1;
-	sig::array<Int, 4> ar2{ 1, 2, 3 };
-	sig::array<Int, 5> ar3(3, 1);	//{ 1, 1, 1 }
+	array<TestInt, 5> ar1;
+	array<TestInt, 4> ar2{ 1, 2, 3 };
+	array<TestInt, 5> ar3(3, 1);	//{ 1, 1, 1 }
 
-	std::array<Int, 4> stdar = { { 1, 2, 3, 4 } };
-	sig::array<Int, 5> ar4{ stdar };
+	std::array<TestInt, 4> stdar = { { 1, 2, 3, 4 } };
+	array<TestInt, 5> ar4{ stdar };
 
-	sig::array<Int, 5> ar5{ ar2 };
-	sig::array<Int, 5> ar6{ std::move(ar5) };
+	array<TestInt, 5> ar5{ ar2 };
+	array<TestInt, 5> ar6{ std::move(ar5) };
 
-	sig::assert_foreach(sig::Identity(), ar2, std::vector<Int>{1, 2, 3});	//test elements
-	sig::assert_foreach(sig::Identity(), ar3, std::vector<Int>{1, 1, 1});
-	sig::assert_foreach(sig::Identity(), ar4, stdar);
+	assert_foreach(Identity(), ar2, std::vector<TestInt>{1, 2, 3});	//test elements
+	assert_foreach(Identity(), ar3, std::vector<TestInt>{1, 1, 1});
+	assert_foreach(Identity(), ar4, stdar);
 	assert(ar5.size() == 0);
-	sig::assert_foreach(sig::Identity(), ar6, ar2);
+	assert_foreach(Identity(), ar6, ar2);
 
 	//copy assignment
 	ar1 = ar2;
-	sig::assert_foreach(sig::Identity(), ar1, ar2);
+	assert_foreach(Identity(), ar1, ar2);
 
 	ar1 = { 3, 2, 1 };
-	sig::assert_foreach(sig::Identity(), ar1, std::vector<Int>{3, 2, 1});
+	assert_foreach(Identity(), ar1, std::vector<TestInt>{3, 2, 1});
 
 	ar1 = stdar;
-	sig::assert_foreach(sig::Identity(), ar1, stdar);
+	assert_foreach(Identity(), ar1, stdar);
 
 	//equal
 	auto ar7 = ar6;
@@ -82,15 +69,15 @@ void ArrayTest()
 	assert(ar2.size() == 3);
 	assert(ar2.max_size() == 4);
 
-	Int* raw = ar2.data();
-	std::array<Int, 4> stdar2 = ar2.std_array();
+	TestInt* raw = ar2.data();
+	std::array<TestInt, 4> stdar2 = ar2.std_array();
 
 	ar3.fill(2);
-	sig::assert_foreach(sig::Identity(), ar3, std::vector<Int>{2, 2, 2, 2, 2});
+	assert_foreach(Identity(), ar3, std::vector<TestInt>{2, 2, 2, 2, 2});
 
 	ar3 = ar2;
 	ar1.swap(ar3);
-	sig::assert_foreach(sig::Identity(), ar1, ar6);
+	assert_foreach(Identity(), ar1, ar6);
 	assert(ar3.empty());
 
 	ar1.clear();

@@ -49,6 +49,27 @@ namespace sig
 			debug_equal(*it1, *it2);
 		}
 	}
+
+	class TestInt
+	{
+		std::vector<int> v;
+		bool emp;
+	public:
+
+		TestInt() : v(), emp(true){}
+		TestInt(int i) : v(1, i), emp(false){}
+		TestInt(TestInt const& s) : v(s.v), emp(false){}
+		TestInt(TestInt&& s) : v(std::move(s.v)), emp(false){ s.emp = true; }
+
+		TestInt& operator=(TestInt const& s){ v = s.v; emp = false; return *this; }
+		TestInt& operator=(TestInt&& s){ v = std::move(s.v); emp = false; s.emp = true; return *this; }
+
+		bool operator==(TestInt s) const{ return s.v == v; }
+
+		bool empty() const{ return emp; }
+
+		int value() const{ return emp ? -1 : v[0]; }
+	};
 };
 
 #endif

@@ -19,22 +19,49 @@ extern void* enabler;
 
 namespace impl{
 
-template <class C>
-auto begin(C&& c) ->std::move_iterator<decltype(std::begin(c))>
+template <class C,
+	class RC = typename impl::remove_const_reference<C>::type,
+	typename std::enable_if<!impl::is_const<C>::value>::type*& = enabler,
+	typename std::enable_if<!std::is_same<typename RC::iterator, typename RC::const_iterator>::value>::type*& = enabler
+>
+auto begin(C&& c) ->std::move_iterator<typename RC::iterator>
 {
 	return std::make_move_iterator(std::begin(c));
 }
 
 template <class C>
-auto begin(C& c) ->decltype(c.begin())
+auto begin(C& c) ->decltype(std::begin(c))
 {
 	return std::begin(c);
 }
 
 template <class C>
-auto begin(C const& c) ->decltype(c.begin())
+auto begin(C const& c) ->decltype(std::begin(c))
 {
 	return std::begin(c);
+}
+
+
+template <class C,
+	class RC = typename impl::remove_const_reference<C>::type,
+	typename std::enable_if<!impl::is_const<C>::value>::type*& = enabler,
+	typename std::enable_if<!std::is_same<typename RC::iterator, typename RC::const_iterator>::value>::type*& = enabler
+>
+auto end(C&& c) ->std::move_iterator<typename RC::iterator>
+{
+	return std::make_move_iterator(std::end(c));
+}
+
+template <class C>
+auto end(C& c) ->decltype(std::end(c))
+{
+	return std::end(c);
+}
+
+template <class C>
+auto end(C const& c) ->decltype(std::end(c))
+{
+	return std::end(c);
 }
 
 
@@ -57,18 +84,17 @@ template <class C>
 struct actual_element
 {
 private:
-	using R1 = typename std::remove_reference<C>::type;
-	using R2 = typename std::remove_const<C>::type;
-	using RR = typename std::remove_const<R1>::type;
+	using R1 = typename std::remove_reference<C>::type;	// remove reference
+	using RR = typename std::remove_const<R1>::type;	// remove const reference
 
 	using CT = typename std::conditional<
 		std::is_const<R1>::value,
 		typename std::add_const<typename container_traits<RR>::value_type>::type,
 		typename container_traits<RR>::value_type
-	>::type;
+	>::type;	// add const
 
 	using CRT = typename std::conditional<
-		std::is_lvalue_reference<R2>::value,
+		std::is_lvalue_reference<C>::value,
 		typename std::add_lvalue_reference<CT>::type,
 		typename std::add_rvalue_reference<CT>::type
 		/*typename std::conditional<
@@ -76,11 +102,20 @@ private:
 			typename std::add_rvalue_reference<CT>::type,
 			CT
 		>::type*/
-	>::type;
+	>::type;	// add reference
 
 public:
 	using type = CRT;
 };
+
+
+template <class C>
+struct enable_random_access
+{
+	static const bool value = std::is_same<typename std::iterator_traits<typename C::iterator>::iterator_category, std::random_access_iterator_tag>::value;
+};
+//template <class T, class D = void> struct has_random_access_iter{ static const bool value = false; };
+//template <class T> struct has_random_access_iter<T, decltype(std::declval<typename T::iterator>()[0], void())>{ static const bool value = true; };
 
 
 template<class It>
@@ -133,30 +168,31 @@ void iterative_assign(uint loop, int init, F&& func, Its... iterators)
 }
 
 
-template <class T, class D = void> struct has_random_access_op{ static const bool value = false; };
-template <class T> struct has_random_access_op<T, decltype(std::declval<typename T::iterator>()[0], void())>{ static const bool value = true; };
-
 template <class C>
 void erase(C& container, typename impl::sequence_container_traits<C>::value_type const& t)
 {
 	container.erase(std::remove(std::begin(container), std::end(container), t), std::end(container));
 }
+
 template <class C>
 void erase(C& container, typename impl::associative_container_traits<C>::value_type const& t)
 {
 	container.erase(t);
 }
+
 template <class C>
 void erase(C& container, typename impl::hash_container_traits<C>::value_type const& t)
 {
 	container.erase(t);
 }
 
+
 template <class C, class F, typename std::enable_if<impl::sequence_container_traits<C>::exist>::type*& = enabler>
 void erase_if(C& container, F const& remove_pred)
 {
 	container.erase(std::remove_if(std::begin(container), std::end(container), remove_pred), std::end(container));
 }
+
 template <class C, class F, typename std::enable_if<impl::associative_container_traits<C>::exist>::type*& = enabler>
 void erase_if(C& container, F const& remove_pred)
 {
@@ -167,6 +203,7 @@ void erase_if(C& container, F const& remove_pred)
 		else ++it;
 	}
 }
+
 template <class C, class F, typename std::enable_if<impl::hash_container_traits<C>::exist>::type*& = enabler>
 void erase_if(C& container, F const& remove_pred)
 {
@@ -178,6 +215,7 @@ void erase_if(C& container, F const& remove_pred)
 	}
 }
 
+
 /// 別の種類のコンテナに要素をコピーする
 /**
 	\tparam RC コピー先のコンテナ型（\ref sig_container ）
@@ -187,10 +225,12 @@ void erase_if(C& container, F const& remove_pred)
 	\return コピーされたコンテナ
 */
 template <class RC, class C>
-auto copy(C const& src) ->RC
+auto copy(C&& src) ->RC
 {
 	RC dest;
-	for (auto const& e : src) impl::container_traits<RC>::add_element(dest, e);
+	for (auto it = impl::begin(std::forward<C>(src)), end = impl::end(std::forward<C>(src)); it != end; ++it){
+		impl::container_traits<RC>::add_element(dest, *it);
+	}
 	return dest;
 }
 	

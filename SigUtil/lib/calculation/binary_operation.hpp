@@ -66,7 +66,7 @@ auto binary_operation(OP&& func, C&& c, T&& v)
 {
 	using RT = decltype(impl::eval(std::forward<OP>(func), std::declval<CT>(), v));
 	using R = typename impl::container_traits<CR>::template rebind<RT>;
-	using AT = impl::actual_element<C>::type;
+	using AT = typename impl::actual_element<C>::type;
 
 	R r;
 	for (auto&& e : std::forward<C>(c)){
@@ -90,7 +90,7 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 {
 	using RT = decltype(impl::eval(func, v, std::declval<CT>()));
 	using R = typename impl::container_traits<CR>::template rebind<RT>;
-	using AT = impl::actual_element<C>::type;
+	using AT = typename impl::actual_element<C>::type;
 
 	R r;
 	for (auto&& e : std::forward<C>(c)){
@@ -134,7 +134,7 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 			std::declval<CT>() Operator v\
 		)>\
 	{\
-		using AT = impl::actual_element<C>::type;\
+		using AT = typename impl::actual_element<C>::type;\
 		return binary_operation([](AT v1, T v2){ return v1 Operator v2; }, std::forward<C>(c), std::forward<T>(v)); \
 	}\
 \
@@ -147,7 +147,7 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 			v Operator std::declval<CT>()\
 		)>\
 	{\
-		using AT = impl::actual_element<C>::type;\
+		using AT = typename impl::actual_element<C>::type;\
 		return binary_operation([](T v1, AT v2){ return v1 Operator v2; }, std::forward<T>(v), std::forward<C>(c)); \
 	}\
 

@@ -10,6 +10,8 @@ http://opensource.org/licenses/mit-license.php
 
 #include "../sigutil.hpp"
 #include "../distance/norm.hpp"
+#include "../helper/maybe.hpp"
+#include "../helper/helper.hpp"
 
 /// \file convergence.hpp 反復処理の収束判定に関するユーティリティ
 

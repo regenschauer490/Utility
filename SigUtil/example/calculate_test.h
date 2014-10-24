@@ -5,3 +5,5 @@
 
 void ArithmeticOperationsTest();
 void StatisticalOperationTest();
+void ForeachTest();
+void CompoundAssignmentTest();

@@ -18,7 +18,7 @@ namespace sig
 {
 
 template <class B>
-#if !(SIG_MSVC_VER == 140)
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
 bool And(B&& cond){
@@ -37,7 +37,7 @@ bool And(B&& cond){
 	\endcode
 */
 template <class B1, class... Bs>
-#if !(SIG_MSVC_VER == 140)
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
 bool And(B1&& cond, Bs&&... conds){
@@ -46,7 +46,7 @@ bool And(B1&& cond, Bs&&... conds){
 
 
 template <class B>
-#if !(SIG_MSVC_VER == 140)
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
 bool Or(B&& cond){
@@ -64,7 +64,7 @@ bool Or(B&& cond){
 	\endcode
 */
 template <class B1, class... Bs>
-#if !(SIG_MSVC_VER == 140)
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
 bool Or(B1&& cond, Bs&&... conds){
@@ -86,7 +86,7 @@ bool Or(B1&& cond, Bs&&... conds){
 	\endcode
 */
 template <class B1, class B2>
-#if !(SIG_MSVC_VER == 140)
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
 bool Xor(B1&& a, B2&& b){
@@ -107,7 +107,7 @@ bool Xor(B1&& a, B2&& b){
 	\endcode
 */
 template <class B1, class B2>
-#if !(SIG_MSVC_VER == 140)
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
 bool Consistency(B1&& a, B2&& b){

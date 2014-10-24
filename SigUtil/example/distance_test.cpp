@@ -1,5 +1,6 @@
 #include "distance_test.h"
 #include "../lib/array.hpp"
+#include "../lib/calculation/foreach.hpp"
 
 const sig::array<int, 5> data1{ -1, 0, 1, 2, 3 };
 const std::list<double> data2{ 1, 1.5, 2, 2.5, 3 };
