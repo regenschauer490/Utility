@@ -10,6 +10,7 @@ http://opensource.org/licenses/mit-license.php
 
 #include "../helper/helper.hpp"
 #include "../helper/container_helper.hpp"
+#include "../modify/sort.hpp"
 
 /// \file restl.hpp その他 functional関数
 
@@ -43,18 +44,21 @@ C seq(T1 st, T2 d, uint n)
 /**
 	(a -> a -> bool) -> [a] -> [a]
 */
-template <class F, class C, typename std::enable_if<has_random_access_op<C>::value, void>::type*& = enabler>
-auto sort(F const& binary_op, C const& data){
-	C result = data;
-	std::sort(std::begin(result), std::end(result), binary_op);
+template <class F, class C, typename std::enable_if<impl::container_traits<typename impl::remove_const_reference<C>::type>::exist>::type*& = enabler>
+auto sort(F&& binary_op, C&& data)
+{
+	auto result = std::forward<C>(data);
+	sort(result, std::forward<F>(binary_op));
 	return result;
 }
-template <class F, class C, typename std::enable_if<!has_random_access_op<C>::value, void>::type*& = enabler>
-auto sort(F const& binary_op, C const& data){
+/*
+template <class F, class C, typename std::enable_if<!impl::has_random_access_iter<C>::value, void>::type*& = enabler>
+auto sort(F&& binary_op, C const& data){
 	C result = data;
 	//result.sort(binary_op);
 	return result;
 }
+*/
 #endif
 
 }

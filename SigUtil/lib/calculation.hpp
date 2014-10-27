@@ -12,7 +12,7 @@ http://opensource.org/licenses/mit-license.php
 
 #include "calculation/binary_operation.hpp"
 #include "calculation/assign_operation.hpp"
-#include "calculation/statistics_util.hpp"
+#include "calculation/basic_statistics.hpp"
 #include "calculation/ublas.hpp"
 #include "calculation/foreach.hpp"
 

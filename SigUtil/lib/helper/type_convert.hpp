@@ -8,18 +8,12 @@ http://opensource.org/licenses/mit-license.php
 #ifndef _SIG_UTIL_TYPE_CONVERT_HPP
 #define _SIG_UTIL_TYPE_CONVERT_HPP
 
-#include "../sigutil.hpp"
+#include "type_traits.hpp"
 
 namespace sig
 {
 namespace impl
 {
-
-template <class T>
-struct is_const
-{
-	static const bool value = std::is_const<typename std::remove_reference<T>::type>::value;
-};
 
 template <class T>
 struct remove_const_reference
@@ -32,6 +26,7 @@ struct plus
 {
 	static const size_t value = N1 + N2;
 };
+
 
 // string type to associated in regex type
 template <class T>

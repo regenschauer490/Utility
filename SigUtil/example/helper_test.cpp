@@ -1,7 +1,7 @@
 #include "helper_test.h"
 #include "debug.hpp"
 #include "../lib/helper/maybe.hpp"
-#include "../lib/calculation/statistics_util.hpp"
+#include "../lib/calculation/basic_statistics.hpp"
 #include "../lib/functional.hpp"
 
 void TestHelperModules()

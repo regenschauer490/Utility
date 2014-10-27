@@ -109,15 +109,6 @@ public:
 };
 
 
-template <class C>
-struct enable_random_access
-{
-	static const bool value = std::is_same<typename std::iterator_traits<typename C::iterator>::iterator_category, std::random_access_iterator_tag>::value;
-};
-//template <class T, class D = void> struct has_random_access_iter{ static const bool value = false; };
-//template <class T> struct has_random_access_iter<T, decltype(std::declval<typename T::iterator>()[0], void())>{ static const bool value = true; };
-
-
 template<class It>
 auto dereference_iterator(It&& iter) ->typename std::add_rvalue_reference<decltype(*iter)>::type
 {

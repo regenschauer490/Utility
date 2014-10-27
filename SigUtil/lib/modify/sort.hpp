@@ -9,7 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_SORT_HPP
 
 #include "../sigutil.hpp"
-#include "../functional/rest.hpp"
+#include "../functional/zip.hpp"
 
 
 /// \file sort.hpp ソートに関連する処理
@@ -65,33 +65,38 @@ void sort(
 #else*/
 
 template <class F, class T>
-void sort(
+auto sort(
 	std::vector<T>& container,
-	F&& binary_op)
+	F&& binary_op
+	) ->decltype(impl::eval(std::forward<F>(binary_op), std::declval<T>(), std::declval<T>()), void())
 {
 	std::sort(std::begin(container), std::end(container), std::forward<F>(binary_op));
 }
 
 template <class F,
 	class C,
-	class T = typename impl::static_container_traits<typename impl::remove_const_reference<C>::type>::value_type,
-	typename std::enable_if<impl::enable_random_access<C>::value>::type*& = enabler
+	class CR = typename impl::remove_const_reference<C>::type,
+	class T = typename impl::static_container_traits<CR>::value_type,
+	typename std::enable_if<impl::has_random_access_iter<CR>::value>::type*& = enabler
 >
-void sort(
+auto sort(
 	C& container,
-	F&& binary_op)
+	F&& binary_op
+	) ->decltype(impl::eval(std::forward<F>(binary_op), std::declval<T>(), std::declval<T>()), void())
 {
 	std::sort(std::begin(container), std::end(container), std::forward<F>(binary_op));
 }
 
 template <class F,
 	class C,
-	typename std::enable_if<!impl::enable_random_access<C>::value>::type*& = enabler,
-	class T = typename impl::sequence_container_traits<typename impl::remove_const_reference<C>::type>::value_type
+	class CR = typename impl::remove_const_reference<C>::type,
+	typename std::enable_if<!impl::has_random_access_iter<CR>::value>::type*& = enabler,
+	class T = typename impl::sequence_container_traits<CR>::value_type
 >
-void sort(
+auto sort(
 	C& container,
-	F&& binary_op)
+	F&& binary_op
+	) ->decltype(impl::eval(std::forward<F>(binary_op), std::declval<T>(), std::declval<T>()), void())
 {
 	container.sort(std::forward<F>(binary_op));
 }
