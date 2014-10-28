@@ -9,7 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_MANIPULATE_HPP
 
 #include "../helper/type_convert.hpp"
-#include "../helper/container_traits.hpp"
+#include "../helper/container_helper.hpp"
 
 
 /// \file manipulate.hpp 文字列処理ユーティリティ

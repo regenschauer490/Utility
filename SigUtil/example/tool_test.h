@@ -7,5 +7,5 @@ void RandomTest();
 void ConvergenceTest();
 void TimeWatchTest();
 void HistgramTest();
+void TagDealerTest();
 void PercentTest();
-void ArrayTest();

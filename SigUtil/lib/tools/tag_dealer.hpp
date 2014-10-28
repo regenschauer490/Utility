@@ -9,6 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_TAGDEALER_HPP
 
 #include "../functional/high_order.hpp"
+#include "../string/manipulate.hpp"
 
 namespace sig
 {

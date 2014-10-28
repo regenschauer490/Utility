@@ -18,6 +18,9 @@ namespace sig
 {
 #undef min
 
+	const FilepassString raw_pass = SIG_TO_FPSTR("../../SigUtil/example/test_file/");
+
+
 	struct DebugEqual{
 		template <class T1, class T2, typename std::enable_if<!(std::is_floating_point<T1>::value) && !(std::is_floating_point<T2>::value)>::type *& = enabler>
 		void operator()(T1 v1, T2 v2) const{

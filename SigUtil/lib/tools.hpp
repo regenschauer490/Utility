@@ -15,5 +15,6 @@ http://opensource.org/licenses/mit-license.php
 #include "tools/time_watch.hpp"
 #include "tools/histgram.hpp"
 #include "tools/percent.hpp"
+#include "tools/tag_dealer.hpp"
 
 #endif

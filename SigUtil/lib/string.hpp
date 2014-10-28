@@ -12,6 +12,5 @@ http://opensource.org/licenses/mit-license.php
 #include "string/regex.hpp"
 #include "string/convert.hpp"
 #include "string/replace.hpp"
-#include "string/tag_dealer.hpp"
 
 #endif

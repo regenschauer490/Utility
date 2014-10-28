@@ -1,12 +1,7 @@
-﻿#include "lib/string.hpp"
-#include "lib/file.hpp"
-#include "lib/tools.hpp"
-#include "lib/modify.hpp"
-#include "lib/functional.hpp"
-
-#include "example/container_specialize_test.h"
+﻿#include "example/container_specialize_test.h"
 #include "example/helper_test.h"
 #include "example/maybe_test.h"
+#include "example/array_test.h"
 #include "example/string_test.h"
 #include "example/file_test.h"
 #include "example/tool_test.h"
@@ -57,7 +52,6 @@ int main()
 	//string.hpp test
 	RegexTest();
 	SplitTest();
-	TagDealerTest();
 	CatStrTest();
 	StrConvertTest();
 	ZenHanTest();
@@ -77,6 +71,7 @@ int main()
 	HistgramTest();
 	PercentTest();
 //	TimeWatchTest();	//テスト結果は処理環境のスペック依存
+	TagDealerTest();
 
 	//distance.hpp
 	NormTest(); 
