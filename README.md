@@ -10,13 +10,13 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 * clang version 3.4-1 (based on LLVM 3.4)
 
 #### [ インストール & テスト ]
-ヘッダオンリーなのでlibフォルダをコピーするだけで利用できます. boostを使用するかの設定と動作確認のみを行ってください.  
+ヘッダオンリーなのでSigUtil/libフォルダをコピーするだけで利用できます. boostを使用するかの設定と動作確認のみを行ってください.  
 * SigUtil/lib/sigutil.hpp を開いて「SIG\_ENABLE\_BOOST」の値をboost使用時は1、未使用時は0に設定.
 * SigUtil/main.cpp にテスト項目が列挙されている. テスト内容や使用例は SigUtil/example/\*\*\*.cpp に記述.
 
-コンパイル+テスト実行方法
-* Windows: VisualStudio2013(November2013 CTPをインストール済み)で SigUtil.sln を起動してコンパイル+実行.
-* Linux: ターミナルでSigUtil下に移動し、「make -f gcc.mk」または「make -f clang.mk」を実行(事前にINCLUDEやLIBRARYパスは環境に合わせて修正して下さい).コンパイルに成功した後は、「../bin/test」でテストを実行.
+コンパイル+テスト実行方法 (xxxはコンパイラのバージョン)
+* Windows: VisualStudio2013(November2013 CTPをインストール済み)で project/VisualStudio xxx/SigUtil.sln を起動してコンパイル+実行.
+* Linux: ターミナルでproject/gcc xxx または project/clang xxx下に移動し、「make -f gcc.mk」または「make -f clang.mk」を実行(事前にINCLUDEやLIBRARYパスは環境に合わせて修正して下さい).コンパイルに成功した後は、「./bin/test」でテストを実行.
 
 #### [ おしながき ]   
 **\<array.hpp>**
