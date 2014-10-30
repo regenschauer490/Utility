@@ -31,6 +31,7 @@ int main()
 
 	//helper.hpp test
 	TestEval();
+	TestTypeTraits();
 	TestHelperModules();
 	MaybeTest();
 

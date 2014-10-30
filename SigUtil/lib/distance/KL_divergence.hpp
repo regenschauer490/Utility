@@ -28,7 +28,7 @@ struct KL_Divergence
 		using T1 = typename impl::container_traits<C1>::value_type;
 		using T2 = typename impl::container_traits<C2>::value_type;
 
-		if(!is_comparable(dist1, dist2, impl::DistributionTag()) || has_zero(dist2)) return Nothing(-1);
+		if(!is_comparable(dist1, dist2, impl::DistributionTag()) || has_zero(dist2)) return Nothing(-1.0);
 
 		return Just<double>(
 			std::inner_product(std::begin(dist1), std::end(dist1), std::begin(dist2), 0.0, std::plus<double>(),

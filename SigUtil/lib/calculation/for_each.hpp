@@ -12,7 +12,7 @@ http://opensource.org/licenses/mit-license.php
 #include "../helper/container_helper.hpp"
 
 
-/// \file foreach.hpp かゆいところに手が届く反復処理関数
+/// \file for_each.hpp かゆいところに手が届く反復処理関数
 
 namespace sig
 {

@@ -81,16 +81,17 @@ void increment_iterator(It&& iter, Its&&... iterators)
 // コンテナの型に対応した要素型を得る
 // ex: vector<T> const& -> T const&,	list<T>&& -> T&&
 template <class C>
-struct actual_element
+struct forward_element
 {
 private:
 	using R1 = typename std::remove_reference<C>::type;	// remove reference
-	using RR = typename std::remove_const<R1>::type;	// remove const reference
+	using RR = typename std::remove_const<R1>::type;	// remove const and reference
+	using ET = typename container_traits<RR>::value_type;
 
 	using CT = typename std::conditional<
 		std::is_const<R1>::value,
-		typename std::add_const<typename container_traits<RR>::value_type>::type,
-		typename container_traits<RR>::value_type
+		typename std::add_const<ET>::type,
+		typename ET
 	>::type;	// add const
 
 	using CRT = typename std::conditional<

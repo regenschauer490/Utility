@@ -7,7 +7,7 @@ void MaybeTest()
 	auto n = sig::Nothing(0);	// optional有効時には引数はダミー．無効時には引数の値がそのまま返される
 	auto nn = sig::Maybe<int>(n);
 
-	auto f = [&](int v){ return sig::Just<double>(v * 1.5); };
+	auto f = [&](int v){ return sig::Just(v * 1.5); };
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	assert(m);
@@ -49,28 +49,40 @@ void MaybeTest()
 
 	std::vector<int> vec{ 1, 2, 3 };
 
-	auto vecd = sig::mapMaybe([](int v){ return v != 2 ? sig::Just<double>(v *1.5) : sig::Nothing(0); }, vec);
+	auto vecd = sig::mapMaybe([](int v){ return v != 2 ? sig::Just<double>(v *1.5) : sig::Nothing(0.0); }, vec);
 
 	assert(sig::equal(vecd[0], 1.5));
 	assert(sig::equal(vecd[1], 4.5));
 	
 
-	using sig::operator>>=;	// required
-	auto mm1 = (m >>= f) >>= [&](double v){ return sig::Just<bool>(v < 10); };	// Haskell Style
+	// bind chain
+	auto mm = sig::Just(3);
 
-	assert(*mm1);
+	using sig::operator>>=;	// required
+	auto mm1 = (mm >>= f) >>= [&](double v){ return sig::Just(std::to_string(v)); };	// Haskell Style
+
+	auto tmm = *mm1;
+	assert(sig::equal(*mm1, std::to_string(4.5)));
 
 	using sig::operator<<=;	// required
-	auto mm2 = [&](double v){ return sig::Just<bool>(v < 10); } <<= f <<= m;	// this requals above mm1
+	auto mm2 = [&](double v){ return sig::Just(std::to_string(v)); } <<= f <<= mm;	// this equals above mm1
 
-	assert(*mm2);
+	assert(sig::equal(*mm2, std::to_string(4.5)));
 
+	auto mm3 = [&](double v){ return sig::Just(std::to_string(v)); } <<= [](double v){ return sig::Nothing<double>(); } <<= f <<= mm;	// "nothing" pattern
+
+	assert(sig::isNothing(mm3));
+
+	// assign
 	auto mmm = sig::Just<int>(3);
+	auto nnn = sig::Nothing<int>();
 	
 	using sig::operator<<=;	// required
 	mmm <<= 2;
+	nnn <<= 2;
 
 	assert(sig::equal(*mmm, 2));
+	assert(sig::equal(*nnn, 2));
 #else
 	//assert(m);
 	//assert(!n);

@@ -176,10 +176,10 @@ void FileSaveLoadTest()
 	save_num(uset_num, fpass4, "\n", WriteMode::append);
 
 	//数値行列の保存 (上書き、各行カンマ区切りで保存)
-	const array<array<int, 3>, 3> mat = {
+	const array<std::vector<int>, 3> mat = {
 		{ 1, 2, 3 },
-		{ 4, 5, 6 },
-		{ 7, 8, 9 }
+		{ 4, 5, 6, 7 },
+		{ 8, 9 }
 	};
 	save_num(mat, fpass5, ",");
 
@@ -213,7 +213,7 @@ void FileSaveLoadTest()
 	std::vector<std::string> read3;
 	std::list<std::wstring> read4;
 	std::set<double> read_num2;
-	std::vector<std::vector<int>> read_mat2;
+	array<std::vector<int>, 3> read_mat2;
 
 	load_line(read3, fpass1);
 	load_line(read4, fpass2);

@@ -184,7 +184,7 @@
     <ClInclude Include="..\..\SigUtil\lib\calculation\assign_operation.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\calculation\basic_statistics.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\calculation\binary_operation.hpp" />
-    <ClInclude Include="..\..\SigUtil\lib\calculation\foreach.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\calculation\for_each.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\calculation\ublas.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\distance.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\distance\binary_distance.hpp" />

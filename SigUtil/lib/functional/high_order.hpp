@@ -25,8 +25,8 @@ auto variadicZipWith(F&& func, C1&& list1, Cs&&... lists)
 	using CR1 = typename impl::remove_const_reference<C1>::type;
 	using R = typename impl::container_traits<CR1>::template rebind<decltype(impl::eval(
 		std::forward<F>(func),
-		std::declval<typename impl::actual_element<C1>::type>(),
-		std::declval<typename impl::actual_element<Cs>::type>()...
+		std::declval<typename impl::forward_element<C1>::type>(),
+		std::declval<typename impl::forward_element<Cs>::type>()...
 	))>;
 
 	R result;

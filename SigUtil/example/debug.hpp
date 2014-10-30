@@ -55,7 +55,7 @@ namespace sig
 
 	class TestInt
 	{
-		std::vector<int> v;
+		std::vector<int> v;		// use only first element
 		bool emp;
 	public:
 
@@ -66,6 +66,9 @@ namespace sig
 
 		TestInt& operator=(TestInt const& s){ v = s.v; emp = false; return *this; }
 		TestInt& operator=(TestInt&& s){ v = std::move(s.v); emp = false; s.emp = true; return *this; }
+
+		TestInt& operator+=(TestInt const& s){ v[0] += s.v[0]; emp = false; return *this; }
+		TestInt& operator+=(TestInt&& s){ auto tmp = std::move(s.v); v[0] += tmp[0]; emp = false; s.emp = true; return *this; }
 
 		bool operator==(TestInt s) const{ return s.v == v; }
 

@@ -1,8 +1,72 @@
 #include "helper_test.h"
 #include "debug.hpp"
 #include "../lib/helper/maybe.hpp"
-#include "../lib/calculation/basic_statistics.hpp"
-#include "../lib/functional.hpp"
+//#include "../lib/calculation/basic_statistics.hpp"
+//#include "../lib/functional.hpp"
+
+
+struct TestA{};
+struct TestB{};
+
+TestA func1(){ return TestA{}; }
+TestA func2(int){ return TestA{}; }
+
+struct FO
+{
+	TestA a_;
+	TestB b_;
+
+	TestA operator()(){ return a_; }
+	TestB operator()() const{ return b_; }
+
+	TestA mf(){ return a_; }
+	TestB mf() const{ return b_; }
+};
+
+void TestEval()
+{
+	static_assert(std::is_same<decltype(sig::impl::eval(func1)), TestA>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(func2, 0)), TestA>::value, "");
+
+	FO fo;
+	const FO cfo;
+	static_assert(std::is_same<decltype(sig::impl::eval(fo)), TestA>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(cfo)), TestB>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(static_cast<TestA(FO::*)()>(&FO::mf), fo)), TestA>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(static_cast<TestB(FO::*)() const>(&FO::mf), cfo)), TestB>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(&FO::a_, fo)), TestA&>::value, "");
+	static_assert(std::is_same<decltype(sig::impl::eval(&FO::b_, cfo)), TestB const&>::value, "");
+}
+
+void TestTypeTraits()
+{
+	using namespace sig::impl;
+	using std::is_same;
+
+	using Vec = std::vector<int>;
+	using List = std::list<double>;
+	using Ar = sig::array<sig::TestInt, 2>;
+
+	static_assert(is_same<typename container_traits<Vec>::value_type, int>::value, "");
+	static_assert(is_same<typename container_traits<const Vec>::value_type, int>::value, "");
+	static_assert(is_same<typename container_traits<List>::value_type, double>::value, "");
+	static_assert(is_same<typename container_traits<const List>::value_type, double>::value, "");
+	static_assert(is_same<typename container_traits<Ar>::value_type, sig::TestInt>::value, "");
+	static_assert(is_same<typename container_traits<const Ar>::value_type, sig::TestInt>::value, "");
+
+	// forward_element
+	static_assert(std::is_same<typename sig::impl::forward_element< Vec >::type, int&& >::value, "");
+	static_assert(std::is_same<typename sig::impl::forward_element< Vec& >::type, int& >::value, "");
+	static_assert(std::is_same<typename sig::impl::forward_element< Vec const >::type, int const&& >::value, "");
+	static_assert(std::is_same<typename sig::impl::forward_element< Vec const& >::type, int const& >::value, "");
+
+	static_assert(std::is_same<typename sig::impl::forward_element< Ar >::type, sig::TestInt&& >::value, "");
+	static_assert(std::is_same<typename sig::impl::forward_element< Ar& >::type, sig::TestInt& >::value, "");
+	static_assert(std::is_same<typename sig::impl::forward_element< Ar const >::type, sig::TestInt const&& >::value, "");
+	static_assert(std::is_same<typename sig::impl::forward_element< Ar const& >::type, sig::TestInt const& >::value, "");
+
+}
+
 
 void TestHelperModules()
 {
@@ -111,7 +175,7 @@ void TestHelperModules()
 
 	//check Inf
 	double inf = std::numeric_limits<double>::infinity();
-	double inf2 = sig::product(sig::replicate<double>(1000, 10));	// 10^1000
+	double inf2 = std::pow(100, 100) * std::pow(100, 100);
 	assert(sig::is_finite_number(0));
 	assert(!sig::is_finite_number(inf));
 	assert(!sig::is_finite_number(inf2));
@@ -134,12 +198,12 @@ void TestHelperModules()
 	assert(sig::equal(1, 1.0));
 	assert(sig::equal(1.0, 1));
 	assert(sig::equal('a', 'a'));
-	assert(sig::equal2("tes", "tes"));
-	assert(sig::equal2(L"tes", L"tes"));
-	assert(sig::equal2("tes", std::string("tes")));
-	assert(sig::equal2(std::string("tes"), "tes"));
-	assert(sig::equal2(L"tes", std::wstring(L"tes")));
-	assert(sig::equal2(std::wstring(L"tes"), L"tes"));
+	assert(sig::equal("tes", "tes"));
+	assert(sig::equal(L"tes", L"tes"));
+	assert(sig::equal("tes", std::string("tes")));
+	assert(sig::equal(std::string("tes"), "tes"));
+	assert(sig::equal(L"tes", std::wstring(L"tes")));
+	assert(sig::equal(std::wstring(L"tes"), L"tes"));
 
 	//Œë·‚Ì’~Ï‚É‚ ‚é’ö“x‘Îˆ‚Å‚«‚é(‹–—e”ÍˆÍ‚Ìİ’è‚ÍŠÖ”’è‹`)
 	int ct1 = 0;
@@ -198,38 +262,4 @@ void TestHelperModules()
 
 	sig::assert_foreach(sig::Identity(), cpy_list, orig);
 	sig::assert_foreach(sig::Identity(), cpy_set, sig::array<int, 4>{1, 2, 3, 4});
-}
-
-
-struct TestA{};
-struct TestB{};
-
-TestA func1(){ return TestA{}; }
-TestA func2(int){ return TestA{}; }
-
-struct FO
-{
-	TestA a_;
-	TestB b_;
-
-	TestA operator()(){ return a_; }
-	TestB operator()() const{ return b_; }
-
-	TestA mf(){ return a_; }
-	TestB mf() const{ return b_; }
-};
-
-void TestEval()
-{
-	static_assert(std::is_same<decltype(sig::impl::eval(func1)), TestA>::value, "");
-	static_assert(std::is_same<decltype(sig::impl::eval(func2, 0)), TestA>::value, "");
-
-	FO fo;
-	const FO cfo;
-	static_assert(std::is_same<decltype(sig::impl::eval(fo)), TestA>::value, "");
-	static_assert(std::is_same<decltype(sig::impl::eval(cfo)), TestB>::value, "");
-	static_assert(std::is_same<decltype(sig::impl::eval(static_cast<TestA(FO::*)()>(&FO::mf), fo)), TestA>::value, "");
-	static_assert(std::is_same<decltype(sig::impl::eval(static_cast<TestB(FO::*)() const>(&FO::mf), cfo)), TestB>::value, "");
-	static_assert(std::is_same<decltype(sig::impl::eval(&FO::a_, fo)), TestA&>::value, "");
-	static_assert(std::is_same<decltype(sig::impl::eval(&FO::b_, cfo)), TestB const&>::value, "");
 }

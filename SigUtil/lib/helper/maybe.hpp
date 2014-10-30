@@ -10,6 +10,7 @@ http://opensource.org/licenses/mit-license.php
 
 #include "../sigutil.hpp"
 #include "eval.hpp"
+#include "type_convert.hpp"
 #include "container_traits.hpp"
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
@@ -33,7 +34,7 @@ http://opensource.org/licenses/mit-license.php
 	　SigUtilのMaybeに関する機能は，boost.optionalと補助的な非メンバ関数から構成されており，HaskellのData.Maybeの機能を再現することに加え，C++で扱い易い様に工夫を加えている．\n
 	boost.optionalの使用経験がある人は今まで通りの感覚で使用でき，加えてbind演算（\ref maybe_bindop1 , \ref maybe_bindop2 ）や簡潔な値の代入（\ref maybe_assignop ）などを行えるようになる．\n\n
 
-	諸々の事情でboost.optionalを使うことができない場合，Maybeの実体は std::tuple<T, bool>となる（ただし，今後変更の可能性あり）．
+	諸々の事情でboost.optionalを使うことができない（<boost/optional.hpp>非使用）場合，Maybeの実体は std::tuple<T, bool>となる（ただし，今後変更の可能性あり）．
 */
 
 namespace sig
@@ -59,7 +60,9 @@ namespace sig
 		auto n = Nothing();	// :: Maybe<int>
 		\endcode
 	*/
-	inline auto Nothing()-> decltype(boost::none){ return boost::none; }
+	template <class T = void> auto Nothing()
+		-> typename impl::SameIf<T, void, typename boost::none_t, Maybe<T>>::type
+	{ return boost::none; }
 
 	/// 値コンストラクタ
 	/**
@@ -69,7 +72,7 @@ namespace sig
 		auto n = Nothing(0);	// :: Maybe<int>
 		\endcode
 	*/
-	template <class T> auto Nothing(T const& dummy)-> decltype(boost::none){ return boost::none; }
+	template <class T> auto Nothing(T const& dummy)-> Maybe<T>{ return boost::none; }
 
 
 	/// Justであるか調べる関数．Maybe a -> Bool
@@ -190,13 +193,14 @@ namespace sig
 		\sa operator<<=(F const& f, Maybe<T> const& m)
 
 		\code
-		// using sig::operator>>=;	// required in global namespace
+		// using sig::operator>>=;	// required in non-sig namespace
 
 		auto m = Just<int>(1);
-		auto f = [&](int v){ return sig::Just<double>(v * 1.5); };	// (a -> m b)
+		auto f = [&](int v){ return sig::Just(v * 1.5); };	// (a -> m b)
 
-		auto mm = (m >>= f) >>= [&](double v){ return sig::Just<bool>(v < 10); };	// Haskell Style
-		assert(*mm);	// mm == true
+		auto mm = (m >>= f) >>= [&](double v){ return Just(std::to_string(v)); };	// Haskell Style
+		
+		assert(equal(*mm, std::to_string(4.5)));
 		\endcode
 	*/
 	template <class T, class F>
@@ -218,13 +222,14 @@ namespace sig
 		\sa operator>>=(Maybe<T> const& m, F const& f)
 
 		\code
-		// using sig::operator<<=;	// required in global namespace
+		// using sig::operator<<=;	// required in non-sig namespace
 
 		auto m = Just<int>(1);
-		auto f = [&](int v){ return sig::Just<double>(v * 1.5); };	// (a -> m b)
+		auto f = [&](int v){ return sig::Just(v * 1.5); };	// (a -> m b)
 
-		auto mm = [&](double v){ return sig::Just<bool>(v < 10); } <<= f <<= m;		// suitable style for C++
-		assert(*mm);	// mm == true
+		auto mm = [&](double v){ return Just(std::to_string(v)); } <<= f <<= m;		// suitable style for C++
+		
+		assert(equal(*mm, std::to_string(4.5)));
 		\endcode
 	*/
 	template <class F, class T>
@@ -237,7 +242,7 @@ namespace sig
 
 	/// Maybeオブジェクトへの再代入を行う演算子	\anchor maybe_assignop
 	/**
-		関数型言語では再代入は不可能な機能であるが、C++では無いと不便なのでこの関数を作成．\n
+		関数型言語では再代入は不可能な機能であるが、C++では無いと不便であるためこの関数を作成．\n
 		Maybeオブジェクトへの再代入をJust, Nothingに関係なく統一的に記述することが目的
 
 
@@ -247,12 +252,16 @@ namespace sig
 		\return mへの参照
 
 		\code
-		// using sig::operator<<=;	// required in global namespace
+		// using sig::operator<<=;	// required in non-sig namespace
 
 		auto m = Just<int>(1);
-		m <<= 2;
+		auto n = Nothing();
 
-		int v = *m;	// v == 2
+		m <<= 2;
+		n <<= 2;
+
+		int v1 = *m;	// v1 == 2
+		int v2 = *n;	// v2 == 2
 		\endcode
 	*/
 	template <class T1, class T2>

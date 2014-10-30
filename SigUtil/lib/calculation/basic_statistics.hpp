@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_STATIC_UTIL_HPP
 #define SIG_UTIL_STATIC_UTIL_HPP
 
-#include "../calculation/foreach.hpp"
+#include "../calculation/for_each.hpp"
 
 /// \file basic_statistics.hpp 基本的な統計関数、正規化・標準化などの関数
 
@@ -247,7 +247,8 @@ double variance(C const& data)
 
 /// 正規化（Normalization）
 /**
-	最小値0、最大値1とし、各値が[0,1]の範囲に収まるように正規化
+	最小値0、最大値1とし、各値が[0,1]の範囲に収まるように正規化.\n
+	normalize(C const& data, int dummy = 0)ではなくこちらが呼び出されているかを確認するには、返り値をboolで受けるようにする
 
 	\param data 正規化を行いたい値集合（\ref sig_container ）．要素型は浮動小数点型であることが条件
 
@@ -256,12 +257,12 @@ double variance(C const& data)
 	\code
 	array<double, 5> ar{ -5, -2, 0, 1, 5 };	// sig::array
 
-	normalize(ar);
+	bool ck = normalize(ar);
 	ar;				// { 0, 0.3, 0.5, 0.6, 1 }
 	\endcode
 */
 template <class C, typename std::enable_if<std::is_floating_point<typename impl::container_traits<C>::value_type>::value>::type*& = enabler>
-void normalize(C& data)
+bool normalize(C& data)
 {
 	using T = typename impl::container_traits<C>::value_type;
 	T min = *std::begin(data);
@@ -273,6 +274,8 @@ void normalize(C& data)
 	}
 	T diff = max - min;
 	for_each([min, max, diff](T& e){ e = (e - min) / (diff); }, data);
+
+	return true;
 }
 
 /// 正規化（Normalization）
@@ -307,7 +310,8 @@ auto normalize(C const& data, int dummy = 0)
 
 /// 標準化(Standardization)
 /**
-	正規分布N(0, 1)になるように正規化
+	正規分布N(0, 1)になるように正規化\n
+	standardize(C const& data, int dummy = 0)ではなくこちらが呼び出されているかを確認するには、返り値をboolで受けるようにする
 
 	\param data 標準化を行いたい値集合（\ref sig_container ）．要素型は浮動小数点型であることが条件
 
@@ -316,18 +320,19 @@ auto normalize(C const& data, int dummy = 0)
 	\code
 	array<double, 5> ar{ -3, -1, 0, 1, 3 };	// sig::array
 
-	standardize(ar);
+	bool ck = standardize(ar);
 	ar;				// { -0.75, -0.25, 0, 0.25, 0.75 }
 	\endcode
 */
 template <class C, typename std::enable_if<std::is_floating_point<typename impl::container_traits<C>::value_type>::value>::type*& = enabler>
-void standardize(C& data)
+bool standardize(C& data)
 {
 	using T = typename impl::container_traits<C>::value_type;
 	double mean = average(data);
 	double var = variance(data);
 
 	for_each([mean, var](T& e){ e = (e - mean) / var; }, data);
+	return true;
 }
 
 /// 標準化(Standardization)
@@ -362,7 +367,9 @@ auto standardize(C const& data, int dummy = 0)
 
 /// 確率分布の正規化
 /**
-	各値の総和が1になるよう[0,1]の範囲に正規化
+	
+	各値の総和が1になるよう[0,1]の範囲に正規化.\n
+	normalize_dist(C const& data, int dummy = 0)ではなくこちらが呼び出されているかを確認するには、返り値をboolで受けるようにする
 
 	\param data 正規化を行いたい値集合（\ref sig_container ）．要素型は浮動小数点型であることが条件
 
@@ -371,21 +378,21 @@ auto standardize(C const& data, int dummy = 0)
 	\code
 	array<double, 5> ar{ 1, 2, 4, 2, 1 };
 
-	normalize_dist(ar);
+	bool ck = normalize_dist(ar);
 	ar;			// { 0.1, 0.2, 0.4, 0.2, 0.1 }
 	\endcode
 */
 template <class C, typename std::enable_if<std::is_floating_point<typename impl::container_traits<C>::value_type>::value>::type*& = enabler>
-void normalize_dist(C& data)
+bool normalize_dist(C& data)
 {
 	double sum = sig::sum(data);
-
 	for (auto& e : data) e /= sum;
+	return true;
 }
 
 /// 確率分布の正規化
 /**
-	各値の総和が1になるよう[0,1]の範囲に正規化．
+	各値の総和が1になるよう[0,1]の範囲に正規化.\n
 	normalize_dist(C& data)ではなく明示的にこちらを呼び出す場合は、第2引数を指定
 
 	\param data 正規化を行いたい値集合（\ref sig_container ）

@@ -175,7 +175,7 @@ public:
 	{
 		return bin < Bin
 			? Just<std::tuple<uint, int, int>>(std::make_tuple(count_[bin + 1], delta_*bin + min_, delta_*(bin + 1) + min_))
-			: Nothing(std::make_tuple(0u, 0, 0));
+			: Nothing(std::make_tuple(static_cast<uint>(0u), 0, 0));
 	}
 		
 	/// 標準出力へ出力

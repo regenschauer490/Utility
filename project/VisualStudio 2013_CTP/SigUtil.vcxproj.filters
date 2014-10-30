@@ -170,9 +170,6 @@
     <ClInclude Include="..\..\SigUtil\lib\functional\fold.hpp">
       <Filter>ヘッダー ファイル\functional</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SigUtil\lib\calculation\foreach.hpp">
-      <Filter>ヘッダー ファイル\calculation</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\SigUtil\example\functional_test.h">
       <Filter>ヘッダー ファイル\test</Filter>
     </ClInclude>
@@ -280,6 +277,9 @@
     </ClInclude>
     <ClInclude Include="..\..\SigUtil\lib\tools\tag_dealer.hpp">
       <Filter>ヘッダー ファイル\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SigUtil\lib\calculation\for_each.hpp">
+      <Filter>ヘッダー ファイル\calculation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

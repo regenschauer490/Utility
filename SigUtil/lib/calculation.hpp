@@ -14,6 +14,6 @@ http://opensource.org/licenses/mit-license.php
 #include "calculation/assign_operation.hpp"
 #include "calculation/basic_statistics.hpp"
 #include "calculation/ublas.hpp"
-#include "calculation/foreach.hpp"
+#include "calculation/for_each.hpp"
 
 #endif

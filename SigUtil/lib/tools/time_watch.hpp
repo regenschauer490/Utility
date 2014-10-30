@@ -139,7 +139,7 @@ public:
 	{
 		return index < laps.size()
 			? Just<long>(std::chrono::duration_cast<TimeUnit>(d_accumulate(laps, index+1)).count())
-			: Nothing(-1);
+			: Nothing(-1l);
 	}
 
 	///　指定した区間の時間(ラップタイム)を取得
@@ -151,7 +151,7 @@ public:
 	{
 		return index < laps.size()
 			? Just<long>(std::chrono::duration_cast<TimeUnit>(laps[index]).count())
-			: Nothing(-1);
+			: Nothing(-1l);
 	}
 };
 

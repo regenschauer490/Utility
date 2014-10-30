@@ -117,7 +117,8 @@ auto dotProduct(F1&& fold_func, F2&& oper_func, T&& init, Cs&&... lists)
 		impl::eval(
 			std::forward<F2>(oper_func),
 			std::declval<typename impl::container_traits<typename impl::remove_const_reference<Cs>::type>::value_type>()...)
-		));
+		)
+	);
 	R result = std::forward<T>(init);
 	const uint length = min(lists.size()...);
 

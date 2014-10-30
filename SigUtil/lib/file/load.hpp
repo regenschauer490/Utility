@@ -38,19 +38,23 @@ namespace impl
 
 //@{ 
 
-/// ファイルから1行ずつ読み込む
+/// ファイルから1行ずつ読み込む（ifstreamを指定）
 /**
 	\param empty_dest 保存先のコンテナ（\ref sig_container )
 	\param ifs std::ifstream or std::wifstream
 
 	\return 読み込みの成否
 */
-template <class IFS_CT, class C, class R = typename impl::container_traits<C>::value_type>
+template <
+	class IFS_CHAR, 
+	class C, 
+	class R = typename impl::container_traits<C>::value_type
+>
 bool load_line(
 	C& empty_dest,
-	std::basic_ifstream<IFS_CT>& ifs)
+	std::basic_ifstream<IFS_CHAR>& ifs)
 {
-	std::basic_string<IFS_CT> line;
+	std::basic_string<IFS_CHAR> line;
 
 	SIG_FILE_LOCALE_INIT
 
@@ -60,7 +64,7 @@ bool load_line(
 	return static_cast<bool>(ifs);
 }
 
-/// ファイルから1行ずつ読み込む
+/// ファイルから1行ずつ読み込む（ファイル名を指定）
 /**
 	\param empty_dest 保存先のコンテナ（\ref sig_container )
 	\param file_pass 保存先のパス（ファイル名含む）
@@ -75,7 +79,10 @@ bool load_line(
 	load_line(input, fpass);
 	\endcode
 */
-template <class C, class R = typename impl::container_traits<C>::value_type>
+template <
+	class C,
+	class R = typename impl::container_traits<C>::value_type
+>
 bool load_line(
 	C& empty_dest,
 	FilepassString const& file_pass)
@@ -94,7 +101,7 @@ bool load_line(
 //@{ 
 
 /*
-// ファイルから1行ずつ読み込み、結果を返す
+// ファイルから1行ずつ読み込み、結果を返す（ifstreamを指定）
 // R: 返す文字列型(std::string or std::wstring)
 // ifs: std::ifstream or std::wifstream
 // 読込失敗: return -> nothing (boost非使用時は空のコンテナ)
@@ -107,9 +114,9 @@ return tmp.size() ? Just<C>(std::move(tmp)) : Nothing(std::move(tmp));
 }
 */
 
-/// ファイルから1行ずつ読み込み、結果を返す
+/// ファイルから1行ずつ読み込み、結果を返す（ファイル名を指定）
 /**
-	\tparam IST [option] 読み込んだ文字列を保持する型（std::string or std::wstring）
+	\tparam ISTR [option] 読み込んだ文字列を保持する型（std::string or std::wstring）
 
 	\param file_pass 読み込むファイルのパス
 
@@ -124,11 +131,14 @@ return tmp.size() ? Just<C>(std::move(tmp)) : Nothing(std::move(tmp));
 	auto& data = *input;		// std::vector<std::string>
 	\endcode
 */
-template <class IST = std::string, class C = std::vector<IST>>
+template <
+	class ISTR = std::string,
+	class C = std::vector<ISTR>
+>
 auto load_line(FilepassString const& file_pass) ->Maybe<C>
 {
 	C tmp;
-	impl::IfsSelector<IST> ifs(file_pass);
+	impl::IfsSelector<ISTR> ifs(file_pass);
 
 	if (!ifs){
 		//FileOpenErrorPrint(file_pass);
@@ -142,30 +152,41 @@ auto load_line(FilepassString const& file_pass) ->Maybe<C>
 
 /**
 	file_pass が const char* , const wcahr_t* である場合のオーバーロード
+
+	\sa load_line(FilepassString const& file_pass)
 */
-template <class IST = std::string, class R = IST, class C = std::vector<R>>
+template <
+	class ISTR = std::string,
+	class R = ISTR,
+	class C = std::vector<R>
+>
 auto load_line(FilepassStringC file_pass) ->Maybe<C>
 {
-	return load_line<IST, C>(static_cast<impl::string_t<FilepassStringC>>(file_pass));
+	return load_line<ISTR, C>(static_cast<impl::string_t<FilepassStringC>>(file_pass));
 }
 
 //@}
 
 //@{ 
 
-/// ファイルから1行ずつ読み込み、同時に変換処理を行う
+/// ファイルから1行ずつ読み込み、同時に変換処理を行う（ifstreamを指定）
 /**
 	\param empty_dest 保存先のコンテナ（\ref sig_container )
 	\param ifs std::ifstream or std::wifstream
 	\param conv 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはload_numを推奨)
 */
-template <class IFS_CT, class F, class C, class R = typename impl::container_traits<C>::value_type>
+template <
+	class IFS_CHAR,
+	class F,
+	class C,
+	class R = typename impl::container_traits<C>::value_type
+>
 bool load_line(
 	C& empty_dest,
-	std::basic_ifstream<IFS_CT>& ifs,
+	std::basic_ifstream<IFS_CHAR>& ifs,
 	F const& conv)
 {
-	std::basic_string<IFS_CT> line;
+	std::basic_string<IFS_CHAR> line;
 
 	SIG_FILE_LOCALE_INIT
 
@@ -175,9 +196,9 @@ bool load_line(
 	return static_cast<bool>(ifs);
 }
 
-/// ファイルから1行ずつ読み込み、同時に変換処理を行う
+/// ファイルから1行ずつ読み込み、同時に変換処理を行う（ファイル名を指定）
 /**
-	\tparam IST [option] 読み込んだ文字列を保持する型（std::string or std::wstring）
+	\tparam ISTR [option] 読み込んだ文字列を保持する型（std::string or std::wstring）
 
 	\param empty_dest 保存先のコンテナ（\ref sig_container )
 	\param file_pass 保存先のパス（ファイル名含む）
@@ -204,7 +225,12 @@ bool load_line(
 	);
 	\endcode
 */
-template <class IST = std::string, class F, class C, class R = typename impl::container_traits<C>::value_type>
+template <
+	class ISTR = std::string,
+	class F,
+	class C,
+	class R = typename impl::container_traits<C>::value_type
+>
 bool load_line(
 	C& empty_dest,
 	FilepassString const& file_pass,
@@ -212,7 +238,7 @@ bool load_line(
 {
 	impl::IfsSelector<
 		typename impl::SameIf<R, std::string, R,
-		typename impl::SameIf<R, std::wstring, R, IST>::type
+		typename impl::SameIf<R, std::wstring, R, ISTR>::type
 		>::type
 	> ifs(file_pass);
 
@@ -261,7 +287,10 @@ bool load_line(
 	1.1,2.2,3.3
 	\endcode
 */
-template <class C, class RT = typename impl::container_traits<C>::value_type, typename std::enable_if<!impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler>
+template <
+	class C,
+	class RT = typename impl::container_traits<C>::value_type, typename std::enable_if<!impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler
+>
 bool load_num(
 	C& empty_dest,
 	FilepassString const& file_pass,
@@ -316,7 +345,10 @@ bool load_num(
 	1.1,2.2,3.3
 	\endcode
 */
-template <class R, class C = std::vector<R>, typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler>
+template <
+	class R,
+	class C = std::vector<R>, typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler
+>
 auto load_num(
 	FilepassString const& file_pass,
 	std::string delimiter = "\n"
@@ -345,7 +377,7 @@ auto load_num(
 	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
-	std::vector<std::vector<int>> input_mat;
+	array<std::vector<int>, 3> input_mat;
 
 	load_num2d(input_mat, fpass, ",");
 	assert(input_mat[2][0], 7);
@@ -354,11 +386,15 @@ auto load_num(
 	\code
 	// test.txt
 	1,2,3
-	4,5,6
-	7,8,9
+	4,5,6,7
+	8,9
 	\endcode
 */
-template <class CC, class RC = typename impl::container_traits<CC>::value_type, class RT = typename impl::container_traits<RC>::value_type>
+template <
+	class CC,
+	class RC = typename impl::container_traits<CC>::value_type,
+	class RT = typename impl::container_traits<RC>::value_type
+>
 bool load_num2d(
 	CC& empty_dest,
 	FilepassString const& file_pass,
@@ -403,11 +439,15 @@ bool load_num2d(
 	\code
 	// test.txt
 	1,2,3
-	4,5,6
-	7,8,9
+	4,5,6,7
+	8,9
 	\endcode
 */
-template <class R, class CC = std::vector<std::vector<R>>, typename std::enable_if<impl::container_traits<typename impl::container_traits<CC>::value_type>::exist>::type*& = enabler>
+template <
+	class R,
+	class CC = std::vector<std::vector<R>>,
+	typename std::enable_if<impl::container_traits<typename impl::container_traits<CC>::value_type>::exist>::type*& = enabler
+>
 auto load_num2d(
 	FilepassString const& file_pass,
 	std::string delimiter

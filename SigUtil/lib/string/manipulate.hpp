@@ -97,7 +97,7 @@ namespace impl
 {
 //	コンテナに格納された各文字列(数値の場合は文字列に変換)を順番に結合して1つの文字列に(delimiterで区切り指定)
 template <class It, class S, class OSS>
-auto cat_str_impl(It begin, It end, S const& delimiter, OSS& osstream, std::locale osstream_locale = std::locale("")) ->decltype(osstream.str())
+auto cat_impl(It begin, It end, S const& delimiter, OSS& osstream, std::locale osstream_locale = std::locale("")) ->decltype(osstream.str())
 {
 	if (begin == end) return osstream.str();
 
@@ -138,7 +138,7 @@ template <class C,
 >
 auto cat(C&& container, typename std::identity<S>::type const& delimiter, std::locale osstream_locale = std::locale("")) ->S
 {
-	return impl::cat_str_impl(
+	return impl::cat_impl(
 		impl::begin(std::forward<C>(container)),
 		impl::end(std::forward<C>(container)),
 		delimiter,
@@ -155,7 +155,7 @@ auto cat(C&& container, typename std::identity<S>::type const& delimiter, std::l
 template <class T, class S = typename impl::SStreamSelector<T>::string>
 auto cat(std::initializer_list<T> container, typename std::identity<S>::type const& delimiter, std::locale osstream_locale = std::locale("")) ->S
 {
-	return impl::cat_str_impl(
+	return impl::cat_impl(
 		impl::begin(container),
 		impl::end(container),
 		delimiter,

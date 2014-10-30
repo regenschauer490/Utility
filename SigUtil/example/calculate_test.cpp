@@ -271,21 +271,28 @@ void CompoundAssignmentTest()
 	auto data2_t = data2;
 
 	// 複合代入(コンテナの各要素に対して何らかの演算を行い、演算後の値を代入する)
-	compound_assignment([](int& v1, int v2){ v1 += v2; }, data1_t, 1);
+	compound_assignment(assign_plus(), data1_t, 1);		// this assign_plus equals "[](int& v1, int v2){ v1 += v2; }"
 
 	assert_foreach([](int d1){ return d1 + 1; }, data1_t, data1);
 
 	// ex2
-	compound_assignment([](double& v1, int v2){ v1 -= v2; }, data2_t, data0);
+	compound_assignment(assign_minus(), data2_t, data0);	// this assign_minus equals "[](double& v1, int v2){ v1 -= v2; }"
 
 	assert_foreach([](double d2, int d0){ return d2 - d0; }, data2_t, data2, data0);
 
 	// ex3
 	const std::vector<std::string> str{ "ein", "zwei", "drei" };
 	auto str_t = str;
-	compound_assignment([](std::string& str, std::string add){ str += add; }, str_t, std::string("-hander"));
+	compound_assignment([](std::string& str, std::string add){ str += add + "!"; }, str_t, std::string("-hander"));
 
-	assert_foreach([](std::string s){ return s + std::string("-hander"); }, str_t, str);
+	assert_foreach([](std::string s){ return s + std::string("-hander!"); }, str_t, str);
 
+
+	// assign_func move test
+	TestInt ti(1);
+	std::vector<TestInt> tivec{ 1, 2, 3 };
+
+	compound_assignment(assign_plus(), tivec, std::move(ti));
+	assert(ti.empty());
 }
 

@@ -10,6 +10,7 @@ http://opensource.org/licenses/mit-license.php
 
 #include "../sigutil.hpp"
 #include "../functional/zip.hpp"
+#include "../functional/rest.hpp"
 
 
 /// \file sort.hpp ソートに関連する処理
@@ -147,16 +148,15 @@ auto sort(
 	assert(data2[0].empty() && data2[8].empty());	// moved
 	\endcode
 */
-template <class C,
-	class T = typename impl::container_traits<typename impl::remove_const_reference<C>::type>::value_type,
-	class F
+template <class C, class F,
+	class T = typename impl::container_traits<typename impl::remove_const_reference<C>::type>::value_type
 >
 auto sort_with_index(
 	C&& container,
 	F&& binary_op)
 {
 	using Tp = std::tuple<T, uint>;
-	auto result = zip(std::forward<C>(container), seq(0u, 1u, container.size()));
+	auto result = zip(std::forward<C>(container), seqn(0u, 1u, container.size()));
 
 	sort(result, [&](Tp const& l, Tp const& r){ return std::forward<F>(binary_op)(std::get<0>(l), std::get<0>(r)); });
 

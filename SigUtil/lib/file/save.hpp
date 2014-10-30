@@ -53,7 +53,9 @@ inline void clear_file(FilepassString const& file_pass)
 	\param src 保存対象
 	\param ofs std::ofstream or std::wofstream
 */
-template <class T, typename std::enable_if<!impl::container_traits<T>::exist>::type*& = enabler>
+template <class T,
+	typename std::enable_if<!impl::container_traits<T>::exist>::type*& = enabler
+>
 inline void save_line(
 	T src,
 	typename impl::FStreamSelector<T>::ofstream& ofs)
@@ -66,7 +68,9 @@ inline void save_line(
 	\param src 保存対象（\ref sig_container ）
 	\param ofs std::ofstream or std::wofstream
 */
-template <class C, typename std::enable_if<impl::container_traits<C>::exist>::type*& = enabler>
+template <class C,
+	typename std::enable_if<impl::container_traits<C>::exist>::type*& = enabler
+>
 void save_line(
 	C const& src,
 	typename impl::FStreamSelector<typename impl::container_traits<C>::value_type>::ofstream& ofs)
@@ -105,7 +109,9 @@ void save_line(
 
 	\endcode
 */
-template <class T, typename std::enable_if<!impl::container_traits<T>::exist>::type*& = enabler>
+template <class T,
+	typename std::enable_if<!impl::container_traits<T>::exist>::type*& = enabler
+>
 void save_line(
 	T src,
 	FilepassString const& file_pass,
@@ -143,7 +149,9 @@ void save_line(
 
 	\endcode
 */
-template <class C, typename std::enable_if<impl::container_traits<C>::exist>::type*& = enabler>
+template <class C,
+	typename std::enable_if<impl::container_traits<C>::exist>::type*& = enabler
+>
 void save_line(
 	C const& src,
 	FilepassString const& file_pass,
@@ -188,7 +196,9 @@ void save_line(
 	3.3
 	\endcode
 */
-template <class C, typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler>
+template <class C,
+	typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler
+>
 void save_num(
 	C const& src,
 	FilepassString const& file_pass,
@@ -209,10 +219,10 @@ void save_num(
 	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
-	const array<array<int, 3>, 3> mat = {	// sig::array
+	const array<std::vector<int>, 3> mat = {	// sig::array
 		{ 1, 2, 3 },
-		{ 4, 5, 6 },
-		{ 7, 8, 9 }
+		{ 4, 5, 6, 7 },
+		{ 8, 9 }
 	};
 
 	save_num(mat, fpass, ",");
@@ -221,11 +231,13 @@ void save_num(
 	\code
 	// test.txt
 	1,2,3
-	4,5,6
-	7,8,9
+	4,5,6,7
+	8,9
 	\endcode
 */
-template <class CC, typename std::enable_if<impl::container_traits<typename impl::container_traits<CC>::value_type>::exist>::type*& = enabler>
+template <class CC,
+	typename std::enable_if<impl::container_traits<typename impl::container_traits<CC>::value_type>::exist>::type*& = enabler
+>
 void save_num(
 	CC const& src,
 	FilepassString const& file_pass,

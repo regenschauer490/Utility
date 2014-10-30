@@ -5,4 +5,5 @@
 #include "../lib/helper/container_helper.hpp"
 
 void TestEval();
+void TestTypeTraits();
 void TestHelperModules();

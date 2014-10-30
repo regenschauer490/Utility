@@ -73,5 +73,58 @@ void compound_assignment(
 	}
 }
 
+
+/// compound_assignment の第1引数に指定する代入関数のプリセット（加算代入）
+/**
+	\pre 被代入側のオブジェクトに operator+=関数が定義されていること
+*/
+struct assign_plus
+{
+	template <class T1, class T2>
+	void operator()(T1& v1, T2&& v2) const
+	{
+		v1 += std::forward<T2>(v2);
+	}
+};
+
+/// compound_assignment の第1引数に指定する代入関数のプリセット（減算代入）
+/**
+	\pre 被代入側のオブジェクトに operator-=関数が定義されていること
+*/
+struct assign_minus
+{
+	template <class T1, class T2>
+	void operator()(T1& v1, T2&& v2) const
+	{
+		v1 -= std::forward<T2>(v2);
+	}
+};
+
+/// compound_assignment の第1引数に指定する代入関数のプリセット（乗算代入）
+/**
+	\pre 被代入側のオブジェクトに operator*=関数が定義されていること
+*/
+struct assign_mult
+{
+	template <class T1, class T2>
+	void operator()(T1& v1, T2&& v2) const
+	{
+		v1 *= std::forward<T2>(v2);
+	}
+};
+
+/// compound_assignment の第1引数に指定する代入関数のプリセット（除算代入）
+/**
+\pre 被代入側のオブジェクトに operator/=関数が定義されていること
+*/
+struct assign_div
+{
+	template <class T1, class T2>
+	void operator()(T1& v1, T2&& v2) const
+	{
+		v1 /= std::forward<T2>(v2);
+	}
+};
+
 }
 #endif

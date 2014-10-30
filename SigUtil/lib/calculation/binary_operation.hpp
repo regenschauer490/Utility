@@ -8,7 +8,8 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_BINARY_OPERATION_HPP
 #define SIG_UTIL_BINARY_OPERATION_HPP
 
-#include "../functional/high_order.hpp"
+#include "../helper/helper.hpp"
+#include "../helper/container_helper.hpp"
 
 
 /// \file binary_operation.hpp スカラ変数とベクトル変数(+コンテナの種類)を気にせず使える二項演算関数
@@ -24,8 +25,13 @@ namespace sig
 
 	\return 演算結果
 */
-template <class OP, class T1, class T2>
-auto binary_operation(OP&& func, T1&& v1, T2&& v2) ->decltype(std::forward<T1>(v1) +std::forward<T1>(v2))
+template <class OP, class T1, class T2,
+	typename std::enable_if<
+		(!impl::container_traits<typename impl::remove_const_reference<T1>::type>::exist) && (!impl::container_traits<typename impl::remove_const_reference<T2>::type>::exist)
+	>::type*& = enabler
+>
+auto binary_operation(OP&& func, T1&& v1, T2&& v2)
+	->typename impl::remove_const_reference< decltype(impl::eval(std::forward<OP>(func), std::forward<T1>(v1), std::forward<T1>(v2)))>::type
 {
 	return std::forward<OP>(func)(std::forward<T1>(v1), std::forward<T2>(v2));
 }
@@ -34,121 +40,148 @@ auto binary_operation(OP&& func, T1&& v1, T2&& v2) ->decltype(std::forward<T1>(v
 template <class OP, class C1, class C2,
 	class CR1 = typename impl::remove_const_reference<C1>::type,
 	class CR2 = typename impl::remove_const_reference<C2>::type,
-	class CT1 = typename impl::container_traits<typename std::remove_reference<CR1>::type>::value_type,
-	class CT2 = typename impl::container_traits<typename std::remove_reference<CR2>::type>::value_type
+	class AT1 = typename impl::forward_element<C1>::type,
+	class AT2 = typename impl::forward_element<C2>::type,
+	typename std::enable_if<
+		impl::container_traits<CR1>::exist && impl::container_traits<CR2>::exist
+	>::type*& = enabler
 >
 auto binary_operation(OP&& func, C1&& c1, C2&& c2)
-	->typename impl::container_traits<CR1>::template rebind<decltype(impl::eval(
-		std::forward<OP>(func),
-		std::declval<CT1>(),
-		std::declval<CT2>()
-	))>
+	->typename impl::container_traits<CR1>::template rebind<
+		typename impl::remove_const_reference<decltype(impl::eval(
+			std::forward<OP>(func),
+			std::declval<AT1>(),
+			std::declval<AT2>()
+		))>::type
+	>
 {
-	return zipWith(
-		[&](ParamType<CT1> v1, ParamType<CT2> v2){ return std::forward<OP>(func)(v1, v2); },
-		std::forward<C1>(c1),
-		std::forward<C2>(c2)
-	);
+	using RT = decltype(impl::eval(std::forward<OP>(func), std::declval<AT1>(), std::declval<AT2>()));
+	using R = typename impl::container_traits<CR1>::template rebind<RT>;
+
+	R result;
+	const uint length = min(c1.size(), c2.size());
+	iterative_make(length, result, std::forward<OP>(func), impl::begin(std::forward<C1>(c1)), impl::begin(std::forward<C2>(c2)));
+	return result;
 }
 
 /// 二項演算 (element-wise: container and scalar)
 template <class OP, class C, class T,
 	class CR = typename impl::remove_const_reference<C>::type,
-	class CT = typename impl::container_traits<CR>::value_type,
-	class = typename impl::container_traits<CR>::value_type
+	class AT = typename impl::forward_element<C>::type,
+	typename std::enable_if<
+		impl::container_traits<CR>::exist && (!impl::container_traits<typename impl::remove_const_reference<T>::type>::exist)
+	>::type*& = enabler
 >
 auto binary_operation(OP&& func, C&& c, T&& v)
-	->typename impl::container_traits<CR>::template rebind<decltype(impl::eval(
-		std::forward<OP>(func),
-		std::declval<CT>(),
-		v
-	))>
+	->typename impl::container_traits<CR>::template rebind<
+		typename impl::remove_const_reference<decltype(impl::eval(
+			std::forward<OP>(func),
+			std::declval<AT>(),
+			v
+		))>::type
+	>
 {
-	using RT = decltype(impl::eval(std::forward<OP>(func), std::declval<CT>(), v));
+	using RT = decltype(impl::eval(std::forward<OP>(func), std::declval<AT>(), v));
 	using R = typename impl::container_traits<CR>::template rebind<RT>;
-	using AT = typename impl::actual_element<C>::type;
 
-	R r;
+	R result;
 	for (auto&& e : std::forward<C>(c)){
-		impl::container_traits<R>::add_element(r, std::forward<OP>(func)(std::forward<AT>(e), v));
+		impl::container_traits<R>::add_element(result, std::forward<OP>(func)(static_cast<AT>(e), v));
 	}
-	return r;
+	return result;
 }
 
 /// 二項演算 (element-wise: scalar and container)
 template <class OP, class T, class C,
-	class CT = typename impl::container_traits<typename impl::remove_const_reference<C>::type>::value_type,
+	class AT = typename impl::forward_element<C>::type,
 	class CR = typename impl::remove_const_reference<C>::type,
-	class = typename impl::container_traits<CR>::value_type
+	typename std::enable_if<
+		(!impl::container_traits<typename impl::remove_const_reference<T>::type>::exist) && impl::container_traits<CR>::exist
+	>::type*& = enabler
 >
 auto binary_operation(OP&& func, T&& v, C&& c)
-	->typename impl::container_traits<CR>::template rebind<decltype(impl::eval(
-		std::forward<OP>(func),
-		v,
-		std::declval<CT>()
-	))>
+	->typename impl::container_traits<CR>::template rebind<
+		typename impl::remove_const_reference<decltype(impl::eval(
+			std::forward<OP>(func),
+			v,
+			std::declval<AT>()
+		))>::type
+	>
 {
-	using RT = decltype(impl::eval(func, v, std::declval<CT>()));
+	using RT = decltype(impl::eval(std::forward<OP>(func), v, std::declval<AT>()));
 	using R = typename impl::container_traits<CR>::template rebind<RT>;
-	using AT = typename impl::actual_element<C>::type;
 
 	R r;
 	for (auto&& e : std::forward<C>(c)){
-		impl::container_traits<R>::add_element(r, std::forward<OP>(func)(v, std::forward<AT>(e)));
+		impl::container_traits<R>::add_element(r, std::forward<OP>(func)(v, static_cast<AT>(e)));
 	}
 	return r;
 }
 
 
 ///  四則演算を一般的に記述するための関数群
-
 #define SIG_MakeBinaryOperation(FunctionName, Operator)\
-	template <class T1, class T2>\
-	auto FunctionName(T1&& v1, T2&& v2) ->decltype(v1 Operator v2)\
+	template <class T1, class T2,\
+		typename std::enable_if<\
+			(!impl::container_traits<typename impl::remove_const_reference<T1>::type>::exist) && (!impl::container_traits<typename impl::remove_const_reference<T2>::type>::exist)\
+		>::type*& = enabler\
+	>\
+	auto FunctionName(T1&& v1, T2&& v2) ->typename impl::remove_const_reference<decltype(std::forward<T1>(v1) Operator std::forward<T2>(v2))>::type\
 	{\
-		return v1 Operator v2;\
+		return std::forward<T1>(v1) Operator std::forward<T2>(v2); \
 	}\
 \
 	template <class C1, class C2,\
 		class CR1 = typename impl::remove_const_reference<C1>::type, \
 		class CR2 = typename impl::remove_const_reference<C2>::type, \
-		class CT1 = typename impl::container_traits<typename std::remove_reference<CR1>::type>::value_type,\
-		class CT2 = typename impl::container_traits<typename std::remove_reference<CR2>::type>::value_type\
+		class AT1 = typename impl::forward_element<C1>::type,\
+		class AT2 = typename impl::forward_element<C2>::type,\
+		typename std::enable_if<\
+			impl::container_traits<CR1>::exist && impl::container_traits<CR2>::exist\
+		>::type*& = enabler\
 	>\
 	auto FunctionName(C1&& c1, C2&& c2)\
-		->typename impl::container_traits<CR1>::template rebind<decltype(\
-			std::declval<CT1>() Operator std::declval<CT2>()\
-		)>\
+		->typename impl::container_traits<CR1>::template rebind<\
+			typename impl::remove_const_reference<decltype(\
+				std::declval<AT1>() Operator std::declval<AT2>()\
+			)>::type\
+		>\
 	{\
-		using AT1 = impl::actual_element<C1>::type;\
-		using AT2 = impl::actual_element<C2>::type;\
-		return binary_operation([](AT1 v1, AT2 v2){ return v1 Operator v2; }, std::forward<C1>(c1), std::forward<C2>(c2)); \
+		return binary_operation([](AT1 v1, AT2 v2){ return static_cast<AT1>(v1) Operator static_cast<AT2>(v2); }, std::forward<C1>(c1), std::forward<C2>(c2)); \
 	}\
 \
 	template <class C, class T,\
 		class CR = typename impl::remove_const_reference<C>::type,\
-		class CT = typename impl::container_traits<CR>::value_type\
+		class AT = typename impl::forward_element<C>::type,\
+		typename std::enable_if<\
+			impl::container_traits<CR>::exist && (!impl::container_traits<typename impl::remove_const_reference<T>::type>::exist)\
+		>::type*& = enabler\
 	>\
 	auto FunctionName(C&& c, T&& v)\
-		->typename impl::container_traits<CR>::template rebind<decltype(\
-			std::declval<CT>() Operator v\
-		)>\
+		->typename impl::container_traits<CR>::template rebind<\
+			typename impl::remove_const_reference<decltype(\
+				std::declval<AT>() Operator v\
+			)>::type\
+		>\
 	{\
-		using AT = typename impl::actual_element<C>::type;\
-		return binary_operation([](AT v1, T v2){ return v1 Operator v2; }, std::forward<C>(c), std::forward<T>(v)); \
+		return binary_operation([](AT v1, T v2){ return static_cast<AT>(v1) Operator v2; }, std::forward<C>(c), std::forward<T>(v)); \
 	}\
 \
 	template <class T, class C,\
-		class CT = typename impl::container_traits<typename impl::remove_const_reference<C>::type>::value_type, \
-		class CR = typename impl::remove_const_reference<C>::type\
+		class AT = typename impl::forward_element<C>::type, \
+		class CR = typename impl::remove_const_reference<C>::type,\
+		typename std::enable_if<\
+			(!impl::container_traits<typename impl::remove_const_reference<T>::type>::exist) && impl::container_traits<CR>::exist\
+		>::type*& = enabler\
 	>\
 	auto FunctionName(T&& v, C&& c)\
-		->typename impl::container_traits<CR>::template rebind<decltype(\
-			v Operator std::declval<CT>()\
-		)>\
+		->typename impl::container_traits<CR>::template rebind<\
+			typename impl::remove_const_reference<decltype(\
+				v Operator std::declval<AT>()\
+			)>::type\
+		>\
 	{\
-		using AT = typename impl::actual_element<C>::type;\
-		return binary_operation([](T v1, AT v2){ return v1 Operator v2; }, std::forward<T>(v), std::forward<C>(c)); \
+		return binary_operation([](T v1, AT v2){ return v1 Operator static_cast<AT>(v2); }, std::forward<T>(v), std::forward<C>(c)); \
 	}\
 
 

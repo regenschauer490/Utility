@@ -230,8 +230,8 @@ void FunctionalTest()
 
 	/// make arithmetic sequence
 	{
-		auto as1 = seq(1, 2, 5);
-		auto as2 = seq(0, -1.1, 4);
+		auto as1 = seqn(1, 2, 5);
+		auto as2 = seqn(0, -1.1, 4);
 
 		for_each(DebugEqual(), as1, array<int, 5>{ 1, 3, 5, 7, 9 });
 		for_each(DebugEqual(), as2, array<double, 4>{ 0, -1.1, -2.2, -3.3 });

@@ -25,12 +25,12 @@ namespace sig
 	\return 結果のコンテナ（defaultはstd::vector）
 
 	\code
-	auto as1 = seq(1, 2, 5);		// std::vector<int>{ 1, 3, 5, 7, 9 }
-	auto as2 = seq(0, -1.1, 4);		// std::vector<double>{ 0, -1.1, -2.2, -3.3 }
+	auto as1 = seqn(1, 2, 5);		// std::vector<int>{ 1, 3, 5, 7, 9 }
+	auto as2 = seqn(0, -1.1, 4);		// std::vector<double>{ 0, -1.1, -2.2, -3.3 }
 	\endcode
 */
 template <class T1, class T2, class C = std::vector<typename std::common_type<T1, T2>::type>>
-C seq(T1 st, T2 d, uint n)
+C seqn(T1 st, T2 d, uint n)
 {
 	using R = typename std::common_type<T1, T2>::type;
 	C result;

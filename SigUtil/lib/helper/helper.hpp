@@ -275,7 +275,7 @@ auto abs_delta(T1 v1, T2 v2) ->decltype(v1 < v2 ? v2 - v1 : v1 - v2)
 	}
 	\endcode
 */
-template <class T1, class T2, typename std::enable_if<!(impl::StringId<T1>::value || impl::StringId<T2>::value)>::type*& = enabler>
+template <class T1, class T2, typename std::enable_if<!(impl::is_string<T1>::value || impl::is_string<T2>::value)>::type*& = enabler>
 #if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
@@ -302,7 +302,7 @@ bool equal(T1&& v1, T2&& v2)
 	\endcode
 */
 template <class S1, class S2, typename std::enable_if<(impl::is_string<S1>::value && impl::is_string<S2>::value)>::type*& = enabler>
-bool equal2(S1&& v1, S2&& v2)
+bool equal(S1&& v1, S2&& v2)
 {
 	return static_cast<impl::string_t<S1>>(std::forward<S1>(v1)) == static_cast<impl::string_t<S2>>(std::forward<S2>(v2));
 }

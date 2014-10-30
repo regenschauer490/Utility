@@ -147,8 +147,8 @@ template <class R = void, class C1, class C2,
 		typename impl::remove_const_reference< typename impl::container_traits<CR1>::template rebind<RT>>::type,
 		R
 	>::type,
-	class AT1 = typename impl::actual_element<C1>::type,
-	class AT2 = typename impl::actual_element<C2>::type,
+	class AT1 = typename impl::forward_element<C1>::type,
+	class AT2 = typename impl::forward_element<C2>::type,
 	typename std::enable_if<!(impl::static_container_traits<CR1>::exist)>::type*& = enabler
 >
 auto merge(C1&& list1, C2&& list2) ->RR

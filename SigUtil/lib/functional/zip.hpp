@@ -43,8 +43,8 @@ template <class... Cs
 auto zip(Cs&&... lists)
 {
 	return variadicZipWith(
-		[&](typename impl::actual_element<Cs>::type... vs){
-			return std::make_tuple(std::forward<typename impl::actual_element<Cs>::type>(vs)...);
+		[&](typename impl::forward_element<Cs>::type... vs){
+			return std::make_tuple(std::forward<typename impl::forward_element<Cs>::type>(vs)...);
 		},
 		std::forward<Cs>(lists)...
 	);
@@ -72,12 +72,13 @@ auto zip(Cs&&... lists)
 	auto uz2 = unzip<1>(data);	// array<std::string, 3>{ "a", "b", "c" }
 	\endcode
 */
-template <uint Index, class CT>
-auto unzip(CT&& c_tuple)
+template <uint Index, class CT,
+	class T = typename std::tuple_element<Index, typename impl::container_traits<typename impl::remove_const_reference<CT>::type>::value_type>::type,
+	class R = std::vector<T>
+>
+auto unzip(CT&& c_tuple) ->R
 {
-	using T = typename std::tuple_element<Index, typename impl::container_traits<typename impl::remove_const_reference<CT>::type>::value_type>::type;
-	using R = std::vector<T>;
-	using AT = typename impl::actual_element<CT>::type;
+	using AT = typename impl::forward_element<CT>::type;
 
 	R result;
 
@@ -91,14 +92,16 @@ namespace impl
 {
 template<class CT, uint I = 0,
 	class CTR = typename impl::remove_const_reference<CT>::type,
-	typename std::enable_if<I + 1 == std::tuple_size<typename impl::container_traits<CTR>::value_type>::value, void>::type*& = enabler>
+	typename std::enable_if<I + 1 == std::tuple_size<typename impl::container_traits<CTR>::value_type>::value, void>::type*& = enabler
+>
 auto unzipImpl_(CT&& c_tuple)
 {
 	return std::make_tuple(unzip<I>(std::forward<CT>(c_tuple)));
 }
 template<class CT, uint I = 0,
 	class CTR = typename impl::remove_const_reference<CT>::type,
-	typename std::enable_if<I + 1 < std::tuple_size<typename impl::container_traits<CTR>::value_type>::value, void>::type*& = enabler>
+	typename std::enable_if<I + 1 < std::tuple_size<typename impl::container_traits<CTR>::value_type>::value, void>::type*& = enabler
+>
 auto unzipImpl_(CT&& c_tuple)
 {
 	return std::tuple_cat(std::make_tuple(unzip<I>(std::forward<CT>(c_tuple))), impl::unzipImpl_<CT, I + 1>(std::forward<CT>(c_tuple)));
