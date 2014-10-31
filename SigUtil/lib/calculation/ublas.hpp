@@ -105,28 +105,107 @@ auto to_matrix_ublas(CC const& mat) ->matrix_u<T>
 	return dest;
 }
 
+
 /// 逆行列を求める
 /**
 	LU分解を用いて逆行列を計算する．\n
 	boost.optional有効時には値がラップされて返される
 
+	\param mat 逆行列を求める行列．この行列自体に変更を加えても良い場合はmoveで渡す
+
 	\return 逆行列
 */
+template <class T>
+auto invert_matrix(matrix_u<T>&& mat)
+	->Maybe<matrix_u<T>>
+{
+	using namespace boost::numeric::ublas;
+	permutation_matrix<> pm(mat.size1());
+
+	if (lu_factorize(mat, pm) != 0) return Nothing(matrix_u<T>());
+
+	matrix<T> result = identity_matrix<T>(mat.size1());
+
+	lu_substitute(mat, pm, result);
+
+	return Just<matrix_u<T>>(std::move(result));
+}
+
 template <class T>
 auto invert_matrix(matrix_u<T> const& mat)
 	->Maybe<matrix_u<T>>
 {
+	matrix_u<T> tmp(mat);
+	return invert_matrix(std::move(tmp));
+}
+
+
+/// 連立方程式を解く
+template <class T>
+auto matrix_vector_solve(matrix_u<T>&& mat, vector_u<T>&& vec)
+	->Maybe<vector_u<T>>
+{
 	using namespace boost::numeric::ublas;
-	matrix<T> tmp(mat);
-	permutation_matrix<> pm(tmp.size1());
+	permutation_matrix<> pm(mat.size1());
 
-	if (lu_factorize(tmp, pm) != 0) return Nothing(matrix_u<T>());
+	if (lu_factorize(mat, pm) != 0) return Nothing(vector_u<T>());
 
-	matrix<T> result = identity_matrix<T>(tmp.size1());
+	lu_substitute(mat, pm, vec);
 
-	lu_substitute(tmp, pm, result);
+	return Just<vector_u<T>>(std::move(vec));
+}
 
-	return Just<matrix_u<T>>(std::move(result));
+template <class T>
+auto matrix_vector_solve(matrix_u<T> const& mat, vector_u<T> const& vec)
+	->Maybe<vector_u<T>>
+{
+	matrix_u<T> tmp_m(mat);
+	vector_u<T> tmp_v(vec);
+	
+	return matrix_vector_solve(std::move(tmp_m), std::move(tmp_v));
+}
+template <class T>
+auto matrix_vector_solve(matrix_u<T> const& mat, vector_u<T>&& vec)
+->Maybe<vector_u<T>>
+{
+	matrix_u<T> tmp_m(mat);
+
+	return matrix_vector_solve(std::move(tmp_m), std::move(vec));
+}
+template <class T>
+auto matrix_vector_solve(matrix_u<T>&& mat, vector_u<T> const& vec)
+->Maybe<vector_u<T>>
+{
+	vector_u<T> tmp_v(vec);
+
+	return matrix_vector_solve(std::move(mat), std::move(tmp_v));
+}
+
+
+/// 行列の全要素に対して、代入演算を行う関数を適用する
+template <class F, class T, class T1>
+void compound_assign_all(F&& func, matrix_u<T>& mat, T1 value)
+{
+	using namespace boost::numeric::ublas;
+
+	for (uint i = 0; i<mat.size(); ++i){
+		for (uint j = 0; j<mat[i].size(); ++j){
+			std::forward<F>(func)(mat(i,j), value);
+		}
+	}
+}
+
+/// 行列の対角要素の対して、代入演算を行う関数を適用する
+template <class F, class T, class T1>
+void compound_assign_diagonal(F&& func, matrix_u<T>& mat, T1 value)
+{
+	using namespace boost::numeric::ublas;
+	const uint size = min(mat.size1(), mat.size2());
+	matrix_vector_range<decltype(xx)> r(xx, range(0, size), range(0, size));
+
+	for (auto it = r.begin(), end = r.end(); it != end; ++it){
+		std::forward<F>(func)(*it, value);
+	}
 }
 
 }
