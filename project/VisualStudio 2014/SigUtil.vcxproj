@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1764A61C-A85C-4524-86CA-5936B0DCEC5D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(BOOST_DIR)/stage/x86/lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(BOOST_DIR)/stage/x64/lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(BOOST_DIR)/stage/x86/lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(BOOST_DIR)/stage/x64/lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\SigUtil\example\array_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\calculate_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\container_specialize_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\distance_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\file_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\functional_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\helper_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\maybe_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\modify_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\string_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\tool_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\ublas_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\SigUtil\example\array_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\calculate_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\container_specialize_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\debug.hpp" />
+    <ClInclude Include="..\..\SigUtil\example\distance_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\file_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\functional_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\helper_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\maybe_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\modify_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\string_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\tool_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\ublas_test.h" />
+    <ClInclude Include="..\..\SigUtil\lib\array.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\calculation.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\calculation\for_each.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\calculation\ublas.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\calculation\assign_operation.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\calculation\binary_operation.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\calculation\basic_statistics.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\distance.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\distance\binary_distance.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\distance\canberra_distance.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\distance\comparable_check.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\distance\cosine_similarity.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\distance\JS_divergence.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\distance\KL_divergence.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\distance\minkowski_distance.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\distance\norm.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\file.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\file\load.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\file\pass.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\file\save.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\functional.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\functional\filter.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\functional\fold.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\functional\high_order.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\functional\list_deal.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\functional\rest.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\functional\zip.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\helper\container_helper.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\helper\container_traits.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\helper\eval.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\helper\helper.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\helper\maybe.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\helper\type_convert.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\helper\type_traits.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\modify.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\modify\remove.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\modify\shuffle.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\modify\sort.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\sigutil.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\string.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\string\convert.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\string\manipulate.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\string\regex.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\string\replace.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\tools.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\tools\convergence.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\tools\histgram.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\tools\percent.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\tools\random.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\tools\tag_dealer.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\tools\time_watch.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

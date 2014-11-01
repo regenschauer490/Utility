@@ -1,7 +1,6 @@
 ﻿#include "tool_test.h"
 #include "../lib/calculation.hpp"
 
-
 using namespace sig;
 
 #if SIG_MSVC_ENV

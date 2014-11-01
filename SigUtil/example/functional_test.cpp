@@ -14,12 +14,7 @@ void MapTest()
 	const std::unordered_multiset<int> data4{ 1, -3, 5, -7 };
 
 	auto r0 = map(Increment(), data0);
-
 	auto r1 = map([](int v){ return v * 2; }, data1);
-
-#if !SIG_MSVC_ENV || !(MSC_VER < 1900)
-	auto r2 = map([](int v){ return [v](int th){ return v < th; }; }, data2);
-#endif
 	auto r3 = map([](int v){ return v / 4.0; }, data3);
 	auto r4 = map([](int v){ return v < 0; }, data4);
 
@@ -31,7 +26,8 @@ void MapTest()
 	for(unsigned i=0; i<data1.size(); ++i){
 		assert(data1[i] * 2 == r1[i]);
 	}
-#if !SIG_MSVC_ENV || !(MSC_VER < 1900)
+#if !SIG_MSVC_ENV || !(SIG_MSVC_VER < 140)
+	auto r2 = map([](int v){ return [v](int th){ return v < th; }; }, data2);
 	{
 	const int th = 2;
 	auto it2 = data2.begin();
@@ -50,7 +46,6 @@ void MapTest()
 	}
 
 	assert(std::accumulate(data4.begin(), data4.end(), 0, [](int sum, int v1){ return sum + static_cast<int>(v1 < 0); }) == std::accumulate(r4.begin(), r4.end(), 0));
-
 }
 
 void ZipWithTest()
@@ -311,7 +306,7 @@ void FunctionalTest()
 		for_each(DebugEqual(), d3, array<int, 1>{ 10 });
 	}
 
-#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || !(SIG_MSVC_VER <= 120)
+#if SIG_GCC_GT4_8_0 || SIG_CLANG_GT_3_4 || !(SIG_MSVC_VER < 140)
 	/// sort
 	{
 		auto s0 = sort(std::greater<int>(), data0);

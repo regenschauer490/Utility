@@ -98,10 +98,10 @@ using std::placeholders::_2;
 
 #if SIG_ENABLE_BOOST
 	template <class T>
-	using container_allocator = boost::fast_pool_allocator<T>;
+	using fragment_allocator = boost::fast_pool_allocator<T>;
 #else
 	template <class T>
-	using container_allocator = std::allocator<T>;
+	using fragment_allocator = std::allocator<T>;
 #endif
 
 

@@ -1,151 +1,153 @@
 #include "maybe_test.h"
 
+using namespace sig;
+
 void MaybeTest()
 {
-	auto m = sig::Just<int>(1);
+	auto m = Just<int>(1);
 
-	auto n = sig::Nothing(0);	// optional有効時には引数はダミー．無効時には引数の値がそのまま返される
-	auto nn = sig::Maybe<int>(n);
+	auto n = Nothing(0);	// optional有効時には引数はダミー．無効時には引数の値がそのまま返される
+	auto nn = Maybe<int>(n);
 
-	auto f = [&](int v){ return sig::Just(v * 1.5); };
+	auto f = [&](int v){ return Just(v * 1.5); };
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	assert(m);
 	assert(!n);
 	assert(!nn);
 
-	assert(sig::isJust(m));
-	assert(!sig::isJust(n));
-	assert(!sig::isJust(nn));
+	assert(isJust(m));
+	assert(!isJust(n));
+	assert(!isJust(nn));
 
-	assert(!sig::isNothing(m));
-	assert(sig::isNothing(n));
-	assert(sig::isNothing(nn));
+	assert(!isNothing(m));
+	assert(isNothing(n));
+	assert(isNothing(nn));
 
 
-	const auto cm = sig::Just<int>(2);
+	const auto cm = Just<int>(2);
 
-	assert(sig::equal(sig::fromJust(m), 1));
-	assert(sig::equal(sig::fromJust(cm), 2));
-	assert(sig::equal(sig::fromJust(sig::Just<int>(3)), 3));
+	assert(equal(fromJust(m), 1));
+	assert(equal(fromJust(cm), 2));
+	assert(equal(fromJust(Just<int>(3)), 3));
 
-	auto m1 = sig::Just<int>(4);
-	auto& rm1 = sig::fromJust(m1);	// int&
+	auto m1 = Just<int>(4);
+	auto& rm1 = fromJust(m1);	// int&
 	rm1 = 5;
-	assert(sig::equal(sig::fromJust(m1), 5));
+	assert(equal(fromJust(m1), 5));
 
-	auto& m2 = sig::fromJust(cm);	// const int&
-	auto m3 = sig::fromJust(cm);	// int
+	auto& m2 = fromJust(cm);	// const int&
+	auto m3 = fromJust(cm);	// int
 
 
-	assert(sig::equal(*m, 1));
-	assert(sig::equal(*cm, 2));
-	assert(sig::equal(*sig::Just<int>(3), 3));
+	assert(equal(*m, 1));
+	assert(equal(*cm, 2));
+	assert(equal(*Just<int>(3), 3));
 
-	assert(sig::equal(sig::fromMaybe(2, m), 1));
-	assert(sig::equal(sig::fromMaybe(2, n), 2));
-	assert(sig::equal(sig::fromMaybe(2, nn), 2));
+	assert(equal(fromMaybe(2, m), 1));
+	assert(equal(fromMaybe(2, n), 2));
+	assert(equal(fromMaybe(2, nn), 2));
 
 
 	std::vector<int> vec{ 1, 2, 3 };
 
-	auto vecd = sig::mapMaybe([](int v){ return v != 2 ? sig::Just<double>(v *1.5) : sig::Nothing(0.0); }, vec);
+	auto vecd = mapMaybe([](int v){ return v != 2 ? Just<double>(v *1.5) : Nothing(0.0); }, vec);
 
-	assert(sig::equal(vecd[0], 1.5));
-	assert(sig::equal(vecd[1], 4.5));
+	assert(equal(vecd[0], 1.5));
+	assert(equal(vecd[1], 4.5));
 	
 
 	// bind chain
-	auto mm = sig::Just(3);
+	auto mm = Just(3);
 
 	using sig::operator>>=;	// required
-	auto mm1 = (mm >>= f) >>= [&](double v){ return sig::Just(std::to_string(v)); };	// Haskell Style
+	auto mm1 = (mm >>= f) >>= [&](double v){ return Just(std::to_string(v)); };	// Haskell Style
 
 	auto tmm = *mm1;
-	assert(sig::equal(*mm1, std::to_string(4.5)));
+	assert(equal(*mm1, std::to_string(4.5)));
 
 	using sig::operator<<=;	// required
-	auto mm2 = [&](double v){ return sig::Just(std::to_string(v)); } <<= f <<= mm;	// this equals above mm1
+	auto mm2 = [&](double v){ return Just(std::to_string(v)); } <<= f <<= mm;	// this equals above mm1
 
-	assert(sig::equal(*mm2, std::to_string(4.5)));
+	assert(equal(*mm2, std::to_string(4.5)));
 
-	auto mm3 = [&](double v){ return sig::Just(std::to_string(v)); } <<= [](double v){ return sig::Nothing<double>(); } <<= f <<= mm;	// "nothing" pattern
+	auto mm3 = [&](double v){ return Just(std::to_string(v)); } <<= [](double v){ return Nothing<double>(); } <<= f <<= mm;	// "nothing" pattern
 
-	assert(sig::isNothing(mm3));
+	assert(isNothing(mm3));
 
 	// assign
-	auto mmm = sig::Just<int>(3);
-	auto nnn = sig::Nothing<int>();
+	auto mmm = Just<int>(3);
+	auto nnn = Nothing<int>();
 	
 	using sig::operator<<=;	// required
 	mmm <<= 2;
 	nnn <<= 2;
 
-	assert(sig::equal(*mmm, 2));
-	assert(sig::equal(*nnn, 2));
+	assert(equal(*mmm, 2));
+	assert(equal(*nnn, 2));
 #else
 	//assert(m);
 	//assert(!n);
 	//assert(!nn);
 
-	assert(sig::isJust(m));
-	assert(!sig::isJust(n));
-	assert(!sig::isJust(nn));
+	assert(isJust(m));
+	assert(!isJust(n));
+	assert(!isJust(nn));
 
-	assert(!sig::isNothing(m));
-	assert(sig::isNothing(n));
-	assert(sig::isNothing(nn));
+	assert(!isNothing(m));
+	assert(isNothing(n));
+	assert(isNothing(nn));
 
 
-	const auto cm = sig::Just<int>(2);
+	const auto cm = Just<int>(2);
 
-	assert(sig::equal(sig::fromJust(m), 1));
-	assert(sig::equal(sig::fromJust(cm), 2));
-	assert(sig::equal(sig::fromJust(sig::Just<int>(3)), 3));
+	assert(equal(fromJust(m), 1));
+	assert(equal(fromJust(cm), 2));
+	assert(equal(fromJust(Just<int>(3)), 3));
 
-	auto m1 = sig::Just<int>(4);
-	auto& rm1 = sig::fromJust(m1);	// int&
+	auto m1 = Just<int>(4);
+	auto& rm1 = fromJust(m1);	// int&
 	rm1 = 5;
-	assert(sig::equal(sig::fromJust(m1), 5));
+	assert(equal(fromJust(m1), 5));
 
-	auto& m2 = sig::fromJust(cm);	// const int&
-	auto m3 = sig::fromJust(cm);	// int
+	auto& m2 = fromJust(cm);	// const int&
+	auto m3 = fromJust(cm);	// int
 
 
-	using sig::operator*;	// required
+	using operator*;	// required
 
-	assert(sig::equal(*m, 1));
-	assert(sig::equal(*cm, 2));
-	assert(sig::equal(*sig::Just<int>(3), 3));
+	assert(equal(*m, 1));
+	assert(equal(*cm, 2));
+	assert(equal(*Just<int>(3), 3));
 
-	//assert(sig::equal(sig::fromMaybe(2, m), 1));
-	//assert(sig::equal(sig::fromMaybe(2, n), 2));
-	//assert(sig::equal(sig::fromMaybe(2, nn), 2));
+	//assert(equal(fromMaybe(2, m), 1));
+	//assert(equal(fromMaybe(2, n), 2));
+	//assert(equal(fromMaybe(2, nn), 2));
 
 
 	std::vector<int> vec{ 1, 2, 3 };
 
-	//auto vecd = sig::mapMaybe([](int v){ return v != 2 ? sig::Just<double>(v *1.5) : sig::Nothing(0); }, vec);
+	//auto vecd = mapMaybe([](int v){ return v != 2 ? Just<double>(v *1.5) : Nothing(0); }, vec);
 
-	//assert(sig::equal(vecd[0], 1.5));
-	//assert(sig::equal(vecd[1], 4.5));
+	//assert(equal(vecd[0], 1.5));
+	//assert(equal(vecd[1], 4.5));
 
 
-	//using sig::operator>>=;	// required
-	//auto mm1 = (m >>= f) >>= [&](double v){ return sig::Just<bool>(v < 10); };	// Haskell Style
+	//using operator>>=;	// required
+	//auto mm1 = (m >>= f) >>= [&](double v){ return Just<bool>(v < 10); };	// Haskell Style
 
 	//assert(*mm1);
 
-	//using sig::operator<<=;	// required
-	//auto mm2 = [&](double v){ return sig::Just<bool>(v < 10); } <<= f <<= m;	// this requals above mm1
+	//using operator<<=;	// required
+	//auto mm2 = [&](double v){ return Just<bool>(v < 10); } <<= f <<= m;	// this requals above mm1
 
 	//assert(*mm2);
 
-	auto mmm = sig::Just<int>(3);
+	auto mmm = Just<int>(3);
 
-	using sig::operator<<=;	// required
+	using operator<<=;	// required
 	mmm <<= 2;
 
-	assert(sig::equal(*mmm, 2));
+	assert(equal(*mmm, 2));
 #endif
 }
