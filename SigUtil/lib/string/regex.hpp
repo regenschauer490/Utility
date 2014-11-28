@@ -51,6 +51,7 @@ namespace sig
 inline auto escape_regex(std::string const& expression) ->std::string
 {
 	static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
+
 	return SIG_RegexReplace(expression, escape_reg, std::string(R"(\$1)"));
 }
 
@@ -60,6 +61,7 @@ inline auto escape_regex(std::string const& expression) ->std::string
 inline auto escape_regex(std::wstring const& expression) ->std::wstring
 {
 	static const SIG_WRegex escape_reg(LR"(([(){}\[\]|^?$.+*\\]))");
+
 	return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\$1)"));
 }
 
@@ -72,6 +74,7 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 inline auto escape_regex(std::string const& expression) ->std::string
 {
 	static const SIG_Regex escape_reg(R"(([(){}\[\]|^?$.+*\\]))");
+
 	return SIG_RegexReplace(expression, escape_reg, std::string(R"(\\$1)"));
 }
 
@@ -81,6 +84,7 @@ inline auto escape_regex(std::string const& expression) ->std::string
 inline auto escape_regex(std::wstring const& expression) ->std::wstring
 {
 	static const SIG_WRegex escape_reg(LR"(([(){}\[\]|^?$.+*\\]))");
+
 	return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\\$1)"));
 }
 #endif
@@ -130,10 +134,11 @@ auto make_regex(S const& expression) ->typename impl::Str2RegexSelector<impl::st
 template <class S, class TS = impl::string_t<S>>
 auto regex_search(
 	S&& src,
-	typename impl::Str2RegexSelector<TS>::regex const& expression
-	) ->Maybe<std::vector<std::vector<TS>>>
+	typename impl::Str2RegexSelector<TS>::regex const& expression)
+->Maybe<std::vector<std::vector<TS>>>
 {
 	using R = std::vector<std::vector<TS>>;
+
 	typename impl::Str2RegexSelector<TS>::smatch match;
 	auto tmp = static_cast<TS>(src);
 	R d;

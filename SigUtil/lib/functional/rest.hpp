@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_REST_HPP
 #define SIG_UTIL_REST_HPP
 
-#include "../helper/helper.hpp"
+#include "../helper/helper_modules.hpp"
 #include "../helper/container_helper.hpp"
 #include "../modify/sort.hpp"
 
@@ -29,12 +29,16 @@ namespace sig
 	auto as2 = seqn(0, -1.1, 4);		// std::vector<double>{ 0, -1.1, -2.2, -3.3 }
 	\endcode
 */
-template <class T1, class T2, class C = std::vector<typename std::common_type<T1, T2>::type>>
+template <class T1, class T2,
+	class TC = typename std::common_type<T1, T2>::type,
+	class C = std::vector<TC>
+>
 C seqn(T1 st, T2 d, uint n)
 {
-	using R = typename std::common_type<T1, T2>::type;
-	C result;
-	for (uint i = 0; i<n; ++i) impl::container_traits<C>::add_element(result, static_cast<R>(st) + i * static_cast<R>(d));
+	C result = impl::container_traits<C>::make(n);
+
+	for (uint i = 0; i<n; ++i) impl::container_traits<C>::add_element(result, static_cast<TC>(st) + i * static_cast<TC>(d));
+
 	return result;
 }
 
@@ -44,18 +48,25 @@ C seqn(T1 st, T2 d, uint n)
 /**
 	(a -> a -> bool) -> [a] -> [a]
 */
-template <class F, class C, typename std::enable_if<impl::container_traits<typename impl::remove_const_reference<C>::type>::exist>::type*& = enabler>
+template <class F, class C,
+	typename std::enable_if<impl::container_traits<typename impl::remove_const_reference<C>::type>::exist>::type*& = enabler
+>
 auto sort(F&& binary_op, C&& data)
 {
 	auto result = std::forward<C>(data);
+
 	sort(result, std::forward<F>(binary_op));
+
 	return result;
 }
 /*
 template <class F, class C, typename std::enable_if<!impl::has_random_access_iter<C>::value, void>::type*& = enabler>
-auto sort(F&& binary_op, C const& data){
+auto sort(F&& binary_op, C const& data
+){
 	C result = data;
+
 	//result.sort(binary_op);
+
 	return result;
 }
 */

@@ -143,7 +143,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(BOOST_DIR)/stage/lib;$(BOOST_DIR)/stage/x86/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(BOOST_DIR)/stage/lib;$(BOOST_DIR)/stage/x64/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -193,6 +193,7 @@
     <ClInclude Include="..\..\SigUtil\lib\distance\cosine_similarity.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\distance\JS_divergence.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\distance\KL_divergence.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\distance\mahalanobis_distance.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\distance\minkowski_distance.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\distance\norm.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\file\load.hpp" />
@@ -207,7 +208,7 @@
     <ClInclude Include="..\..\SigUtil\lib\helper\container_helper.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\helper\container_traits.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\helper\eval.hpp" />
-    <ClInclude Include="..\..\SigUtil\lib\helper\helper.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\helper\helper_modules.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\helper\maybe.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\helper\type_convert.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\modify.hpp" />

@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_LIST_DEAL_HPP
 #define SIG_UTIL_LIST_DEAL_HPP
 
-#include "../helper/helper.hpp"
+#include "../helper/helper_modules.hpp"
 #include "../helper/container_helper.hpp"
 
 /// \file list_deal.hpp リスト(コンテナ)操作関数
@@ -29,11 +29,13 @@ namespace sig
 	auto rep2 = replicate(2, std::string("rep"));	// std::vector<std::string>{ "rep", "rep" }
 	\endcode
 */
-	template <class T, class C = std::vector<T>>
+template <class T, class C = std::vector<T>>
 auto replicate(uint n, T const& value) ->C
 {
-	C result;
+	C result = impl::container_traits<C>::make(n);
+
 	for (uint i = 0; i<n; ++i) impl::container_traits<C>::add_element(result, value);
+
 	return result;
 }
 
@@ -60,12 +62,14 @@ template <class C>
 auto reverse(C&& list) ->typename impl::remove_const_reference<C>::type
 {
 	auto result = std::forward<C>(list);
+
 	std::reverse(std::begin(result), std::end(result));
+
 	return result;
 }
 
 
-/// コンテナの結合（同じ型）
+/// コンテナの結合（同じコンテナ型）
 /**
 	[a] -> [a] -> [a] \n
 	非シーケンスコンテナの場合、結合後の要素の順番は保たれない
@@ -89,9 +93,12 @@ template <class C, class R = typename impl::remove_const_reference<C>::type,
 >
 auto merge(C&& list1, C&& list2) ->R
 {
-	R result;
+	const uint length = list1.size() + list2.size();
+	R result = impl::container_traits<R>::make(length);
+
 	impl::container_traits<R>::concat(result, std::forward<C>(list1));
 	impl::container_traits<R>::concat(result, std::forward<C>(list2));
+
 	return result;
 }
 
@@ -100,7 +107,8 @@ namespace impl
 template <class R, class C1, class C2>
 auto merge_impl(C1&& list1, C2&& list2) ->R
 {
-	R result;
+	const uint length = list1.size() + list2.size();
+	R result = impl::container_traits<R>::make(length);
 
 	for (auto it = impl::begin(std::forward<C1>(list1)), end = impl::end(std::forward<C1>(list1)); it != end; ++it){
 		impl::container_traits<R>::add_element(result, *it);
@@ -108,12 +116,13 @@ auto merge_impl(C1&& list1, C2&& list2) ->R
 	for (auto it = impl::begin(std::forward<C2>(list2)), end = impl::end(std::forward<C2>(list2)); it != end; ++it){
 		impl::container_traits<R>::add_element(result, *it);
 	}
+
 	return result;
 }
 
 }	// impl
 
-// コンテナの結合（異なる型）
+// コンテナの結合（異なるコンテナ型）
 /**
 	[a] -> [b] -> [c] \n
 	ただし、cはstd::common_type<a, b>::type \n
@@ -182,7 +191,7 @@ template <class R = void, class SC1, class SC2,
 		typename impl::static_container_traits<SCR2>::value_type
 	>::type,
 	class RR = typename impl::SameIf<R, void,
-		typename impl::static_container_traits<SCR1>::template rebind_t<RT, impl::plus<impl::static_container_traits<SCR1>::size, impl::static_container_traits<SCR2>::size>::value>,
+		typename impl::static_container_traits<SCR1>::template rebind_t<RT, impl::plus_t<impl::static_container_traits<SCR1>::size, impl::static_container_traits<SCR2>::size>::value>,
 		R
 	>::type,
 	typename std::enable_if<impl::static_container_traits<SCR1>::exist && impl::static_container_traits<SCR2>::exist>::type*& = enabler
@@ -210,12 +219,16 @@ auto merge(SC1&& list1, SC2&& list2) ->RR
 	auto t2 = take(3, data2);		// std::vector<int> data2{ 1, -3, 5 }
 	\endcode
 */
-template <class C, class CR = typename impl::remove_const_reference<C>::type>
+template <class C,
+	class CR = typename impl::remove_const_reference<C>::type
+>
 auto take(uint n, C&& list) ->CR
 {
-	CR result;
+	CR result = impl::container_traits<CR>::make(n);
 	uint i = 0;
+
 	for (auto it = impl::begin(std::forward<C>(list)); i < n; ++i, ++it) impl::container_traits<CR>::add_element(result, *it);
+
 	return result;
 }
 
@@ -237,14 +250,18 @@ auto take(uint n, C&& list) ->CR
 	auto t2 = drop(3, data2);		// std::vector<int> data2{ 2, 10 }
 	\endcode
 */
-template <class C, class CR = typename impl::remove_const_reference<C>::type>
+template <class C,
+	class CR = typename impl::remove_const_reference<C>::type
+>
 auto drop(uint n, C&& list) ->CR
 {
-	CR result;
+	CR result = impl::container_traits<CR>::make(list.size() - n);
 	uint i = 0;
 	auto it = impl::begin(list), end = impl::end(list);
+
 	for (; i < n && it != end; ++i, ++it) ;
 	for (; it != end; ++i, ++it) impl::container_traits<CR>::add_element(result, *it);
+
 	return result;
 }
 

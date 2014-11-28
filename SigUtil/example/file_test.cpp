@@ -194,10 +194,10 @@ void FileSaveLoadTest()
 
 	if (read1){
 		const auto test1 = merge(TVecw{ L"test write 0" }, blghost_text1);
-		assert_foreach(Identity(), str_to_wstr(fromJust(read1)), test1);
+		assert_foreach(identity_t(), str_to_wstr(fromJust(read1)), test1);
 	}
 	if (read2){
-		assert_foreach(Identity(), fromJust(read2), TVecw{ L"test write 壱", L"test write 弐" });
+		assert_foreach(identity_t(), fromJust(read2), TVecw{ L"test write 壱", L"test write 弐" });
 	}
 	if (read_num){
 		const auto test = std::accumulate(list_num.begin(), list_num.end(), 0.0) + std::accumulate(uset_num.begin(), uset_num.end(), 0.0);
@@ -206,7 +206,7 @@ void FileSaveLoadTest()
 	}
 	if (read_mat){
 		for(unsigned i=0; i<read_mat->size(); ++i){
-			assert_foreach(Identity(), fromJust(read_mat)[i], mat[i]);
+			assert_foreach(identity_t(), fromJust(read_mat)[i], mat[i]);
 		}
 	}
 #endif
@@ -221,16 +221,16 @@ void FileSaveLoadTest()
 	load_num2d(read_mat2, fpass5, ",");
 	
 	const auto test1 = merge(TVec{"test write 0"}, wstr_to_str(blghost_text1));
-	assert_foreach(Identity(), read3, test1);
+	assert_foreach(identity_t(), read3, test1);
 
-	assert_foreach(Identity(), read4, TVecw{ L"test write 壱", L"test write 弐" });
+	assert_foreach(identity_t(), read4, TVecw{ L"test write 壱", L"test write 弐" });
 
 	const auto test2 = std::accumulate(list_num.begin(), list_num.end(), 0.0) + std::accumulate(uset_num.begin(), uset_num.end(), 0.0);
 	//保存前がunorderedで順不同となるので、読み取り後のdouble値の合計と一致するかで判断
 	assert(equal(std::accumulate(read_num2.begin(), read_num2.end(), 0.0), test2));
 	
 	for (unsigned i = 0; i<read_mat2.size(); ++i){
-		assert_foreach(Identity(), read_mat2[i], mat[i]);
+		assert_foreach(identity_t(), read_mat2[i], mat[i]);
 	}
 
 

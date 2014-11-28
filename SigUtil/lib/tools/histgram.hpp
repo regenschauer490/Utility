@@ -130,7 +130,10 @@ public:
 	*/
 	Histgram(T min, T max) : min_(min), max_(max), delta_(((double) max - min) / Bin), num_(0)
 	{
-		assert(delta_ > 0);
+		if (!(delta_ > 0)){
+			std::cout << "error: max - min = " << delta_ << std::endl;
+			std::terminate();
+		}
 		for (auto& ct : count_) ct = 0;
 	}
 
@@ -147,8 +150,8 @@ public:
 		++count_[Bin + 1];
 	}
 
-	template <class Container>
-	void count(Container const& values){
+	template <class C, typename std::enable_if<impl::container_traits<C>::exist>::type*& = enabler>
+	void count(C const& values){
 		for (auto const& e : values) count(e);
 	}
 

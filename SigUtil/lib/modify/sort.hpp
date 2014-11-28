@@ -37,47 +37,10 @@ namespace sig
 	data3;			// { 5, 3, 1, -2 }
 	\endcode
 */
-
-/*#if SIG_MSVC_VER  <= 140
-template <class C,
-	class F = std::less<typename impl::sequence_container_traits<C>::value_type>,
-	typename std::enable_if<has_random_access_op<C>::value>::type*& = enabler
->
-void sort(
-	C& container,
-	F const& binary_op = std::less<typename impl::container_traits<C>::value_type>()
-)
-{
-	std::sort(std::begin(container), std::end(container), binary_op);
-}
-
-// メンバ関数にsort()がある場合
-template <class C,
-	class F = std::less<typename impl::sequence_container_traits<C>::value_type>,
-	typename std::enable_if<!has_random_access_op<C>::value>::type*& = enabler
->
-void sort(
-	C& container,
-	F const& binary_op = std::less<typename impl::container_traits<C>::value_type>()
-)
-{
-	container.sort(binary_op);
-}
-#else*/
-
-template <class F, class T>
-auto sort(
-	std::vector<T>& container,
-	F&& binary_op
-	) ->decltype(impl::eval(std::forward<F>(binary_op), std::declval<T>(), std::declval<T>()), void())
-{
-	std::sort(std::begin(container), std::end(container), std::forward<F>(binary_op));
-}
-
-template <class F,
-	class C,
+// for sequence container which has random access iterator
+template <class F, class C,
 	class CR = typename impl::remove_const_reference<C>::type,
-	class T = typename impl::static_container_traits<CR>::value_type,
+	class T = typename impl::sequence_container_traits<CR>::value_type,
 	typename std::enable_if<impl::has_random_access_iter<CR>::value>::type*& = enabler
 >
 auto sort(
@@ -88,8 +51,23 @@ auto sort(
 	std::sort(std::begin(container), std::end(container), std::forward<F>(binary_op));
 }
 
-template <class F,
-	class C,
+// for static container which has random access iterator
+template <class F, class C,
+	class CR = typename impl::remove_const_reference<C>::type,
+	class T = typename impl::static_container_traits<CR>::value_type,
+	class D = void,
+	typename std::enable_if<impl::has_random_access_iter<CR>::value>::type*& = enabler
+>
+auto sort(
+	C& container,
+	F&& binary_op
+	) ->decltype(impl::eval(std::forward<F>(binary_op), std::declval<T>(), std::declval<T>()), void())
+{
+	std::sort(std::begin(container), std::end(container), std::forward<F>(binary_op));
+}
+
+// for sequence container which doesn't have random access iterator
+template <class F, class C,
 	class CR = typename impl::remove_const_reference<C>::type,
 	typename std::enable_if<!impl::has_random_access_iter<CR>::value>::type*& = enabler,
 	class T = typename impl::sequence_container_traits<CR>::value_type
@@ -101,7 +79,6 @@ auto sort(
 {
 	container.sort(std::forward<F>(binary_op));
 }
-//#endif
 	
 
 /// ソート前の位置を保持してソート
@@ -156,6 +133,7 @@ auto sort_with_index(
 	F&& binary_op)
 {
 	using Tp = std::tuple<T, uint>;
+
 	auto result = zip(std::forward<C>(container), seqn(0u, 1u, container.size()));
 
 	sort(result, [&](Tp const& l, Tp const& r){ return std::forward<F>(binary_op)(std::get<0>(l), std::get<0>(r)); });

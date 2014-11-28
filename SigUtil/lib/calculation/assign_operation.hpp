@@ -8,9 +8,9 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_ASSIGN_OPERATION_HPP
 #define SIG_UTIL_ASSIGN_OPERATION_HPP
 
-#include "../helper/helper.hpp"
+#include "../helper/helper_modules.hpp"
 #include "../helper/container_helper.hpp"
-
+#include "../calculation/for_each.hpp"
 
 /// \file assign_operation.hpp ベクトル変数(コンテナ)向けの代入演算関数
 
@@ -33,15 +33,15 @@ namespace sig
 	data1;		// { 0.1, -5.3, 2.5 }
 	\endcode
 */
-template <class OP, class C1, class C2,
+template <class F, class C1, class C2,
 	typename std::enable_if<impl::container_traits<C1>::exist && impl::container_traits<C2>::exist>::type*& = enabler
 >
 void compound_assignment(
-	OP const& assign_op,
+	F&& assign_op,
 	C1& dest,
 	C2 const& src)
 {
-	for_each(assign_op, dest, src);
+	sig::for_each(std::forward<F>(assign_op), dest, src);
 }
 
 /// コンテナへの代入演算 (element-wise: container and scalar)
@@ -60,16 +60,16 @@ void compound_assignment(
 	data;		// { "ein-hander", "zwei-hander", "drei-hander" }
 	\endcode
 */
-template <class OP, class C, class T,
+template <class F, class C, class T,
 	typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<T>::exist>::type*& = enabler
 >
 void compound_assignment(
-	OP const& assign_op,
+	F&& assign_op,
 	C& dest,
 	T src)
 {
 	for (auto& e : dest){
-		assign_op(e, src);
+		std::forward<F>(assign_op)(e, src);
 	}
 }
 
@@ -78,7 +78,7 @@ void compound_assignment(
 /**
 	\pre 被代入側のオブジェクトに operator+=関数が定義されていること
 */
-struct assign_plus
+struct assign_plus_t
 {
 	template <class T1, class T2>
 	void operator()(T1& v1, T2&& v2) const
@@ -91,7 +91,7 @@ struct assign_plus
 /**
 	\pre 被代入側のオブジェクトに operator-=関数が定義されていること
 */
-struct assign_minus
+struct assign_minus_t
 {
 	template <class T1, class T2>
 	void operator()(T1& v1, T2&& v2) const
@@ -104,7 +104,7 @@ struct assign_minus
 /**
 	\pre 被代入側のオブジェクトに operator*=関数が定義されていること
 */
-struct assign_mult
+struct assign_mult_t
 {
 	template <class T1, class T2>
 	void operator()(T1& v1, T2&& v2) const
@@ -117,7 +117,7 @@ struct assign_mult
 /**
 \pre 被代入側のオブジェクトに operator/=関数が定義されていること
 */
-struct assign_div
+struct assign_div_t
 {
 	template <class T1, class T2>
 	void operator()(T1& v1, T2&& v2) const

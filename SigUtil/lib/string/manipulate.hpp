@@ -37,7 +37,10 @@ template <
 	class S = std::string,
 	class TS = impl::string_t<S>
 >
-auto split(S const& src, impl::string_t<S> const& delimiter) ->CSeq<TS>
+auto split(
+	S const& src,
+	impl::string_t<S> const& delimiter)
+->CSeq<TS>
 {
 	CSeq<TS> result;
 	const uint mag = delimiter.size();
@@ -78,7 +81,10 @@ auto split(S const& src, impl::string_t<S> const& delimiter) ->CSeq<TS>
 	\sa split(S const& src, impl::string_t<S> const& delimiter)
 */
 template < template <class T_, class = std::allocator<T_>> class CSeq = std::vector >
-auto split(char const* const src, char const* const delimiter) ->CSeq<std::string>
+auto split(
+	char const* const src,
+	char const* const delimiter)
+->CSeq<std::string>
 {
 	return split<CSeq>(std::string(src), std::string(delimiter));
 }
@@ -87,7 +93,10 @@ auto split(char const* const src, char const* const delimiter) ->CSeq<std::strin
 	\sa split(S const& src, impl::string_t<S> const& delimiter)
 */
 template < template < class T_, class = std::allocator<T_>> class CSeq = std::vector >
-auto split(wchar_t const* const src, wchar_t const* const delimiter) ->CSeq<std::wstring>
+auto split(
+	wchar_t const* const src,
+	wchar_t const* const delimiter)
+->CSeq<std::wstring>
 {
 	return split<CSeq>(std::wstring(src), std::wstring(delimiter));
 }
@@ -97,7 +106,13 @@ namespace impl
 {
 //	コンテナに格納された各文字列(数値の場合は文字列に変換)を順番に結合して1つの文字列に(delimiterで区切り指定)
 template <class It, class S, class OSS>
-auto cat_impl(It begin, It end, S const& delimiter, OSS& osstream, std::locale osstream_locale = std::locale("")) ->decltype(osstream.str())
+auto cat_impl(
+	It begin,
+	It end,
+	S const& delimiter,
+	OSS& osstream,
+	std::locale osstream_locale = std::locale(""))
+->decltype(osstream.str())
 {
 	if (begin == end) return osstream.str();
 
@@ -108,6 +123,7 @@ auto cat_impl(It begin, It end, S const& delimiter, OSS& osstream, std::locale o
 	for (osstream << *begin++; begin != end; ++begin){
 		osstream << delimiter << *begin;
 	}
+
 	return osstream.str();
 }
 
@@ -136,7 +152,11 @@ template <class C,
 	class CR = typename impl::remove_const_reference<C>::type,
 	class S = impl::SStreamSelector< typename impl::container_traits<CR>::value_type>::string
 >
-auto cat(C&& container, typename std::identity<S>::type const& delimiter, std::locale osstream_locale = std::locale("")) ->S
+auto cat(
+	C&& container,
+	typename std::identity<S>::type const& delimiter,
+	std::locale osstream_locale = std::locale(""))
+->S
 {
 	return impl::cat_impl(
 		impl::begin(std::forward<C>(container)),
@@ -153,7 +173,11 @@ auto cat(C&& container, typename std::identity<S>::type const& delimiter, std::l
 	\sa cat(C const& container, S const& delimiter, std::locale osstream_locale)
 */
 template <class T, class S = typename impl::SStreamSelector<T>::string>
-auto cat(std::initializer_list<T> container, typename std::identity<S>::type const& delimiter, std::locale osstream_locale = std::locale("")) ->S
+auto cat(
+	std::initializer_list<T> container,
+	typename std::identity<S>::type const& delimiter,
+	std::locale osstream_locale = std::locale(""))
+->S
 {
 	return impl::cat_impl(
 		impl::begin(container),

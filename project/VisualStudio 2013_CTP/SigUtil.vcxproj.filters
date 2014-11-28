@@ -101,9 +101,6 @@
     <ClInclude Include="..\..\SigUtil\lib\distance.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SigUtil\lib\helper\helper.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\SigUtil\lib\modify.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -280,6 +277,12 @@
     </ClInclude>
     <ClInclude Include="..\..\SigUtil\lib\calculation\for_each.hpp">
       <Filter>ヘッダー ファイル\calculation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SigUtil\lib\distance\mahalanobis_distance.hpp">
+      <Filter>ヘッダー ファイル\distance</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SigUtil\lib\helper\helper_modules.hpp">
+      <Filter>ヘッダー ファイル\helper</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,10 +14,17 @@ const array<std::string, 3> data6{ "A", "B", "C" };
 
 void ArithmeticOperationsTest()
 {
+#if !(SIG_MSVC_VER <= 120)
 	// スカラー + スカラー
 	assert(plus(1, 1.0) == 2.0);
+#endif
 
 	// ベクトル + スカラー
+	for_each(
+		DebugEqual(),
+		data2 + 1.0,
+		zipWith(std::plus<double>(), data2, replicate(data2.size(), 1))
+	);
 	for_each(
 		DebugEqual(),
 		plus(data2, 1.0),
@@ -27,34 +34,56 @@ void ArithmeticOperationsTest()
 	// スカラー + ベクトル
 	for_each(
 		DebugEqual(),
+		1.0 + data3,
+		zipWith(std::plus<double>(), replicate(data3.size(), 1), data3)
+	);
+	for_each(
+		DebugEqual(),
 		plus(1.0, data3),
 		zipWith(std::plus<double>(), replicate(data3.size(), 1), data3)
 	);
-	std::vector<int> vec1{ 1, 2, 3 };
-	std::vector<int> vec2{ 3, 2, 1 };
+
 
 	// ベクトル(sequence) + ベクトル(sequence)
 	for_each(
 		DebugEqual(),
-		plus(data1, data2), 
+		data1 + data2, 
 		zipWith(std::plus<double>(), data1, data2)
-	);	
+	);
+	for_each(
+		DebugEqual(),
+		plus(data1, data2),
+		zipWith(std::plus<double>(), data1, data2)
+	);
 
-	// ベクトル(set) + ベクトル(sequence)
+	// ベクトル(set) + ベクトル(static array)
+	for_each(
+		DebugEqual(),
+		data3 + data0,
+		zipWith(std::plus<double>(), data3, data0)
+	);
 	for_each(
 		DebugEqual(),
 		plus(data3, data0),
 		zipWith(std::plus<double>(), data3, data0)
 	);
 
-	// ベクトル(hash set) + ベクトル(sequence)
+	// ベクトル(hash set) + ベクトル(static array)
+	assert(foldl(std::plus<double>(), 0.0, data4 + data0) == foldl(std::plus<double>(), 0.0, zipWith(std::plus<double>(), data4, data0)));
 	assert(foldl(std::plus<double>(), 0.0, plus(data4, data0)) == foldl(std::plus<double>(), 0.0, zipWith(std::plus<double>(), data4, data0)));
 
 
 	// 減算
+#if !(SIG_MSVC_VER <= 120)
 	assert(minus(2, 1.0) == 1.0);
 	assert(minus(1.0, 2) == -1.0);
+#endif
 
+	for_each(
+		DebugEqual(),
+		data3 - 1.0,
+		zipWith(std::minus<double>(), data3, replicate(data3.size(), 1))
+	);
 	for_each(
 		DebugEqual(),
 		minus(data3, 1.0),
@@ -63,25 +92,48 @@ void ArithmeticOperationsTest()
 
 	for_each(
 		DebugEqual(),
+		1.0 - data1,
+		zipWith(std::minus<double>(), replicate(data1.size(), 1), data1)
+	);
+	for_each(
+		DebugEqual(),
 		minus(1.0, data1),
 		zipWith(std::minus<double>(), replicate(data1.size(), 1), data1)
 	);
 
 	for_each(
 		DebugEqual(),
+		data2 - data0,
+		zipWith(std::minus<double>(), data2, data0)
+	);
+	for_each(
+		DebugEqual(),
 		minus(data2, data0),
 		zipWith(std::minus<double>(), data2, data0)
 	);
 
+
 	// 乗算
+#if !(SIG_MSVC_VER <= 120)
 	assert(multiplies(2, 2.0) == 4.0);
+#endif
 
 	for_each(
 		DebugEqual(),
-		multiplies(data3, 2.5),
+		data3 * 2.5,
+		zipWith(std::multiplies<double>(), data3, replicate(data3.size(), 2.5))
+	);
+	for_each(
+		DebugEqual(),
+		mult(data3, 2.5),
 		zipWith(std::multiplies<double>(), data3, replicate(data3.size(), 2.5))
 	);
 
+	for_each(
+		DebugEqual(),
+		2.5 * data1,
+		zipWith(std::multiplies<double>(), replicate(data1.size(), 2.5), data1)
+	);
 	for_each(
 		DebugEqual(),
 		mult(2.5, data1),
@@ -90,20 +142,38 @@ void ArithmeticOperationsTest()
 
 	for_each(
 		DebugEqual(),
+		data2 * data0,
+		zipWith(std::multiplies<double>(), data2, data0)
+	);
+	for_each(
+		DebugEqual(),
 		mult(data2, data0),
 		zipWith(std::multiplies<double>(), data2, data0)
 	);
 
+
 	// 除算
+#if !(SIG_MSVC_VER <= 120)
 	assert(divides(2, 1.0) == 2.0);
 	assert(divides(1.0, 2) == 0.5);
+#endif
 
 	for_each(
 		DebugEqual(),
-		divides(data3, 3.0),
+		data3 / 3.0,
+		zipWith(std::divides<double>(), data3, replicate(data2.size(), 3.0))
+	);
+	for_each(
+		DebugEqual(),
+		div(data3, 3.0),
 		zipWith(std::divides<double>(), data3, replicate(data2.size(), 3.0))
 	);
 
+	for_each(
+		DebugEqual(),
+		3.0 / data1,
+		zipWith(std::divides<double>(), replicate(data1.size(), 3.0), data1)
+	);
 	for_each(
 		DebugEqual(),
 		div(3.0, data1),
@@ -112,9 +182,16 @@ void ArithmeticOperationsTest()
 
 	for_each(
 		DebugEqual(),
+		data2 / data0,
+		zipWith(std::divides<double>(), data2, data0)
+	);
+	for_each(
+		DebugEqual(),
 		div(data2, data0),
 		zipWith(std::divides<double>(), data2, data0)
 	);
+
+	auto rr = 2 / data2 + 2 * data1 - data0 * 0.5;
 }
 
 void StatisticalOperationTest()
@@ -252,7 +329,7 @@ void ForeachTest()
 	for (unsigned i = 0; i<data1.size(); ++i){
 		data1_tt[i] += (data0[i] + i + 1);
 	}
-	assert_foreach(Identity(), data1_t, data1_tt);
+	assert_foreach(identity_t(), data1_t, data1_tt);
 
 	// 上記2つの関数の引数は可変長
 	for_each([](int i, int a, double b, int c, char d, std::string& e)
@@ -271,12 +348,12 @@ void CompoundAssignmentTest()
 	auto data2_t = data2;
 
 	// 複合代入(コンテナの各要素に対して何らかの演算を行い、演算後の値を代入する)
-	compound_assignment(assign_plus(), data1_t, 1);		// this assign_plus equals "[](int& v1, int v2){ v1 += v2; }"
+	compound_assignment(assign_plus_t(), data1_t, 1);		// this assign_plus_t equals "[](int& v1, int v2){ v1 += v2; }"
 
 	assert_foreach([](int d1){ return d1 + 1; }, data1_t, data1);
 
 	// ex2
-	compound_assignment(assign_minus(), data2_t, data0);	// this assign_minus equals "[](double& v1, int v2){ v1 -= v2; }"
+	compound_assignment(assign_minus_t(), data2_t, data0);	// this assign_minus_t equals "[](double& v1, int v2){ v1 -= v2; }"
 
 	assert_foreach([](double d2, int d0){ return d2 - d0; }, data2_t, data2, data0);
 
@@ -292,7 +369,7 @@ void CompoundAssignmentTest()
 	TestInt ti(1);
 	std::vector<TestInt> tivec{ 1, 2, 3 };
 
-	compound_assignment(assign_plus(), tivec, std::move(ti));
+	compound_assignment(assign_plus_t(), tivec, std::move(ti));
 	assert(ti.empty());
 }
 

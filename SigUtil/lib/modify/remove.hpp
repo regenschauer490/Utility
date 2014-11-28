@@ -31,10 +31,12 @@ namespace sig
 	auto removed3 = remove_duplicates(data3);	// { 1, 5, 3, 0, 4 } 順不同
 	\endcode
 */
-template <class C>
+template <class C,
+	class CR = typename impl::remove_const_reference<C>::type,
+	class T = typename impl::container_traits<CR>::value_type
+>
 auto remove_duplicates(C& container)
 {
-	using T = typename impl::container_traits<C>::value_type;
 	std::map<T, uint> removed;
 
 	for (auto it = std::begin(container), end = std::end(container); it != end;){
@@ -89,6 +91,7 @@ bool remove_one(C& container, Sig_Eraser_ParamType1 remove)
 		}
 		else ++it;
 	}
+
 	return false;
 }
 
@@ -116,6 +119,7 @@ bool remove_one_if(C& container, Pred remove_pred)
 		}
 		else ++it;
 	}
+
 	return false;
 }
 
@@ -144,7 +148,9 @@ template <class C>
 bool remove_all(C& container, Sig_Eraser_ParamType1 remove)
 {
 	uint presize = container.size();
+
 	if (!container.empty()) erase(container, remove);
+
 	return presize != container.size();
 }
 
@@ -167,7 +173,9 @@ template <class Pred, class C>
 bool remove_all_if(C& container, Pred remove_pred)
 {
 	uint presize = container.size();
+
 	if (!container.empty()) erase_if(container, remove_pred);
+
 	return presize != container.size();
 }
 

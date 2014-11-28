@@ -13,7 +13,7 @@ void MapTest()
 	const std::multiset<int, std::greater<int>> data3{ 1, -3, 5 };
 	const std::unordered_multiset<int> data4{ 1, -3, 5, -7 };
 
-	auto r0 = map(Increment(), data0);
+	auto r0 = map(increment_t(), data0);
 	auto r1 = map([](int v){ return v * 2; }, data1);
 	auto r3 = map([](int v){ return v / 4.0; }, data3);
 	auto r4 = map([](int v){ return v < 0; }, data4);
@@ -142,18 +142,19 @@ void FunctionalTest()
 
 	/// filter, partition
 	{
-		const array<double, 3> data0d{ 1.1, 1.5, 4 };
+		array<TestInt, 4> data0t{ 1, 2, 3, 0 };
 
 		auto filt1 = filter([](int v){ return v%2; }, data0);
-		auto filt2 = filter([](int v){ return v < 0; }, data2);
-		auto filt3 = filter([](int i, double v){ return v / i < 1; }, 1, data0d);
+		auto filt2 = filter([](int i, int v){ return i < v; }, 1, data2);
+		auto filt3 = filter([](TestInt const& v){ return v.value() < 2; }, std::move(data0t));
 
 		auto part1 = partition([](int v){ return v % 2; }, data0);
 		auto part2 = partition([](int v){ return v < 0; }, data2);
 
 		for_each(DebugEqual(), filt1, std::vector<int>{1, 3, 5});
-		for_each(DebugEqual(), filt2, std::vector<int>{-3});
-		for_each(DebugEqual(), filt3, std::vector<double>{ 1.5 });
+		for_each(DebugEqual(), filt2, std::vector<int>{5});
+		for_each(DebugEqual(), filt3, std::vector<sig::TestInt>{1, 0});
+		assert(data0t[0].empty() && data0t[3].empty() && (!data0t[1].empty()) && (!data0t[2].empty()));
 
 		for_each(DebugEqual(), std::get<0>(part1), std::vector<int>{1, 3, 5});
 		for_each(DebugEqual(), std::get<1>(part1), std::vector<int>{2, 4});

@@ -81,11 +81,11 @@ public:
 	for (auto v : rints) std::cout << v << std::endl;
 	\endcode
 */
-template < template < class T, class = std::allocator<T>> class Container = std::vector >
-Container<int> make_unique_numbers(uint n, int min, int max, bool debug)
+template <class C = std::vector<int>>
+C make_unique_numbers(uint n, int min, int max, bool debug)
 {
 	std::unordered_set<int> match;
-	Container<int> result;
+	C result = impl::container_traits<C>::make(n);
 	SimpleRandom<int> Rand(0, max - min, debug);
 
 	int r;

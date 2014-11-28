@@ -5,14 +5,14 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_HELPER_HPP
-#define SIG_UTIL_HELPER_HPP
+#ifndef SIG_UTIL_HELPER_MODULES_HPP
+#define SIG_UTIL_HELPER_MODULES_HPP
 
 #include "../sigutil.hpp"
 #include "../helper/type_convert.hpp"
 #include <sstream> 
 
-/// \file helper.hpp 補助モジュール群
+/// \file helper_modules.hpp 補助モジュール群
 
 namespace sig
 {
@@ -229,7 +229,10 @@ constexpr bool is_finite_number(T x)
 
 
 template <class T>
-constexpr T abs_delta(T v1, T v2)
+#if !(SIG_MSVC_VER <= 140)
+constexpr
+#endif
+T abs_delta(T v1, T v2)
 {
 	return v1 < v2 ? v2 - v1 : v1 - v2;
 }
@@ -246,7 +249,7 @@ constexpr T abs_delta(T v1, T v2)
 	\endcode
 */
 template <class T1, class T2>
-#if !(SIG_MSVC_VER == 140)
+#if !(SIG_MSVC_VER <= 140)
 constexpr
 #endif
 auto abs_delta(T1 v1, T2 v2) ->decltype(v1 < v2 ? v2 - v1 : v1 - v2)
@@ -398,7 +401,7 @@ constexpr bool less(T1 v1, T2 v2){ return v1 < v2 ? true : false; };
 
 
 /// 引数の変数をそのまま返す関数オブジェクト
-struct Identity
+struct identity_t
 {
 	template <class T>
 #if !(SIG_MSVC_VER == 140)
@@ -408,7 +411,7 @@ struct Identity
 };
 
 /// 引数の値をインクリメントした値を返す関数オブジェクト
-struct Increment
+struct increment_t
 {
 	template <class T>
 #if !(SIG_MSVC_VER == 140)
@@ -418,13 +421,58 @@ struct Increment
 };
 
 /// 引数の値をデクリメントした値を返す関数オブジェクト
-struct Decrement
+struct decrement_t
 {
 	template <class T>
 #if !(SIG_MSVC_VER == 140)
 	constexpr
 #endif
 	T operator()(T v) const{ return --v; }
+};
+
+
+/// 加法を行う関数オブジェクト
+struct plus_t
+{
+	template <class T1, class T2>
+	auto operator()(T1&& v1, T2&& v2) const
+		->typename impl::remove_const_reference< decltype(std::forward<T1>(v1) + std::forward<T2>(v2)) >::type
+	{
+		return std::forward<T1>(v1) + std::forward<T2>(v2);
+	}
+};
+
+/// 減法を行う関数オブジェクト
+struct minus_t
+{
+	template <class T1, class T2>
+	auto operator()(T1&& v1, T2&& v2) const
+		->typename impl::remove_const_reference< decltype(std::forward<T1>(v1) - std::forward<T2>(v2)) >::type
+	{
+		return std::forward<T1>(v1) - std::forward<T2>(v2);
+	}
+};
+
+/// 乗法を行う関数オブジェクト
+struct mult_t
+{
+	template <class T1, class T2>
+	auto operator()(T1&& v1, T2&& v2) const
+		->typename impl::remove_const_reference< decltype(std::forward<T1>(v1) * std::forward<T2>(v2)) >::type
+	{
+		return std::forward<T1>(v1) * std::forward<T2>(v2);
+	}
+};
+
+/// 除法を行う関数オブジェクト
+struct div_t
+{
+	template <class T1, class T2>
+	auto operator()(T1&& v1, T2&& v2) const
+		->typename impl::remove_const_reference< decltype(std::forward<T1>(v1) / std::forward<T2>(v2)) >::type
+	{
+		return std::forward<T1>(v1) / std::forward<T2>(v2);
+	}
 };
 
 }

@@ -56,8 +56,8 @@ namespace sig
 */
 class TimeWatch
 {
-	typedef std::chrono::system_clock::time_point Time;
-	typedef decltype(std::declval<Time>() - std::declval<Time>()) Duration;
+	using Time = std::chrono::system_clock::time_point;
+	using Duration = decltype(std::declval<Time>() - std::declval<Time>());
 
 	Time st;
 	std::vector<Duration> laps;
@@ -119,6 +119,11 @@ public:
 		laps.push_back(d_accumulate(cache, cache.size()));
 		cache.clear();
 	}
+
+
+	/// 記録したデータ数を取得
+	uint get_count() const{ return laps.size(); }
+
 
 	///　全区間のトータルの時間を取得
 	/**

@@ -57,7 +57,7 @@ auto zip(Cs&&... lists)
 
 	\tparam Index 取り出すインデックス
 
-	\param c_tuple データが格納されたタプルのコンテナ [(a, b, ...)]（\ref sig_container ）
+	\param list_tuple データが格納されたタプルのコンテナ [(a, b, ...)]（\ref sig_container ）
 
 	\return 結果のコンテナ（コンテナはc_tupleと同じ種類）
 
@@ -76,14 +76,14 @@ template <uint Index, class CT,
 	class T = typename std::tuple_element<Index, typename impl::container_traits<typename impl::remove_const_reference<CT>::type>::value_type>::type,
 	class R = std::vector<T>
 >
-auto unzip(CT&& c_tuple) ->R
+auto unzip(CT&& list_tuple) ->R
 {
-	using AT = typename impl::forward_element<CT>::type;
+	using ET = typename impl::forward_element<CT>::type;
 
-	R result;
+	R result = impl::container_traits<R>::make(list_tuple.size());
 
-	for (auto&& t : std::forward<CT>(c_tuple)){
-		impl::container_traits<R>::add_element(result, std::get<Index>(std::forward<AT>(t)));
+	for (auto&& t : std::forward<CT>(list_tuple)){
+		impl::container_traits<R>::add_element(result, std::get<Index>(std::forward<ET>(t)));
 	}
 	return result;
 }

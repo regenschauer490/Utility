@@ -47,7 +47,8 @@ namespace sig
 	std::string str = wstr_to_str(wstr);
 	\endcode
 */
-inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::string>
+inline auto wstr_to_str(std::wstring const& src)
+	->std::string //Just<std::string>
 {
 	size_t mbs_size = src.length() * MB_CUR_MAX + 1;
 	if (mbs_size < 2 || src == L"\0") return std::string();
@@ -82,15 +83,19 @@ inline auto wstr_to_str(std::wstring const& src) ->std::string //Just<std::strin
 	auto svec = wstr_to_str(wsvec);	// std::vector<std::string>
 	\endcode
 */
-template <class C, typename std::enable_if<std::is_same<typename impl::container_traits<C>::value_type, std::wstring>::value>::type*& = enabler>
-auto wstr_to_str(C const& strvec) -> typename impl::container_traits<C>::template rebind<std::string>
+template <class C,
+	class R = typename impl::container_traits<C>::template rebind<std::string>,
+	typename std::enable_if<std::is_same<typename impl::container_traits<C>::value_type, std::wstring>::value>::type*& = enabler
+>
+auto wstr_to_str(C const& src) ->R
 {
-	using R = typename impl::container_traits<C>::template rebind<std::string>;
-	R result;
-	for (auto const& str : strvec){
+	R result = impl::container_traits<R>::make(src.size());
+
+	for (auto const& str : src){
 		std::string r = wstr_to_str(str);
 		if (!r.empty()) impl::container_traits<R>::add_element(result, std::move(r));
 	}
+
 	return result;
 }
 
@@ -142,15 +147,19 @@ inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstri
 	auto wsvec = str_to_wstr(svec);		// std::vector<std::wstring>
 	\endcode
 */
-template <class C, typename std::enable_if<std::is_same<typename impl::container_traits<C>::value_type, std::string>::value>::type*& = enabler>
-auto str_to_wstr(C const& strvec) ->typename impl::container_traits<C>::template rebind<std::wstring>
+template <class C,
+	class R = typename impl::container_traits<C>::template rebind<std::wstring>,
+	typename std::enable_if<std::is_same<typename impl::container_traits<C>::value_type, std::string>::value>::type*& = enabler
+>
+auto str_to_wstr(C const& src) ->R
 {
-	using R = typename impl::container_traits<C>::template rebind<std::wstring>;
-	R result;
-	for (auto const& str : strvec){
+	R result = impl::container_traits<R>::make(src.size());
+
+	for (auto const& str : src){
 		std::wstring r = str_to_wstr(str);
 		if (!r.empty()) impl::container_traits<R>::add_element(result, std::move(r));
 	}
+
 	return result;
 }
 
@@ -166,8 +175,8 @@ auto str_to_wstr(C const& strvec) ->typename impl::container_traits<C>::template
 inline auto utf8_to_utf16(std::string const& src) ->std::u16string
 {
 	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-	std::u16string dest = convert.from_bytes(src);
-	return dest;
+
+	return convert.from_bytes(src);
 }
 
 /// UTF-16 -> UTF-8
@@ -181,8 +190,8 @@ inline auto utf8_to_utf16(std::string const& src) ->std::u16string
 inline auto utf16_to_utf8(std::u16string const& src) ->std::string
 {
 	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
-	std::string dest = convert.to_bytes(src);
-	return dest;
+
+	return convert.to_bytes(src);
 }
 
 /// UTF-8 -> UTF-32
@@ -196,8 +205,8 @@ inline auto utf16_to_utf8(std::u16string const& src) ->std::string
 inline auto utf8_to_utf32(std::string const& src) ->std::u32string
 {
 	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
-	std::u32string dest = utf32conv.from_bytes(src);
-	return dest;
+
+	return utf32conv.from_bytes(src);
 }
 
 /// UTF-32 -> UTF-8
@@ -211,8 +220,8 @@ inline auto utf8_to_utf32(std::string const& src) ->std::u32string
 inline auto utf32_to_utf8(std::u32string const& src) ->std::string
 {
 	std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
-	std::string dest = utf32conv.to_bytes(src);
-	return dest;
+
+	return utf32conv.to_bytes(src);
 }
 #endif
 

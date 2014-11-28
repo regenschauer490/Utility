@@ -25,6 +25,7 @@ int main()
 	//performance test
 	//SplitPerformanceTest();
 	//OptionalPerformanceTest();
+	//ContainerTraitsEffectiveTest();
 
 	//container_traits.hpp test (利用可能コンテナの拡張)
 	ContainerSpecializeTest();

@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_FOREACH_HPP
 #define SIG_UTIL_FOREACH_HPP
 
-#include "../helper/helper.hpp"
+#include "../helper/helper_modules.hpp"
 #include "../helper/container_helper.hpp"
 
 
@@ -43,10 +43,10 @@ namespace sig
 	\endcode
 */
 template <class F, class... Cs>
-void for_each(F const& func, Cs&&... containers)
+void for_each(F&& func, Cs&&... containers)
 {
 	const uint length = min(containers.size()...);
-	iterative_assign(length, func, impl::begin(std::forward<Cs>(containers))...);
+	iterative_assign(length, std::forward<F>(func), impl::begin(std::forward<Cs>(containers))...);
 }
 	
 /// 複数コンテナを反復処理 (添字変数の利用可)
@@ -75,10 +75,10 @@ void for_each(F const& func, Cs&&... containers)
 	\endcode
 */
 template <class F, class... Cs>
-void for_each(F const& func, int init, Cs&&... containers)
+void for_each(F&& func, int init, Cs&&... containers)
 {
 	const uint length = min(containers.size()...);
-	iterative_assign(length, init, func, impl::begin(std::forward<Cs>(containers))...);
+	iterative_assign(length, init, std::forward<F>(func), impl::begin(std::forward<Cs>(containers))...);
 }
 
 }

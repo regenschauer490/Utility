@@ -84,3 +84,198 @@ void OptionalPerformanceTest()
 	maybe	97, 107, 98 ms
 	*/
 }
+
+void ContainerTraitsEffectiveTest()
+{
+	using Vec = std::vector<double>;
+	using US = std::unordered_set<double>;
+	using UM = std::unordered_map<double, double>;
+
+	const int L = 100;
+	const int N = 50000;
+	const int H = N;
+
+	Sleep(1000);
+
+// vector
+	{
+		sig::TimeWatch tw1;
+		for (int l = 0; l<L; ++l){
+			Vec vec1;
+			for (int i = 0; i < N; ++i){
+				vec1.push_back(i);
+			}
+		}
+		tw1.stop();
+		tw1.save();
+
+		sig::TimeWatch tw2;
+		for (int l = 0; l<L; ++l){
+			auto vec2 = sig::impl::container_traits<Vec>::make(N);
+			for (int i = 0; i < N; ++i){
+				vec2.push_back(i);
+			}
+		}
+		tw2.stop();
+		tw2.save();
+
+		std::cout << "default vec time: " << tw1.get_total_time<std::chrono::microseconds>() / L << std::endl;
+		std::cout << "reserve vec time: " << tw2.get_total_time<std::chrono::microseconds>() / L << std::endl;
+	}
+
+	Sleep(1000);
+
+//u-set
+	{
+		sig::TimeWatch tw1;
+		tw1.stop();
+		sig::TimeWatch tw2;
+		tw2.stop();
+
+		for (int l=0; l<L; ++l){
+			US us1;
+			tw1.restart();
+			for (int i = 0; i < N; ++i){
+				us1.emplace(i);
+			}
+			tw1.stop();
+			tw1.save();
+			us1.clear();
+
+			US us2 = sig::impl::container_traits<US>::make(H);
+			tw2.restart();
+			for (int i = 0; i < N; ++i){
+				us2.emplace(i);
+			}
+			tw2.stop();
+			tw2.save();
+		}
+
+		std::cout << "default u-set write time: " << tw1.get_total_time<std::chrono::milliseconds>() / L << std::endl;
+		std::cout << "reserve u-set write time: " << tw2.get_total_time<std::chrono::milliseconds>() / L << std::endl;
+		
+		sig::Histgram<long, 20> hist1(0, tw1.get_total_time<std::chrono::microseconds>() * 2 / L);
+		for (int i = 0; i<tw1.get_count(); ++i) hist1.count(*tw1.get_lap_time<std::chrono::microseconds>(i));
+		hist1.print();
+
+		sig::Histgram<long, 20> hist2(0, tw2.get_total_time<std::chrono::microseconds>() * 2 / L);
+		for (int i = 0; i<tw2.get_count(); ++i) hist2.count(*tw2.get_lap_time<std::chrono::microseconds>(i));
+		hist2.print();
+	}
+
+	Sleep(1000);
+
+	{
+		US us1;
+		US us2 = sig::impl::container_traits<US>::make(H);
+		for (int i = 0; i < N; ++i){
+			us1.emplace(i);
+			us2.emplace(i);
+		}
+
+		sig::TimeWatch tw1;
+		tw1.stop();
+		sig::TimeWatch tw2;
+		tw2.stop();
+
+		for (int l = 0; l<L; ++l){
+			double sum1 = 0;
+			double sum2 = 0;
+
+			tw1.restart();
+			for (int i = 0; i < N; ++i){
+				sum1 += *us1.find(i);
+			}
+			tw1.stop();
+			tw1.save();
+
+			tw2.restart();
+			for (int i = 0; i < N; ++i){
+				sum2 += *us2.find(i);
+			}
+			tw2.stop();
+			tw2.save();
+		}
+
+		std::cout << "default u-set read time: " << tw1.get_total_time<std::chrono::microseconds>() / L << std::endl;
+		std::cout << "reserve u-set read time: " << tw2.get_total_time<std::chrono::microseconds>() / L << std::endl;
+
+
+		sig::Histgram<long, 20> hist1(0, tw1.get_total_time<std::chrono::nanoseconds>() * 2 / L);
+		for (int i = 0; i<tw1.get_count(); ++i) hist1.count(*tw1.get_lap_time<std::chrono::nanoseconds>(i));
+		hist1.print();
+
+		sig::Histgram<long, 20> hist2(0, tw2.get_total_time<std::chrono::nanoseconds>() * 2 / L);
+		for (int i = 0; i<tw2.get_count(); ++i) hist2.count(*tw2.get_lap_time<std::chrono::nanoseconds>(i));
+		hist2.print();
+	}
+
+	Sleep(1000);
+
+// u-map
+	{
+		sig::TimeWatch tw1;
+		for (int l = 0; l<L; ++l){
+			UM um1;
+			tw1.restart();
+			for (int i = 0; i < N; ++i){
+				um1.emplace(i, i);
+			}
+			tw1.stop();
+			tw1.save();
+		}
+		tw1.stop();
+		tw1.save();
+
+		sig::TimeWatch tw2;
+		for (int l = 0; l<L; ++l){
+			auto um2 = sig::impl::container_traits<UM>::make(H);
+			tw2.restart();
+			for (int i = 0; i < N; ++i){
+				um2.emplace(i, i);
+			}
+			tw2.stop();
+			tw2.save();
+		}
+		tw2.stop();
+		tw2.save();
+
+		std::cout << "default u-map write time: " << tw1.get_total_time<std::chrono::milliseconds>() / L << std::endl;
+		std::cout << "reserve u-map write time: " << tw2.get_total_time<std::chrono::milliseconds>() / L << std::endl;
+	}
+
+	Sleep(1000);
+
+	{
+		UM um1;
+		auto um2 = sig::impl::container_traits<UM>::make(H);
+		for (int i = 0; i < N; ++i){
+			um1.emplace(i, i);
+			um2.emplace(i, i);
+		}
+
+		double sum1 = 0;
+		sig::TimeWatch tw1;
+		for (int l = 0; l<L; ++l){
+			for (int i = 0; i < N; ++i){
+				sum1 += um1.find(i)->second;
+			}
+		}
+		tw1.stop();
+		tw1.save();
+
+
+		double sum2 = 0;
+		sig::TimeWatch tw2;
+		for (int l = 0; l<L; ++l){
+			for (int i = 0; i < N; ++i){
+				sum2 += um2.find(i)->second;
+			}
+		}
+		tw2.stop();
+		tw2.save();
+
+		std::cout << "default u-map read time: " << tw1.get_total_time<std::chrono::microseconds>() / L << std::endl;
+		std::cout << "reserve u-map read time: " << tw2.get_total_time<std::chrono::microseconds>() / L << std::endl;
+	}
+}
