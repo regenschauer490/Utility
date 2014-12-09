@@ -36,7 +36,7 @@ template<
     >
 auto eval(F&& f, Args&&... args) -> decltype(f(std::forward<Args>(args)...))
 {
-    return f(std::forward<Args>(args)...);
+    return std::forward<F>(f)(std::forward<Args>(args)...);
 }
 
 /// for const function of const object

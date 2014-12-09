@@ -22,7 +22,7 @@ struct remove_const_reference
 };
 
 template <size_t N1, size_t N2>
-struct plus
+struct plus_t
 {
 	static const size_t value = N1 + N2;
 };

@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_PASS_HPP
 #define SIG_UTIL_PASS_HPP
 
-#include "../helper/helper.hpp"
+#include "../helper/helper_modules.hpp"
 #include "../helper/maybe.hpp"
 
 
@@ -75,9 +75,11 @@ inline auto get_file_names(
 	FilepassString const& directory_pass,
 	bool hidden_file,
 	std::wstring extension = L""
-	) ->Maybe<std::vector<std::wstring>>
+)
+	->Maybe<std::vector<std::wstring>>
 {
-	typedef std::vector<std::wstring> ResultType;
+	using ResultType = std::vector<std::wstring>;
+
 	ResultType result;
 
 #if SIG_MSVC_ENV
@@ -140,9 +142,11 @@ inline auto get_file_names(
 inline auto get_folder_names(
 	FilepassString const& directory_pass,
 	bool hidden_file
-	) ->Maybe<std::vector<std::wstring>>
+)
+	->Maybe<std::vector<std::wstring>>
 {
-	typedef std::vector<std::wstring> ResultType;
+	using ResultType = std::vector<std::wstring>;
+
 	ResultType result;
 
 #if SIG_MSVC_ENV

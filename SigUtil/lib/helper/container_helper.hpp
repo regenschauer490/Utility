@@ -21,22 +21,19 @@ namespace impl{
 
 template <class C,
 	class RC = typename impl::remove_const_reference<C>::type,
-	typename std::enable_if<!impl::is_const<C>::value>::type*& = enabler,
-	typename std::enable_if<!std::is_same<typename RC::iterator, typename RC::const_iterator>::value>::type*& = enabler
+	typename std::enable_if<std::is_same<C, RC>::value>::type *& = enabler,	// C is not const and not lvalue-reference
+	typename std::enable_if<!std::is_same<typename RC::iterator, typename RC::const_iterator>::value>::type*& = enabler	// not to return const-iterator
 >
 auto begin(C&& c) ->std::move_iterator<typename RC::iterator>
 {
 	return std::make_move_iterator(std::begin(c));
 }
 
-template <class C>
-auto begin(C& c) ->decltype(std::begin(c))
-{
-	return std::begin(c);
-}
-
-template <class C>
-auto begin(C const& c) ->decltype(std::begin(c))
+template <class C,
+	class RC = typename impl::remove_const_reference<C>::type,
+	typename std::enable_if<(!std::is_same<C, RC>::value) || (std::is_same<typename RC::iterator, typename RC::const_iterator>::value)>::type *& = enabler
+>
+auto begin(C&& c) ->decltype(std::begin(c))
 {
 	return std::begin(c);
 }
@@ -44,24 +41,61 @@ auto begin(C const& c) ->decltype(std::begin(c))
 
 template <class C,
 	class RC = typename impl::remove_const_reference<C>::type,
-	typename std::enable_if<!impl::is_const<C>::value>::type*& = enabler,
-	typename std::enable_if<!std::is_same<typename RC::iterator, typename RC::const_iterator>::value>::type*& = enabler
+	typename std::enable_if<std::is_same<C, RC>::value>::type *& = enabler,	// C is not const and not lvalue-reference
+	typename std::enable_if<!std::is_same<typename RC::iterator, typename RC::const_iterator>::value>::type*& = enabler	// not to return const-iterator
 >
 auto end(C&& c) ->std::move_iterator<typename RC::iterator>
 {
 	return std::make_move_iterator(std::end(c));
 }
 
-template <class C>
-auto end(C& c) ->decltype(std::end(c))
+template <class C,
+	class RC = typename impl::remove_const_reference<C>::type,
+	typename std::enable_if<(!std::is_same<C, RC>::value) || (std::is_same<typename RC::iterator, typename RC::const_iterator>::value)>::type *& = enabler
+>
+auto end(C&& c) ->decltype(std::end(c))
 {
 	return std::end(c);
 }
 
-template <class C>
-auto end(C const& c) ->decltype(std::end(c))
+
+template <class C,
+	class RC = typename impl::remove_const_reference<C>::type,
+	typename std::enable_if<std::is_same<C, RC>::value>::type *& = enabler,
+	typename std::enable_if<!std::is_same<typename RC::reverse_iterator, typename RC::const_reverse_iterator>::value>::type*& = enabler
+>
+auto rbegin(C&& c) ->std::move_iterator<typename RC::reverse_iterator>
 {
-	return std::end(c);
+	return std::make_move_iterator(std::rbegin(c));
+}
+
+template <class C,
+	class RC = typename impl::remove_const_reference<C>::type,
+	typename std::enable_if<(!std::is_same<C, RC>::value) || (std::is_same<typename RC::reverse_iterator, typename RC::const_reverse_iterator>::value)>::type *& = enabler
+>
+auto rbegin(C&& c) ->decltype(std::rbegin(c))
+{
+	return std::rbegin(c);
+}
+
+
+template <class C,
+	class RC = typename impl::remove_const_reference<C>::type,
+	typename std::enable_if<std::is_same<C, RC>::value>::type *& = enabler,	// C is not const and not lvalue-reference
+	typename std::enable_if<!std::is_same<typename RC::reverse_iterator, typename RC::const_reverse_iterator>::value>::type*& = enabler	// not to return const-iterator
+>
+auto rend(C&& c) ->std::move_iterator<typename RC::reverse_iterator>
+{
+	return std::make_move_iterator(std::rend(c));
+}
+
+template <class C,
+class RC = typename impl::remove_const_reference<C>::type,
+	typename std::enable_if<(!std::is_same<C, RC>::value) || (std::is_same<typename RC::reverse_iterator, typename RC::const_reverse_iterator>::value)>::type *& = enabler
+>
+auto rend(C&& c) ->decltype(std::rend(c))
+{
+	return std::rend(c);
 }
 
 
@@ -111,7 +145,7 @@ public:
 
 
 template<class It>
-auto dereference_iterator(It&& iter) ->typename std::add_rvalue_reference<decltype(*iter)>::type
+auto dereference_iterator(It&& iter) ->decltype(*std::forward<It>(iter))
 {
 /*
 	if(std::is_same<typename std::add_rvalue_reference<decltype(*iter)>::type, typename std::iterator_traits<It>::value_type&>{}) std::cout << "lval&";
@@ -119,7 +153,7 @@ auto dereference_iterator(It&& iter) ->typename std::add_rvalue_reference<declty
 	if(std::is_same<typename std::add_rvalue_reference<decltype(*iter)>::type, typename std::iterator_traits<It>::value_type&&>{}) std::cout << "rval&";
 std::cout << std::endl;
 */
-	return *iter;
+	return *std::forward<It>(iter);
 }
 
 }	//impl
@@ -219,10 +253,12 @@ void erase_if(C& container, F const& remove_pred)
 template <class RC, class C>
 auto copy(C&& src) ->RC
 {
-	RC dest;
+	RC dest = impl::container_traits<RC>::make(src.size());
+
 	for (auto it = impl::begin(std::forward<C>(src)), end = impl::end(std::forward<C>(src)); it != end; ++it){
 		impl::container_traits<RC>::add_element(dest, *it);
 	}
+
 	return dest;
 }
 	

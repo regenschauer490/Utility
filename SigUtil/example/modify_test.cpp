@@ -19,13 +19,13 @@ void SortTest()
 
 
 	sort(data1, std::less<double>());
-	assert_foreach(Identity(), data1, TVec<double>{ -2.2, 1.1, 3.3 });
+	assert_foreach(identity_t(), data1, TVec<double>{ -2.2, 1.1, 3.3 });
 
 	sort(data2, std::less<int>());
-	assert_foreach(Identity(), data2, TVec<int>{ -2, 1, 3, 5 });
+	assert_foreach(identity_t(), data2, TVec<int>{ -2, 1, 3, 5 });
 
 	sort(data3, std::greater<int>());
-	assert_foreach(Identity(), data3, TVec<int>{ 5, 3, 1, -2 });
+	assert_foreach(identity_t(), data3, TVec<int>{ 5, 3, 1, -2 });
 
 
 	//ソート前のindexを保持してソート
@@ -35,14 +35,14 @@ void SortTest()
 	const auto original_index1 = std::get<1>(swi1);
 	const auto test1 = std::make_tuple(TVec<int>{ 0, 0, 1, 1, 3, 3, 3, 4, 5}, TVec<uint>{ 4, 6, 0, 7, 2, 3, 8, 5, 1 });
 
-	assert_foreach(Identity(), sorted1, std::get<0>(test1));
-	assert_foreach(Identity(), original_index1, std::get<1>(test1));
+	assert_foreach(identity_t(), sorted1, std::get<0>(test1));
+	assert_foreach(identity_t(), original_index1, std::get<1>(test1));
 
 	//ソート基準を指定する場合
 	const auto swi2 = sort_with_index(cdata2, [](int l, int r){ return l > r; });
 	const auto sorted2 = std::get<0>(swi2);
 
-	assert_foreach(Identity(), sorted2, reverse(std::get<0>(test1)));
+	assert_foreach(identity_t(), sorted2, reverse(std::get<0>(test1)));
 
 	// move
 	const auto swi4 = sort_with_index(std::move(data4), [](TestInt const& l, TestInt const& r){ return l.value() < r.value(); });
@@ -62,7 +62,7 @@ void ShuffleTest()
 	//ex: c1[1, 2, 3, 4], c2[1, 2, 3, 4] -> c1'[3, 1, 4, 2], c2'[3, 1, 4, 2]
 	shuffle(data1, data2);
 
-	assert_foreach(Identity(), data1, data2);
+	assert_foreach(identity_t(), data1, data2);
 }
 
 void RemoveDuplicateTest()
@@ -86,13 +86,13 @@ void RemoveDuplicateTest()
 		assert(removed[5] == 0);
 	};
 
-	assert_foreach(Identity(), data1, TVec<int>{ 1, 5, 3, 0, 4 });
+	assert_foreach(identity_t(), data1, TVec<int>{ 1, 5, 3, 0, 4 });
 	test_remove_duplicates(removed1);
 
-	assert_foreach(Identity(), data2, TVec<int>{ 1, 5, 3, 0, 4 });
+	assert_foreach(identity_t(), data2, TVec<int>{ 1, 5, 3, 0, 4 });
 	test_remove_duplicates(removed2);
 
-	assert_foreach(Identity(), data3, TVec<int>{ 5, 4, 3, 1, 0 });
+	assert_foreach(identity_t(), data3, TVec<int>{ 5, 4, 3, 1, 0 });
 	test_remove_duplicates(removed3);
 
 	auto testd4 = { 1, 5, 3, 0, 4 };
@@ -104,7 +104,7 @@ void RemoveDuplicateTest()
 	auto removed5 = remove_duplicates(data5);
 
 	std::multimap<int, std::string> testd5{ { 1, "a"}, {5, "b"}, {3, "c"}, {3, "d"}, {0, "e"}, {4, "f"}, {0, "g"}, {1, "h"} };
-	assert_foreach(Identity(), data5, testd5);
+	assert_foreach(identity_t(), data5, testd5);
 	assert(removed5.size() == 8);
 	assert(removed5[std::make_pair(1, "a")] == 0);
 	assert(removed5[std::make_pair(5, "b")] == 0);
@@ -132,10 +132,10 @@ void RemoveTest()
 	assert( remove_one(data3, 3) );
 	assert( remove_one(data4, 3) );
 
-	assert_foreach(Identity(), data0, TVec<std::string>{ "a", "c", "b" });
-	assert_foreach(Identity(), data1, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
-	assert_foreach(Identity(), data2, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
-	assert_foreach(Identity(), data3, TVec<int>{ 5, 4, 3, 3, 1, 1, 0, 0 });
+	assert_foreach(identity_t(), data0, TVec<std::string>{ "a", "c", "b" });
+	assert_foreach(identity_t(), data1, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
+	assert_foreach(identity_t(), data2, TVec<int>{ 1, 5, 3, 0, 4, 0, 1, 3 });
+	assert_foreach(identity_t(), data3, TVec<int>{ 5, 4, 3, 3, 1, 1, 0, 0 });
 
 	auto testd4 = { 1, 1, 5, 3, 3, 0, 0, 4 };
 	assert(std::accumulate(data4.begin(), data4.end(), 0.0) == std::accumulate(testd4.begin(), testd4.end(), 0.0));
@@ -147,11 +147,11 @@ void RemoveTest()
 	assert( remove_all(data3, 3) );
 	assert( remove_all(data4, 3) );
 
-	assert_foreach(Identity(), data1, TVec<int>{ 1, 5, 0, 4, 0, 1 });
+	assert_foreach(identity_t(), data1, TVec<int>{ 1, 5, 0, 4, 0, 1 });
 
-	assert_foreach(Identity(), data2, TVec<int>{ 1, 5, 0, 4, 0, 1 });
+	assert_foreach(identity_t(), data2, TVec<int>{ 1, 5, 0, 4, 0, 1 });
 
-	assert_foreach(Identity(), data3, TVec<int>{ 5, 4, 1, 1, 0, 0 });
+	assert_foreach(identity_t(), data3, TVec<int>{ 5, 4, 1, 1, 0, 0 });
 
 	auto testda4 = { 1, 1, 5, 0, 0, 4 };
 	assert(std::accumulate(data4.begin(), data4.end(), 0.0) == std::accumulate(testda4.begin(), testda4.end(), 0.0));

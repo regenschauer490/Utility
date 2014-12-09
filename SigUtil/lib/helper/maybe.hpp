@@ -51,8 +51,11 @@ namespace sig
 		auto m2 = Just<double>(1);	// :: Maybe<double>
 		\endcode
 	*/
-	template <class T> Maybe<T> Just(T&& v){ return Maybe<T>(std::forward<T>(v)); }
-	template <class T> Maybe<T> Just(T const& v){ return Maybe<T>(v); }		// T is given explicitly
+	template <class T, class R = typename sig::impl::remove_const_reference<T>::type>
+	Maybe<R> Just(T&& v){ return Maybe<R>(std::forward<T>(v)); }
+
+	template <class T>
+	Maybe<T> Just(T const& v){ return Maybe<T>(v); }		// T is given explicitly
 
 	/// 値コンストラクタ
 	/**
@@ -60,9 +63,11 @@ namespace sig
 		auto n = Nothing();	// :: Maybe<int>
 		\endcode
 	*/
-	template <class T = void> auto Nothing()
-		-> typename impl::SameIf<T, void, typename boost::none_t, Maybe<T>>::type
-	{ return boost::none; }
+	template <class T = void>
+	auto Nothing()-> typename impl::SameIf<T, void, typename boost::none_t, Maybe<T>>::type
+	{
+		return boost::none;
+	}
 
 	/// 値コンストラクタ
 	/**

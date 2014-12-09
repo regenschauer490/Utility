@@ -48,11 +48,8 @@ void TestTypeTraits()
 	using Ar = sig::array<sig::TestInt, 2>;
 
 	static_assert(is_same<typename container_traits<Vec>::value_type, int>::value, "");
-	static_assert(is_same<typename container_traits<const Vec>::value_type, int>::value, "");
 	static_assert(is_same<typename container_traits<List>::value_type, double>::value, "");
-	static_assert(is_same<typename container_traits<const List>::value_type, double>::value, "");
 	static_assert(is_same<typename container_traits<Ar>::value_type, sig::TestInt>::value, "");
-	static_assert(is_same<typename container_traits<const Ar>::value_type, sig::TestInt>::value, "");
 
 	// forward_element
 	static_assert(std::is_same<typename sig::impl::forward_element< Vec >::type, int&& >::value, "");
@@ -65,6 +62,12 @@ void TestTypeTraits()
 	static_assert(std::is_same<typename sig::impl::forward_element< Ar const >::type, sig::TestInt const&& >::value, "");
 	static_assert(std::is_same<typename sig::impl::forward_element< Ar const& >::type, sig::TestInt const& >::value, "");
 
+	const int size = 5;
+	Vec vec = container_traits<Vec>::make(size);
+	assert(vec.capacity() == size);
+
+	auto uset = container_traits<std::unordered_set<int>>::make(size);
+	auto umap = container_traits<std::unordered_map<int,double>>::make(size);
 }
 
 
@@ -181,12 +184,12 @@ void TestHelperModules()
 	assert(!sig::is_finite_number(inf2));
 
 	//generic |a - b|
+#if !(SIG_MSVC_VER <= 140)
+	static_assert(sig::abs_delta(3, 1.5) == 1.5, "");
 	static_assert(sig::abs_delta(1, 3) == 2, "");
 	static_assert(sig::abs_delta(-2, -1) == 1, "");
 	static_assert(sig::abs_delta(3.0, 1.5) == 1.5, "");
-#if !(SIG_MSVC_VER == 140)
-	static_assert(sig::abs_delta(3, 1.5) == 1.5, "");
-#else
+#else	
 	assert(sig::equal(sig::abs_delta(3, 1.5), 1.5));
 #endif
 
@@ -251,15 +254,15 @@ void TestHelperModules()
 	static_assert(sig::less(0, 1), "");
 
 	//function object test
-	assert(sig::Identity()(1) == 1, "");
-	assert(sig::Increment()(1) == 2);
-	assert(sig::Decrement()(1) == 0);
+	assert(sig::identity_t()(1) == 1, "");
+	assert(sig::increment_t()(1) == 2);
+	assert(sig::decrement_t()(1) == 0);
 
 	//copy elements (into another container)
 	std::vector<int> orig{1,4,3,2,1};
 	auto cpy_list = sig::copy<std::list<int>>(orig);
 	auto cpy_set = sig::copy<std::set<int>>(orig);
 
-	sig::assert_foreach(sig::Identity(), cpy_list, orig);
-	sig::assert_foreach(sig::Identity(), cpy_set, sig::array<int, 4>{1, 2, 3, 4});
+	sig::assert_foreach(sig::identity_t(), cpy_list, orig);
+	sig::assert_foreach(sig::identity_t(), cpy_set, sig::array<int, 4>{1, 2, 3, 4});
 }

@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_BINARY_OPERATION_HPP
 #define SIG_UTIL_BINARY_OPERATION_HPP
 
-#include "../helper/helper.hpp"
+#include "../helper/helper_modules.hpp"
 #include "../helper/container_helper.hpp"
 
 
@@ -58,8 +58,9 @@ auto binary_operation(OP&& func, C1&& c1, C2&& c2)
 	using RT = decltype(impl::eval(std::forward<OP>(func), std::declval<AT1>(), std::declval<AT2>()));
 	using R = typename impl::container_traits<CR1>::template rebind<RT>;
 
-	R result;
 	const uint length = min(c1.size(), c2.size());
+	R result = impl::container_traits<R>::make(length);
+
 	iterative_make(length, result, std::forward<OP>(func), impl::begin(std::forward<C1>(c1)), impl::begin(std::forward<C2>(c2)));
 	return result;
 }
@@ -67,7 +68,7 @@ auto binary_operation(OP&& func, C1&& c1, C2&& c2)
 /// 二項演算 (element-wise: container and scalar)
 template <class OP, class C, class T,
 	class CR = typename impl::remove_const_reference<C>::type,
-	class AT = typename impl::forward_element<C>::type,
+	class ET = typename impl::forward_element<C>::type,
 	typename std::enable_if<
 		impl::container_traits<CR>::exist && (!impl::container_traits<typename impl::remove_const_reference<T>::type>::exist)
 	>::type*& = enabler
@@ -76,24 +77,25 @@ auto binary_operation(OP&& func, C&& c, T&& v)
 	->typename impl::container_traits<CR>::template rebind<
 		typename impl::remove_const_reference<decltype(impl::eval(
 			std::forward<OP>(func),
-			std::declval<AT>(),
+			std::declval<ET>(),
 			v
 		))>::type
 	>
 {
-	using RT = decltype(impl::eval(std::forward<OP>(func), std::declval<AT>(), v));
+	using RT = decltype(impl::eval(std::forward<OP>(func), std::declval<ET>(), v));
 	using R = typename impl::container_traits<CR>::template rebind<RT>;
 
-	R result;
+	R result = impl::container_traits<R>::make(c.size());
+
 	for (auto&& e : std::forward<C>(c)){
-		impl::container_traits<R>::add_element(result, std::forward<OP>(func)(static_cast<AT>(e), v));
+		impl::container_traits<R>::add_element(result, std::forward<OP>(func)(static_cast<ET>(e), v));
 	}
 	return result;
 }
 
 /// 二項演算 (element-wise: scalar and container)
 template <class OP, class T, class C,
-	class AT = typename impl::forward_element<C>::type,
+	class ET = typename impl::forward_element<C>::type,
 	class CR = typename impl::remove_const_reference<C>::type,
 	typename std::enable_if<
 		(!impl::container_traits<typename impl::remove_const_reference<T>::type>::exist) && impl::container_traits<CR>::exist
@@ -104,21 +106,116 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 		typename impl::remove_const_reference<decltype(impl::eval(
 			std::forward<OP>(func),
 			v,
-			std::declval<AT>()
+			std::declval<ET>()
 		))>::type
 	>
 {
-	using RT = decltype(impl::eval(std::forward<OP>(func), v, std::declval<AT>()));
+	using RT = decltype(impl::eval(std::forward<OP>(func), v, std::declval<ET>()));
 	using R = typename impl::container_traits<CR>::template rebind<RT>;
 
-	R r;
+	R result = impl::container_traits<R>::make(c.size());
+
 	for (auto&& e : std::forward<C>(c)){
-		impl::container_traits<R>::add_element(r, std::forward<OP>(func)(v, static_cast<AT>(e)));
+		impl::container_traits<R>::add_element(result, std::forward<OP>(func)(v, static_cast<ET>(e)));
 	}
-	return r;
+	return result;
 }
 
 
+
+template <class T1, class T2>
+auto plus(T1&& v1, T2&& v2)
+	->decltype(binary_operation(plus_t(), std::forward<T1>(v1), std::forward<T2>(v2)))
+{
+	return binary_operation(plus_t(), std::forward<T1>(v1), std::forward<T2>(v2));
+}
+
+
+template <class T1, class T2>
+auto minus(T1&& v1, T2&& v2)
+	->decltype(binary_operation(minus_t(), std::forward<T1>(v1), std::forward<T2>(v2)))
+{
+	return binary_operation(minus_t(), std::forward<T1>(v1), std::forward<T2>(v2));
+}
+
+
+template <class T1, class T2>
+auto mult(T1&& v1, T2&& v2)
+	->decltype(binary_operation(mult_t(), std::forward<T1>(v1), std::forward<T2>(v2)))
+{
+	return binary_operation(mult_t(), std::forward<T1>(v1), std::forward<T2>(v2));
+}
+
+
+template <class T1, class T2>
+auto div(T1&& v1, T2&& v2)
+	->decltype(binary_operation(div_t(), std::forward<T1>(v1), std::forward<T2>(v2)))
+{
+	return binary_operation(div_t(), std::forward<T1>(v1), std::forward<T2>(v2));
+}
+
+
+template <class T1, class T2,
+	class TR1 = typename impl::remove_const_reference<T1>::type,
+	class TR2 = typename impl::remove_const_reference<T2>::type,
+	typename std::enable_if<
+		impl::container_traits<TR1>::exist || impl::container_traits<TR2>::exist
+	>::type*& = enabler
+>
+auto operator+(T1&& v1, T2&& v2)
+	->decltype(binary_operation(plus_t(), std::forward<T1>(v1), std::forward<T2>(v2)))
+{
+	return binary_operation(plus_t(), std::forward<T1>(v1), std::forward<T2>(v2));
+}
+
+
+
+template <class T1, class T2,
+	class TR1 = typename impl::remove_const_reference<T1>::type,
+	class TR2 = typename impl::remove_const_reference<T2>::type,
+	typename std::enable_if<
+		impl::container_traits<TR1>::exist || impl::container_traits<TR2>::exist
+	>::type*& = enabler
+>
+auto operator-(T1&& v1, T2&& v2)
+	->decltype(binary_operation(minus_t(), std::forward<T1>(v1), std::forward<T2>(v2)))
+{
+	return binary_operation(minus_t(), std::forward<T1>(v1), std::forward<T2>(v2));
+}
+
+
+
+template <class T1, class T2,
+	class TR1 = typename impl::remove_const_reference<T1>::type,
+	class TR2 = typename impl::remove_const_reference<T2>::type,
+	typename std::enable_if<
+		impl::container_traits<TR1>::exist || impl::container_traits<TR2>::exist
+	>::type*& = enabler
+>
+auto operator*(T1&& v1, T2&& v2)
+	->decltype(binary_operation(mult_t(), std::forward<T1>(v1), std::forward<T2>(v2)))
+{
+	return binary_operation(mult_t(), std::forward<T1>(v1), std::forward<T2>(v2));
+}
+
+
+
+template <class T1, class T2,
+	class TR1 = typename impl::remove_const_reference<T1>::type,
+	class TR2 = typename impl::remove_const_reference<T2>::type,
+	typename std::enable_if<
+		impl::container_traits<TR1>::exist || impl::container_traits<TR2>::exist
+	>::type*& = enabler
+>
+auto operator/(T1&& v1, T2&& v2)
+	->decltype(binary_operation(div_t(), std::forward<T1>(v1), std::forward<T2>(v2)))
+{
+	return binary_operation(div_t(), std::forward<T1>(v1), std::forward<T2>(v2));
+}
+
+
+
+/*
 ///  四則演算を一般的に記述するための関数群
 #define SIG_MakeBinaryOperation(FunctionName, Operator)\
 	template <class T1, class T2,\
@@ -152,7 +249,7 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 \
 	template <class C, class T,\
 		class CR = typename impl::remove_const_reference<C>::type,\
-		class AT = typename impl::forward_element<C>::type,\
+		class ET = typename impl::forward_element<C>::type,\
 		typename std::enable_if<\
 			impl::container_traits<CR>::exist && (!impl::container_traits<typename impl::remove_const_reference<T>::type>::exist)\
 		>::type*& = enabler\
@@ -160,15 +257,15 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 	auto FunctionName(C&& c, T&& v)\
 		->typename impl::container_traits<CR>::template rebind<\
 			typename impl::remove_const_reference<decltype(\
-				std::declval<AT>() Operator v\
+				std::declval<ET>() Operator v\
 			)>::type\
 		>\
 	{\
-		return binary_operation([](AT v1, T v2){ return static_cast<AT>(v1) Operator v2; }, std::forward<C>(c), std::forward<T>(v)); \
+		return binary_operation([](ET v1, T v2){ return static_cast<ET>(v1) Operator v2; }, std::forward<C>(c), std::forward<T>(v)); \
 	}\
 \
 	template <class T, class C,\
-		class AT = typename impl::forward_element<C>::type, \
+		class ET = typename impl::forward_element<C>::type, \
 		class CR = typename impl::remove_const_reference<C>::type,\
 		typename std::enable_if<\
 			(!impl::container_traits<typename impl::remove_const_reference<T>::type>::exist) && impl::container_traits<CR>::exist\
@@ -177,13 +274,13 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 	auto FunctionName(T&& v, C&& c)\
 		->typename impl::container_traits<CR>::template rebind<\
 			typename impl::remove_const_reference<decltype(\
-				v Operator std::declval<AT>()\
+				v Operator std::declval<ET>()\
 			)>::type\
 		>\
 	{\
-		return binary_operation([](T v1, AT v2){ return v1 Operator static_cast<AT>(v2); }, std::forward<T>(v), std::forward<C>(c)); \
+		return binary_operation([](T v1, ET v2){ return v1 Operator static_cast<ET>(v2); }, std::forward<T>(v), std::forward<C>(c)); \
 	}\
-
+*/
 
 /// 加法関数plusの自動生成
 /**
@@ -197,28 +294,28 @@ auto binary_operation(OP&& func, T&& v, C&& c)
 	auto p4 = plus(vec, list);		// vector<int>{4, 4, 4}
 	\endcode
 */
-SIG_MakeBinaryOperation(plus, +);
+//SIG_MakeBinaryOperation(plus, +);
 
 /// 減法関数minusの自動生成
 /**
 	\sa SIG_MakeBinaryOperation(plus, +)
 */
-SIG_MakeBinaryOperation(minus, -);
+//SIG_MakeBinaryOperation(minus, -);
 
 /// 乗法関数multの自動生成
 /**
 	\sa SIG_MakeBinaryOperation(plus, +)
 */
-SIG_MakeBinaryOperation(mult, *);
-SIG_MakeBinaryOperation(multiplies, *);
+//SIG_MakeBinaryOperation(mult, *);
+//SIG_MakeBinaryOperation(multiplies, *);
 
 /// 除法関数divの自動生成
 /**
 	\sa SIG_MakeBinaryOperation(plus, +)
 */
-SIG_MakeBinaryOperation(div, / );
-SIG_MakeBinaryOperation(divides, / );
+//SIG_MakeBinaryOperation(div, / );
+//SIG_MakeBinaryOperation(divides, / );
+
 
 }
-
 #endif

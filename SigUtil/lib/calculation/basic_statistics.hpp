@@ -241,6 +241,7 @@ template <class C>
 double variance(C const& data)
 {
 	using T = typename impl::container_traits<C>::value_type;
+
 	double mean = average(data);
 	return std::accumulate(std::begin(data), std::end(data), 0.0, [mean](double sum, T e){ return sum + std::pow(e - mean, 2); }) / data.size();
 }
@@ -265,6 +266,7 @@ template <class C, typename std::enable_if<std::is_floating_point<typename impl:
 bool normalize(C& data)
 {
 	using T = typename impl::container_traits<C>::value_type;
+
 	T min = *std::begin(data);
 	T max = *std::begin(data);
 
@@ -305,6 +307,7 @@ auto normalize(C const& data, int dummy = 0)
 
 	auto result = sig::copy<RT>(data);
 	normalize(result);
+
 	return result;
 }
 
@@ -328,10 +331,12 @@ template <class C, typename std::enable_if<std::is_floating_point<typename impl:
 bool standardize(C& data)
 {
 	using T = typename impl::container_traits<C>::value_type;
+
 	double mean = average(data);
 	double var = variance(data);
 
 	for_each([mean, var](T& e){ e = (e - mean) / var; }, data);
+
 	return true;
 }
 
@@ -362,6 +367,7 @@ auto standardize(C const& data, int dummy = 0)
 
 	auto result = sig::copy<RT>(data);
 	standardize(result);
+
 	return result;
 }
 
@@ -382,11 +388,14 @@ auto standardize(C const& data, int dummy = 0)
 	ar;			// { 0.1, 0.2, 0.4, 0.2, 0.1 }
 	\endcode
 */
-template <class C, typename std::enable_if<std::is_floating_point<typename impl::container_traits<C>::value_type>::value>::type*& = enabler>
+template <class C,
+	typename std::enable_if<std::is_floating_point<typename impl::container_traits<C>::value_type>::value>::type*& = enabler
+>
 bool normalize_dist(C& data)
 {
 	double sum = sig::sum(data);
 	for (auto& e : data) e /= sum;
+
 	return true;
 }
 
@@ -411,12 +420,13 @@ bool normalize_dist(C& data)
 */
 template <class R = double, class C = void>
 auto normalize_dist(C const& data, int dummy = 0)
-->typename impl::container_traits<C>::template rebind<R>
+	->typename impl::container_traits<C>::template rebind<R>
 {
 	using RT = typename impl::container_traits<C>::template rebind<R>;
 
 	auto result = sig::copy<RT>(data);
 	normalize_dist(result);
+
 	return result;
 }
 

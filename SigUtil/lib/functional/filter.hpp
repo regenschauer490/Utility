@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_FILTER_HPP
 #define SIG_UTIL_FILTER_HPP
 
-#include "../helper/helper.hpp"
+#include "../helper/helper_modules.hpp"
 #include "../helper/container_helper.hpp"
 
 /// \file filter.hpp 各種フィルタ関数
@@ -25,22 +25,28 @@ namespace sig
 	\return 処理結果のコンテナ [a]（コンテナはlistと同じ種類）
 
 	\code
-	const array<int, 3> data1{ 1, -3, 2 };	// sig::array
 	const std::unordered_set<double> data2{ 0, 1.1, -2.2, 3.3 };
+	array<std::string, 3> data2{ "a", "bbb", "cc" };	// sig::array
 
 	auto fl1 = filter([](int v){ return v % 2; }, data1);
-	auto fl2 = filter([](double v){ return v < 0; }, data2);
+	auto fl2 = filter([](std::string const& v){ return v.length() < 3; }, std::move(data2));
 
-	fl1;	// array<int, 3>{ 1, -3 }. array[2]は未使用
-	fl2;	// std::unordered_set<double>{ -2.2 }
+	fl1;	// std::unordered_set<double>{ -2.2 }
+	fl2;	// array<std::string, 3>{ "a", "cc" } // array[2]は未使用
+
+	assert(data2[0].empty() && data2[2].empty() && (!data2[1].empty()) );
 	\endcode
 */
-template <class F, class C>
-auto filter(F const& pred, C const& list)
+template <class F, class C,
+	class CR = typename impl::remove_const_reference<C>::type,
+	class ET = typename impl::forward_element<C>::type
+>
+auto filter(F&& pred, C&& list)
 {
-	C result;
-	for (auto const& e : list){
-		if (pred(e)) impl::container_traits<C>::add_element(result, e);
+	CR result = impl::container_traits<CR>::make(list.size());
+
+	for (auto&& e : std::forward<C>(list)){
+		if (std::forward<F>(pred)(e)) impl::container_traits<CR>::add_element(result, std::forward<ET>(e));
 	}
 	return result;
 }
@@ -51,7 +57,7 @@ auto filter(F const& pred, C const& list)
 
 	\param pred: 条件判定を行う述語関数 (int -> a -> Bool)
 	\param init indexの初期値 int
-	\param container データが格納されたコンテナ [a]（\ref sig_container ）
+	\param list データが格納されたコンテナ [a]（\ref sig_container ）
 
 	\return 処理結果のコンテナ [a]（コンテナはlistと同じ種類）
 
@@ -62,12 +68,16 @@ auto filter(F const& pred, C const& list)
 	data;		// { 1.5 }
 	\endcode
 */
-template <class F, class C>
-auto filter(F const& pred, int init, C const& container)
+template <class F, class C,
+	class CR = typename impl::remove_const_reference<C>::type,
+	class ET = typename impl::forward_element<C>::type
+>
+auto filter(F&& pred, int init, C&& list)
 {
-	C result;
-	for (auto const& e : container){
-		if (pred(init, e)) impl::container_traits<C>::add_element(result, e);
+	CR result = impl::container_traits<CR>::make(list.size());
+
+	for (auto&& e : std::forward<C>(list)){
+		if (std::forward<F>(pred)(init, e)) impl::container_traits<CR>::add_element(result, std::forward<ET>(e));
 		++init;
 	}
 	return result;
@@ -97,14 +107,18 @@ auto filter(F const& pred, int init, C const& container)
 	auto pt2_f = std::get<1>(pt2);	// std::unordered_set<double>{ 0, 1.1, 3.3 }
 	\endcode
 */
-template <class F, class C>
-auto partition(F const& pred, C const& list)
+template <class F, class C,
+	class CR = typename impl::remove_const_reference<C>::type,
+	class ET = typename impl::forward_element<C>::type
+>
+auto partition(F&& pred, C&& list)
 {
-	C result1, result2;
+	CR result1 = impl::container_traits<CR>::make(list.size());
+	CR result2 = impl::container_traits<CR>::make(list.size());
 
-	for (auto const& e : list){
-		if (pred(e)) impl::container_traits<C>::add_element(result1, e);
-		else impl::container_traits<C>::add_element(result2, e);
+	for (auto&& e : std::forward<C>(list)){
+		if (std::forward<F>(pred)(e)) impl::container_traits<CR>::add_element(result1, std::forward<ET>(e));
+		else impl::container_traits<CR>::add_element(result2, std::forward<ET>(e));
 	}
 	return std::make_tuple(std::move(result1), std::move(result2));
 }

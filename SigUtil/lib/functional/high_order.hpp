@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_HIGH_ORDER_HPP
 #define SIG_UTIL_HIGH_ORDER_HPP
 
-#include "../helper/helper.hpp"
+#include "../helper/helper_modules.hpp"
 #include "../helper/container_helper.hpp"
 
 /// \file high_order.hpp 高階関数
@@ -29,8 +29,9 @@ auto variadicZipWith(F&& func, C1&& list1, Cs&&... lists)
 		std::declval<typename impl::forward_element<Cs>::type>()...
 	))>;
 
-	R result;
 	const uint length = min(list1.size(), lists.size()...);
+	R result = impl::container_traits<R>::make(length);
+
 	iterative_make(length, result, std::forward<F>(func), impl::begin(std::forward<C1>(list1)), impl::begin(std::forward<Cs>(lists))...);
 
 	return result;
@@ -50,7 +51,7 @@ auto variadicZipWith(F&& func, C1&& list1, Cs&&... lists)
 	const array<int, 3> data1{ 1, -3, 5 };	// sig::array
 	const std::unordered_set<double> data2{ 0, 1.1, -2.2, 3.3 };
 
-	auto r1 = map(Increment(), data1);
+	auto r1 = map(increment_t(), data1);
 	auto r2 = map([](double v){ return v * 2; }, data2);
 
 	r1;		// array<int, 3>{ 2, -2, 6 }

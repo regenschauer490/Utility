@@ -11,7 +11,7 @@ http://opensource.org/licenses/mit-license.php
 #include "../sigutil.hpp"
 #include "../distance/norm.hpp"
 #include "../helper/maybe.hpp"
-#include "../helper/helper.hpp"
+#include "../helper/helper_modules.hpp"
 
 /// \file convergence.hpp 反復処理の収束判定に関するユーティリティ
 
@@ -65,13 +65,14 @@ class ManageConvergenceSimple
 {
 	const double epsilon_;
 	Maybe<double> last_value_;
+	bool conv_;
 
 public:
 	/// コンストラクタ
 	/**
 		\param epsilon 収束判定用の定数（前回の値との差がこの定数未満であれば収束と判定する）
 	*/
-	ManageConvergenceSimple(double epsilon) : epsilon_(epsilon), last_value_(Nothing(0)) {}
+	ManageConvergenceSimple(double epsilon) : epsilon_(epsilon), last_value_(Nothing(0)), conv_(false) {}
 
 	/// 状態の更新と収束判定
 	/**
@@ -80,13 +81,16 @@ public:
 		\return true(収束), false(未収束)
 	*/
 	bool update(double value){
-		if (isJust(last_value_) && abs_delta(value, fromJust(last_value_)) < epsilon_) return true;
+		conv_ = isJust(last_value_) && abs_delta(value, fromJust(last_value_)) < epsilon_;
 		last_value_ <<= value;
-		return false;
+
+		return conv_;
 	}
 
 	/// 前回の値の取得
 	double get_value() const{ return isJust(last_value_) ? fromJust(last_value_) : -1;	}
+
+	bool is_convergence() const{ return conv_; }
 };
 
 
@@ -119,6 +123,7 @@ class ManageConvergence
 	const F norm_func_;
 	const C criteria_;
 	Maybe<T> last_value_;
+	bool conv_;
 
 public:
 	/// コンストラクタ
@@ -126,7 +131,7 @@ public:
 		\param epsilon 収束判定用の定数（前回のノルム値との差がこの定数未満であれば収束と判定する）
 		\param norm_function ノルム関数（1引数と2引数のoperator()を定義した関数オブジェクト）
 	*/
-	ManageConvergence(double epsilon, F norm_func = norm_L2) : epsilon_(epsilon), norm_func_(norm_func), last_value_(Nothing(T())) {}
+	ManageConvergence(double epsilon, F norm_func = norm_L2) : epsilon_(epsilon), norm_func_(norm_func), last_value_(Nothing(T())), conv_(false) {}
 
 	/// 状態の更新とノルム計算、および収束判定
 	/**
@@ -135,10 +140,13 @@ public:
 		\return true(収束), false(未収束)
 	*/
 	bool update(T value){
-		if (isJust(last_value_) && criteria_(value, fromJust(last_value_), norm_func_) < epsilon_) return true;
+		conv_ = isJust(last_value_) && criteria_(value, fromJust(last_value_), norm_func_) < epsilon_;
 		last_value_ <<= value;
-		return false;
+
+		return conv_;
 	}
+
+	bool is_convergence() const{ return conv_; }
 };
 
 }

@@ -48,6 +48,7 @@ struct has_iterator
 	static const bool value = Detect_iterator<C>::value;
 };
 
+#if !(SIG_MSVC_VER < 120)
 template <class C>
 struct has_random_access_iter
 {
@@ -61,6 +62,7 @@ struct has_random_access_iter
 
 	static const bool value = impl_<typename Sel<C, has_iterator<C>::value>::type>::v;
 };
+#endif
 
 //template <class T, class D = void> struct has_random_access_iter{ static const bool value = false; };
 //template <class T> struct has_random_access_iter<T, decltype(std::declval<typename T::iterator>()[0], void())>{ static const bool value = true; };

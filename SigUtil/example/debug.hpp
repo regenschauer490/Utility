@@ -9,7 +9,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_DEBUG_HPP
 
 #include <assert.h>
-#include "../lib/helper/helper.hpp"
+#include "../lib/helper/helper_modules.hpp"
 #include "../lib/helper/container_helper.hpp"
 
 /* デバッグ用ツール */

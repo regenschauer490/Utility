@@ -29,6 +29,7 @@ template <class C>
 void shuffle(C& container)
 {
 	static SimpleRandom<double> myrand(0.0, 1.0, false);
+
 	std::random_shuffle(std::begin(container), std::end(container), [&](std::ptrdiff_t max){ return static_cast<std::ptrdiff_t>(myrand() * max); });
 }
 

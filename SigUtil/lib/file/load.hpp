@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_LOAD_HPP
 #define SIG_UTIL_LOAD_HPP
 
-#include "../helper/helper.hpp"
+#include "../helper/helper_modules.hpp"
 #include "../helper/maybe.hpp"
 
 #include <fstream>
@@ -22,19 +22,18 @@ namespace sig
 
 namespace impl
 {
-	template <class T>
-	using IfsSelector = typename impl::SameIf<
-		T,
-		std::string,
-		std::ifstream,
-		typename impl::SameIf<
-		T,
-		std::wstring,
+template <class T>
+using IfsSelector = typename SameIf<
+	T, std::string,
+	std::ifstream,
+	typename SameIf<
+		T, std::wstring,
 		std::wifstream,
 		std::basic_ifstream<T>
-		>::type
-	>::type;
-}
+	>::type
+>::type;
+
+}	// impl
 
 //@{ 
 

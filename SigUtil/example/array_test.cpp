@@ -16,21 +16,21 @@ void ArrayTest()
 	array<TestInt, 5> ar5{ ar2 };
 	array<TestInt, 5> ar6{ std::move(ar5) };
 
-	assert_foreach(Identity(), ar2, std::vector<TestInt>{1, 2, 3});	//test elements
-	assert_foreach(Identity(), ar3, std::vector<TestInt>{1, 1, 1});
-	assert_foreach(Identity(), ar4, stdar);
+	assert_foreach(identity_t(), ar2, std::vector<TestInt>{1, 2, 3});	//test elements
+	assert_foreach(identity_t(), ar3, std::vector<TestInt>{1, 1, 1});
+	assert_foreach(identity_t(), ar4, stdar);
 	assert(ar5.size() == 0);
-	assert_foreach(Identity(), ar6, ar2);
+	assert_foreach(identity_t(), ar6, ar2);
 
 	//copy assignment
 	ar1 = ar2;
-	assert_foreach(Identity(), ar1, ar2);
+	assert_foreach(identity_t(), ar1, ar2);
 
 	ar1 = { 3, 2, 1 };
-	assert_foreach(Identity(), ar1, std::vector<TestInt>{3, 2, 1});
+	assert_foreach(identity_t(), ar1, std::vector<TestInt>{3, 2, 1});
 
 	ar1 = stdar;
-	assert_foreach(Identity(), ar1, stdar);
+	assert_foreach(identity_t(), ar1, stdar);
 
 	//equal
 	auto ar7 = ar6;
@@ -73,11 +73,11 @@ void ArrayTest()
 	std::array<TestInt, 4> stdar2 = ar2.std_array();
 
 	ar3.fill(2);
-	assert_foreach(Identity(), ar3, std::vector<TestInt>{2, 2, 2, 2, 2});
+	assert_foreach(identity_t(), ar3, std::vector<TestInt>{2, 2, 2, 2, 2});
 
 	ar3 = ar2;
 	ar1.swap(ar3);
-	assert_foreach(Identity(), ar1, ar6);
+	assert_foreach(identity_t(), ar1, ar6);
 	assert(ar3.empty());
 
 	ar1.clear();
