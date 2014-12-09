@@ -34,7 +34,7 @@ class SimpleRandom
 	
 	typename std::conditional <
 		std::is_integral<T>::value,
-		std::uniform_int_distribution<int>,
+		std::uniform_int_distribution<T>,
 		std::uniform_real_distribution<T>
 	> ::type dist_;		// 一様分布
 
