@@ -21,7 +21,7 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_USE_GLIBCPP 1
 #endif
 
-#if SIG_MSVC_ENV || !(SIG_USE_GLIBCPP)
+#if (SIG_MSVC_ENV && SIG_MSVC_VER != 140) && !(SIG_USE_GLIBCPP)
 #include <codecvt>
 /// <codecvt>を使用するか (GCC非対応)
 #define SIG_ENABLE_CODECVT 1
@@ -267,7 +267,9 @@ inline auto utf16_to_sjis(std::u16string const& src) ->std::string //Just<std::s
 
 	return is_succeed ? dest : std::string(); //is_succeed ? Just<std::string>(std::move(dest)) : Nothing(std::string());
 }
+#endif
 
+#ifdef SIG_ENABLE_CODECVT 
 /// ShiftJIS -> UTF-8
 /**
 	\pre Windows環境のみ
@@ -293,7 +295,6 @@ inline auto utf8_to_sjis(std::string const& src) ->std::string
 {
 	return utf16_to_sjis(utf8_to_utf16(src));
 }
-
 #endif
 
 }

@@ -125,7 +125,7 @@ void TestHelperModules()
 	const auto maybe_true = sig::Just(1);
 	const auto maybe_false = sig::Nothing(0);
 
-#if !(SIG_MSVC_VER <= 120)
+#if !(SIG_MSVC_VER <= 120) && SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	assert(sig::And(maybe_true, maybe_true));
 	assert(sig::And(maybe_true, true));
 	assert(!sig::And(maybe_true, maybe_false));

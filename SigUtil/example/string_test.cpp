@@ -134,12 +134,6 @@ void StrConvertTest()
 	// まとめて変換
 	auto wstr_vec = str_to_wstr(sjis);
 
-	// Shift-JIS <-> UTF-8
-	std::string	utf8_from_sjis = sjis_to_utf8(sjis[1]);
-	std::string	sjis_from_utf8 = utf8_to_sjis(utf8[1]);
-
-	assert(utf8_from_sjis == utf8[1]);
-	assert(sjis_from_utf8 == sjis[1]);
 
 	// Shift-Jis <-> UTF-16
 	std::u16string	utf16_from_sjis = sjis_to_utf16(sjis[1]);
@@ -147,14 +141,22 @@ void StrConvertTest()
 
 	assert(sjis_from_utf16 == sjis[1]);
 
+#ifdef SIG_ENABLE_CODECVT 
+	// Shift-JIS <-> UTF-8
+	std::string	utf8_from_sjis = sjis_to_utf8(sjis[1]);
+	std::string	sjis_from_utf8 = utf8_to_sjis(utf8[1]);
+
+	assert(utf8_from_sjis == utf8[1]);
+	assert(sjis_from_utf8 == sjis[1]);
+
 	// UTF-8 <-> UTF-16
 	std::u16string	utf16_from_utf8 = utf8_to_utf16(utf8[1]);
 	std::string		utf8_from_utf16 = utf16_to_utf8(utf16_from_utf8);
 
 	assert(utf8_from_utf16 == utf8[1]);
-
 	assert(utf16_from_utf8 == utf16_from_sjis);
-	
+#endif
+
 #elif SIG_GCC_ENV	// g++
 	const auto utf8 = fromJust( load_line<std::string>("../SigUtil/example/test_file/utf8.txt"));
 

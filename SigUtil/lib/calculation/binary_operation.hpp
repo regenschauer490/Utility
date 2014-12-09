@@ -31,7 +31,7 @@ template <class OP, class T1, class T2,
 	>::type*& = enabler
 >
 auto binary_operation(OP&& func, T1&& v1, T2&& v2)
-	->typename impl::remove_const_reference< decltype(impl::eval(std::forward<OP>(func), std::forward<T1>(v1), std::forward<T1>(v2)))>::type
+	->typename impl::remove_const_reference< decltype(impl::eval(std::forward<OP>(func), std::forward<T1>(v1), std::forward<T2>(v2)))>::type
 {
 	return std::forward<OP>(func)(std::forward<T1>(v1), std::forward<T2>(v2));
 }

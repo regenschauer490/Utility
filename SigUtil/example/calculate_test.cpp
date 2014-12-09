@@ -115,7 +115,7 @@ void ArithmeticOperationsTest()
 
 	// 乗算
 #if !(SIG_MSVC_VER <= 120)
-	assert(multiplies(2, 2.0) == 4.0);
+	assert(mult(2, 2.0) == 4.0);
 #endif
 
 	for_each(
@@ -154,8 +154,8 @@ void ArithmeticOperationsTest()
 
 	// 除算
 #if !(SIG_MSVC_VER <= 120)
-	assert(divides(2, 1.0) == 2.0);
-	assert(divides(1.0, 2) == 0.5);
+	assert(div(2, 1.0) == 2.0);
+	assert(div(1.0, 2) == 0.5);
 #endif
 
 	for_each(

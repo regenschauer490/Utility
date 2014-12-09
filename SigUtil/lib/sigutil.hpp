@@ -15,7 +15,7 @@ http://opensource.org/licenses/mit-license.php
 
 /*------------------------------------------------------------------------------------------------------------------------*/
 
-#define SIG_UTIL_VERSION 110
+#define SIG_UTIL_VERSION 100
 
 #if defined(_WIN32) || defined(_WIN64) // windows env
 	#ifdef _MSC_VER
