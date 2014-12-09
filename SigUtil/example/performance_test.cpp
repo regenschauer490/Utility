@@ -95,6 +95,10 @@ void ContainerTraitsEffectiveTest()
 	const int N = 50000;
 	const int H = N;
 
+#if !(SIG_ENABLE_BOOST && SIG_USE_OPTIONAL)
+	using sig::operator*;
+#endif
+
 	Sleep(1000);
 
 // vector

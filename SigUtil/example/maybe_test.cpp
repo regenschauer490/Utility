@@ -114,7 +114,7 @@ void MaybeTest()
 	auto m3 = fromJust(cm);	// int
 
 
-	using operator*;	// required
+	using sig::operator*;	// required
 
 	assert(equal(*m, 1));
 	assert(equal(*cm, 2));
@@ -145,7 +145,7 @@ void MaybeTest()
 
 	auto mmm = Just<int>(3);
 
-	using operator<<=;	// required
+	using sig::operator<<=;	// required
 	mmm <<= 2;
 
 	assert(equal(*mmm, 2));
