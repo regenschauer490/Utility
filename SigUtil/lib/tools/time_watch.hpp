@@ -19,6 +19,8 @@ namespace sig
 {
 /// タイムウォッチ
 /**
+	\template Clock 時間の精度（defaultはstd::chrono::system_clock. 高精度はstd::chrono::high_resolution_clock）
+
 	\code
 	TimeWatch tw;		// 計測開始
 
@@ -54,9 +56,10 @@ namespace sig
 	assert( equal_tolerant( tw.get_total_time<std::chrono::microseconds>(), 1000000, 10000));	//1000000  ± 10000 (μs)
 	\endcode
 */
+template <class Clock = std::chrono::system_clock>
 class TimeWatch
 {
-	using Time = std::chrono::system_clock::time_point;
+	using Time = typename Clock::time_point;
 	using Duration = decltype(std::declval<Time>() - std::declval<Time>());
 
 	Time st;
@@ -67,7 +70,7 @@ class TimeWatch
 private:
 	void init()
 	{
-		st = std::chrono::system_clock::now();
+		st = Clock::now();
 		laps.clear();
 		cache.clear();
 	}
@@ -96,14 +99,14 @@ public:
 	/// 停止
 	void stop()
 	{
-		if (is_run)	cache.push_back(std::chrono::system_clock::now() - st);
+		if (is_run)	cache.push_back(Clock::now() - st);
 		is_run = false;
 	}
 		
 	/// 停止解除
 	void restart()
 	{
-		st = std::chrono::system_clock::now();
+		st = Clock::now();
 		is_run = true;
 	}
 
@@ -111,7 +114,7 @@ public:
 	void save()
 	{
 		if (is_run){
-			auto now = std::chrono::system_clock::now();
+			auto now = Clock::now();
 			cache.push_back(now - st);
 			st = std::move(now);
 		}
