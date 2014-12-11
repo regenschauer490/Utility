@@ -57,7 +57,7 @@ void ConvergenceTest()
 
 void TimeWatchTest()
 {
-	TimeWatch tw;		//計測開始
+	TimeWatch<std::chrono::high_resolution_clock> tw;		//計測開始
 
 #if SIG_MSVC_ENV
 	auto tsleep = [](unsigned milisec){ Sleep(milisec); };

@@ -9,7 +9,7 @@ void SplitPerformanceTest()
 {
 	auto long_text = sig::fromJust(sig::load_line<std::string>(SIG_TO_FPSTR("../SigUtil/example/test_file/long_text.txt")));
 
-	sig::TimeWatch tw;
+	sig::TimeWatch<> tw;
 	auto split = sig::split(long_text[0], ",");
 	tw.save();
 	std::cout << "split time(ms): " << tw.get_total_time() << std::endl;
@@ -25,7 +25,7 @@ void OptionalPerformanceTest()
 	const int N = 1000;
 	const auto str = "test string";
 
-	sig::TimeWatch tw1;
+	sig::TimeWatch<> tw1;
 	for (int loop = 0; loop<ITERATION; ++loop){
 		sig::array<std::wstring, N> ar;
 
@@ -61,7 +61,7 @@ void OptionalPerformanceTest()
 		dot2.push_back(drand());
 	}
 
-	sig::TimeWatch tw2;
+	sig::TimeWatch<std::chrono::high_resolution_clock> tw2;
 	for (int loop = 0; loop < ITERATION; ++loop){
 		sig::array<double, M> ar;
 
@@ -103,7 +103,7 @@ void ContainerTraitsEffectiveTest()
 
 // vector
 	{
-		sig::TimeWatch tw1;
+		sig::TimeWatch<std::chrono::high_resolution_clock> tw1;
 		for (int l = 0; l<L; ++l){
 			Vec vec1;
 			for (int i = 0; i < N; ++i){
@@ -113,7 +113,7 @@ void ContainerTraitsEffectiveTest()
 		tw1.stop();
 		tw1.save();
 
-		sig::TimeWatch tw2;
+		sig::TimeWatch<std::chrono::high_resolution_clock> tw2;
 		for (int l = 0; l<L; ++l){
 			auto vec2 = sig::impl::container_traits<Vec>::make(N);
 			for (int i = 0; i < N; ++i){
@@ -131,9 +131,9 @@ void ContainerTraitsEffectiveTest()
 
 //u-set
 	{
-		sig::TimeWatch tw1;
+		sig::TimeWatch<std::chrono::high_resolution_clock> tw1;
 		tw1.stop();
-		sig::TimeWatch tw2;
+		sig::TimeWatch<std::chrono::high_resolution_clock> tw2;
 		tw2.stop();
 
 		for (int l=0; l<L; ++l){
@@ -177,9 +177,9 @@ void ContainerTraitsEffectiveTest()
 			us2.emplace(i);
 		}
 
-		sig::TimeWatch tw1;
+		sig::TimeWatch<std::chrono::high_resolution_clock> tw1;
 		tw1.stop();
-		sig::TimeWatch tw2;
+		sig::TimeWatch<std::chrono::high_resolution_clock> tw2;
 		tw2.stop();
 
 		for (int l = 0; l<L; ++l){
@@ -218,7 +218,7 @@ void ContainerTraitsEffectiveTest()
 
 // u-map
 	{
-		sig::TimeWatch tw1;
+		sig::TimeWatch<std::chrono::high_resolution_clock> tw1;
 		for (int l = 0; l<L; ++l){
 			UM um1;
 			tw1.restart();
@@ -231,7 +231,7 @@ void ContainerTraitsEffectiveTest()
 		tw1.stop();
 		tw1.save();
 
-		sig::TimeWatch tw2;
+		sig::TimeWatch<std::chrono::high_resolution_clock> tw2;
 		for (int l = 0; l<L; ++l){
 			auto um2 = sig::impl::container_traits<UM>::make(H);
 			tw2.restart();
@@ -259,7 +259,7 @@ void ContainerTraitsEffectiveTest()
 		}
 
 		double sum1 = 0;
-		sig::TimeWatch tw1;
+		sig::TimeWatch<std::chrono::high_resolution_clock> tw1;
 		for (int l = 0; l<L; ++l){
 			for (int i = 0; i < N; ++i){
 				sum1 += um1.find(i)->second;
@@ -270,7 +270,7 @@ void ContainerTraitsEffectiveTest()
 
 
 		double sum2 = 0;
-		sig::TimeWatch tw2;
+		sig::TimeWatch<std::chrono::high_resolution_clock> tw2;
 		for (int l = 0; l<L; ++l){
 			for (int i = 0; i < N; ++i){
 				sum2 += um2.find(i)->second;
