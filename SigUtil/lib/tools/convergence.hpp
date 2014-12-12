@@ -116,12 +116,12 @@ public:
 	}
 	\endcode
 */
-template <class T, class C = RelativeError, class F = Norm<2>>
+template <class T, class Criteria = RelativeError, class F = Norm<2>>
 class ManageConvergence
 {
 	const double epsilon_;
 	const F norm_func_;
-	const C criteria_;
+	const Criteria criteria_;
 	Maybe<T> last_value_;
 	bool conv_;
 
@@ -131,7 +131,7 @@ public:
 		\param epsilon 収束判定用の定数（前回のノルム値との差がこの定数未満であれば収束と判定する）
 		\param norm_function ノルム関数（1引数と2引数のoperator()を定義した関数オブジェクト）
 	*/
-	ManageConvergence(double epsilon, F norm_func = norm_L2) : epsilon_(epsilon), norm_func_(norm_func), last_value_(Nothing(T())), conv_(false) {}
+	ManageConvergence(double epsilon, F norm_func = norm_L2) : epsilon_(epsilon), norm_func_(norm_func), criteria_(Criteria()), last_value_(Nothing(T())), conv_(false) {}
 
 	/// 状態の更新とノルム計算、および収束判定
 	/**

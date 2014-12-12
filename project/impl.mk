@@ -2,7 +2,8 @@ ifeq "$(strip $(OBJ_DIR))" ""
   OBJ_DIR = .
 endif
 
-TEST_DIR = example
+MAIN_DIR = ../../SigUtil
+TEST_DIR = $(MAIN_DIR)/example
 TEST_FILES = $(wildcard $(TEST_DIR)/*.cpp) 
 TEST_FNAMES = $(subst $(TEST_DIR)/,,$(TEST_FILES))
 TEST_TMP = $(TEST_FNAMES:.cpp=.o)
@@ -15,11 +16,11 @@ $(TARGET) : $(OBJS) $(LIBS)
 	@[ -d $(BIN_DIR) ] || mkdir -p $(BIN_DIR)
 	$(COMPILER) -o $(TARGET0) $^ $(LDFLAGS)
 
-$(OBJ_DIR)/main.o : main.cpp
+$(OBJ_DIR)/main.o : $(MAIN_DIR)/main.cpp
 	@[ -d $(OBJ_DIR) ] || mkdir -p $(OBJ_DIR)
 	$(COMPILER) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
-$(OBJ_DIR)/%.o : example/%.cpp
+$(OBJ_DIR)/%.o : $(TEST_DIR)/%.cpp
 	@[ -d $(OBJ_DIR) ] || mkdir -p $(OBJ_DIR)
 	$(COMPILER) $(CFLAGS) $(INCLUDE) -c $< -o $@
 

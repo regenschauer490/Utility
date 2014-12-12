@@ -44,9 +44,11 @@ void SortTest()
 
 	assert_foreach(identity_t(), sorted2, reverse(std::get<0>(test1)));
 
+#if SIG_ENABLE_MOVEITERATOR
 	// move
 	const auto swi4 = sort_with_index(std::move(data4), [](TestInt const& l, TestInt const& r){ return l.value() < r.value(); });
 	assert(data4[0].empty() && data4[8].empty());
+#endif
 }
 
 void ShuffleTest()

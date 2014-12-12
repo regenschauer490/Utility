@@ -99,7 +99,13 @@ void ContainerTraitsEffectiveTest()
 	using sig::operator*;
 #endif
 
-	Sleep(1000);
+#if SIG_MSVC_ENV
+	auto tsleep = [](unsigned milisec){ Sleep(milisec); };
+#else
+	auto tsleep = [](unsigned milisec){ usleep(milisec*1000); };
+#endif
+
+	tsleep(1000);
 
 // vector
 	{
@@ -127,7 +133,7 @@ void ContainerTraitsEffectiveTest()
 		std::cout << "reserve vec time: " << tw2.get_total_time<std::chrono::microseconds>() / L << std::endl;
 	}
 
-	Sleep(1000);
+	tsleep(1000);
 
 //u-set
 	{
@@ -167,7 +173,7 @@ void ContainerTraitsEffectiveTest()
 		hist2.print();
 	}
 
-	Sleep(1000);
+	tsleep(1000);
 
 	{
 		US us1;
@@ -214,7 +220,7 @@ void ContainerTraitsEffectiveTest()
 		hist2.print();
 	}
 
-	Sleep(1000);
+	tsleep(1000);
 
 // u-map
 	{
@@ -248,7 +254,7 @@ void ContainerTraitsEffectiveTest()
 		std::cout << "reserve u-map write time: " << tw2.get_total_time<std::chrono::milliseconds>() / L << std::endl;
 	}
 
-	Sleep(1000);
+	tsleep(1000);
 
 	{
 		UM um1;

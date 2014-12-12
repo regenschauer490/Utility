@@ -80,6 +80,7 @@ void ZipWithTest()
 	}
 	}
 
+#if SIG_ENABLE_MOVEITERATOR
 	// move test
 	const std::vector<std::vector<int>> ddata1{ std::vector<int>{1, 2}, std::vector<int>{3, 4} };
 	std::vector<std::vector<int>> ddata2{ std::vector<int>{1, 2}, std::vector<int>{3, 4} };
@@ -87,7 +88,7 @@ void ZipWithTest()
 	auto ht = zipWith([](std::vector<int> const& a, std::vector<int>&& b){ auto t = std::move(b); return a[0] + t[1]; }, ddata1, std::move(ddata2));
 	assert(!ddata1[0].empty());
 	assert(ddata2[1].empty());
-
+#endif
 }
 
 void FunctionalTest()
@@ -107,7 +108,7 @@ void FunctionalTest()
 		assert(fl1 == sum(data0));
 		assert(fl2 == std::accumulate(std::begin(data2), std::end(data2), 0.0, [](double sum, int v){ return sum + v * 0.5; }));
 
-#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || SIG_MSVC_ENV
+#if SIG_ENABLE_FOLDR
 
 		int fl0 = foldl(std::minus<int>(), 1, array<int, 3>{ 2, 3, 4 }); //((1-2)-3)-4
 		int fr0 = foldr(std::minus<int>(), 4, array<int, 3>{ 1, 2, 3 }); //1-(2-(3-4))
@@ -164,6 +165,7 @@ void FunctionalTest()
 
 	/// zip, unzip (move and const& ver)
 	{
+#if SIG_ENABLE_MOVEITERATOR
 		//move ver
 		auto mdata1 = data1;
 		auto mdata2 = data2;
@@ -189,7 +191,7 @@ void FunctionalTest()
 			assert(std::get<0>(t) == v1 && std::get<1>(t) == v2); return 0;
 		}, data1, data2, rezipped);
 #endif
-
+#endif
 		//const ver
 		const auto czipped = zip(data1, data2, data3, data4);	//std::vector< std::tuple<int, int, int, int>>
 
@@ -204,11 +206,11 @@ void FunctionalTest()
 		for_each(DebugEqual(), data3, std::get<2>(cunzipped));
 		for_each(DebugEqual(), data4, std::get<3>(cunzipped));
 
-#if SIG_GCC_GT4_9_0 || !(SIG_MSVC_VER <= 140)
-		auto crezipped = zip(cunzipped);		//std::vector< std::tuple<int, int, int, int>>
+#if SIG_ENABLE_TUPLE_ZIP
+		auto rezipped = zip(cunzipped);		//std::vector< std::tuple<int, int, int, int>>
 
 		variadicZipWith([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){
-			ssert(std::get<0>(t) == v1 && std::get<1>(t) == v2 && std::get<2>(t) == v3 && std::get<3>(t) == v4); return 0;
+			assert(std::get<0>(t) == v1 && std::get<1>(t) == v2 && std::get<2>(t) == v3 && std::get<3>(t) == v4); return 0;
 		}, data1, data2, data3, data4, rezipped);
 #endif
 	}
@@ -271,9 +273,11 @@ void FunctionalTest()
 		decltype(data1d) ma3 = merge(ar1, data1d);
 		decltype(data1d) ma4 = merge(data1d, ar1);
 
+#if SIG_ENABLE_MOVEITERATOR
 		auto mmm = merge<std::set<double, std::greater<double>>>(ar3, ar1);
 		auto ma1m = merge(ar1, std::move(ar2));
 		assert(ar2[0].empty() && ar2[3].empty());
+#endif
 	}
 
 	/// take top n elements
@@ -283,15 +287,18 @@ void FunctionalTest()
 		auto t2 = take(3, data2);
 		auto t3 = take(4, data3);
 
-		std::vector<TestInt> vec{ 1, 2, 3 };
-		auto t4 = take(2, std::move(vec));
-
 		for_each(DebugEqual(), t0, array<int, 1>{ 1 });
 		for_each(DebugEqual(), t1, array<int, 2>{ 1, -3 });
 		for_each(DebugEqual(), t2, array<int, 3>{ 1, -3, 5 });
 		for_each(DebugEqual(), t3, array<int, 4>{ -3, 1, 2, 5 });
+
+#if SIG_ENABLE_MOVEITERATOR
+		std::vector<TestInt> vec{ 1, 2, 3 };
+		auto t4 = take(2, std::move(vec));
+
 		for_each(DebugEqual(), t4, array<int, 2>{ 1, 2 });
 		assert(vec[0].empty() && vec[1].empty());
+#endif
 	}
 
 	/// drop top n elements

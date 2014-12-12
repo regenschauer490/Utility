@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_RANDOM_HPP
 #define SIG_UTIL_RANDOM_HPP
 
-#include "../sigutil.hpp"
+#include "../helper/container_traits.hpp"
 #include <random>
 
 
@@ -32,7 +32,7 @@ class SimpleRandom
 {
 	mutable Engine engine_;		// 乱数生成アルゴリズム 
 	
-	typename std::conditional <
+	mutable typename std::conditional <
 		std::is_integral<T>::value,
 		std::uniform_int_distribution<T>,
 		std::uniform_real_distribution<T>

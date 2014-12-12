@@ -36,16 +36,22 @@ namespace sig
 	\endcode
 */
 template <class... Cs
-#if !(SIG_MSVC_VER <= 140)
-	, typename std::enable_if< And(impl::container_traits<Cs>::exist...) >::type*& = enabler
+#if (SIG_MSVC_ENV && !(SIG_MSVC_VER <= 140)) || (SIG_GCC_ENV) || (SIG_CLANG_ENV)
+	, typename std::enable_if< And(impl::container_traits<typename impl::remove_const_reference<Cs>::type>::exist...) >::type*& = enabler
 #endif
 	>
 auto zip(Cs&&... lists)
 {
 	return variadicZipWith(
-		[&](typename impl::forward_element<Cs>::type... vs){
+#if SIG_ENABLE_MOVEITERATOR
+		[](typename impl::forward_element<Cs>::type... vs){
 			return std::make_tuple(std::forward<typename impl::forward_element<Cs>::type>(vs)...);
 		},
+#else
+		[](typename impl::container_traits<typename impl::remove_const_reference<Cs>::type>::value_type... vs){
+			return std::make_tuple(vs...);
+		},
+#endif
 		std::forward<Cs>(lists)...
 	);
 }
@@ -136,7 +142,7 @@ auto unzip(CT&& c_tuple)
 }
 
 
-#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_TUPLE_ZIP
 namespace impl
 {
 	template <class TC, size_t... Is>
@@ -158,10 +164,18 @@ namespace impl
 	\code
 	\endcode
 */
-template <class... Cs, class Indices = std::make_index_sequence<sizeof...(Cs)>
+template <class... Cs>
+auto zip(std::tuple<Cs...> const& t_lists)
+{
+	using Indices = std::make_index_sequence<sizeof...(Cs)>;
+	return impl::zipImpl_(t_lists, Indices());
+}
+
+template <class... Cs>
 auto zip(std::tuple<Cs...>&& t_lists)
 {
-	return impl::zipImpl_(std::forward<Cs...>(t_lists), Indices());
+	using Indices = std::make_index_sequence<sizeof...(Cs)>;
+	return impl::zipImpl_(std::move(t_lists), Indices());
 }
 #endif
 

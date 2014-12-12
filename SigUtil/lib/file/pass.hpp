@@ -10,12 +10,13 @@ http://opensource.org/licenses/mit-license.php
 
 #include "../helper/helper_modules.hpp"
 #include "../helper/maybe.hpp"
-
+#include "../string/manipulate.hpp"
 
 #if SIG_MSVC_ENV
 #define NOMINMAX
 	#include <windows.h>
 #elif SIG_USE_BOOST_FILESYSTEM
+	#include "../string/regex.hpp"
 	#include <boost/filesystem.hpp>
 	namespace fs = boost::filesystem;
 #endif
@@ -116,13 +117,13 @@ inline auto get_file_names(
 			auto leaf = sig::split(it->path().wstring(), L"/").back();
 			if (extension.empty()) result.push_back(leaf);
 			else{
-				auto query = L".*(" + escape_regex(extension) + L")";
+				auto query = L".*(" + sig::escape_regex(extension) + L")";
 				auto ext = sig::regex_search(leaf, SIG_WRegex(query));
-				if (is_container_valid(ext) && fromJust(ext)[0][1] == extension) result.push_back(leaf);
+				if (isJust(ext) && fromJust(ext)[0][1] == extension) result.push_back(leaf);
 			}
 		}
 	}
-	return Just<ResultType>::type(std::move(result));
+	return Just<ResultType>(std::move(result));
 #else
 	std::cout << "I don't support this envirnment which is default. please include boost if any." << std::endl; 
 	assert(false);

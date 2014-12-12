@@ -150,19 +150,20 @@ auto cat_impl(
 */
 template <class C,
 	class CR = typename impl::remove_const_reference<C>::type,
-	class S = impl::SStreamSelector< typename impl::container_traits<CR>::value_type>::string
+	class S = typename impl::SStreamSelector<typename impl::container_traits<CR>::value_type>::string
 >
 auto cat(
 	C&& container,
-	typename std::identity<S>::type const& delimiter,
+	typename sig::impl::identity<S>::type const& delimiter,
 	std::locale osstream_locale = std::locale(""))
 ->S
 {
+	typename impl::SStreamSelector<S>::ostringstream oss;
 	return impl::cat_impl(
 		impl::begin(std::forward<C>(container)),
 		impl::end(std::forward<C>(container)),
 		delimiter,
-		typename impl::SStreamSelector<S>::ostringstream{},
+		oss,
 		osstream_locale
 	);
 }
@@ -175,15 +176,16 @@ auto cat(
 template <class T, class S = typename impl::SStreamSelector<T>::string>
 auto cat(
 	std::initializer_list<T> container,
-	typename std::identity<S>::type const& delimiter,
+	typename sig::impl::identity<S>::type const& delimiter,
 	std::locale osstream_locale = std::locale(""))
 ->S
 {
+	typename impl::SStreamSelector<S>::ostringstream oss;
 	return impl::cat_impl(
 		impl::begin(container),
 		impl::end(container),
 		delimiter,
-		typename impl::SStreamSelector<T>::ostringstream{},
+		oss,
 		osstream_locale
 	);
 }

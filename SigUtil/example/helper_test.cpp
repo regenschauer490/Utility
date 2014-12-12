@@ -254,7 +254,7 @@ void TestHelperModules()
 	static_assert(sig::less(0, 1), "");
 
 	//function object test
-	assert(sig::identity_t()(1) == 1, "");
+	assert(sig::identity_t()(1) == 1);
 	assert(sig::increment_t()(1) == 2);
 	assert(sig::decrement_t()(1) == 0);
 

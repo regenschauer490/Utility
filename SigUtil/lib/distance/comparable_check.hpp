@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_COMPARE_CHECK_HPP
 #define SIG_UTIL_COMPARE_CHECK_HPP
 
-#include "../sigutil.hpp"
+#include "../helper/helper_modules.hpp"
 
 namespace sig
 {

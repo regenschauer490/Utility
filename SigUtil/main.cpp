@@ -58,10 +58,6 @@ int main()
 	StrConvertTest();
 	ZenHanTest();
 
-	//file.hpp test
-	GetDirectoryNamesTest();
-	FileSaveLoadTest();
-
 	//modify.hpp test
 	SortTest();
 	ShuffleTest();
@@ -90,6 +86,10 @@ int main()
 
 	//convergence.hpp
 	ConvergenceTest();
+
+	//file.hpp test
+	GetDirectoryNamesTest();
+	FileSaveLoadTest();
 
 	return 0;
 }

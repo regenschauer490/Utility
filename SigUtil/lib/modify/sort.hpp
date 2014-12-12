@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIG_UTIL_SORT_HPP
 #define SIG_UTIL_SORT_HPP
 
-#include "../sigutil.hpp"
+#include "../helper/type_traits.hpp"
 #include "../functional/zip.hpp"
 #include "../functional/rest.hpp"
 

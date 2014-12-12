@@ -117,11 +117,10 @@ void CatStrTest()
 
 void StrConvertTest()
 {
-#if SIG_MSVC_ENV	// windows + VisualStudio 環境
-
 	const auto sjis_text_pass = raw_pass + SIG_TO_FPSTR("shift_jis.txt");
 	const auto utf8_text_pass = raw_pass + SIG_TO_FPSTR("utf8.txt");
 
+#if SIG_MSVC_ENV	// windows + VisualStudio 環境
 	const auto sjis = fromJust(load_line(sjis_text_pass));
 	const auto utf8 = fromJust(load_line(utf8_text_pass));
 
@@ -158,7 +157,7 @@ void StrConvertTest()
 #endif
 
 #elif SIG_GCC_ENV	// g++
-	const auto utf8 = fromJust( load_line<std::string>("../SigUtil/example/test_file/utf8.txt"));
+	const auto utf8 = fromJust( load_line<std::string>(utf8_text_pass));
 
 	// マルチ文字 <-> ワイド文字 変換
 	std::wstring	wstr = str_to_wstr(utf8[1]);

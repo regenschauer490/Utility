@@ -9,7 +9,8 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_UTIL_BLAS_HPP
 
 #include "../helper/maybe.hpp"
-#include "../helper/container_traits.hpp"
+#include "../helper/container_helper.hpp"
+#include "../helper/helper_modules.hpp"
 
 #ifdef SIG_ENABLE_BOOST
 
@@ -169,7 +170,7 @@ auto to_vector_ublas(C const& vec) ->vector_u<T>
 }
 
 /// STLのvectorの2次元配列 から ublas::matrix<T> へ変換
-template <class CC, class T = typename impl::container_traits<impl::container_traits<CC>::value_type>::value_type>
+template <class CC, class T = typename impl::container_traits<typename impl::container_traits<CC>::value_type>::value_type>
 auto to_matrix_ublas(CC const& mat) ->matrix_u<T>
 {
 	using C = typename impl::container_traits<CC>::value_type;
@@ -321,7 +322,7 @@ auto map_m(F&& func, M&& mat)
 template <class F, class V, class... Vs>
 void for_each_v(F&& func, V& vec, Vs&&... vecs)
 {
-	const uint length = min(vec.size(), vecs.size()...);
+	const uint length = sig::min(vec.size(), vecs.size()...);
 	iterative_assign(length, std::forward<F>(func), impl::begin(vec), impl::begin(std::forward<Vs>(vecs))...);
 }
 

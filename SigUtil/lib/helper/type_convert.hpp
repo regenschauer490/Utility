@@ -28,21 +28,6 @@ struct plus_t
 };
 
 
-// string type to associated in regex type
-template <class T>
-struct Str2RegexSelector{};
-template <>
-struct Str2RegexSelector<std::string>{
-	typedef SIG_Regex regex;
-	typedef SIG_SMatch smatch;
-};
-template <>
-struct Str2RegexSelector<std::wstring>{
-	typedef SIG_WRegex regex;
-	typedef SIG_WSMatch smatch;
-};
-
-
 // out/in type to stream (mainly filestream)
 template <class FILE_STRING>
 struct FStreamSelector{

@@ -19,6 +19,7 @@ extern void* enabler;
 
 namespace impl{
 
+#if SIG_ENABLE_MOVEITERATOR
 template <class C,
 	class RC = typename impl::remove_const_reference<C>::type,
 	typename std::enable_if<std::is_same<C, RC>::value>::type *& = enabler,	// C is not const and not lvalue-reference
@@ -37,7 +38,6 @@ auto begin(C&& c) ->decltype(std::begin(c))
 {
 	return std::begin(c);
 }
-
 
 template <class C,
 	class RC = typename impl::remove_const_reference<C>::type,
@@ -58,7 +58,21 @@ auto end(C&& c) ->decltype(std::end(c))
 	return std::end(c);
 }
 
+#else
+template <class C>
+auto begin(C&& c) ->decltype(std::begin(c))
+{
+	return std::begin(c);
+}
 
+template <class C>
+auto end(C&& c) ->decltype(std::end(c))
+{
+	return std::end(c);
+}
+#endif
+
+#if SIG_MSVC_ENV || (SIG_GCC_ENV && SIG_GCC_GT5_0_0) || (SIG_CLANG_ENV)
 template <class C,
 	class RC = typename impl::remove_const_reference<C>::type,
 	typename std::enable_if<std::is_same<C, RC>::value>::type *& = enabler,
@@ -97,6 +111,7 @@ auto rend(C&& c) ->decltype(std::rend(c))
 {
 	return std::rend(c);
 }
+#endif
 
 
 template<class It>
@@ -114,7 +129,7 @@ void increment_iterator(It&& iter, Its&&... iterators)
 
 // コンテナの型に対応した要素型を得る
 // ex: vector<T> const& -> T const&,	list<T>&& -> T&&
-template <class C>
+template <class C, typename std::enable_if<container_traits<typename remove_const_reference<C>::type>::exist>::type*& = enabler>
 struct forward_element
 {
 private:
@@ -125,7 +140,7 @@ private:
 	using CT = typename std::conditional<
 		std::is_const<R1>::value,
 		typename std::add_const<ET>::type,
-		typename ET
+		ET
 	>::type;	// add const
 
 	using CRT = typename std::conditional<

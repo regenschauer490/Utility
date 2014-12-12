@@ -47,9 +47,11 @@ http://opensource.org/licenses/mit-license.php
 	#endif
 
 #elif SIG_GCC_ENV
-	#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)
+	#if __GNUC__ > 4 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 0)
+	#define SIG_GCC_GT5_0_0 1
+	#elif (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)
 	#define SIG_GCC_GT4_9_0 1
-	#elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
+	#elif (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)
 	#define SIG_GCC_GT4_8_0 1
 	#endif
 
@@ -60,6 +62,16 @@ http://opensource.org/licenses/mit-license.php
 	#define SIG_CLANG_GT_3_5 1
 	#endif
 #endif
+
+
+#define SIG_ENABLE_CONSTEXPR (SIG_MSVC_ENV && SIG_MSVC_VER > 140) || (SIG_GCC_ENV) || (SIG_CLANG_ENV)
+
+#define SIG_ENABLE_MOVEITERATOR (SIG_MSVC_ENV) || (SIG_GCC_ENV && SIG_GCC_GT5_0_0) || (SIG_CLANG_ENV)
+
+#define SIG_ENABLE_FOLDR SIG_MSVC_ENV || SIG_GCC_GT5_0_0 || SIG_CLANG_GT_3_5
+
+#define SIG_ENABLE_TUPLE_ZIP (SIG_MSVC_VER > 140) || SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5
+
 
 #include <assert.h>
 #include <string>
@@ -131,24 +143,6 @@ using std::placeholders::_2;
 	inline void FileOpenErrorPrint(FilepassString const& pass){ std::cout << "file open error: " << pass << std::endl; }
 	#define SIG_TO_FPSTR(str) str
 	#define SIG_USE_BOOST_FILESYSTEM 1
-#endif
-
-
-// 正規表現ライブラリの指定 (gcc標準はバグが多いため避ける)
-#if !SIG_MSVC_ENV && SIG_ENABLE_BOOST
-	using SIG_Regex = boost::regex;
-	using SIG_WRegex = boost::wregex;
-	using SIG_SMatch = boost::smatch;
-	using SIG_WSMatch = boost::wsmatch;
-	#define SIG_RegexSearch boost::regex_search
-	#define SIG_RegexReplace boost::regex_replace
-#else
-	using SIG_Regex = std::regex;
-	using SIG_WRegex = std::wregex;
-	using SIG_SMatch = std::smatch;
-	using SIG_WSMatch = std::wsmatch;
-	#define SIG_RegexSearch std::regex_search
-	#define SIG_RegexReplace std::regex_replace
 #endif
 
 

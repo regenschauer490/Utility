@@ -109,7 +109,7 @@ private:
 		else offset2.append(keta - 3, ' ');*/
 
 		ofs << "\n-- Histgram --\n";
-		for (int i = 0; i < Bin + 2; ++i){
+		for (uint i = 0; i < Bin + 2; ++i){
 			auto low = delta_*(i - 1) + min_;
 			auto high = delta_*i + min_;
 

@@ -2,8 +2,8 @@
 #include "../lib/helper/container_traits.hpp"
 
 
-// ƒ†[ƒU’è‹`ƒNƒ‰ƒX‚ÉƒCƒeƒŒ[ƒ^‚ğ•Ô‚·begin, endƒƒ“ƒoŠÖ”‚ğ’è‹`‚µA
-// sig–¼‘O‹óŠÔ‚Å“Áê‰»‚·‚é‚±‚Æ‚Åƒ‰ƒCƒuƒ‰ƒŠ“à‚ÌƒRƒ“ƒeƒi‚ğó‚¯æ‚éŠÖ”‚ªg—p‰Â”\‚É‚È‚é
+// ãƒ¦ãƒ¼ã‚¶å®šç¾©ã‚¯ãƒ©ã‚¹ã«ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã‚’è¿”ã™begin, endãƒ¡ãƒ³ãƒé–¢æ•°ã‚’å®šç¾©ã—ã€
+// sigåå‰ç©ºé–“ã§ç‰¹æ®ŠåŒ–ã™ã‚‹ã“ã¨ã§ãƒ©ã‚¤ãƒ–ãƒ©ãƒªå†…ã®ã‚³ãƒ³ãƒ†ãƒŠã‚’å—ã‘å–ã‚‹é–¢æ•°ãŒä½¿ç”¨å¯èƒ½ã«ãªã‚‹
 template <class T>
 class MyVector3
 {
@@ -15,16 +15,17 @@ public:
 	auto begin() const ->decltype(vec_.begin()){ return vec_.begin(); }
 	auto end() const ->decltype(vec_.end()){ return vec_.end(); }
 
-	size_t size() const{ return 3; }	// ‚±‚ê‚à‚ ‚Á‚½•û‚ª‚¢‚¢
+	size_t size() const{ return 3; }	// ã“ã‚Œã‚‚ã‚ã£ãŸæ–¹ãŒã„ã„
 };
 
 namespace sig
 {
-	// ƒRƒ“ƒeƒi‚Ì«¿‚É‡‚í‚¹‚ÄA“KØ‚É“Áê‰»‚·‚éƒNƒ‰ƒX‚ğ‘I‚Ô‚±‚Æ‚ğ„§
+namespace impl{
+	// ã‚³ãƒ³ãƒ†ãƒŠã®æ€§è³ªã«åˆã‚ã›ã¦ã€é©åˆ‡ã«ç‰¹æ®ŠåŒ–ã™ã‚‹ã‚¯ãƒ©ã‚¹ã‚’é¸ã¶ã“ã¨ã‚’æ¨å¥¨
 	template<template<class> class C, class T>
-	struct impl::static_container_traits<C<T>>
+	struct static_container_traits<C<T>>
 	{
-		static const bool exist = true;		// “Áê‰»‚Å‚«‚Ä‚¢‚é‚©
+		static const bool exist = true;		// ç‰¹æ®ŠåŒ–ã§ãã¦ã„ã‚‹ã‹
 
 		using value_type = T;
 
@@ -37,12 +38,12 @@ namespace sig
 		}
 	};
 
-	// “Áê‰»‚µ‚½ƒNƒ‰ƒX‚ğcontainer_traits‚ÉŒp³(“o˜^ì‹Æ)
+	// ç‰¹æ®ŠåŒ–ã—ãŸã‚¯ãƒ©ã‚¹ã‚’container_traitsã«ç¶™æ‰¿(ç™»éŒ²ä½œæ¥­)
 	template<class... Args>
-	struct impl::container_traits<MyVector3<Args...>> : public static_container_traits<MyVector3<Args...>>
+	struct container_traits<MyVector3<Args...>> : public static_container_traits<MyVector3<Args...>>
 	{};
 }
-
+}
 
 void ContainerSpecializeTest()
 {

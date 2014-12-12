@@ -12,7 +12,6 @@ http://opensource.org/licenses/mit-license.php
 #include "../helper/maybe.hpp"
 #include <regex>
 
-
 #if SIG_MSVC_ENV
 #define NOMINMAX
 #include <windows.h>
@@ -27,10 +26,48 @@ http://opensource.org/licenses/mit-license.php
 #define SIG_USE_GLIBCPP 1
 #endif
 
+// 正規表現ライブラリの指定 (gcc標準はバグが多いため避ける)
+#if (!SIG_GCC_ENV)
+	using SIG_Regex = std::regex;
+	using SIG_WRegex = std::wregex;
+	using SIG_SMatch = std::smatch;
+	using SIG_WSMatch = std::wsmatch;
+	#define SIG_RegexSearch std::regex_search
+	#define SIG_RegexReplace std::regex_replace
+#elif SIG_ENABLE_BOOST
+	using SIG_Regex = typename boost::regex;
+	using SIG_WRegex = typename boost::wregex;
+	using SIG_SMatch = typename boost::smatch;
+	using SIG_WSMatch = typename boost::wsmatch;
+	#define SIG_RegexSearch boost::regex_search
+	#define SIG_RegexReplace boost::regex_replace
+#else
+	#define SIG_REGEX_UNABLE 1
+#endif
+
+
 /// \file regex.hpp 正規表現ユーティリティ
 
+#if !SIG_REGEX_UNABLE
 namespace sig
 {
+
+namespace impl
+{
+// string type to associated in regex type
+template <class T>
+struct Str2RegexSelector{};
+template <>
+struct Str2RegexSelector<std::string>{
+	typedef SIG_Regex regex;
+	typedef SIG_SMatch smatch;
+};
+template <>
+struct Str2RegexSelector<std::wstring>{
+	typedef SIG_WRegex regex;
+	typedef SIG_WSMatch smatch;
+};
+}
 
 #if SIG_MSVC_ENV
 
@@ -154,5 +191,5 @@ auto regex_search(
 #endif
 
 }
-
+#endif
 #endif

@@ -48,8 +48,7 @@ auto foldl(F&& func, T&& init, C&& list)
 	return std::accumulate(impl::begin(std::forward<C>(list)), impl::end(std::forward<C>(list)), static_cast<R>(init), std::forward<F>(func));
 }
 
-#if SIG_GCC_GT_4_9 || SIG_CLANG_GT_3_5 || SIG_MSVC_ENV
-
+#if SIG_ENABLE_FOLDR
 /// コンテナの末尾からたたみ込み
 /**
 	(a -> b -> b) -> b0 -> [a] -> b \n

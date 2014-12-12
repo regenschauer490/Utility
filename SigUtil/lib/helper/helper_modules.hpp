@@ -18,7 +18,7 @@ namespace sig
 {
 
 template <class B>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 bool And(B&& cond){
@@ -37,7 +37,7 @@ bool And(B&& cond){
 	\endcode
 */
 template <class B1, class... Bs>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 bool And(B1&& cond, Bs&&... conds){
@@ -46,7 +46,7 @@ bool And(B1&& cond, Bs&&... conds){
 
 
 template <class B>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 bool Or(B&& cond){
@@ -64,7 +64,7 @@ bool Or(B&& cond){
 	\endcode
 */
 template <class B1, class... Bs>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 bool Or(B1&& cond, Bs&&... conds){
@@ -86,7 +86,7 @@ bool Or(B1&& cond, Bs&&... conds){
 	\endcode
 */
 template <class B1, class B2>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 bool Xor(B1&& a, B2&& b){
@@ -107,7 +107,7 @@ bool Xor(B1&& a, B2&& b){
 	\endcode
 */
 template <class B1, class B2>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 bool Consistency(B1&& a, B2&& b){
@@ -116,7 +116,7 @@ bool Consistency(B1&& a, B2&& b){
 
 
 template <class T>
-#if !(SIG_MSVC_VER <= 120)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 auto min(T v) ->T
@@ -125,7 +125,7 @@ auto min(T v) ->T
 }
 
 template <class T1, class T2>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 auto min(T1 v1, T2 v2)
@@ -144,7 +144,7 @@ auto min(T1 v1, T2 v2)
 	\endcode
 */
 template <class T, class... Ts>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 auto min(T v, Ts... vs)
@@ -154,7 +154,7 @@ auto min(T v, Ts... vs)
 
 
 template <class T>
-#if !(SIG_MSVC_VER <= 120)
+#if SIG_ENABLE_CONSTEXPR
 constexpr 
 #endif
 auto max(T v) ->T
@@ -163,7 +163,7 @@ auto max(T v) ->T
 }
 
 template <class T1, class T2>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr 
 #endif
 auto max(T1 v1, T2 v2)
@@ -182,7 +182,7 @@ auto max(T1 v1, T2 v2)
 	\endcode
 */
 template <class T, class... Ts>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 auto max(T v, Ts... vs)
@@ -224,12 +224,12 @@ constexpr bool is_number(T x)
 template <class T>
 constexpr bool is_finite_number(T x)
 {
-	return (x <= DBL_MAX && x >= -DBL_MAX);
+	return (x <= std::numeric_limits<T>::max() && x >= std::numeric_limits<T>::min());
 }
 
 
 template <class T>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 T abs_delta(T v1, T v2)
@@ -249,7 +249,7 @@ T abs_delta(T v1, T v2)
 	\endcode
 */
 template <class T1, class T2>
-#if !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_CONSTEXPR
 constexpr
 #endif
 auto abs_delta(T1 v1, T2 v2) ->decltype(v1 < v2 ? v2 - v1 : v1 - v2)
@@ -279,9 +279,6 @@ auto abs_delta(T1 v1, T2 v2) ->decltype(v1 < v2 ? v2 - v1 : v1 - v2)
 	\endcode
 */
 template <class T1, class T2, typename std::enable_if<!(impl::is_string<T1>::value || impl::is_string<T2>::value)>::type*& = enabler>
-#if !(SIG_MSVC_VER <= 140)
-constexpr
-#endif
 bool equal(T1&& v1, T2&& v2)
 {
 	constexpr uint tolerant_rate = 10000;	//許容範囲の調整 (10^-16 * tolerant_rate)
@@ -404,7 +401,7 @@ constexpr bool less(T1 v1, T2 v2){ return v1 < v2 ? true : false; };
 struct identity_t
 {
 	template <class T>
-#if !(SIG_MSVC_VER == 140)
+#if SIG_ENABLE_CONSTEXPR
 	constexpr
 #endif
 	T operator()(T v) const{ return v; }
@@ -414,7 +411,7 @@ struct identity_t
 struct increment_t
 {
 	template <class T>
-#if !(SIG_MSVC_VER == 140)
+#if SIG_ENABLE_CONSTEXPR
 	constexpr
 #endif
 	T operator()(T v) const{ return ++v; }
@@ -424,7 +421,7 @@ struct increment_t
 struct decrement_t
 {
 	template <class T>
-#if !(SIG_MSVC_VER == 140)
+#if SIG_ENABLE_CONSTEXPR
 	constexpr
 #endif
 	T operator()(T v) const{ return --v; }

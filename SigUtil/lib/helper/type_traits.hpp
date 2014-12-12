@@ -40,6 +40,11 @@ struct is_const
 	static const bool value = std::is_const<typename std::remove_reference<T>::type>::value;
 };
 
+template <class T>
+struct identity
+{
+	using type = T;
+};
 
 template <class C>
 struct has_iterator
@@ -48,7 +53,7 @@ struct has_iterator
 	static const bool value = Detect_iterator<C>::value;
 };
 
-#if !(SIG_MSVC_VER < 120)
+#if (SIG_MSVC_ENV && !(SIG_MSVC_VER < 120)) || (SIG_GCC_ENV) || (SIG_CLANG_ENV)
 template <class C>
 struct has_random_access_iter
 {
