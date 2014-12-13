@@ -1,23 +1,29 @@
-SigUtil (現在開発中 version 1.xx)
+SigUtil (現在開発中 version 0.95)
 =======
 汎用性と使いやすさを重視したC++11ユーティリティ(template ライブラリ).   
-コンテナに対してはboost::rangeのようにイテレータを介さず使用できる.  
-Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため). boost無しの場合、一部使用できない機能あり.
+主にコンテナに対する汎用的な操作と、機械学習や数値計算に便利なモジュールを作成している．
+開発は基本的にVisualStudio環境で行っているが、GCCやClang環境での動作確認も行っており移植性も考慮している．
+boostの機能に依存している部分が多少あり、boostを使用できない場合には一部使用できない機能あり.
 
 #### [ 動作確認環境 ]
-* Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
-* g++ (Ubuntu 4.8.1-2) 4.8.1
-* clang version 3.4-1 (based on LLVM 3.4)
+// Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
+// Visual C++ Compiler 2014 (v140)
+// Visual C++ Compiler 2015 Preview (v140)
+// g++ 4.8
+// g++ 4.9
+// clang 3.4 (based on LLVM 3.4)
 
 #### [ インストール & テスト ]
-ヘッダオンリーなのでSigUtil/libフォルダをコピーするだけで利用できます. boostを使用するかの設定と動作確認のみを行ってください.  
+ヘッダオンリーなのでSigUtil/libフォルダにパスを通して#includeするだけで利用できます. 
+デフォルトではboostを使用する設定になっていますが、使用しない場合は次の処理を行ってください．  
 * SigUtil/lib/sigutil.hpp を開いて「SIG\_ENABLE\_BOOST」の値をboost使用時は1、未使用時は0に設定.
-* SigUtil/main.cpp にテスト項目が列挙されている. テスト内容や使用例は SigUtil/example/\*\*\*.cpp に記述.
 
-コンパイル+テスト実行方法 (xxxはコンパイラのバージョン)
-* Windows: VisualStudio2013(November2013 CTP)以降で project/VisualStudio xxx/SigUtil.sln を起動してコンパイル+実行.
-* Linux: ターミナルで「project/gcc xxx」または「project/clang xxx」下に移動し、「make -f gcc.mk」または「make -f clang.mk」を実行 (事前にINCLUDEやLIBRARYパスは環境に合わせて修正して下さい).
- コンパイルに成功した後は、「./bin/test」でテストを実行.
+動作確認のテストは、以下の操作を行ってください．(xxxはコンパイラのバージョン)
+* VisualStudio環境: VisualStudio2013(November2013 CTP)以降で project/VisualStudio xxx/SigUtil.sln を起動してコンパイル+実行.
+* GCC環境: ターミナルで「project/gcc」下に移動し、「make -f gcc.mk」を実行 (事前に gcc.mk のINCLUDEやLIBRARYパスは環境に合わせて修正して下さい).コンパイルに成功した後は、「./bin/test」でテストを実行.
+* Clang環境: ターミナルで「project/clang」下に移動し、「make -f clang.mk」を実行 (事前に clang.mk のINCLUDEやLIBRARYパスは環境に合わせて修正して下さい). コンパイルに成功した後は、「./bin/test」でテストを実行.
+
+* SigUtil/main.cpp にテスト項目が列挙されています. テスト内容やライブラリの使用例は SigUtil/example/\*\*\*.cpp に記述されています.
 
 #### [ おしながき ]   
 **\<array.hpp>**
