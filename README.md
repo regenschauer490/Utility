@@ -1,22 +1,29 @@
-SigUtil (version 0.90)
+SigUtil (現在開発中 version 0.95)
 =======
 汎用性と使いやすさを重視したC++11ユーティリティ(template ライブラリ).   
-コンテナに対してはboost::rangeのようにイテレータを介さず使用できる.  
-Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため). boost無しの場合、一部使用できない機能あり.
+主にコンテナに対する汎用的な操作と、機械学習や数値計算に便利なモジュールを作成している．
+開発は基本的にVisualStudio環境で行っているが、GCCやClang環境での動作確認も行っており移植性も考慮している．
+boostの機能に依存している部分が多少あり、boostを使用できない場合には一部使用できない機能あり.
 
 #### [ 動作確認環境 ]
-* Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
-* g++ (Ubuntu 4.8.1-2) 4.8.1
-* clang version 3.4-1 (based on LLVM 3.4)
+// Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
+// Visual C++ Compiler 2014 (v140)
+// Visual C++ Compiler 2015 Preview (v140)
+// g++ 4.8
+// g++ 4.9
+// clang 3.4 (based on LLVM 3.4)
 
 #### [ インストール & テスト ]
-ヘッダオンリーなのでlibフォルダをコピーするだけで利用できます. boostを使用するかの設定と動作確認のみを行ってください.  
+ヘッダオンリーなのでSigUtil/libフォルダにパスを通して#includeするだけで利用できます. 
+デフォルトではboostを使用する設定になっていますが、使用しない場合は次の処理を行ってください．  
 * SigUtil/lib/sigutil.hpp を開いて「SIG\_ENABLE\_BOOST」の値をboost使用時は1、未使用時は0に設定.
-* SigUtil/main.cpp にテスト項目が列挙されている. テスト内容や使用例は SigUtil/example/\*\*\*.cpp に記述.
 
-コンパイル+テスト実行方法
-* Windows: VisualStudio2013(November2013 CTPをインストール済み)で SigUtil.sln を起動してコンパイル+実行.
-* Linux: ターミナルでSigUtil下に移動し、「make -f gcc.mk」または「make -f clang.mk」を実行(事前にINCLUDEやLIBRARYパスは環境に合わせて修正して下さい).コンパイルに成功した後は、「../bin/test」でテストを実行.
+動作確認のテストは、以下の操作を行ってください．(xxxはコンパイラのバージョン)
+* VisualStudio環境: VisualStudio2013(November2013 CTP)以降で project/VisualStudio xxx/SigUtil.sln を起動してコンパイル+実行.
+* GCC環境: ターミナルで「project/gcc」下に移動し、「make -f gcc.mk」を実行 (事前に gcc.mk のINCLUDEやLIBRARYパスは環境に合わせて修正して下さい).コンパイルに成功した後は、「./bin/test」でテストを実行.
+* Clang環境: ターミナルで「project/clang」下に移動し、「make -f clang.mk」を実行 (事前に clang.mk のINCLUDEやLIBRARYパスは環境に合わせて修正して下さい). コンパイルに成功した後は、「./bin/test」でテストを実行.
+
+* SigUtil/main.cpp にテスト項目が列挙されています. テスト内容やライブラリの使用例は SigUtil/example/\*\*\*.cpp に記述されています.
 
 #### [ おしながき ]   
 **\<array.hpp>**
@@ -29,6 +36,8 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 * variadicZipWith: map,zipWith の可変長化　(a -> b -> ...) -> [a] -> [b] -> ...
 * foldl: コンテナの先頭からたたみ込み (a -> b -> a) -> a -> [b] -> a
 * foldr: コンテナの末尾からたたみ込み (a -> b -> b) -> b -> [a] -> b
+* filter: コンテナから指定条件を満たす要素を抽出する　(a -> Bool) -> [a] -> [a]
+* partition: コンテナから指定条件を満たす要素とそれ以外要素をそれぞれ抽出する　(a -> Bool) -> [a] -> ([a], [a])
 * zip: 複数のコンテナから、タプルのコンテナを作る　[a] -> [b] -> ... -> [(a, b, ...)]
 * zip: コンテナのタプルから、タプルのコンテナを作る　([a], [b], ...) -> [(a, b, ...)]
 * unzip: タプルのコンテナから、リストのタプルを作る　[(a, b, ...)] -> ([a], [b], ...)
@@ -56,6 +65,10 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 * divides: 汎用的な除算関数
 * sum: 総和を求める関数
 * product: 総乗を求める関数
+* average: 平均を求める関数
+* variance: 分散を求める関数
+* normalize: 正規化を行う関数
+* standardize: 標準化を行う関数
 
 **\<modify.hpp>**
 　コンテナに対する変更操作
@@ -105,6 +118,16 @@ Linux環境ではboostの併用推奨(optional, regex, filesystem 等のため).
 * class TimeWatch: 高機能ストップウォッチ(ラップ、スプリット、一時停止、複数保存)
 * class Histgram: ヒストグラム(データ型指定、ビン数指定、値域指定、出力・保存機能)
 * class Percent: パーセント型
+
+**\<distance.hpp>** 
+　距離・類似度関数
+* norm: Pノルム(L1, L2,...), 最大ノルム
+* minkowski_distance: ミンコフスキー距離(マンハッタン距離, ユークリッド距離,...)
+* canberra_distance: キャンベラ距離
+* binary_distance: バイナリ距離
+* cosine_similarity: コサイン類似度
+* KL_divergence: KL情報量
+* JS_divergence: JS情報量
 
 **\<helper.hpp>**
 　雑多な補助モジュール

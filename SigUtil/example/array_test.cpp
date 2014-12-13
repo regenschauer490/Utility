@@ -1,32 +1,43 @@
 #include "array_test.h"
 #include "debug.hpp"
 
+using namespace sig;
+
 void ArrayTest()
 {
 	//constructor
-	sig::array<int, 5> ar1;
-	sig::array<int, 5> ar2{ 1, 2, 3 };
-	sig::array<int, 5> ar3(3, 1);	//{ 1, 1, 1 }
+	array<TestInt, 5> ar1;
+	array<TestInt, 4> ar2{ 1, 2, 3 };
+	array<TestInt, 5> ar3(3, 1);	//{ 1, 1, 1 }
 
-	std::array<int, 5> stdar = { { 1, 2, 3, 4, 5 } };
-	sig::array<int, 5> ar4{ stdar };
+	std::array<TestInt, 4> stdar = { { 1, 2, 3, 4 } };
+	array<TestInt, 5> ar4{ stdar };
 
-	sig::array<int, 5> ar5{ ar2 };
+	array<TestInt, 5> ar5{ ar2 };
+	array<TestInt, 5> ar6{ std::move(ar5) };
 
-	sig::for_each(sig::DebugEqual(), ar2, std::vector<int>{1, 2, 3});	//test elements
-	sig::for_each(sig::DebugEqual(), ar3, std::vector<int>{1, 1, 1});
-	sig::for_each(sig::DebugEqual(), ar4, stdar);
-	sig::for_each(sig::DebugEqual(), ar5, ar2);
+	assert_foreach(identity_t(), ar2, std::vector<TestInt>{1, 2, 3});	//test elements
+	assert_foreach(identity_t(), ar3, std::vector<TestInt>{1, 1, 1});
+	assert_foreach(identity_t(), ar4, stdar);
+	assert(ar5.size() == 0);
+	assert_foreach(identity_t(), ar6, ar2);
 
 	//copy assignment
 	ar1 = ar2;
-	sig::for_each(sig::DebugEqual(), ar1, ar2);
+	assert_foreach(identity_t(), ar1, ar2);
 
 	ar1 = { 3, 2, 1 };
-	sig::for_each(sig::DebugEqual(), ar1, std::vector<int>{3, 2, 1});
+	assert_foreach(identity_t(), ar1, std::vector<TestInt>{3, 2, 1});
 
 	ar1 = stdar;
-	sig::for_each(sig::DebugEqual(), ar1, stdar);
+	assert_foreach(identity_t(), ar1, stdar);
+
+	//equal
+	auto ar7 = ar6;
+	assert(ar6 == ar7);
+	assert(ar7 == ar6);
+	assert(ar1 != ar7);
+	assert(ar7 != ar1);
 
 	//member functions
 	assert(*ar2.begin() == 1);
@@ -56,17 +67,18 @@ void ArrayTest()
 	assert(!ar2.empty());
 
 	assert(ar2.size() == 3);
-	assert(ar2.max_size() == 5);
+	assert(ar2.max_size() == 4);
 
-	int* raw = ar2.data();
-	std::array<int, 5> stdar2 = ar2.std_array();
+	TestInt* raw = ar2.data();
+	std::array<TestInt, 4> stdar2 = ar2.std_array();
 
 	ar3.fill(2);
-	sig::for_each(sig::DebugEqual(), ar3, std::vector<int>{2, 2, 2, 2, 2});
+	assert_foreach(identity_t(), ar3, std::vector<TestInt>{2, 2, 2, 2, 2});
 
-	ar1.swap(ar2);
-	sig::for_each(sig::DebugEqual(), ar1, ar5);
-	assert(ar2.empty());
+	ar3 = ar2;
+	ar1.swap(ar3);
+	assert_foreach(identity_t(), ar1, ar6);
+	assert(ar3.empty());
 
 	ar1.clear();
 	for (int i=0; i<(int)ar1.max_size(); ++i){
@@ -82,18 +94,19 @@ void ArrayTest()
 	assert(ar1[2] == 2);
 	assert(ar1[3] == 3);
 
-	ar1.insert(ar1.begin()+1, 10);
+	auto it1 = ar1.insert(ar1.begin()+1, 10);
+	assert(*it1 == 10);
 	assert(ar1[0] == 0);
 	assert(ar1[1] == 10);
 	assert(ar1[2] == 1);
 	assert(ar1[3] == 2);
 	assert(ar1[4] == 3);
 
-	ar1.erase(ar1.begin() + 2);
+	auto it2 = ar1.erase(it1 + 1);
+	assert(*it2 == 2);
 	assert(ar1.size() == 4);
 	assert(ar1[0] == 0);
 	assert(ar1[1] == 10);
 	assert(ar1[2] == 2);
 	assert(ar1[3] == 3);
-
 }
