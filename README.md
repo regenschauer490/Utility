@@ -26,7 +26,7 @@ boostの機能に依存している部分が多少あり、boostを使用でき�
 * SigUtil/main.cpp にテスト項目が列挙されています. テスト内容やライブラリの使用例は SigUtil/example/\*\*\*.cpp に記述されています.
 
 #### [ おしながき ]  
-詳細なリファレンスは http://regenschauer490.github.io/Utility/ を参照．以下は簡易リファレンスです．
+詳細なリファレンスは http://regenschauer490.github.io/Utility/ を参照．以下は一覧と概要です．
  
 **\<array.hpp>**
 * class array: std::arrayの利便性を拡張し、固定長なstd::vectorの感覚で使用できる静的配列
