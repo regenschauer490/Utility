@@ -6,12 +6,12 @@ SigUtil (現在開発中 version 0.95)
 boostの機能に依存している部分が多少あり、boostを使用できない場合には一部使用できない機能あり.
 
 #### [ 動作確認環境 ]
-// Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
-// Visual C++ Compiler 2014 (v140)
-// Visual C++ Compiler 2015 Preview (v140)
-// g++ 4.8
-// g++ 4.9
-// clang 3.4 (based on LLVM 3.4)
+- Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
+- Visual C++ Compiler 2014 (v140)
+- Visual C++ Compiler 2015 Preview (v140)
+- g++ 4.8
+- g++ 4.9
+- clang 3.4 (based on LLVM 3.4)
 
 #### [ インストール & テスト ]
 ヘッダオンリーなのでSigUtil/libフォルダにパスを通して#includeするだけで利用できます. 
@@ -26,7 +26,7 @@ boostの機能に依存している部分が多少あり、boostを使用でき�
 * SigUtil/main.cpp にテスト項目が列挙されています. テスト内容やライブラリの使用例は SigUtil/example/\*\*\*.cpp に記述されています.
 
 #### [ おしながき ]  
-*** 詳細なリファレンスは http://regenschauer490.github.io/Utility/ を参照．以下は簡易リファレンスです．
+詳細なリファレンスは http://regenschauer490.github.io/Utility/ を参照．以下は簡易リファレンスです．
  
 **\<array.hpp>**
 * class array: std::arrayの利便性を拡張し、固定長なstd::vectorの感覚で使用できる静的配列
