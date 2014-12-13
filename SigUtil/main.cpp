@@ -14,8 +14,11 @@
 
 /// test completed
 // Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
-// g++ (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1
-// Ubuntu clang version 3.4-1~exp1 (trunk) (based on LLVM 3.4)
+// Visual C++ Compiler 2014 (v140)
+// Visual C++ Compiler 2015 Preview (v140)
+// g++ 4.8
+// g++ 4.9
+// clang 3.4 (based on LLVM 3.4)
 
 
 int main()
