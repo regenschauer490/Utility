@@ -13,6 +13,23 @@ http://opensource.org/licenses/mit-license.php
 
 
 /// \file binary_operation.hpp スカラ変数とベクトル変数(+コンテナの種類)を気にせず使える二項演算関数
+/** \file
+	主に、四則計算をスカラ変数（ex. int a）とベクトル変数（ex. vector<double> v）を区別なくelement-wiseな計算を統一的に記述することが可能になる．\n
+	すなわち、R言語やnumpyの様な記述を行うことができる
+
+	\code
+		int a = 2;
+		std::vector<double> vec{ 1.1, 2.2, 3.3 };
+		sig::array<int, 5> ar{ 1, 2, 3, 4, 5 };
+
+		using sig::operator*;
+
+		auto r1 = a * vec;	// std::vector<double>{ 2.2, 4.4, 6.6 }
+		auto r2 = ar * vec;	// sig::array<double, 5>{ 1.1, 2.2, 9.9, ※, ※ }.　※は未初期化値を意味している.詳しくは array.hpp を参照
+	\endcode
+
+	ただし、計算結果を戻り値として返すため、使用する\ref sig_container がメモリ領域を動的確保するコンテナの場合、速度パフォーマンスを重要視する処理には適していない．
+*/
 
 namespace sig
 {
