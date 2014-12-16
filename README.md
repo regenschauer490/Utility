@@ -6,12 +6,12 @@ SigUtil (現在開発中 version 0.95)
 boostの機能に依存している部分が多少あり、boostを使用できない場合には一部使用できない機能あり.
 
 #### [ 動作確認環境 ]
-// Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
-// Visual C++ Compiler 2014 (v140)
-// Visual C++ Compiler 2015 Preview (v140)
-// g++ 4.8
-// g++ 4.9
-// clang 3.4 (based on LLVM 3.4)
+- Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
+- Visual C++ Compiler 2014 (v140)
+- Visual C++ Compiler 2015 Preview (v140)
+- g++ 4.8
+- g++ 4.9
+- clang 3.4 (based on LLVM 3.4)
 
 #### [ インストール & テスト ]
 ヘッダオンリーなのでSigUtil/libフォルダにパスを通して#includeするだけで利用できます. 
@@ -25,7 +25,9 @@ boostの機能に依存している部分が多少あり、boostを使用でき�
 
 * SigUtil/main.cpp にテスト項目が列挙されています. テスト内容やライブラリの使用例は SigUtil/example/\*\*\*.cpp に記述されています.
 
-#### [ おしながき ]   
+#### [ おしながき ]  
+詳細なリファレンスは http://regenschauer490.github.io/Utility/ を参照．以下は一覧と概要です．
+ 
 **\<array.hpp>**
 * class array: std::arrayの利便性を拡張し、固定長なstd::vectorの感覚で使用できる静的配列
 
@@ -42,33 +44,40 @@ boostの機能に依存している部分が多少あり、boostを使用でき�
 * zip: コンテナのタプルから、タプルのコンテナを作る　([a], [b], ...) -> [(a, b, ...)]
 * unzip: タプルのコンテナから、リストのタプルを作る　[(a, b, ...)] -> ([a], [b], ...)
 * replicate: 値を複製したコンテナを返す　uint -> a -> [a]
-* seq: 等差数列作成(初項, 公差, 項数)　a -> b -> uint -> [common_type(a,b)]
+* seqn: 等差数列作成(初項, 公差, 項数)　a -> b -> uint -> [common_type(a,b)]
 * reverse: コンテナの要素を逆転させたコンテナを返す　[a] -> [a]
 * merge: コンテナの結合　[a] -> [a] -> [a]
 * take: コンテナの先頭からn個を取り出したコンテナを返す uint -> [a] -> [a]
 * drop: コンテナの先頭からn個を削除したコンテナを返す　uint -> [a] -> [a]
 * sort: 任意の比較関数でソートしたコンテナを返す　(a -> a -> bool) -> [a] -> [a]
 
-※対応コンテナ：STL (vector, deque, list, set, multiset, unordered\_set, unordered\_multiset), sig::array
-
 **\<iteration.hpp>**
 　かゆいところに手が届く反復処理関数
 * for\_each: std::for\_eachの可変長版(複数コンテナを反復処理)
 * for\_each: 上記に加えて、添字の設定と使用もできる
-* compound\_assignment: コンテナへの代入演算を述語関数を指定して行う
+* compound_assignment: コンテナへの代入演算
 
 **\<calculation.hpp>**
-　スカラ変数とベクトル変数(+コンテナの種類)を気にせず使える演算関数
+　スカラ変数とベクトル変数を統一的にelement-wiseに計算する関数．および統計処理関数
 * plus: 汎用的な加算関数
+  * operator+: 演算子版
 * minus: 汎用的な減算関数
-* multiplies: 汎用的な乗算関数
-* divides: 汎用的な除算関数
-* sum: 総和を求める関数
-* product: 総乗を求める関数
+  * operator-: 演算子版
+* mult: 汎用的な乗算関数
+  * operator*: 演算子版
+* div: 汎用的な除算関数
+  * operator/: 演算子版
+* sum: 総和を求める関数（各要素に関数適用も可能）
+  * sum_row: 2次元配列形式のコンテナの行の総和を求める
+  * sum_col: 2次元配列形式のコンテナの列の総和を求める
+* product: 総乗を求める関数（各要素に関数適用も可能）
+  * product_row: 2次元配列形式のコンテナの行の総乗を求める
+  * product_col: 2次元配列形式のコンテナの列の総乗を求める
 * average: 平均を求める関数
 * variance: 分散を求める関数
 * normalize: 正規化を行う関数
 * standardize: 標準化を行う関数
+* normalize_dist: 確率分布の正規化を行う関数
 
 **\<modify.hpp>**
 　コンテナに対する変更操作
@@ -87,7 +96,7 @@ boostの機能に依存している部分が多少あり、boostを使用でき�
  * escape\_regex: 正規表現の特殊文字をエスケープ
  * make\_regex: エスケープ処理を行い、regex or wregexを返す (外部取得したテキスト内の文字を使って検索する時などに)
 * split: 文字列をある文字列(デリミタ)を目印に分割する
-* cat\_str: コンテナに格納された全文字列を結合して1つの文字列にする(区切り文字の指定可)
+* cat: コンテナに格納された全文字列を結合して1つの文字列にする(区切り文字の指定可)
 * wstr\_to\_str: ワイド文字 -> マルチバイト文字 (ex: Windows環境では UTF-16 -> Shift-JIS)
 * str\_to\_wstr: マルチバイト文字 -> ワイド文字 (ex: Windows環境では Shift-JIS -> UTF-16)
 * utf8\_to\_utf16: UTF-8 -> UTF-16
@@ -98,7 +107,6 @@ boostの機能に依存している部分が多少あり、boostを使用でき�
 * utf16\_to\_sjis: UTF-16 -> ShiftJIS
 * sjis\_to\_utf8: ShiftJIS -> UTF-8
 * utf8\_to\_sjis: UTF-8 -> ShiftJIS
-* class TagDealer: HTML風にタグをエンコード・デコード
 * class ZenHanReplace: 全角・半角文字の置換処理を行う (アルファベット, カタカナ, 数字)
 
 **\<file.hpp>**
@@ -108,13 +116,16 @@ boostの機能に依存している部分が多少あり、boostを使用でき�
 * clear\_file: ファイル内容の初期化
 * save\_line: 文字列or文字列のコンテナを渡し、1行ずつ保存 
 * save\_num: 数値or数値のコンテナを渡し、改行やデリミタで区切って保存(行列形式の保存も可)
-* read\_line: ファイルから文字列を1行ずつ読み込む
-* read\_num: ファイルから数値を改行やデリミタを目印に読み込む(行列形式の読み込みも可)
+* load\_line: ファイルから文字列を1行ずつ読み込む
+* load\_num: ファイルから数値を改行やデリミタを目印に読み込む
+  * load_num2d 行列形式の数値の読み込み
 
 **\<tool.hpp>** 
 　便利ツール
 * class SimpleRandom: 初期化時に指定した範囲の一様分布乱数を発生(データ型指定、値域指定、乱数生成アルゴリズム指定)
   * random\_unique\_numbers: 重複の無い一様分布の整数乱数を生成(値域指定、個数指定)
+* class ManageConvergence: 反復計算における収束判定と管理を行うクラス
+  * class ManageConvergenceSimple: 収束判定の管理を行うクラス
 * class TimeWatch: 高機能ストップウォッチ(ラップ、スプリット、一時停止、複数保存)
 * class Histgram: ヒストグラム(データ型指定、ビン数指定、値域指定、出力・保存機能)
 * class Percent: パーセント型
@@ -152,3 +163,6 @@ boostの機能に依存している部分が多少あり、boostを使用でき�
 * struct has\_random\_access\_op: ランダムアクセス演算子([ ])をメンバに持っているか判定
 * erase: コンテナ毎のerase処理の差異を吸収するための関数
 * copy: 別のコンテナに要素をコピーする
+
+※対応コンテナ：STL (vector, deque, list, set, multiset, unordered\_set, unordered\_multiset), sig::array
+ 一部制限あり：STL（map, multimap, unordered_map, unordered_multimap）
