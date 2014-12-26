@@ -26,9 +26,12 @@ namespace sig
 	std::vector<int> data2{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 	std::unordered_multiset<int> data3{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 
-	auto removed1 = remove_duplicates(data1);	// { "a", "b", "c" }
-	auto removed2 = remove_duplicates(data2);	// { 1, 5, 3, 0, 4 }
-	auto removed3 = remove_duplicates(data3);	// { 1, 5, 3, 0, 4 } 順不同
+	auto removed1 = remove_duplicates(data1);	// { "a":0, "b":1, "c":0 }
+	data1;										// { "a", "b", "c" }
+	auto removed2 = remove_duplicates(data2);	// { 0:1, 1:1, 3:2, 4:0, 5:0 }
+	data2;										// { 1, 5, 3, 0, 4 }
+	auto removed3 = remove_duplicates(data3);
+	data3;										// { 1, 5, 3, 0, 4 } 順不同
 	\endcode
 */
 template <class C,

@@ -33,7 +33,7 @@ http://opensource.org/licenses/mit-license.php
 #endif
 
 // compiler version check
-#ifdef SIG_MSVC_ENV
+#if SIG_MSVC_ENV
 	#ifdef _DEBUG
 	#define SIG_DEBUG_MODE 1
 	#endif

@@ -25,10 +25,10 @@ namespace sig
 	\return 処理結果のコンテナ [a]（コンテナはlistと同じ種類）
 
 	\code
-	const std::unordered_set<double> data2{ 0, 1.1, -2.2, 3.3 };
+	const std::unordered_set<double> data1{ 0, 1.1, -2.2, 3.3 };
 	array<std::string, 3> data2{ "a", "bbb", "cc" };	// sig::array
 
-	auto fl1 = filter([](int v){ return v % 2; }, data1);
+	auto fl1 = filter([](int v){ return v < 0; }, data1);
 	auto fl2 = filter([](std::string const& v){ return v.length() < 3; }, std::move(data2));
 
 	fl1;	// std::unordered_set<double>{ -2.2 }
