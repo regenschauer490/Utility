@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_DISTANCE_HPP
-#define SIG_UTIL_DISTANCE_HPP
+#ifndef SIGUTIL_DISTANCE_HPP
+#define SIGUTIL_DISTANCE_HPP
 
 #include "distance/norm.hpp"
 #include "distance/minkowski_distance.hpp"

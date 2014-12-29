@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_BLAS_HPP
-#define SIG_UTIL_BLAS_HPP
+#ifndef SIGUTIL_BLAS_HPP
+#define SIGUTIL_BLAS_HPP
 
 #include "../helper/maybe.hpp"
 #include "../helper/container_helper.hpp"

@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_SHUFFLE_HPP
-#define SIG_UTIL_SHUFFLE_HPP
+#ifndef SIGUTIL_SHUFFLE_HPP
+#define SIGUTIL_SHUFFLE_HPP
 
 #include "../sigutil.hpp"
 #include "../tools/random.hpp"

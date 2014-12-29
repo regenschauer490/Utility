@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_ERROR_CONVERGENCE_HPP
-#define SIG_UTIL_ERROR_CONVERGENCE_HPP
+#ifndef SIGUTIL_ERROR_CONVERGENCE_HPP
+#define SIGUTIL_ERROR_CONVERGENCE_HPP
 
 #include "../sigutil.hpp"
 #include "../distance/norm.hpp"

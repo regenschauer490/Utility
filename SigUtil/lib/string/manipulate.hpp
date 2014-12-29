@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_MANIPULATE_HPP
-#define SIG_UTIL_MANIPULATE_HPP
+#ifndef SIGUTIL_MANIPULATE_HPP
+#define SIGUTIL_MANIPULATE_HPP
 
 #include "../helper/type_convert.hpp"
 #include "../helper/container_helper.hpp"

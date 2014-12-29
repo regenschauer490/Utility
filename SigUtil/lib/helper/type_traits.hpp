@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef _SIG_UTIL_TYPE_TRAITS_HPP
-#define _SIG_UTIL_TYPE_TRAITS_HPP
+#ifndef _SIGUTIL_TYPE_TRAITS_HPP
+#define _SIGUTIL_TYPE_TRAITS_HPP
 
 #include "../sigutil.hpp"
 #include <iterator>

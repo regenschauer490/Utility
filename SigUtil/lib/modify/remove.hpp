@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_REMOVE_HPP
-#define SIG_UTIL_REMOVE_HPP
+#ifndef SIGUTIL_REMOVE_HPP
+#define SIGUTIL_REMOVE_HPP
 
 #include "../sigutil.hpp"
 #include "../helper/container_helper.hpp"

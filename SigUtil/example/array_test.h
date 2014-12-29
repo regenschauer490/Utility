@@ -1,5 +1,5 @@
 #pragma once
 
-#include "../lib/array.hpp"
+#include "../lib/container/array.hpp"
 
 void ArrayTest();

@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_COSINE_SIMILARITY_HPP
-#define SIG_UTIL_COSINE_SIMILARITY_HPP
+#ifndef SIGUTIL_COSINE_SIMILARITY_HPP
+#define SIGUTIL_COSINE_SIMILARITY_HPP
 
 #include <numeric>
 #include "norm.hpp"

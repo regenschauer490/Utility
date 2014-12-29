@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_FUNCTIONAL_HPP
-#define SIG_UTIL_FUNCTIONAL_HPP
+#ifndef SIGUTIL_FUNCTIONAL_HPP
+#define SIGUTIL_FUNCTIONAL_HPP
 
 /// \file functional.hpp 関数型プログラミング サポート
 

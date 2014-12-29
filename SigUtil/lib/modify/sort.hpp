@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_SORT_HPP
-#define SIG_UTIL_SORT_HPP
+#ifndef SIGUTIL_SORT_HPP
+#define SIGUTIL_SORT_HPP
 
 #include "../helper/type_traits.hpp"
 #include "../functional/zip.hpp"

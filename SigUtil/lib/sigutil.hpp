@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_HPP
-#define SIG_UTIL_HPP
+#ifndef SIGUTIL_HPP
+#define SIGUTIL_HPP
 
 /*--------------------------------------- User Option --------------------------------------------------------------------*/
 
@@ -15,7 +15,7 @@ http://opensource.org/licenses/mit-license.php
 
 /*------------------------------------------------------------------------------------------------------------------------*/
 
-#define SIG_UTIL_VERSION 095
+#define SIGUTIL_VERSION 095
 
 #if defined(_WIN32) || defined(_WIN64) // windows env
 	#ifdef _MSC_VER

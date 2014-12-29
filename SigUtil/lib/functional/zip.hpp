@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_ZIP_HPP
-#define SIG_UTIL_ZIP_HPP
+#ifndef SIGUTIL_ZIP_HPP
+#define SIGUTIL_ZIP_HPP
 
 #include "high_order.hpp"
 

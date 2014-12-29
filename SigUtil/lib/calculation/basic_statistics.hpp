@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_STATIC_UTIL_HPP
-#define SIG_UTIL_STATIC_UTIL_HPP
+#ifndef SIGUTIL_STATIC_UTIL_HPP
+#define SIGUTIL_STATIC_UTIL_HPP
 
 #include "../calculation/for_each.hpp"
 

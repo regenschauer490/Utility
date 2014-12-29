@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_REGEX_HPP
-#define SIG_UTIL_REGEX_HPP
+#ifndef SIGUTIL_REGEX_HPP
+#define SIGUTIL_REGEX_HPP
 
 #include "../helper/type_convert.hpp"
 #include "../helper/maybe.hpp"

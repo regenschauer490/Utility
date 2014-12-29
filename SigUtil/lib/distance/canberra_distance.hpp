@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_CANBERRA_DISTANCE_HPP
-#define SIG_UTIL_CANBERRA_DISTANCE_HPP
+#ifndef SIGUTIL_CANBERRA_DISTANCE_HPP
+#define SIGUTIL_CANBERRA_DISTANCE_HPP
 
 #include "../functional/high_order.hpp"
 #include "comparable_check.hpp"

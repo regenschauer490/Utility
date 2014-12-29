@@ -1,5 +1,4 @@
 #include "ublas_test.h"
-#include "../lib/array.hpp"
 #include "../lib/functional/high_order.hpp"
 
 using namespace sig;

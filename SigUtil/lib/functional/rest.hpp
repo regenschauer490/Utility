@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_REST_HPP
-#define SIG_UTIL_REST_HPP
+#ifndef SIGUTIL_REST_HPP
+#define SIGUTIL_REST_HPP
 
 #include "../helper/helper_modules.hpp"
 #include "../helper/container_helper.hpp"

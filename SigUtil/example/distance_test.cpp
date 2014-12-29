@@ -1,5 +1,4 @@
 #include "distance_test.h"
-#include "../lib/array.hpp"
 #include "../lib/calculation/for_each.hpp"
 
 using namespace sig;

@@ -148,6 +148,7 @@
     <ClCompile Include="..\..\SigUtil\example\helper_test.cpp" />
     <ClCompile Include="..\..\SigUtil\example\maybe_test.cpp" />
     <ClCompile Include="..\..\SigUtil\example\modify_test.cpp" />
+    <ClCompile Include="..\..\SigUtil\example\rating_matrix_test.cpp" />
     <ClCompile Include="..\..\SigUtil\example\string_test.cpp" />
     <ClCompile Include="..\..\SigUtil\example\tool_test.cpp" />
     <ClCompile Include="..\..\SigUtil\example\ublas_test.cpp" />
@@ -164,16 +165,18 @@
     <ClInclude Include="..\..\SigUtil\example\helper_test.h" />
     <ClInclude Include="..\..\SigUtil\example\maybe_test.h" />
     <ClInclude Include="..\..\SigUtil\example\modify_test.h" />
+    <ClInclude Include="..\..\SigUtil\example\rating_matrix_test.h" />
     <ClInclude Include="..\..\SigUtil\example\string_test.h" />
     <ClInclude Include="..\..\SigUtil\example\tool_test.h" />
     <ClInclude Include="..\..\SigUtil\example\ublas_test.h" />
-    <ClInclude Include="..\..\SigUtil\lib\array.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\calculation.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\calculation\for_each.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\calculation\ublas.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\calculation\assign_operation.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\calculation\binary_operation.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\calculation\basic_statistics.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\container\array.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\container\rating_matrix.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\distance.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\distance\binary_distance.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\distance\canberra_distance.hpp" />

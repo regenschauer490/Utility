@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef _SIG_UTIL_TYPE_CONVERT_HPP
-#define _SIG_UTIL_TYPE_CONVERT_HPP
+#ifndef _SIGUTIL_TYPE_CONVERT_HPP
+#define _SIGUTIL_TYPE_CONVERT_HPP
 
 #include "type_traits.hpp"
 

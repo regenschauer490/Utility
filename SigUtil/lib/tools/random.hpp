@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_RANDOM_HPP
-#define SIG_UTIL_RANDOM_HPP
+#ifndef SIGUTIL_RANDOM_HPP
+#define SIGUTIL_RANDOM_HPP
 
 #include "../helper/container_traits.hpp"
 #include <random>

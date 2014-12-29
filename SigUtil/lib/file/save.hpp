@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_SAVE_HPP
-#define SIG_UTIL_SAVE_HPP
+#ifndef SIGUTIL_SAVE_HPP
+#define SIGUTIL_SAVE_HPP
 
 #include "../helper/helper_modules.hpp"
 #include "../helper/maybe.hpp"

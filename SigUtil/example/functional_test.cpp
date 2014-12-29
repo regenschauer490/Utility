@@ -1,6 +1,5 @@
 #include "functional_test.h"
 #include "debug.hpp"
-#include "../lib/array.hpp"
 #include "../lib/calculation.hpp"
 
 using namespace sig;

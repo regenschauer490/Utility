@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_REPLACE_HPP
-#define SIG_UTIL_REPLACE_HPP
+#ifndef SIGUTIL_REPLACE_HPP
+#define SIGUTIL_REPLACE_HPP
 
 #include "../sigutil.hpp"
 #include <unordered_map>

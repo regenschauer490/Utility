@@ -30,7 +30,7 @@ http://opensource.org/licenses/mit-license.php
 #include <unordered_map>
 #include <initializer_list>
 
-#include "../array.hpp"
+#include "../container/array.hpp"
 
 
 /** \page sig_container 対応コンテナ

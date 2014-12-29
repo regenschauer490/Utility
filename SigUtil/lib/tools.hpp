@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_TOOL_HPP
-#define SIG_UTIL_TOOL_HPP
+#ifndef SIGUTIL_TOOL_HPP
+#define SIGUTIL_TOOL_HPP
 
 /* 便利ツール */
 

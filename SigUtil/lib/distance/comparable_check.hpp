@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_COMPARE_CHECK_HPP
-#define SIG_UTIL_COMPARE_CHECK_HPP
+#ifndef SIGUTIL_COMPARE_CHECK_HPP
+#define SIGUTIL_COMPARE_CHECK_HPP
 
 #include "../helper/helper_modules.hpp"
 

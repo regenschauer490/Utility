@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_TIMEWATCH_HPP
-#define SIG_UTIL_TIMEWATCH_HPP
+#ifndef SIGUTIL_TIMEWATCH_HPP
+#define SIGUTIL_TIMEWATCH_HPP
 
 #include "../sigutil.hpp"
 #include "../helper/maybe.hpp"

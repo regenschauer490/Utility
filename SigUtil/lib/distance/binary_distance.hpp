@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_BINARY_DISTANCE_HPP
-#define SIG_UTIL_BINARY_DISTANCE_HPP
+#ifndef SIGUTIL_BINARY_DISTANCE_HPP
+#define SIGUTIL_BINARY_DISTANCE_HPP
 
 #include "comparable_check.hpp"
 

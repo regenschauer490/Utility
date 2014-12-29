@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_PERCENT_HPP
-#define SIG_UTIL_PERCENT_HPP
+#ifndef SIGUTIL_PERCENT_HPP
+#define SIGUTIL_PERCENT_HPP
 
 #include "../sigutil.hpp"
 

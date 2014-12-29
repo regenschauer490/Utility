@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_NORM_HPP
-#define SIG_UTIL_NORM_HPP
+#ifndef SIGUTIL_NORM_HPP
+#define SIGUTIL_NORM_HPP
 
 #include "comparable_check.hpp"
 #include "../calculation/binary_operation.hpp"

@@ -43,6 +43,9 @@
     <Filter Include="Header Files\modify">
       <UniqueIdentifier>{62e6a472-f8ff-4b64-a61c-653c2ae9f5e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\container">
+      <UniqueIdentifier>{d0fe3abe-4b10-4969-9ce6-bc2474a87a26}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\SigUtil\main.cpp">
@@ -84,11 +87,11 @@
     <ClCompile Include="..\..\SigUtil\example\ublas_test.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\SigUtil\example\rating_matrix_test.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\SigUtil\lib\array.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\SigUtil\lib\calculation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -277,6 +280,15 @@
     </ClInclude>
     <ClInclude Include="..\..\SigUtil\lib\calculation\for_each.hpp">
       <Filter>Header Files\calculation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SigUtil\lib\container\array.hpp">
+      <Filter>Header Files\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SigUtil\lib\container\rating_matrix.hpp">
+      <Filter>Header Files\container</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SigUtil\example\rating_matrix_test.h">
+      <Filter>Header Files\test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

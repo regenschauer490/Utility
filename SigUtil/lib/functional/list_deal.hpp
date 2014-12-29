@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_LIST_DEAL_HPP
-#define SIG_UTIL_LIST_DEAL_HPP
+#ifndef SIGUTIL_LIST_DEAL_HPP
+#define SIGUTIL_LIST_DEAL_HPP
 
 #include "../helper/helper_modules.hpp"
 #include "../helper/container_helper.hpp"

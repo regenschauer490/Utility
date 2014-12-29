@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_TAGDEALER_HPP
-#define SIG_UTIL_TAGDEALER_HPP
+#ifndef SIGUTIL_TAGDEALER_HPP
+#define SIGUTIL_TAGDEALER_HPP
 
 #include "../functional/high_order.hpp"
 #include "../string/manipulate.hpp"

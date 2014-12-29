@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIG_UTIL_CALCULATION_HPP
-#define SIG_UTIL_CALCULATION_HPP
+#ifndef SIGUTIL_CALCULATION_HPP
+#define SIGUTIL_CALCULATION_HPP
 
 /* 主に統計的な計算によく利用される演算関数群 */
 
