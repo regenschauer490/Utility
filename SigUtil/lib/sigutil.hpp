@@ -12,6 +12,7 @@ http://opensource.org/licenses/mit-license.php
 
 #define SIG_ENABLE_BOOST 1		// boostが使用可能か
 #define SIG_USE_OPTIONAL 1		// boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが影響する可能性あり)
+#define SIG_PRINT_ERROR_MESSAGE 1	// エラー発生時にメッセージをコンソールに出力するか(ex:ファイル入出力)
 
 /*------------------------------------------------------------------------------------------------------------------------*/
 

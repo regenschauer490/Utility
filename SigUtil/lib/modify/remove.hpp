@@ -57,6 +57,34 @@ auto remove_duplicates(C& container)
 	return removed;
 }
 
+template <class C, class F,
+	class CR = typename impl::remove_const_reference<C>::type,
+	class T_ = typename impl::container_traits<CR>::value_type
+>
+auto remove_duplicates(C& container, F&& get_landmark)
+{
+	using T = decltype(sig::impl::eval(
+		std::forward<F>(get_landmark), std::declval<T_>()
+	));
+
+	std::map<T, uint> removed;
+
+	for (auto it = std::begin(container), end = std::end(container); it != end;) {
+		auto&& lm = get_landmark(*it);
+		if (!removed.count(lm)) {
+			removed[lm] = 0;
+			++it;
+		}
+		else {
+			++removed[lm];
+			it = container.erase(it);
+			end = container.end();
+		}
+	}
+
+	return removed;
+}
+
 #if SIG_ENABLE_BOOST
 #define Sig_Eraser_ParamType1 typename boost::call_traits<typename impl::container_traits<C>::value_type>::param_type
 #else

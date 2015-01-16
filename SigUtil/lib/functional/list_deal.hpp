@@ -227,8 +227,9 @@ auto take(uint n, C&& list) ->CR
 	CR result = impl::container_traits<CR>::make(n);
 	uint i = 0;
 
-	for (auto it = impl::begin(std::forward<C>(list)); i < n; ++i, ++it) impl::container_traits<CR>::add_element(result, *it);
-
+	for (auto it = impl::begin(std::forward<C>(list)), end = impl::end(std::forward<C>(list)); i < n && it != end; ++i, ++it) {
+		impl::container_traits<CR>::add_element(result, *it);
+	}
 	return result;
 }
 

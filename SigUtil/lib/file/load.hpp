@@ -89,7 +89,9 @@ bool load_line(
 	impl::IfsSelector<R> ifs(file_pass);
 
 	if (!ifs){
-		//FileOpenErrorPrint(file_pass);
+#if SIG_PRINT_ERROR_MESSAGE
+		FileOpenErrorPrint(file_pass);
+#endif
 		return false;
 	}
 	return load_line(empty_dest, ifs);
@@ -140,7 +142,9 @@ auto load_line(FilepassString const& file_pass) ->Maybe<C>
 	impl::IfsSelector<ISTR> ifs(file_pass);
 
 	if (!ifs){
-		//FileOpenErrorPrint(file_pass);
+#if SIG_PRINT_ERROR_MESSAGE
+		FileOpenErrorPrint(file_pass);
+#endif
 		return Nothing(C());
 	}
 
