@@ -34,7 +34,8 @@ void GetDirectoryNamesTest()
 		L"histgram1.txt",
 		L"histgram2.txt",
 		L"shift_jis.txt",
-		L"utf8.txt"
+		L"utf8.txt",
+		L"long_text.txt"
 	};
 	const std::set<std::wstring> t_hidden{ L".hidden file linux.txt" };
 	const std::set<std::wstring> t_old_text{ L"test.old.txt" };
@@ -67,11 +68,17 @@ void GetDirectoryNamesTest()
 	auto tttmp = merge(t_old_text, t_noextension);
 	auto t_all_visible = merge(t_text, tttmp);
 
-	assert(all_visible.size() == t_all_visible.size());
+std::cout << all_visible.size() << " " << t_all_visible.size() << std::endl;
+for (auto fn : t_all_visible){
+		std::wcout << fn << std::endl;
+	}
+std::cout << std::endl;
+
 	for (auto fn : all_visible){
 		std::wcout << fn << std::endl;
 		assert(t_all_visible.count(fn));
 	}
+	assert(all_visible.size() == t_all_visible.size());
 	
 	std::cout << std::endl << "[all .txt files]" << std::endl;
 	auto text_visible = fromJust(text_file_names);

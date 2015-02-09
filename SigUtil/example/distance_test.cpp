@@ -75,7 +75,7 @@ void CanberraDistanceTest()
 void BinaryDistanceTest()
 {
 	// element must be an integral-type: bool, uint, int, char,...
-	const array<uint, 4> bdata1{ 1, 1, 0, 0 };
+	const array<sig::uint, 4> bdata1{ 1, 1, 0, 0 };
 	const std::list<bool> bdata2{ true, false, true, true };
 
 	double bindist = binary_distance(bdata1, bdata2);

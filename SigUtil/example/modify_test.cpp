@@ -33,7 +33,7 @@ void SortTest()
 
 	const auto sorted1 = std::get<0>(swi1);
 	const auto original_index1 = std::get<1>(swi1);
-	const auto test1 = std::make_tuple(TVec<int>{ 0, 0, 1, 1, 3, 3, 3, 4, 5}, TVec<uint>{ 4, 6, 0, 7, 2, 3, 8, 5, 1 });
+	const auto test1 = std::make_tuple(TVec<int>{ 0, 0, 1, 1, 3, 3, 3, 4, 5}, TVec<sig::uint>{ 4, 6, 0, 7, 2, 3, 8, 5, 1 });
 
 	assert_foreach(identity_t(), sorted1, std::get<0>(test1));
 	assert_foreach(identity_t(), original_index1, std::get<1>(test1));
@@ -74,12 +74,12 @@ void RemoveDuplicateTest()
 	std::multiset<int, std::greater<int>> data3{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 	std::unordered_multiset<int> data4{ 1, 5, 3, 3, 0, 4, 0, 1, 3 };
 
-	std::map<int, uint> removed1 = remove_duplicates(data1);
+	std::map<int, sig::uint> removed1 = remove_duplicates(data1);
 	auto removed2 = remove_duplicates(data2);
 	auto removed3 = remove_duplicates(data3);
 	auto removed4 = remove_duplicates(data4);
 
-	auto test_remove_duplicates = [](std::map<int, uint>& removed){
+	auto test_remove_duplicates = [](std::map<int, sig::uint>& removed){
 		assert(removed.size() == 5);
 		assert(removed[0] == 1);
 		assert(removed[1] == 1);

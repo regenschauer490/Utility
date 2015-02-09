@@ -216,7 +216,7 @@ void TagDealerTest()
 
 	if (isJust(decoded)){
 		auto dec_v = fromJust(decoded_vec);
-		for (uint i = 0; i< dec_v.size(); ++i) assert((dec_v)[i] == test[i]);
+		for (sig::uint i = 0; i< dec_v.size(); ++i) assert((dec_v)[i] == test[i]);
 	}
 }
 
