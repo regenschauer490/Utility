@@ -34,7 +34,8 @@ void GetDirectoryNamesTest()
 		L"histgram1.txt",
 		L"histgram2.txt",
 		L"shift_jis.txt",
-		L"utf8.txt"
+		L"utf8.txt",
+		L"long_text.txt"
 	};
 	const std::set<std::wstring> t_hidden{ L".hidden file linux.txt" };
 	const std::set<std::wstring> t_old_text{ L"test.old.txt" };

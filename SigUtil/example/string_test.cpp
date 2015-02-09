@@ -38,8 +38,8 @@ void RegexTest()
 	//match[0][0] == tes1a, match[0][1] == 1, match[0][2] == a
 	//match[1][0] == tes2b, match[1][1] == 2, match[1][2] == b
 	TVec2 test3 = { { "tes1a", "1", "a" }, { "tes2b", "2", "b" } };
-	for (uint i=0; i < fromJust(matches1).size(); ++i){
-		for (uint j = 0; j < fromJust(matches1)[i].size(); ++j){
+	for (sig::uint i=0; i < fromJust(matches1).size(); ++i){
+		for (sig::uint j = 0; j < fromJust(matches1)[i].size(); ++j){
 			assert(isJust(matches1) && fromJust(matches1)[i][j] == test3[i][j]);
 		}
 	}
@@ -60,23 +60,23 @@ void SplitTest()
 	auto split1 = split(str, ",");
 
 	TVec test1{ "one", " 2", " 参 " };
-	for (uint i = 0; i<split1.size(); ++i) assert(split1[i] == test1[i]);
+	for (sig::uint i = 0; i<split1.size(); ++i) assert(split1[i] == test1[i]);
 
 	//コンテナ(シーケンス限定)の明示的指定も可
 	auto split2 = split<std::list>(L"https://github.com/regenschauer490/Utility", L"/");
 
 	TVecw test2{ L"https:", L"github.com", L"regenschauer490", L"Utility" };
 	auto sp2it = split2.begin();
-	for (uint i = 0; i<split2.size(); ++i, ++sp2it) assert(*sp2it == test2[i]);
+	for (sig::uint i = 0; i<split2.size(); ++i, ++sp2it) assert(*sp2it == test2[i]);
 
 	//デリミタ間に何もなければ無視
 	auto split3 = split("10 100  1000", " ");	
 	auto split4 = split(" ,, ,  ,", ",");
 
 	TVec test3{ "10", "100", "1000"};
-	for (uint i = 0; i<split3.size(); ++i) assert(split3[i] == test3[i]);
+	for (sig::uint i = 0; i<split3.size(); ++i) assert(split3[i] == test3[i]);
 	TVec test4{ " ", " ", "  " };
-	for (uint i = 0; i<split4.size(); ++i) assert(split4[i] == test4[i]);
+	for (sig::uint i = 0; i<split4.size(); ++i) assert(split4[i] == test4[i]);
 
 	std::string sentence = R"(1
 2
@@ -92,7 +92,7 @@ void SplitTest()
 #endif
 
 	TVec test5 = { "1", "2", "4" };
-	for (uint i = 0; i<split5.size(); ++i){
+	for (sig::uint i = 0; i<split5.size(); ++i){
 		assert(split5[i] == test5[i]);
 	}
 }

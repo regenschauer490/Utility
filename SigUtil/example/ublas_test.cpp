@@ -25,13 +25,13 @@ void UblasConvertTest()
 
 	auto vec_mr = from_matrix_ublas(umat, 1);
 
-	for (uint i=0; i<vec.size(); ++i){
+	for (sig::uint i=0; i<vec.size(); ++i){
 		assert(uvec[i] == vec[i]);
 		assert(vec_r[i] == vec[i] + uvec[i]);
 		assert(vec_mr[i] == mat[1][i]);
 	}
 
-	for (uint i = 0; i<mat.size(); ++i){
+	for (sig::uint i = 0; i<mat.size(); ++i){
 		for (int j = 0; j<mat[i].size(); ++j){
 			assert(umat(i, j) == mat[i][j]);
 			assert(mat_r[i][j] == mat[i][0] * mat[0][j] + mat[i][1] * mat[1][j] + mat[i][2] * mat[2][j]);
@@ -42,7 +42,7 @@ void UblasConvertTest()
 	auto mpu = map_v([](double v){ return static_cast<int>(v); }, uvec);
 
 	auto mp_test = array<int, 3>{static_cast<int>(uvec[0]), static_cast<int>(uvec[1]), static_cast<int>(uvec[2])};
-	for (uint i = 0; i<mp_test.size(); ++i){
+	for (sig::uint i = 0; i<mp_test.size(); ++i){
 		assert(mpu(i) == mp_test[i]);
 	}
 
@@ -60,8 +60,8 @@ void UblasCalculation()
 
 	const array<array<double, 3>, 3> inv_test{{-0.375, -0.125, 0.625}, {-0.125, 0.625, -0.125}, {0.625, -0.125, -0.375}};
 
-	for (uint i = 0; i<mat.size(); ++i){
-		for (uint j = 0; j<mat[i].size(); ++j){
+	for (sig::uint i = 0; i<mat.size(); ++i){
+		for (sig::uint j = 0; j<mat[i].size(); ++j){
 			assert(equal(inv_umat(i, j), inv_test[i][j]));
 			assert(equal(inv_mat[i][j], inv_test[i][j]));
 		}
@@ -80,7 +80,7 @@ void UblasCalculation()
 	auto caa_test1 = array<double, 3>{uvec[0] + 1, uvec[1] + 1, uvec[2] + 1 };
 	auto caa_test2 = array<double, 3>{uvec[0] * 3, uvec[1] * 3, uvec[2] * 3 };
 
-	for (uint i = 0; i<vec.size(); ++i){
+	for (sig::uint i = 0; i<vec.size(); ++i){
 		assert(uvec2(i) == caa_test1[i]);
 		assert(equal(uvec3(i), caa_test2[i]));
 	}

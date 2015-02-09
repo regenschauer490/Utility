@@ -124,7 +124,7 @@ void HistgramTest()
 	hist.count(data1);
 
 	hist.print();						//コンソールへ出力
-	hist.print(file1);	//ファイルへ出力
+	hist.print(file1, true);	//ファイルへ出力
 
 	/*
 	-- Histgram --
@@ -166,7 +166,7 @@ void HistgramTest()
 	for (int i = 0; i<100; ++i) hist2.count(rand_maker());
 
 	hist2.print();
-	hist2.print(file2);
+	hist2.print(file2, true);
 	/*
 	-- Histgram --
 
@@ -216,7 +216,7 @@ void TagDealerTest()
 
 	if (isJust(decoded)){
 		auto dec_v = fromJust(decoded_vec);
-		for (uint i = 0; i< dec_v.size(); ++i) assert((dec_v)[i] == test[i]);
+		for (sig::uint i = 0; i< dec_v.size(); ++i) assert((dec_v)[i] == test[i]);
 	}
 }
 
