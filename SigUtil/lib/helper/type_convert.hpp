@@ -30,23 +30,29 @@ struct plus_t
 
 // out/in type to stream (mainly filestream)
 template <class FILE_STRING>
-struct FStreamSelector{
-	typedef std::ofstream ofstream;
-	typedef std::ifstream ifstream;
-	typedef std::ostreambuf_iterator<char> ostreambuf_iterator;
-	typedef std::istreambuf_iterator<char> istreambuf_iterator;
+struct StreamSelector{
+	using ostream = std::ostream;
+	using istream = std::istream;
+	using ofstream = std::ofstream;
+	using ifstream = std::ifstream;
+	using ostreambuf_iterator = std::ostreambuf_iterator<char>;
+	using istreambuf_iterator = std::istreambuf_iterator<char>;
 };
-template<> struct FStreamSelector<std::wstring>{
-	typedef std::wofstream ofstream;
-	typedef std::wifstream ifstream;
-	typedef std::ostreambuf_iterator<wchar_t> ostreambuf_iterator;
-	typedef std::istreambuf_iterator<wchar_t> istreambuf_iterator;
+template<> struct StreamSelector<std::wstring>{
+	using ostream = std::wostream;
+	using istream = std::wistream;
+	using ofstream = std::wofstream;
+	using ifstream = std::wifstream;
+	using ostreambuf_iterator = std::ostreambuf_iterator<wchar_t>;
+	using istreambuf_iterator = std::istreambuf_iterator<wchar_t>;
 };
-template<> struct FStreamSelector<wchar_t const*>{
-	typedef std::wofstream ofstream;
-	typedef std::wifstream ifstream;
-	typedef std::ostreambuf_iterator<wchar_t> ostreambuf_iterator;
-	typedef std::istreambuf_iterator<wchar_t> istreambuf_iterator;
+template<> struct StreamSelector<wchar_t const*>{
+	using ostream = std::wostream;
+	using istream = std::wistream;
+	using ofstream = std::wofstream;
+	using ifstream = std::wifstream;
+	using ostreambuf_iterator = std::ostreambuf_iterator<wchar_t>;
+	using istreambuf_iterator = std::istreambuf_iterator<wchar_t>;
 };
 
 // out/in type to stringstream

@@ -58,7 +58,7 @@ template <class T,
 >
 inline void save_line(
 	T src,
-	typename impl::FStreamSelector<T>::ofstream& ofs)
+	typename impl::StreamSelector<T>::ofstream& ofs)
 {
 	ofs << src << std::endl;
 }
@@ -73,9 +73,9 @@ template <class C,
 >
 void save_line(
 	C const& src,
-	typename impl::FStreamSelector<typename impl::container_traits<C>::value_type>::ofstream& ofs)
+	typename impl::StreamSelector<typename impl::container_traits<C>::value_type>::ofstream& ofs)
 {
-	typename impl::FStreamSelector<typename impl::container_traits<C>::value_type>::ostreambuf_iterator streambuf_iter(ofs);
+	typename impl::StreamSelector<typename impl::container_traits<C>::value_type>::ostreambuf_iterator streambuf_iter(ofs);
 	for (auto const& str : src){
 		std::copy(str.begin(), str.end(), streambuf_iter);
 		streambuf_iter = '\n';
@@ -120,7 +120,7 @@ void save_line(
 	SIG_FILE_LOCALE_INIT
 
 	const auto mode = open_mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-	typename impl::FStreamSelector<T>::ofstream ofs(file_pass, mode);
+	typename impl::StreamSelector<T>::ofstream ofs(file_pass, mode);
 	save_line(src, ofs);
 }
 
@@ -160,7 +160,7 @@ void save_line(
 	SIG_FILE_LOCALE_INIT
 
 	const auto mode = open_mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-	typename impl::FStreamSelector<typename impl::container_traits<C>::value_type>::ofstream ofs(file_pass, mode);
+	typename impl::StreamSelector<typename impl::container_traits<C>::value_type>::ofstream ofs(file_pass, mode);
 	save_line(src, ofs);
 }
 

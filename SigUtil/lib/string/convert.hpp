@@ -223,13 +223,56 @@ inline auto utf32_to_utf8(std::u32string const& src) ->std::string
 
 	return utf32conv.to_bytes(src);
 }
+#elif SIG_MSVC_ENV
+	/// UTF-8 -> UTF-16
+	/**
+	\pre Windows環境
+
+	\param src 変換対象の文字列
+
+	\return 変換後の文字列
+	*/
+	inline auto utf8_to_utf16(std::string const& src) ->std::u16string
+	{
+
+		const int dest_size = ::MultiByteToWideChar(CP_UTF8, 0, src.c_str(), -1, NULL, 0);
+		BYTE* buf = new BYTE[dest_size * 2 + 2];
+
+		bool is_succeed = ::MultiByteToWideChar(CP_UTF8, 0, src.c_str(), -1, reinterpret_cast<LPWSTR>(buf), dest_size) > 0 ? true : false;
+		std::u16string dest(reinterpret_cast<char16_t*>(buf));
+		delete[] buf;
+
+		return is_succeed ? dest : std::u16string(); //is_succeed ? Just<std::u16string>(std::move(dest)) : Nothing(std::u16string());
+	}
+
+	/// UTF-16 -> UTF-8
+	/**
+	\pre Windows環境
+
+	\param src 変換対象の文字列
+
+	\return 変換後の文字列
+	*/
+	inline auto utf16_to_utf8(std::u16string const& src) ->std::string
+	{
+		LPCWSTR srcp = reinterpret_cast<LPCWSTR>(src.c_str());
+		const int dest_size = ::WideCharToMultiByte(CP_UTF8, 0, srcp, -1, NULL, 0, NULL, NULL);
+		BYTE* buf = new BYTE[dest_size * 2];
+
+		bool is_succeed = ::WideCharToMultiByte(CP_UTF8, 0, srcp, -1, reinterpret_cast<LPSTR>(buf), dest_size, NULL, NULL) > 0 ? true : false;
+		std::string dest(reinterpret_cast<char*>(buf));
+		delete[] buf;
+
+		return is_succeed ? dest : std::string(); //is_succeed ? Just<std::string>(std::move(dest)) : Nothing(std::string());
+	}
+
 #endif
 
 #if SIG_MSVC_ENV
 
 /// ShiftJIS -> UTF-16
 /**
-	\pre Windows環境のみ
+	\pre Windows環境
 
 	\param src 変換対象の文字列
 
@@ -249,7 +292,7 @@ inline auto sjis_to_utf16(std::string const& src) ->std::u16string //Just<std::u
 
 /// UTF-16 -> ShiftJIS
 /**
-	\pre Windows環境のみ
+	\pre Windows環境
 
 	\param src 変換対象の文字列
 
@@ -269,10 +312,9 @@ inline auto utf16_to_sjis(std::u16string const& src) ->std::string //Just<std::s
 }
 #endif
 
-#ifdef SIG_ENABLE_CODECVT 
 /// ShiftJIS -> UTF-8
 /**
-	\pre Windows環境のみ
+	\pre <codecvt>が必要 または Windows環境
 
 	\param src 変換対象の文字列
 
@@ -285,7 +327,7 @@ inline auto sjis_to_utf8(std::string const& src) ->std::string
 
 /// UTF-8 -> ShiftJIS
 /**
-	\pre Windows環境のみ
+	\pre <codecvt>が必要 または Windows環境
 
 	\param src 変換対象の文字列
 
@@ -295,7 +337,6 @@ inline auto utf8_to_sjis(std::string const& src) ->std::string
 {
 	return utf16_to_sjis(utf8_to_utf16(src));
 }
-#endif
 
 }
 #endif

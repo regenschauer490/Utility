@@ -8,6 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIGUTIL_TAGDEALER_HPP
 #define SIGUTIL_TAGDEALER_HPP
 
+#include "../helper/maybe.hpp"
 #include "../functional/high_order.hpp"
 #include "../string/manipulate.hpp"
 
