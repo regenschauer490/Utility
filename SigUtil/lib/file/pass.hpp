@@ -191,6 +191,31 @@ inline auto get_folder_names(
 #endif
 }
 
+
+/// 指定ファイルが存在するか確認
+/**
+\pre VisualStudio環境 または boostのインクルード
+
+\param file_pass 調べたいファイルのパス
+
+\return 存在する場合:true, 存在しない場合:false
+*/
+inline bool file_exists(FilepassString const& file_pass)
+{
+#if SIG_MSVC_ENV
+	WIN32_FIND_DATA FindFileData;
+	HANDLE handle = FindFirstFile(file_pass.c_str(), &FindFileData);
+	int found = handle != INVALID_HANDLE_VALUE;
+	if (found) FindClose(handle);
+	return found;
+#elif SIG_ENABLE_BOOST
+	return boost::filesystem::exists(file_pass);
+#else
+	std::cout << "I don't support this envirnment which is default. please include boost if any." << std::endl;
+	assert(false);
+#endif
+}
+
 }
 
 #endif

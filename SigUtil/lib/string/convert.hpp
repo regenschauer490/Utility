@@ -66,6 +66,15 @@ inline auto wstr_to_str(std::wstring const& src)
 	return error == -1 ? std::string() : dest; //error ? Nothing(dest) : Just<std::string>(std::move(dest));
 }
 
+inline auto to_string(std::wstring const& src) ->std::string
+{
+	return wstr_to_str(src);
+}
+inline auto to_string(std::string const& src) ->std::string
+{
+	return src;
+}
+
 /// ワイド文字 -> マルチバイト文字 
 /**
 	コンテナの全要素をまとめて変換
@@ -130,6 +139,15 @@ inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstri
 	return error == -1 ? std::wstring() : dest; //error ? Nothing(dest) : Just<std::wstring>(std::move(dest));
 }
 
+inline auto to_wstring(std::string const& src) ->std::wstring
+{
+	return str_to_wstr(src);
+}
+inline auto to_wstring(std::wstring const& src) ->std::wstring
+{
+	return src;
+}
+
 /// マルチバイト文字 -> ワイド文字
 /**
 	コンテナの全要素をまとめて変換
@@ -162,6 +180,26 @@ auto str_to_wstr(C const& src) ->R
 
 	return result;
 }
+
+#if SIG_MSVC_ENV
+	inline auto to_fpstring(std::string const& src) ->FilepassString
+	{
+		return str_to_wstr(src);
+	}
+	inline auto to_fpstring(std::wstring const& src) ->FilepassString
+	{
+		return src;
+	}
+#else
+	inline auto to_fpstring(std::wstring const& src) ->FilepassString
+	{
+		return wstr_to_str(src);
+	}
+	inline auto to_fpstring(std::string const& src) ->FilepassString
+	{
+		return src;
+	}
+#endif
 
 #if SIG_ENABLE_CODECVT
 /// UTF-8 -> UTF-16
@@ -312,6 +350,7 @@ inline auto utf16_to_sjis(std::u16string const& src) ->std::string //Just<std::s
 }
 #endif
 
+#if SIG_ENABLE_CODECVT || SIG_MSVC_ENV
 /// ShiftJIS -> UTF-8
 /**
 	\pre <codecvt>が必要 または Windows環境
@@ -337,6 +376,7 @@ inline auto utf8_to_sjis(std::string const& src) ->std::string
 {
 	return utf16_to_sjis(utf8_to_utf16(src));
 }
+#endif
 
 }
 #endif

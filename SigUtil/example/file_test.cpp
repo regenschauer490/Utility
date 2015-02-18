@@ -62,6 +62,9 @@ void GetDirectoryNamesTest()
 	
 #endif
 
+	assert(sig::file_exists(pass + *t_text.begin()));
+	assert(!sig::file_exists(pass + SIG_TO_FPSTR("___")));
+
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl  << "[all visible files]"<< std::endl;
 	auto all_visible = fromJust(file_names);
