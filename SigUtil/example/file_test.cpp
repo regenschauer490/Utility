@@ -19,27 +19,27 @@ void GetDirectoryNamesTest()
 #if SIG_MSVC_ENV || SIG_ENABLE_BOOST
 
 	const auto file_names = get_file_names(pass, false);
-	const auto text_file_names = get_file_names(pass, false, L".txt");
-	const auto old_text_file_names = get_file_names(pass, false, L".old.txt");
-	const auto hidden_text_file_names = get_file_names(pass, true, L".txt");
+	const auto text_file_names = get_file_names(pass, false, SIG_TO_FPSTR(".txt"));
+	const auto old_text_file_names = get_file_names(pass, false, SIG_TO_FPSTR(".old.txt"));
+	const auto hidden_text_file_names = get_file_names(pass, true, SIG_TO_FPSTR(".txt"));
 
 #if SIG_LINUX_ENV
-	const std::set<std::wstring> t_text{
-		L"test.txt",
-		L"test2.txt",
-		L"test3.txt",
-		L"test4.txt",
-		L"test5.txt",
-		L"test6.txt",
-		L"histgram1.txt",
-		L"histgram2.txt",
-		L"shift_jis.txt",
-		L"utf8.txt",
-		L"long_text.txt"
+	const std::set<FilepassString> t_text{
+		"test.txt",
+		"test2.txt",
+		"test3.txt",
+		"test4.txt",
+		"test5.txt",
+		"test6.txt",
+		"histgram1.txt",
+		"histgram2.txt",
+		"shift_jis.txt",
+		"utf8.txt",
+		"long_text.txt"
 	};
-	const std::set<std::wstring> t_hidden{ L".hidden file linux.txt" };
-	const std::set<std::wstring> t_old_text{ L"test.old.txt" };
-	const std::set<std::wstring> t_noextension{ L"dummy" };
+	const std::set<FilepassString> t_hidden{ ".hidden file linux.txt" };
+	const std::set<FilepassString> t_old_text{ "test.old.txt" };
+	const std::set<FilepassString> t_noextension{ "dummy" };
 
 #else
 	const std::set<std::wstring> t_text{
@@ -73,7 +73,7 @@ void GetDirectoryNamesTest()
 
 	assert(all_visible.size() == t_all_visible.size());
 	for (auto fn : all_visible){
-		std::wcout << fn << std::endl;
+		sig::print_ln(fn);
 		assert(t_all_visible.count(fn));
 	}
 	
@@ -83,7 +83,7 @@ void GetDirectoryNamesTest()
 
 	assert(text_visible.size() == t_text_visible.size());
 	for (auto fn : text_visible){
-		std::wcout << fn << std::endl;
+		sig::print_ln(fn);
 		assert(t_text_visible.count(fn));
 	}
 	
@@ -93,13 +93,13 @@ void GetDirectoryNamesTest()
 	assert(old_text_visible.size() == t_old_text.size());
 
 	for (auto fn : old_text_visible){
-		std::wcout << fn << std::endl;
+		sig::print_ln(fn);
 		assert(t_old_text_visible.count(fn));
 	}
 	
 	std::cout << std::endl << "[all hidden files]" << std::endl;
 	for (auto fn : fromJust(hidden_text_file_names)){
-		std::wcout << fn << std::endl;
+		sig::print_ln(fn);
 #if SIG_LINUX_ENV
 		assert(fromJust(hidden_text_file_names).size() == t_hidden.size());
 		assert(t_hidden.count(fn));

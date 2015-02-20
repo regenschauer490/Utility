@@ -145,6 +145,8 @@ using std::placeholders::_2;
 	#define SIG_TO_FPSTR(str) str
 	#define SIG_USE_BOOST_FILESYSTEM 1
 #endif
+	inline void print_ln(std::string const& str) { std::cout << str << std::endl; }
+	inline void print_ln(std::wstring const& str) { std::wcout << str << std::endl; }
 
 
 #define SIG_FILE_LOCALE_INIT\

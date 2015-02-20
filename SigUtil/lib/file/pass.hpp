@@ -75,11 +75,11 @@ inline auto modify_dirpass_tail(FilepassString const& directory_pass, bool const
 inline auto get_file_names(
 	FilepassString const& directory_pass,
 	bool hidden_file,
-	std::wstring extension = L""
+	FilepassString const& extension = SIG_TO_FPSTR("")
 )
-	->Maybe<std::vector<std::wstring>>
+	->Maybe<std::vector<FilepassString>>
 {
-	using ResultType = std::vector<std::wstring>;
+	using ResultType = std::vector<FilepassString>;
 
 	ResultType result;
 
@@ -114,11 +114,11 @@ inline auto get_file_names(
 	for (fs::directory_iterator it(directory_pass); it != end; ++it)
 	{
 		if (!fs::is_directory(*it) && Consistency(hidden_file, IsHidden(*it))){
-			auto leaf = sig::split(it->path().wstring(), L"/").back();
+			auto leaf = sig::split(it->path().string(), "/").back();
 			if (extension.empty()) result.push_back(leaf);
 			else{
-				auto query = L".*(" + sig::escape_regex(extension) + L")";
-				auto ext = sig::regex_search(leaf, SIG_WRegex(query));
+				auto query = ".*(" + sig::escape_regex(extension) + ")";
+				auto ext = sig::regex_search(leaf, SIG_Regex(query));
 				if (isJust(ext) && fromJust(ext)[0][1] == extension) result.push_back(leaf);
 			}
 		}
@@ -144,9 +144,9 @@ inline auto get_folder_names(
 	FilepassString const& directory_pass,
 	bool hidden_file
 )
-	->Maybe<std::vector<std::wstring>>
+	->Maybe<std::vector<FilepassString>>
 {
-	using ResultType = std::vector<std::wstring>;
+	using ResultType = std::vector<FilepassString>;
 
 	ResultType result;
 
@@ -181,7 +181,7 @@ inline auto get_folder_names(
 	for (fs::directory_iterator it(directory_pass); it != end; ++it)
 	{
 		if (fs::is_directory(*it) && Consistency(hidden_file, IsHidden(*it))){
-			result.push_back(sig::split(it->path().wstring(), L"/").back());
+			result.push_back(sig::split(it->path().string(), "/").back());
 		}
 	}
 	return Just<ResultType>(std::move(result));
