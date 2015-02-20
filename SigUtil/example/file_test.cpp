@@ -112,10 +112,10 @@ void GetDirectoryNamesTest()
 
 #if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl << "[all visible folders]" << std::endl;
-	for (auto fn : fromJust(folder_names)) std::wcout << fn << std::endl;
+	for (auto fn : fromJust(folder_names)) sig::print_ln(fn);
 	
 	std::cout << std::endl << "[all hidden folders]" << std::endl;
-	for (auto fn : fromJust(hidden_folder_names)) std::wcout << fn << std::endl;
+	for (auto fn : fromJust(hidden_folder_names)) sig::print_ln(fn);
 #endif
 #else
 	std::cout << "I don't support this environment. please include boost if any." << std::endl; 
