@@ -10,7 +10,7 @@ http://opensource.org/licenses/mit-license.php
 
 #include "../sigutil.hpp"
 
-#if SIG_ENABLE_BOOST
+#if SIG_USE_BOOST
 #include <boost/serialization/serialization.hpp>
 #endif
 
@@ -52,7 +52,7 @@ public:
 
 	bool operator!=(Percent obj) const{ return percent_ != obj.percent_; }
 
-#if SIG_ENABLE_BOOST
+#if SIG_USE_BOOST
 private:
 	friend class boost::serialization::access;
 

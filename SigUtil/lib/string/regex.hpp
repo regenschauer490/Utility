@@ -18,7 +18,7 @@ http://opensource.org/licenses/mit-license.php
 #pragma warning ( disable : 4996 )
 #endif
 
-#if !SIG_MSVC_ENV && SIG_ENABLE_BOOST
+#if !SIG_MSVC_ENV && SIG_USE_BOOST
 #include <boost/regex.hpp>
 #endif
 
@@ -34,7 +34,7 @@ http://opensource.org/licenses/mit-license.php
 	using SIG_WSMatch = std::wsmatch;
 	#define SIG_RegexSearch std::regex_search
 	#define SIG_RegexReplace std::regex_replace
-#elif SIG_ENABLE_BOOST
+#elif SIG_USE_BOOST
 	using SIG_Regex = typename boost::regex;
 	using SIG_WRegex = typename boost::wregex;
 	using SIG_SMatch = typename boost::smatch;
@@ -102,7 +102,7 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 	return SIG_RegexReplace(expression, escape_reg, std::wstring(LR"(\$1)"));
 }
 
-#elif (SIG_USE_GLIBCPP && SIG_ENABLE_BOOST)
+#elif (SIG_USE_GLIBCPP && SIG_USE_BOOST)
 
 /// 与えられた文字中に含まれる、正規表現の特殊文字をエスケープする
 /**
@@ -127,7 +127,7 @@ inline auto escape_regex(std::wstring const& expression) ->std::wstring
 #endif
 
 
-#if SIG_MSVC_ENV || (SIG_USE_GLIBCPP && SIG_ENABLE_BOOST)
+#if SIG_MSVC_ENV || (SIG_USE_GLIBCPP && SIG_USE_BOOST)
 
 /// エスケープ処理を行い、regexオブジェクトを返す
 /**

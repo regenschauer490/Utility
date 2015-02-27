@@ -10,8 +10,8 @@ http://opensource.org/licenses/mit-license.php
 
 /*--------------------------------------- User Option --------------------------------------------------------------------*/
 
-#define SIG_ENABLE_BOOST 1		// boostが使用可能か
-#define SIG_USE_OPTIONAL 1		// boost::optionalを使用するか(大規模データを扱う際にはオーバーヘッドが影響する可能性あり)
+#define SIG_USE_BOOST 1			// boostが使用可能か
+#define SIG_USE_OPTIONAL 1		// boost.optionalを使用するか(大規模データを扱う際にはオーバーヘッドが影響する可能性あり)
 #define SIG_PRINT_ERROR_MESSAGE 1	// エラー発生時にメッセージをコンソールに出力するか(ex:ファイル入出力)
 
 /*------------------------------------------------------------------------------------------------------------------------*/
@@ -84,11 +84,11 @@ http://opensource.org/licenses/mit-license.php
 #include <numeric>
 #include <utility>
 
-#if SIG_MSVC_ENV || !SIG_ENABLE_BOOST
+#if SIG_MSVC_ENV || !SIG_USE_BOOST
 #include <regex>
 #endif
 
-#if SIG_ENABLE_BOOST
+#if SIG_USE_BOOST
 #include <boost/pool/pool_alloc.hpp>
 #include <boost/call_traits.hpp>
 #endif
@@ -111,7 +111,7 @@ using std::placeholders::_1;
 using std::placeholders::_2;
 
 
-#if SIG_ENABLE_BOOST
+#if SIG_USE_BOOST
 	template <class T>
 	using fragment_allocator = boost::fast_pool_allocator<T>;
 #else
@@ -121,7 +121,7 @@ using std::placeholders::_2;
 
 
 // boost.call_traits の有効・無効に関係なくコードを統一的に記述するための処理
-#if SIG_ENABLE_BOOST
+#if SIG_USE_BOOST
 	template <class T> using ParamType = typename boost::call_traits<T>::param_type;
 #else
 	template <class T>

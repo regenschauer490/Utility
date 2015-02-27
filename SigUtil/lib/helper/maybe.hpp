@@ -13,7 +13,7 @@ http://opensource.org/licenses/mit-license.php
 #include "type_convert.hpp"
 #include "container_traits.hpp"
 
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
+#if SIG_USE_BOOST && SIG_USE_OPTIONAL
 #include <boost/optional.hpp>
 #endif
 
@@ -41,7 +41,7 @@ namespace sig
 {
 	
 // Maybe(boost.optional)の有効・無効に関係なくコードを統一的に記述するための処理
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
+#if SIG_USE_BOOST && SIG_USE_OPTIONAL
 	template <class T> using Maybe = boost::optional<T>;
 
 	/// 値コンストラクタ

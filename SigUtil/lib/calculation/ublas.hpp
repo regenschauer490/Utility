@@ -12,7 +12,7 @@ http://opensource.org/licenses/mit-license.php
 #include "../helper/container_helper.hpp"
 #include "../helper/helper_modules.hpp"
 
-#ifdef SIG_ENABLE_BOOST
+#ifdef SIG_USE_BOOST
 
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>

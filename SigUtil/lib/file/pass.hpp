@@ -103,7 +103,7 @@ inline auto get_file_names(
 		FindClose(hFind);
 		return Just<ResultType>(std::move(result));
 	}
-#elif SIG_ENABLE_BOOST
+#elif SIG_USE_BOOST
 	auto IsHidden = [](fs::path const& p){
 		auto name = p.filename();
 		if (name.c_str()[0] == '.' && name != ".." &&	name != ".") return true;
@@ -170,7 +170,7 @@ inline auto get_folder_names(
 		FindClose(hFind);
 		return Just<ResultType>(std::move(result));
 	}
-#elif SIG_ENABLE_BOOST
+#elif SIG_USE_BOOST
 	auto IsHidden = [](fs::path const& p){
 		auto name = p.filename();
 		if (name.c_str()[0] == '.' && name != ".." &&	name != ".") return true;
@@ -208,7 +208,7 @@ inline bool file_exists(FilepassString const& file_pass)
 	int found = handle != INVALID_HANDLE_VALUE;
 	if (found) FindClose(handle);
 	return found;
-#elif SIG_ENABLE_BOOST
+#elif SIG_USE_BOOST
 	return boost::filesystem::exists(file_pass);
 #else
 	std::cout << "I don't support this envirnment which is default. please include boost if any." << std::endl;

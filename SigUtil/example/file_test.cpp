@@ -16,7 +16,7 @@ void GetDirectoryNamesTest()
 {
 	const auto pass = modify_dirpass_tail(raw_pass, true);
 
-#if SIG_MSVC_ENV || SIG_ENABLE_BOOST
+#if SIG_MSVC_ENV || SIG_USE_BOOST
 
 	const auto file_names = get_file_names(pass, false);
 	const auto text_file_names = get_file_names(pass, false, SIG_TO_FPSTR(".txt"));
@@ -65,7 +65,7 @@ void GetDirectoryNamesTest()
 	assert(sig::file_exists(pass + *t_text.begin()));
 	assert(!sig::file_exists(pass + SIG_TO_FPSTR("___")));
 
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
+#if SIG_USE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl  << "[all visible files]"<< std::endl;
 	auto all_visible = fromJust(file_names);
 	auto tttmp = merge(t_old_text, t_noextension);
@@ -110,7 +110,7 @@ void GetDirectoryNamesTest()
 	const auto folder_names = get_folder_names(pass, false);
 	const auto hidden_folder_names = get_folder_names(pass, true);
 
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
+#if SIG_USE_BOOST && SIG_USE_OPTIONAL
 	std::cout << std::endl << "[all visible folders]" << std::endl;
 	for (auto fn : fromJust(folder_names)) sig::print_ln(fn);
 	
@@ -190,7 +190,7 @@ void FileSaveLoadTest()
 
 /* 読み込み */
 
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
+#if SIG_USE_BOOST && SIG_USE_OPTIONAL
 	const auto read1 = load_line(fpass1);
 	const auto read2 = load_line<std::wstring, std::list<std::wstring>>(fpass2);
 	const auto read_num = load_num<double, std::set<double>>(fpass4);

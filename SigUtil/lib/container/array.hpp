@@ -38,7 +38,7 @@ public:
 	using const_reverse_iterator = typename std::array<T, N>::const_reverse_iterator;
 	using size_type = size_t;
 	using difference_type = typename std::array<T, N>::difference_type;
-#if SIG_ENABLE_BOOST
+#if SIG_USE_BOOST
 	using result_type = typename boost::call_traits<T>::value_type;
 	using param_type = typename boost::call_traits<T>::param_type;
 #else

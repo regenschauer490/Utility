@@ -16,7 +16,7 @@ boostの機能に依存している部分が多少あり、boostを使用でき�
 #### [ インストール & テスト ]
 ヘッダオンリーなのでSigUtil/libフォルダにパスを通して#includeするだけで利用できます. 
 デフォルトではboostを使用する設定になっていますが、使用しない場合は次の処理を行ってください．  
-* SigUtil/lib/sigutil.hpp を開いて「SIG\_ENABLE\_BOOST」の値をboost使用時は1、未使用時は0に設定.
+* SigUtil/lib/sigutil.hpp を開いて「SIG\_USE\_BOOST」の値をboost使用時は1、未使用時は0に設定.
 
 動作確認のテストは、以下の操作を行ってください．(xxxはコンパイラのバージョン)
 * VisualStudio環境: VisualStudio2013(November2013 CTP)以降で project/VisualStudio xxx/SigUtil.sln を起動してコンパイル+実行.

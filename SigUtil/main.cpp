@@ -12,7 +12,7 @@
 #include "example/ublas_test.h"
 #include "example/performance_test.h"
 
-/// test completed
+/// test completed compilers
 // Visual C++ Compiler Nov 2013 CTP (CTP_Nov2013)
 // Visual C++ Compiler 2014 (v140)
 // Visual C++ Compiler 2015 Preview (v140)

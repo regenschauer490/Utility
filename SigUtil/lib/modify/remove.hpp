@@ -85,7 +85,7 @@ auto remove_duplicates(C& container, F&& get_landmark)
 	return removed;
 }
 
-#if SIG_ENABLE_BOOST
+#if SIG_USE_BOOST
 #define Sig_Eraser_ParamType1 typename boost::call_traits<typename impl::container_traits<C>::value_type>::param_type
 #else
 #define Sig_Eraser_ParamType1 typename std::common_type<typename impl::container_traits<C>::value_type>::type const&

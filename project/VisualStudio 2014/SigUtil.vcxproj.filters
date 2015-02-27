@@ -87,9 +87,6 @@
     <ClCompile Include="..\..\SigUtil\example\ublas_test.cpp">
       <Filter>Source Files\test</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\SigUtil\example\rating_matrix_test.cpp">
-      <Filter>Source Files\test</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\SigUtil\lib\calculation.hpp">
@@ -282,9 +279,6 @@
       <Filter>Header Files\calculation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SigUtil\lib\container\array.hpp">
-      <Filter>Header Files\container</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\SigUtil\lib\container\rating_matrix.hpp">
       <Filter>Header Files\container</Filter>
     </ClInclude>
     <ClInclude Include="..\..\SigUtil\example\rating_matrix_test.h">

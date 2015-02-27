@@ -10,7 +10,7 @@ using namespace sig;
 #include <unistd.h>
 #endif
 
-//SIG_ENABLE_BOOST = 1 の際にはboost::optionalが有効になる
+//SIG_USE_BOOST = 1 の際にはboost::optionalが有効になる
 
 void RandomTest()
 {

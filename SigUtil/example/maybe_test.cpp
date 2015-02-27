@@ -11,7 +11,7 @@ void MaybeTest()
 
 	auto f = [&](int v){ return Just(v * 1.5); };
 
-#if SIG_ENABLE_BOOST && SIG_USE_OPTIONAL
+#if SIG_USE_BOOST && SIG_USE_OPTIONAL
 	assert(m);
 	assert(!n);
 	assert(!nn);

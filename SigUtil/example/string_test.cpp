@@ -13,7 +13,7 @@ using TVec2 = std::vector<std::vector<std::string>>;
 void RegexTest()
 {
 // GCC以外のコンパイラ or Boostが使えることが必要条件
-#if !((__GLIBCXX__ || __GLIBCPP__) && !SIG_ENABLE_BOOST)
+#if !((__GLIBCXX__ || __GLIBCPP__) && !SIG_USE_BOOST)
 
 	auto raw1 = "? or (lol) must be escaped";
 
