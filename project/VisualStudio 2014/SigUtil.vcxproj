@@ -186,7 +186,7 @@
     <ClInclude Include="..\..\SigUtil\lib\distance\norm.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\file.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\file\load.hpp" />
-    <ClInclude Include="..\..\SigUtil\lib\file\pass.hpp" />
+    <ClInclude Include="..\..\SigUtil\lib\file\path.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\file\save.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\functional.hpp" />
     <ClInclude Include="..\..\SigUtil\lib\functional\filter.hpp" />

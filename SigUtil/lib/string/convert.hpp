@@ -56,9 +56,9 @@ inline auto wstr_to_str(std::wstring const& src)
 
 #if SIG_MSVC_ENV && SIG_DEBUG_MODE
 	size_t num;
-	int error = wcstombs_s(&num, mbs, mbs_size, src.c_str(), src.length() * MB_CUR_MAX + 1);
+	auto error = wcstombs_s(&num, mbs, mbs_size, src.c_str(), src.length() * MB_CUR_MAX + 1);
 #else
-	int error = wcstombs(mbs, src.c_str(), src.length() * MB_CUR_MAX + 1);
+	auto error = wcstombs(mbs, src.c_str(), src.length() * MB_CUR_MAX + 1);
 #endif
 	std::string dest(mbs);
 	delete[] mbs;
@@ -130,9 +130,9 @@ inline auto str_to_wstr(std::string const& src) ->std::wstring //Just<std::wstri
 
 #if SIG_MSVC_ENV && SIG_DEBUG_MODE
 	size_t num;
-	int error = mbstowcs_s(&num, wcs, wcs_size, src.c_str(), src.length() + 1);
+	auto error = mbstowcs_s(&num, wcs, wcs_size, src.c_str(), src.length() + 1);
 #else
-	int error = mbstowcs(wcs, src.c_str(), src.length() + 1);
+	auto error = mbstowcs(wcs, src.c_str(), src.length() + 1);
 #endif
 	std::wstring dest(wcs);
 	delete[] wcs;

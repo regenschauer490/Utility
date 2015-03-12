@@ -5,8 +5,8 @@ This software is released under the MIT License.
 http://opensource.org/licenses/mit-license.php
 */
 
-#ifndef SIGUTIL_PASS_HPP
-#define SIGUTIL_PASS_HPP
+#ifndef SIGUTIL_PATH_HPP
+#define SIGUTIL_PATH_HPP
 
 #include "../helper/helper_modules.hpp"
 #include "../helper/maybe.hpp"
@@ -22,7 +22,7 @@ http://opensource.org/licenses/mit-license.php
 #endif
 
 
-/// \file pass.hpp ファイル・フォルダに関する情報取得
+/// \file path.hpp ファイル・フォルダに関する情報取得
 
 namespace sig
 {

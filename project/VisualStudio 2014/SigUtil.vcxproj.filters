@@ -209,9 +209,6 @@
     <ClInclude Include="..\..\SigUtil\lib\string\manipulate.hpp">
       <Filter>Header Files\string</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\SigUtil\lib\file\pass.hpp">
-      <Filter>Header Files\file</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\SigUtil\lib\tools\percent.hpp">
       <Filter>Header Files\tools</Filter>
     </ClInclude>
@@ -283,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="..\..\SigUtil\example\rating_matrix_test.h">
       <Filter>Header Files\test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SigUtil\lib\file\path.hpp">
+      <Filter>Header Files\file</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

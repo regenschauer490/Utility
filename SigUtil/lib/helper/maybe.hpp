@@ -44,7 +44,7 @@ namespace sig
 #if SIG_USE_BOOST && SIG_USE_OPTIONAL
 	template <class T> using Maybe = boost::optional<T>;
 
-	/// 値コンストラクタ
+	/// 値コンストラクタ（有効な値で初期化）
 	/**
 		\code
 		auto m1 = Just(1);			// :: Maybe<int>
@@ -57,7 +57,7 @@ namespace sig
 	template <class T>
 	Maybe<T> Just(T const& v){ return Maybe<T>(v); }		// T is given explicitly
 
-	/// 値コンストラクタ
+	/// 値コンストラクタ（無効な値で初期化）
 	/**
 		\code
 		auto n = Nothing();	// :: Maybe<int>
@@ -69,7 +69,7 @@ namespace sig
 		return boost::none;
 	}
 
-	/// 値コンストラクタ
+	/// 値コンストラクタ（無効な値で初期化）
 	/**
 		引数はダミー（optional無効時にも統一的に記述できるようにするために存在）
 
@@ -78,6 +78,10 @@ namespace sig
 		\endcode
 	*/
 	template <class T> auto Nothing(T const& dummy)-> Maybe<T>{ return boost::none; }
+
+
+	/// 無効値
+	const auto nothing = boost::none;
 
 
 	/// Justであるか調べる関数．Maybe a -> Bool
@@ -285,9 +289,9 @@ namespace sig
 
 	template <class I> Maybe<I> Just(I v){ return std::make_tuple(v, true); }
 
-	template <class I> Maybe<I> Nothing(I&& dummy){ return std::make_tuple(dummy, false); }
-	template <class I> Maybe<I> Nothing(I const& dummy){ return std::make_tuple(dummy, false); }
-
+	template <class I> Maybe<I> Nothing(I&& dummy){ return std::make_tuple(std::forward<I>(dummy), false); }
+	template <class I> Maybe<I> Nothing(){ return std::make_tuple(I{}, false); }
+	
 	template <class I> bool isJust(Maybe<I> const& m){ return std::get<1>(m); }
 
 	template <class I> bool isNothing(Maybe<I> const& m){ return !std::get<1>(m); }

@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIGUTIL_FILE_HPP
 #define SIGUTIL_FILE_HPP
 
-#include "file/pass.hpp"
+#include "file/path.hpp"
 #include "file/load.hpp"
 #include "file/save.hpp"
 
