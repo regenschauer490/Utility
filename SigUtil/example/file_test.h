@@ -2,5 +2,5 @@
 
 #include "../lib/file.hpp"
 
-void GetDirectoryNamesTest();
-void FileSaveLoadTest();
+void PathTest();
+void SaveLoadTest();

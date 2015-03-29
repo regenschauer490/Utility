@@ -12,128 +12,167 @@ using TVec = std::vector<std::string>;
 using TVecw = std::vector<std::wstring>;
 
 
-void GetDirectoryNamesTest()
+void PathTest()
 {
-	const auto pass = modify_dirpass_tail(raw_pass, true);
-
 #if SIG_MSVC_ENV || SIG_USE_BOOST
 
-	const auto file_names = get_file_names(pass, false);
-	const auto text_file_names = get_file_names(pass, false, SIG_TO_FPSTR(".txt"));
-	const auto old_text_file_names = get_file_names(pass, false, SIG_TO_FPSTR(".old.txt"));
-	const auto hidden_text_file_names = get_file_names(pass, true, SIG_TO_FPSTR(".txt"));
+	// make_directory test
+	{
+		const auto path = modify_dirpath_tail(raw_path, true);
+
+		assert(!make_directory(path + SIG_TO_FPSTR("test"), false));
+		assert(make_directory(path + SIG_TO_FPSTR("md1"), false));
+		assert(!make_directory(path + SIG_TO_FPSTR("md1/md2/md3"), false));
+		assert(make_directory(path + SIG_TO_FPSTR("md1/md2/md3"), true));
+	}
+
+	// remove_directory test
+	{
+		const auto path = modify_dirpath_tail(raw_path, true);
+
+		assert(!remove_directory(path + SIG_TO_FPSTR("md0")));
+		assert(remove_directory(path + SIG_TO_FPSTR("md1/md2/md3")));
+		assert(remove_directory(path + SIG_TO_FPSTR("md1")));
+	}
+
+	// get_file_names test
+	{
+		const auto path = modify_dirpath_tail(raw_path, true);
+
+		const auto file_names = get_file_names(path, false);
+		const auto text_file_names = get_file_names(path, false, SIG_TO_FPSTR(".txt"));
+		const auto old_text_file_names = get_file_names(path, false, SIG_TO_FPSTR(".old.txt"));
+		const auto hidden_text_file_names = get_file_names(path, true, SIG_TO_FPSTR(".txt"));
 
 #if SIG_LINUX_ENV
-	const std::set<FilepassString> t_text{
-		"test.txt",
-		"test2.txt",
-		"test3.txt",
-		"test4.txt",
-		"test5.txt",
-		"test6.txt",
-		"histgram1.txt",
-		"histgram2.txt",
-		"shift_jis.txt",
-		"utf8.txt",
-		"long_text.txt"
-	};
-	const std::set<FilepassString> t_hidden{ ".hidden file linux.txt" };
-	const std::set<FilepassString> t_old_text{ "test.old.txt" };
-	const std::set<FilepassString> t_noextension{ "dummy" };
+		const std::set<FilepassString> t_text{
+			"test.txt",
+			"test2.txt",
+			"test3.txt",
+			"test4.txt",
+			"test5.txt",
+			"test6.txt",
+			"histgram1.txt",
+			"histgram2.txt",
+			"shift_jis.txt",
+			"utf8.txt",
+			"long_text.txt"
+		};
+		const std::set<FilepassString> t_hidden{ ".hidden file linux.txt" };
+		const std::set<FilepassString> t_old_text{ "test.old.txt" };
+		const std::set<FilepassString> t_noextension{ "dummy" };
 
 #else
-	const std::set<std::wstring> t_text{
-		L"test.txt",
-		L"test2.txt",
-		L"test3.txt",
-		L"test4.txt",
-		L"test5.txt",
-		L"test6.txt",
-		L"histgram1.txt",
-		L"histgram2.txt",
-		L"shift_jis.txt",
-		L"utf8.txt",
-		L".hidden file linux.txt",
-		L"long_text.txt"
-	};
-	const std::set<std::wstring> t_hidden{};
-	const std::set<std::wstring> t_old_text{ L"test.old.txt" };
-	const std::set<std::wstring> t_noextension{ L"dummy" };
-	
+		const std::set<std::wstring> t_text{
+			L"test.txt",
+			L"test2.txt",
+			L"test3.txt",
+			L"test4.txt",
+			L"test5.txt",
+			L"test6.txt",
+			L"histgram1.txt",
+			L"histgram2.txt",
+			L"shift_jis.txt",
+			L"utf8.txt",
+			L".hidden file linux.txt",
+			L"long_text.txt"
+		};
+		const std::set<std::wstring> t_hidden{};
+		const std::set<std::wstring> t_old_text{ L"test.old.txt" };
+		const std::set<std::wstring> t_noextension{ L"dummy" };
+
 #endif
 
-	assert(sig::file_exists(pass + *t_text.begin()));
-	assert(!sig::file_exists(pass + SIG_TO_FPSTR("___")));
+		assert(sig::file_exists(path + *t_text.begin()));
+		assert(!sig::file_exists(path + SIG_TO_FPSTR("___")));
 
-#if SIG_USE_BOOST && SIG_USE_OPTIONAL
-	std::cout << std::endl  << "[all visible files]"<< std::endl;
-	auto all_visible = fromJust(file_names);
-	auto tttmp = merge(t_old_text, t_noextension);
-	auto t_all_visible = merge(t_text, tttmp);
+		SIG_PRINT_LN("\n[all visible files]");
+		auto all_visible = fromJust(file_names);
+		auto tttmp = merge(t_old_text, t_noextension);
+		auto t_all_visible = merge(t_text, tttmp);
 
-	assert(all_visible.size() == t_all_visible.size());
-	for (auto fn : all_visible){
-		sig::print_ln(fn);
-		assert(t_all_visible.count(fn));
-	}
-	
-	std::cout << std::endl << "[all .txt files]" << std::endl;
-	auto text_visible = fromJust(text_file_names);
-	auto t_text_visible = merge(t_text, t_old_text);
+		assert(all_visible.size() == t_all_visible.size());
+		for (auto fn : all_visible){
+			print_ln(fn);
+			assert(t_all_visible.count(fn));
+		}
 
-	assert(text_visible.size() == t_text_visible.size());
-	for (auto fn : text_visible){
-		sig::print_ln(fn);
-		assert(t_text_visible.count(fn));
-	}
-	
-	std::cout << std::endl << "[all .old.txt files]" << std::endl;
-	auto old_text_visible = fromJust(old_text_file_names);
-	auto t_old_text_visible = t_old_text;
-	assert(old_text_visible.size() == t_old_text.size());
+		SIG_PRINT_LN("\n[all .txt files]");
+		auto text_visible = fromJust(text_file_names);
+		auto t_text_visible = merge(t_text, t_old_text);
 
-	for (auto fn : old_text_visible){
-		sig::print_ln(fn);
-		assert(t_old_text_visible.count(fn));
-	}
-	
-	std::cout << std::endl << "[all hidden files]" << std::endl;
-	for (auto fn : fromJust(hidden_text_file_names)){
-		sig::print_ln(fn);
+		assert(text_visible.size() == t_text_visible.size());
+		for (auto fn : text_visible){
+			print_ln(fn);
+			assert(t_text_visible.count(fn));
+		}
+
+		SIG_PRINT_LN("\n[all .old.txt files]");
+		auto old_text_visible = fromJust(old_text_file_names);
+		auto t_old_text_visible = t_old_text;
+		assert(old_text_visible.size() == t_old_text.size());
+
+		for (auto fn : old_text_visible){
+			print_ln(fn);
+			assert(t_old_text_visible.count(fn));
+		}
+
+		SIG_PRINT_LN("\n[all hidden files]");
+		for (auto fn : fromJust(hidden_text_file_names)){
+			print_ln(fn);
 #if SIG_LINUX_ENV
-		assert(fromJust(hidden_text_file_names).size() == t_hidden.size());
-		assert(t_hidden.count(fn));
+			assert(fromJust(hidden_text_file_names).size() == t_hidden.size());
+			assert(t_hidden.count(fn));
 #endif
+		}
+		std::cout << std::endl;
 	}
-#endif
 
-	const auto folder_names = get_folder_names(pass, false);
-	const auto hidden_folder_names = get_folder_names(pass, true);
+	// get_folder_names test
+	{
+		const auto path = modify_dirpath_tail(raw_path, true);
 
-#if SIG_USE_BOOST && SIG_USE_OPTIONAL
-	std::cout << std::endl << "[all visible folders]" << std::endl;
-	for (auto fn : fromJust(folder_names)) sig::print_ln(fn);
-	
-	std::cout << std::endl << "[all hidden folders]" << std::endl;
-	for (auto fn : fromJust(hidden_folder_names)) sig::print_ln(fn);
-#endif
+#if SIG_MSVC_ENV
+		const std::set<FilepassString> t_vfs = { SIG_TO_FPSTR("test"), SIG_TO_FPSTR(".hidden linux") };
+		const std::set<FilepassString> t_hfs = {};
 #else
-	std::cout << "I don't support this environment. please include boost if any." << std::endl; 
+		const auto t_vfs = { SIG_TO_FPSTR("test") };
+		const auto t_hfs = { SIG_TO_FPSTR(".hidden linux") };
 #endif
-	std::cout << std::endl;
+		auto vfs = *get_folder_names(path, false);
+		auto hfs = *get_folder_names(path, true);
+
+		SIG_PRINT_LN("\n[all visible folders]");
+		assert(vfs.size() == t_vfs.size());
+		for (auto fn : vfs){
+			print_ln(fn);
+			assert(t_vfs.count(fn));
+		}
+
+		SIG_PRINT_LN("\n[all hidden folders]");
+		assert(hfs.size() == t_hfs.size());
+		for (auto fn : hfs){
+			print_ln(fn);
+			assert(t_hfs.count(fn));
+		}
+	}
+
+
+#else
+	print_ln("This library doesn't support this environment. please include boost if any.");
+#endif
 }
 
-
-void FileSaveLoadTest()
+void SaveLoadTest()
 {
-	const auto pass = modify_dirpass_tail(raw_pass, true);
+	const auto path = modify_dirpath_tail(raw_path, true);
 
-	const auto fpass1 = pass + SIG_TO_FPSTR("test.txt");
-	const auto fpass2 = pass + SIG_TO_FPSTR("test2.txt");
-	const auto fpass3 = pass + SIG_TO_FPSTR("test3.txt");
-	const auto fpass4 = pass + SIG_TO_FPSTR("test4.txt");
-	const auto fpass5 = pass + SIG_TO_FPSTR("test5.txt");
-	const auto fpass6 = pass + SIG_TO_FPSTR("test6.txt");
+	const auto fpass1 = path + SIG_TO_FPSTR("test.txt");
+	const auto fpass2 = path + SIG_TO_FPSTR("test2.txt");
+	const auto fpass3 = path + SIG_TO_FPSTR("test3.txt");
+	const auto fpass4 = path + SIG_TO_FPSTR("test4.txt");
+	const auto fpass5 = path + SIG_TO_FPSTR("test5.txt");
+	const auto fpass6 = path + SIG_TO_FPSTR("test6.txt");
 
 	const std::vector<std::wstring> blghost_text1{
 		L"O.K.",

@@ -8,10 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIGUTIL_LOAD_HPP
 #define SIGUTIL_LOAD_HPP
 
-#include "../helper/helper_modules.hpp"
-#include "../helper/maybe.hpp"
-
-#include <fstream>
+#include "path.hpp"
 #include <locale>
 
 
@@ -66,12 +63,12 @@ bool load_line(
 /// ファイルから1行ずつ読み込む（ファイル名を指定）
 /**
 	\param empty_dest 保存先のコンテナ（\ref sig_container )
-	\param file_pass 保存先のパス（ファイル名含む）
+	\param file_path 保存先のパス（ファイル名含む）
 
 	\return 読み込みの成否
 
 	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
 	std::vector<std::string> input;
@@ -84,13 +81,13 @@ template <
 >
 bool load_line(
 	C& empty_dest,
-	FilepassString const& file_pass)
+	FilepassString const& file_path)
 {
-	impl::IfsSelector<R> ifs(file_pass);
+	impl::IfsSelector<R> ifs(file_path);
 
 	if (!ifs){
 #if SIG_PRINT_ERROR_MESSAGE
-		FileOpenErrorPrint(file_pass);
+		FileOpenErrorPrint(file_path);
 #endif
 		return false;
 	}
@@ -119,12 +116,12 @@ return tmp.size() ? Just<C>(std::move(tmp)) : Nothing(std::move(tmp));
 /**
 	\tparam ISTR [option] 読み込んだ文字列を保持する型（std::string or std::wstring）
 
-	\param file_pass 読み込むファイルのパス
+	\param file_path 読み込むファイルのパス
 
 	\return 読み込み結果（値は\ref sig_maybe で返される）
 
 	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
 	auto input = load_line(fpass);
@@ -136,14 +133,14 @@ template <
 	class ISTR = std::string,
 	class C = std::vector<ISTR>
 >
-auto load_line(FilepassString const& file_pass) ->Maybe<C>
+auto load_line(FilepassString const& file_path) ->Maybe<C>
 {
 	C tmp;
-	impl::IfsSelector<ISTR> ifs(file_pass);
+	impl::IfsSelector<ISTR> ifs(file_path);
 
 	if (!ifs){
 #if SIG_PRINT_ERROR_MESSAGE
-		FileOpenErrorPrint(file_pass);
+		FileOpenErrorPrint(file_path);
 #endif
 		return Nothing(C());
 	}
@@ -154,18 +151,18 @@ auto load_line(FilepassString const& file_pass) ->Maybe<C>
 }
 
 /**
-	file_pass が const char* , const wcahr_t* である場合のオーバーロード
+	file_path が const char* , const wcahr_t* である場合のオーバーロード
 
-	\sa load_line(FilepassString const& file_pass)
+	\sa load_line(FilepassString const& file_path)
 */
 template <
 	class ISTR = std::string,
 	class R = ISTR,
 	class C = std::vector<R>
 >
-auto load_line(FilepassStringC file_pass) ->Maybe<C>
+auto load_line(FilepassStringC file_path) ->Maybe<C>
 {
-	return load_line<ISTR, C>(static_cast<impl::string_t<FilepassStringC>>(file_pass));
+	return load_line<ISTR, C>(static_cast<impl::string_t<FilepassStringC>>(file_path));
 }
 
 //@}
@@ -204,7 +201,7 @@ bool load_line(
 	\tparam ISTR [option] 読み込んだ文字列を保持する型（std::string or std::wstring）
 
 	\param empty_dest 保存先のコンテナ（\ref sig_container )
-	\param file_pass 保存先のパス（ファイル名含む）
+	\param file_path 保存先のパス（ファイル名含む）
 	\param conv 読み込んだ文字列から任意型Rへの変換関数(文字列 -> 数値型へはload_numを推奨)
 
 	\code
@@ -213,7 +210,7 @@ bool load_line(
 		Test(double v, double p) : a(std::pow(v, p)){}
 	};
 
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
 	std::vector<Test> input;
@@ -236,17 +233,17 @@ template <
 >
 bool load_line(
 	C& empty_dest,
-	FilepassString const& file_pass,
+	FilepassString const& file_path,
 	F const& conv)
 {
 	impl::IfsSelector<
 		typename impl::SameIf<R, std::string, R,
 		typename impl::SameIf<R, std::wstring, R, ISTR>::type
 		>::type
-	> ifs(file_pass);
+	> ifs(file_path);
 
 	if (!ifs){
-		//FileOpenErrorPrint(file_pass);
+		//FileOpenErrorPrint(file_path);
 		return false;
 	}
 	return load_line(empty_dest, ifs, conv);
@@ -259,7 +256,7 @@ bool load_line(
 /// 数値列を読み込む
 /**
 	\param empty_dest 保存先のコンテナ（\ref sig_container )
-	\param file_pass 保存先のパス（ファイル名含む）
+	\param file_path 保存先のパス（ファイル名含む）
 	\param delimiter [option] 数値間の区切り文字
 
 	\return 読み込みの成否
@@ -267,7 +264,7 @@ bool load_line(
 	\exception std::invalid_argument（数値に変換できない場合）, std::out_of_range（intやdouble等で変換可能な値の範囲を超えている場合）\n
 
 	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass1 = dir + SIG_TO_FPSTR("test1.txt");
 	const auto fpass2 = dir + SIG_TO_FPSTR("test2.txt");
 
@@ -296,10 +293,10 @@ template <
 >
 bool load_num(
 	C& empty_dest,
-	FilepassString const& file_pass,
+	FilepassString const& file_path,
 	std::string delimiter = "\n")
 {
-	auto read_str = load_line<std::string>(file_pass);
+	auto read_str = load_line<std::string>(file_path);
 
 	if (!isJust(read_str)) return false;
 
@@ -320,7 +317,7 @@ bool load_num(
 	\tparam R 数値の型（int, double等）
 	\tparam C [option] コンテナの型（\ref sig_container )
 
-	\param file_pass 保存先のパス（ファイル名含む）
+	\param file_path 保存先のパス（ファイル名含む）
 	\param delimiter [option] 数値間の区切り文字
 
 	\return 読み込み結果（値は\ref sig_maybe で返される）
@@ -328,7 +325,7 @@ bool load_num(
 	\exception  std::invalid_argument（数値に変換できない場合）, std::out_of_range（intやdouble等で変換可能な値の範囲を超えている場合）\n
 
 	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass1 = dir + SIG_TO_FPSTR("test1.txt");
 	const auto fpass2 = dir + SIG_TO_FPSTR("test2.txt");
 	
@@ -353,12 +350,12 @@ template <
 	class C = std::vector<R>, typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler
 >
 auto load_num(
-	FilepassString const& file_pass,
+	FilepassString const& file_path,
 	std::string delimiter = "\n"
 	) ->Maybe<C>
 {
 	C tmp;
-	load_num(tmp, file_pass, delimiter);
+	load_num(tmp, file_path, delimiter);
 	return tmp.size() ? Just<C>(std::move(tmp)) : Nothing(std::move(tmp));
 }
 
@@ -369,7 +366,7 @@ auto load_num(
 /// 2次元配列の数値(ex:行列)を読み込む
 /**
 	\param empty_dest 保存先のコンテナ（\ref sig_container )
-	\param file_pass 保存先のパス（ファイル名含む）
+	\param file_path 保存先のパス（ファイル名含む）
 	\param delimiter 数値間の区切り文字
 	
 	\return 読み込みの成否
@@ -377,7 +374,7 @@ auto load_num(
 	\exception  std::invalid_argument（数値に変換できない場合）, std::out_of_range（intやdouble等で変換可能な値の範囲を超えている場合）\n
 
 	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
 	array<std::vector<int>, 3> input_mat;
@@ -400,10 +397,10 @@ template <
 >
 bool load_num2d(
 	CC& empty_dest,
-	FilepassString const& file_pass,
+	FilepassString const& file_path,
 	std::string delimiter)
 {
-	auto read_str = load_line<std::string>(file_pass);
+	auto read_str = load_line<std::string>(file_path);
 	if (!isJust(read_str)) return false;
 
 	for (auto const& line : fromJust(read_str)){
@@ -424,7 +421,7 @@ bool load_num2d(
 	\tparam R 数値の型（int, double等）
 	\tparam CC [option] コンテナの型（\ref sig_container )
 
-	\param file_pass 保存先のパス（ファイル名含む）
+	\param file_path 保存先のパス（ファイル名含む）
 	\param delimiter 数値間の区切り文字
 	
 	\return 読み込み結果（値は\ref sig_maybe で返される）
@@ -432,7 +429,7 @@ bool load_num2d(
 	\exception  std::invalid_argument（数値に変換できない場合）, std::out_of_range（intやdouble等で変換可能な値の範囲を超えている場合）\n
 
 	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
 	auto input_mat = load_num2d<double>(input_mat, fpass, ",");
@@ -452,12 +449,12 @@ template <
 	typename std::enable_if<impl::container_traits<typename impl::container_traits<CC>::value_type>::exist>::type*& = enabler
 >
 auto load_num2d(
-	FilepassString const& file_pass,
+	FilepassString const& file_path,
 	std::string delimiter
 	) ->Maybe<CC>
 {
 	CC tmp;
-	load_num2d(tmp, file_pass, delimiter);
+	load_num2d(tmp, file_path, delimiter);
 	return tmp.size() ? Just<CC>(std::move(tmp)) : Nothing(std::move(tmp));
 }
 

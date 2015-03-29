@@ -117,8 +117,8 @@ void CatStrTest()
 
 void StrConvertTest()
 {
-	const auto sjis_text_pass = raw_pass + SIG_TO_FPSTR("shift_jis.txt");
-	const auto utf8_text_pass = raw_pass + SIG_TO_FPSTR("utf8.txt");
+	const auto sjis_text_pass = raw_path + SIG_TO_FPSTR("shift_jis.txt");
+	const auto utf8_text_pass = raw_path + SIG_TO_FPSTR("utf8.txt");
 
 #if SIG_MSVC_ENV	// windows + VisualStudio 環境
 	const auto sjis = fromJust(load_line(sjis_text_pass));

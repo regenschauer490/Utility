@@ -91,8 +91,8 @@ int main()
 	ConvergenceTest();
 
 	//file.hpp test
-	GetDirectoryNamesTest();
-	FileSaveLoadTest();
+	PathTest();
+	SaveLoadTest();
 
 	return 0;
 }

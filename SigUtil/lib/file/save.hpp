@@ -8,10 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIGUTIL_SAVE_HPP
 #define SIGUTIL_SAVE_HPP
 
-#include "../helper/helper_modules.hpp"
-#include "../helper/maybe.hpp"
-
-#include <fstream>
+#include "path.hpp"
 #include <locale>
 
 
@@ -28,23 +25,6 @@ enum class WriteMode{
 	append
 };
 
-
-/// ファイル内容の初期化
-/**
-	\param file_pass 初期化したいファイルのパス
-
-	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./src"), true);
-	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
-
-	clear_file(fpass);
-	\endcode
-*/
-inline void clear_file(FilepassString const& file_pass)
-{
-	std::ofstream ofs(file_pass);
-	ofs << "";
-}
 
 //@{ 
 
@@ -84,15 +64,15 @@ void save_line(
 
 /// ファイルへ1行ずつ保存
 /**
-	file_passで指定したテキストファイルに、srcの内容を書き込み、最後に改行する．\n
+	file_pathで指定したテキストファイルに、srcの内容を書き込み、最後に改行する．\n
 	指定したファイルが存在しない場合、新たにファイルが作成される．
 
 	\param src 保存対象（非コンテナ）
-	\param file_pass 保存先のパス（ファイル名含む）
+	\param file_path 保存先のパス（ファイル名含む）
 	\param open_mode [option] 上書き(overwrite) or 追記(append)
 
 	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
 	std::string str{ "str test" };
@@ -114,27 +94,27 @@ template <class T,
 >
 void save_line(
 	T src,
-	FilepassString const& file_pass,
+	FilepassString const& file_path,
 	WriteMode open_mode = WriteMode::overwrite)
 {
 	SIG_FILE_LOCALE_INIT
 
 	const auto mode = open_mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-	typename impl::StreamSelector<T>::ofstream ofs(file_pass, mode);
+	typename impl::StreamSelector<T>::ofstream ofs(file_path, mode);
 	save_line(src, ofs);
 }
 
 /// ファイルへ1行ずつまとめて保存
 /**
-	file_passで指定したテキストファイルに、srcの内容をコンテナの1要素を1行として書き込む．\n
+	file_pathで指定したテキストファイルに、srcの内容をコンテナの1要素を1行として書き込む．\n
 	指定したファイルが存在しない場合、新たにファイルが作成される．
 
 	\param src 保存対象（\ref sig_container ）
-	\param file_pass 保存先のパス（ファイル名含む）
+	\param file_path 保存先のパス（ファイル名含む）
 	\param open_mode [option] 上書き(overwrite) or 追記(append)
 
 	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
 	std::vector<std::string> data{ "aaa", "bbb", "ccc" };
@@ -154,13 +134,13 @@ template <class C,
 >
 void save_line(
 	C const& src,
-	FilepassString const& file_pass,
+	FilepassString const& file_path,
 	WriteMode open_mode = WriteMode::overwrite)
 {
 	SIG_FILE_LOCALE_INIT
 
 	const auto mode = open_mode == WriteMode::overwrite ? std::ios::out : std::ios::out | std::ios::app;
-	typename impl::StreamSelector<typename impl::container_traits<C>::value_type>::ofstream ofs(file_pass, mode);
+	typename impl::StreamSelector<typename impl::container_traits<C>::value_type>::ofstream ofs(file_path, mode);
 	save_line(src, ofs);
 }
 
@@ -170,15 +150,15 @@ void save_line(
 
 /// 数値列(ex:ベクトル)の保存
 /**
-	file_passで指定したテキストファイルに、数値が格納されたコンテナsrcの各要素を文字列として書き込む．
+	file_pathで指定したテキストファイルに、数値が格納されたコンテナsrcの各要素を文字列として書き込む．
 
 	\param src 保存対象（\ref sig_container ）
-	\param file_pass 保存先のパス（ファイル名含む）
+	\param file_path 保存先のパス（ファイル名含む）
 	\param delimiter 数値間の区切り文字
 	\param open_mode [option] 上書き(overwrite) or 追記(append)
 
 	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
 	const auto list_num = std::list<double>{-1.1, -2.2, -3.3};
@@ -201,22 +181,22 @@ template <class C,
 >
 void save_num(
 	C const& src,
-	FilepassString const& file_pass,
+	FilepassString const& file_path,
 	std::string delimiter,
 	WriteMode open_mode = WriteMode::overwrite)
 {
-	save_line(cat(src, delimiter), file_pass, open_mode);
+	save_line(cat(src, delimiter), file_path, open_mode);
 }
 
 /// 2次元配列の数値(ex:行列)を保存
 /**
 	\param src 保存対象の行列（\ref sig_container )
-	\param file_pass 保存先のパス（ファイル名含む）
+	\param file_path 保存先のパス（ファイル名含む）
 	\param delimiter 数値間の区切り文字
 	\param open_mode [option] 上書き(overwrite) or 追記(append)
 
 	\code
-	const auto dir = modify_dirpass_tail( SIG_TO_FPSTR("./example"), true);
+	const auto dir = modify_dirpath_tail( SIG_TO_FPSTR("./example"), true);
 	const auto fpass = dir + SIG_TO_FPSTR("test.txt");
 
 	const array<std::vector<int>, 3> mat = {	// sig::array
@@ -240,7 +220,7 @@ template <class CC,
 >
 void save_num(
 	CC const& src,
-	FilepassString const& file_pass,
+	FilepassString const& file_path,
 	std::string delimiter,
 	WriteMode open_mode = WriteMode::overwrite)
 {
@@ -249,7 +229,7 @@ void save_num(
 	for (auto const& line : src){
 		tmp.push_back(cat(line, delimiter));
 	}
-	save_line(tmp, file_pass, open_mode);
+	save_line(tmp, file_path, open_mode);
 }
 
 //@}
