@@ -182,26 +182,33 @@ auto str_to_wstr(C const& src) ->R
 }
 
 #if SIG_MSVC_ENV
-	inline auto to_fpstring(std::string const& src) ->FilepassString
+	inline auto to_fpstring(std::string const& src) ->FilepathString
 	{
 		return str_to_wstr(src);
 	}
-	inline auto to_fpstring(std::wstring const& src) ->FilepassString
+	inline auto to_fpstring(std::wstring const& src) ->FilepathString
 	{
 		return src;
 	}
 #else
-	inline auto to_fpstring(std::wstring const& src) ->FilepassString
+	inline auto to_fpstring(std::wstring const& src) ->FilepathString
 	{
 		return wstr_to_str(src);
 	}
-	inline auto to_fpstring(std::string const& src) ->FilepassString
+	inline auto to_fpstring(std::string const& src) ->FilepathString
 	{
 		return src;
 	}
 #endif
 
 #if SIG_ENABLE_CODECVT
+
+#if SIG_MSVC_VER >= 150
+using CHAR16T = uint16_t;
+#else
+using CHAR16T = char16_t;
+#endif
+
 /// UTF-8 -> UTF-16
 /**
 	\pre <codecvt>が必要
@@ -210,12 +217,15 @@ auto str_to_wstr(C const& src) ->R
 
 	\return 変換後の文字列
 */
+
+#if !(SIG_MSVC_VER >= 150)
 inline auto utf8_to_utf16(std::string const& src) ->std::u16string
 {
-	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+	std::wstring_convert<std::codecvt_utf8_utf16<CHAR16T>, CHAR16T> convert;
 
 	return convert.from_bytes(src);
 }
+#endif
 
 /// UTF-16 -> UTF-8
 /**
@@ -227,9 +237,9 @@ inline auto utf8_to_utf16(std::string const& src) ->std::u16string
 */
 inline auto utf16_to_utf8(std::u16string const& src) ->std::string
 {
-	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+	std::wstring_convert<std::codecvt_utf8_utf16<CHAR16T>, CHAR16T> convert;
 
-	return convert.to_bytes(src);
+	return convert.to_bytes(reinterpret_cast<const uint16_t*>(src.c_str()));
 }
 
 /// UTF-8 -> UTF-32
@@ -372,10 +382,13 @@ inline auto sjis_to_utf8(std::string const& src) ->std::string
 
 	\return 変換後の文字列
 */
+
+#if !(SIG_MSVC_VER >= 150)
 inline auto utf8_to_sjis(std::string const& src) ->std::string
 {
 	return utf16_to_sjis(utf8_to_utf16(src));
 }
+#endif
 #endif
 
 }

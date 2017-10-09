@@ -182,9 +182,9 @@ void FunctionalTest()
 		for_each(DebugEqual(), data1, std::get<0>(unzipped));
 		for_each(DebugEqual(), data2, std::get<1>(unzipped));
 
-#if SIG_GCC_GT4_9_0 || SIG_CLANG_GT_3_5 || !(SIG_MSVC_VER <= 140)
+#if SIG_ENABLE_TUPLE_ZIP
 		//make container of tuple, from tuple of container
-		auto rezipped = zip(std::move(unzipped));		//std::vector< std::tuple<int, int>>
+		auto rezipped = tzip(std::move(unzipped));		//std::vector< std::tuple<int, int>>
 
 		variadicZipWith([](int v1, int v2, std::tuple<int, int> t){
 			assert(std::get<0>(t) == v1 && std::get<1>(t) == v2); return 0;
@@ -206,11 +206,11 @@ void FunctionalTest()
 		for_each(DebugEqual(), data4, std::get<3>(cunzipped));
 
 #if SIG_ENABLE_TUPLE_ZIP
-		auto rezipped = zip(cunzipped);		//std::vector< std::tuple<int, int, int, int>>
+		auto rezipped2 = tzip(cunzipped);		//std::vector< std::tuple<int, int, int, int>>
 
 		variadicZipWith([](int v1, int v2, int v3, int v4, std::tuple<int, int, int, int> t){
 			assert(std::get<0>(t) == v1 && std::get<1>(t) == v2 && std::get<2>(t) == v3 && std::get<3>(t) == v4); return 0;
-		}, data1, data2, data3, data4, rezipped);
+		}, data1, data2, data3, data4, rezipped2);
 #endif
 	}
 
@@ -251,7 +251,7 @@ void FunctionalTest()
 
 		auto mc2 = merge(data2, data3);
 		auto mc3 = merge<std::vector<int>>(data2, data3);
-		std::vector<double> mc4 = merge(data1, data1d);
+		std::vector<double> mc4 = merge(data1d, data1);
 
 		const auto size_d1 = data1.size();
 		for (unsigned i = 0; i < 2; ++i){
@@ -268,13 +268,13 @@ void FunctionalTest()
 		const array<double, 3> ar3{ 5.5, 6.6, 7.7 };
 
 		array<int, 8> ma1 = merge(ar1, ar1);
-		array<double, 7> ma2 = merge(ar1, ar3);
+		array<double, 7> ma2 = merge(ar3, ar1);
 		decltype(data1d) ma3 = merge(ar1, data1d);
 		decltype(data1d) ma4 = merge(data1d, ar1);
 
 #if SIG_ENABLE_MOVEITERATOR
 		auto mmm = merge<std::set<double, std::greater<double>>>(ar3, ar1);
-		auto ma1m = merge(ar1, std::move(ar2));
+		auto ma1m = merge(std::move(ar2), ar1);
 		assert(ar2[0].empty() && ar2[3].empty());
 #endif
 	}

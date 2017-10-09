@@ -18,7 +18,7 @@ namespace sig
 {
 #undef min
 
-	const FilepassString raw_path = SIG_TO_FPSTR("../../SigUtil/example/test_file/");
+	const FilepathString raw_path = SIG_TO_FPSTR("../../SigUtil/example/test_file/");
 
 
 	struct DebugEqual{

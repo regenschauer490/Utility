@@ -8,7 +8,7 @@ http://opensource.org/licenses/mit-license.php
 #ifndef SIGUTIL_SAVE_HPP
 #define SIGUTIL_SAVE_HPP
 
-#include "path.hpp"
+#include "./path.hpp"
 #include <locale>
 
 
@@ -94,7 +94,7 @@ template <class T,
 >
 void save_line(
 	T src,
-	FilepassString const& file_path,
+	FilepathString const& file_path,
 	WriteMode open_mode = WriteMode::overwrite)
 {
 	SIG_FILE_LOCALE_INIT
@@ -134,7 +134,7 @@ template <class C,
 >
 void save_line(
 	C const& src,
-	FilepassString const& file_path,
+	FilepathString const& file_path,
 	WriteMode open_mode = WriteMode::overwrite)
 {
 	SIG_FILE_LOCALE_INIT
@@ -181,7 +181,7 @@ template <class C,
 >
 void save_num(
 	C const& src,
-	FilepassString const& file_path,
+	FilepathString const& file_path,
 	std::string delimiter,
 	WriteMode open_mode = WriteMode::overwrite)
 {
@@ -220,7 +220,7 @@ template <class CC,
 >
 void save_num(
 	CC const& src,
-	FilepassString const& file_path,
+	FilepathString const& file_path,
 	std::string delimiter,
 	WriteMode open_mode = WriteMode::overwrite)
 {

@@ -185,7 +185,7 @@ public:
 	void print() const{ print_base_(std::cout); }
 
 	/// ファイルへ出力
-	void print(FilepassString const& file_path, bool is_overwrite) const
+	void print(FilepathString const& file_path, bool is_overwrite) const
 	{
 		std::ofstream ofs(file_path, is_overwrite ? std::ios::out : std::ios::out | std::ios::app);
 		print_base_(ofs);

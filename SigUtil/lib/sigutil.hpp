@@ -10,7 +10,7 @@ http://opensource.org/licenses/mit-license.php
 
 /*--------------------------------------- User Option --------------------------------------------------------------------*/
 
-#define SIG_USE_BOOST 0			// boostが使用可能か
+#define SIG_USE_BOOST 1			// boostが使用可能か
 #define SIG_USE_OPTIONAL 1		// boost.optionalを使用するか(大規模データを扱う際にはオーバーヘッドが影響する可能性あり)
 #define SIG_PRINT_ERROR_MESSAGE 1	// エラー発生時にメッセージをコンソールに出力するか(ex:ファイル入出力)
 
@@ -45,6 +45,8 @@ http://opensource.org/licenses/mit-license.php
 	#define SIG_MSVC_VER 120
 	#elif _MSC_VER == 1900
 	#define SIG_MSVC_VER 140
+	#elif _MSC_VER == 1910
+	#define SIG_MSVC_VER 170
 	#endif
 
 #elif SIG_GCC_ENV
@@ -131,17 +133,17 @@ using std::placeholders::_2;
 
 // ファイルパスの文字型の指定
 #if SIG_MSVC_ENV
-	using FilepassString = std::wstring;
-	using FilepassStringC = wchar_t const*;
-	template <class T> FilepassString to_fpstring(T v){ return std::to_wstring(v);  }
-	inline void FileOpenErrorPrint(FilepassString const& path){ std::wcout << L"file open error: " << path << std::endl; }
+	using FilepathString = std::wstring;
+	using FilepathStringC = wchar_t const*;
+	template <class T> FilepathString to_fpstring(T v){ return std::to_wstring(v);  }
+	inline void FileOpenErrorPrint(FilepathString const& path){ std::wcout << L"file open error: " << path << std::endl; }
 	#define SIG_TO_FPSTR(str) L ## str
 	#define SIG_USE_BOOST_FILESYSTEM 0
 #else
-	using FilepassString = std::string;
-	using FilepassStringC = char const*;
-	template <class T> FilepassString to_fpstring(T v){ return std::to_string(v);  }
-	inline void FileOpenErrorPrint(FilepassString const& path){ std::cout << "file open error: " << path << std::endl; }
+	using FilepathString = std::string;
+	using FilepathStringC = char const*;
+	template <class T> FilepathString to_fpstring(T v){ return std::to_string(v);  }
+	inline void FileOpenErrorPrint(FilepathString const& path){ std::cout << "file open error: " << path << std::endl; }
 	#define SIG_TO_FPSTR(str) str
 	#define SIG_USE_BOOST_FILESYSTEM 1
 #endif

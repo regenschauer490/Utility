@@ -81,7 +81,7 @@ template <
 >
 bool load_line(
 	C& empty_dest,
-	FilepassString const& file_path)
+	FilepathString const& file_path)
 {
 	impl::IfsSelector<R> ifs(file_path);
 
@@ -133,7 +133,7 @@ template <
 	class ISTR = std::string,
 	class C = std::vector<ISTR>
 >
-auto load_line(FilepassString const& file_path) ->Maybe<C>
+auto load_line(FilepathString const& file_path) ->Maybe<C>
 {
 	C tmp;
 	impl::IfsSelector<ISTR> ifs(file_path);
@@ -153,16 +153,16 @@ auto load_line(FilepassString const& file_path) ->Maybe<C>
 /**
 	file_path が const char* , const wcahr_t* である場合のオーバーロード
 
-	\sa load_line(FilepassString const& file_path)
+	\sa load_line(FilepathString const& file_path)
 */
 template <
 	class ISTR = std::string,
 	class R = ISTR,
 	class C = std::vector<R>
 >
-auto load_line(FilepassStringC file_path) ->Maybe<C>
+auto load_line(FilepathStringC file_path) ->Maybe<C>
 {
-	return load_line<ISTR, C>(static_cast<impl::string_t<FilepassStringC>>(file_path));
+	return load_line<ISTR, C>(static_cast<impl::string_t<FilepathStringC>>(file_path));
 }
 
 //@}
@@ -233,7 +233,7 @@ template <
 >
 bool load_line(
 	C& empty_dest,
-	FilepassString const& file_path,
+	FilepathString const& file_path,
 	F const& conv)
 {
 	impl::IfsSelector<
@@ -293,7 +293,7 @@ template <
 >
 bool load_num(
 	C& empty_dest,
-	FilepassString const& file_path,
+	FilepathString const& file_path,
 	std::string delimiter = "\n")
 {
 	auto read_str = load_line<std::string>(file_path);
@@ -350,7 +350,7 @@ template <
 	class C = std::vector<R>, typename std::enable_if<impl::container_traits<C>::exist && !impl::container_traits<typename impl::container_traits<C>::value_type>::exist>::type*& = enabler
 >
 auto load_num(
-	FilepassString const& file_path,
+	FilepathString const& file_path,
 	std::string delimiter = "\n"
 	) ->Maybe<C>
 {
@@ -397,7 +397,7 @@ template <
 >
 bool load_num2d(
 	CC& empty_dest,
-	FilepassString const& file_path,
+	FilepathString const& file_path,
 	std::string delimiter)
 {
 	auto read_str = load_line<std::string>(file_path);
@@ -449,7 +449,7 @@ template <
 	typename std::enable_if<impl::container_traits<typename impl::container_traits<CC>::value_type>::exist>::type*& = enabler
 >
 auto load_num2d(
-	FilepassString const& file_path,
+	FilepathString const& file_path,
 	std::string delimiter
 	) ->Maybe<CC>
 {

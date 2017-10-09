@@ -88,7 +88,8 @@ auto reverse(C&& list) ->typename impl::remove_const_reference<C>::type
 	auto m = merge(data1, data2);	// array<int, 6>{ 1, 2, 3, 4 , 5, 6 }
 	\endcode
 */
-template <class C, class R = typename impl::remove_const_reference<C>::type,
+template <class C,
+	class R = typename impl::remove_const_reference<C>::type,
 	typename std::enable_if<!impl::static_container_traits<R>::exist>::type*& = enabler
 >
 auto merge(C&& list1, C&& list2) ->R
@@ -145,6 +146,68 @@ auto merge_impl(C1&& list1, C2&& list2) ->R
 	auto m3 = merge<std::set<double, std::greater<double>>>(data1, data2);	// std::set<double>{ 7.7, 6.6, 5.5, 4, 3, 2, 1 }
 	\endcode
 */
+
+#if SIG_MSVC_VER > 140
+
+template <class R = void, class C1, class C2,
+	class CR1 = typename impl::remove_const_reference<C1>::type,
+	class CR2 = typename impl::remove_const_reference<C2>::type,
+	class RT = typename impl::container_traits<CR1>::value_type,
+	class RR = typename impl::SameIf<R, void,
+		typename impl::container_traits<CR1>::template rebind<RT>,
+		R
+	>::type,
+	typename std::enable_if<
+		!impl::static_container_traits<CR1>::exist
+	>::type*& = enabler
+>
+auto merge(C1&& list1, C2&& list2) ->RR
+{
+	return impl::merge_impl<RR>(std::forward<C1>(list1), std::forward<C2>(list2));
+}
+
+template <class R = void, class SC, class C,
+	class SCR = typename impl::remove_const_reference<SC>::type,
+	class CR = typename impl::remove_const_reference<C>::type,
+	class RT = typename impl::container_traits<CR>::value_type,
+	class RR = typename impl::SameIf<R, void,
+		typename impl::container_traits<CR>::template rebind<RT>,
+		R
+	>::type,
+	typename std::enable_if<
+		impl::static_container_traits<SCR>::exist && (!impl::static_container_traits<CR>::exist)
+	>::type*& = enabler
+>
+auto merge(SC&& list1, C&& list2) ->RR
+{
+	return impl::merge_impl<RR>(std::forward<SC>(list1), std::forward<C>(list2));
+}
+
+// static container
+template <class R = void, class SC1, class SC2,
+	class SCR1 = typename impl::remove_const_reference<SC1>::type,
+	class SCR2 = typename impl::remove_const_reference<SC2>::type,
+	class RT = typename impl::static_container_traits<SCR1>::value_type,
+	class RR = typename impl::SameIf<R, void, 
+		typename impl::static_container_traits<SCR1>::template rebind_t<RT,
+			impl::plus_t<
+				impl::static_container_traits<SCR1>::size,
+				impl::static_container_traits<SCR2>::size
+			>::value
+		>,
+		R
+	>::type,
+	typename std::enable_if<
+		impl::static_container_traits<SCR1>::exist && impl::static_container_traits<SCR2>::exist
+	>::type*& = enabler
+>
+auto merge(SC1&& list1, SC2&& list2) ->RR
+{
+	return impl::merge_impl<RR>(std::forward<SC1>(list1), std::forward<SC2>(list2));
+}
+
+#else
+
 template <class R = void, class C1, class C2,
 	class CR1 = typename impl::remove_const_reference<C1>::type,
 	class CR2 = typename impl::remove_const_reference<C2>::type,
@@ -200,7 +263,7 @@ auto merge(SC1&& list1, SC2&& list2) ->RR
 {
 	return impl::merge_impl<RR>(std::forward<SC1>(list1), std::forward<SC2>(list2));
 }
-
+#endif
 
 /// コンテナの先頭からn個の要素を取り出す
 /**

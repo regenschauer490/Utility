@@ -143,17 +143,22 @@ void StrConvertTest()
 #ifdef SIG_ENABLE_CODECVT 
 	// Shift-JIS <-> UTF-8
 	std::string	utf8_from_sjis = sjis_to_utf8(sjis[1]);
-	std::string	sjis_from_utf8 = utf8_to_sjis(utf8[1]);
-
 	assert(utf8_from_sjis == utf8[1]);
+
+#if !(SIG_MSVC_VER >= 150)
+	std::string	sjis_from_utf8 = utf8_to_sjis(utf8[1]);
 	assert(sjis_from_utf8 == sjis[1]);
+#endif
+	
 
 	// UTF-8 <-> UTF-16
+#if !(SIG_MSVC_VER >= 150)
 	std::u16string	utf16_from_utf8 = utf8_to_utf16(utf8[1]);
 	std::string		utf8_from_utf16 = utf16_to_utf8(utf16_from_utf8);
-
-	assert(utf8_from_utf16 == utf8[1]);
 	assert(utf16_from_utf8 == utf16_from_sjis);
+	assert(utf8_from_utf16 == utf8[1]);
+#endif
+
 #endif
 
 #elif SIG_GCC_ENV	// g++

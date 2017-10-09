@@ -41,7 +41,7 @@ namespace sig
 	auto mpass = modify_dirpath_tail(path, true);	// "../SigUtil/example/"
 	\endcode
 */
-inline auto modify_dirpath_tail(FilepassString const& directory_path, bool const has_slash) ->FilepassString
+inline auto modify_dirpath_tail(FilepathString const& directory_path, bool const has_slash) ->FilepathString
 {
 	if (directory_path.empty()) return directory_path;
 
@@ -74,13 +74,13 @@ inline auto modify_dirpath_tail(FilepassString const& directory_path, bool const
 	\return ファイル名の一覧
 */
 inline auto get_file_names(
-	FilepassString const& directory_path,
+	FilepathString const& directory_path,
 	bool hidden_file,
-	FilepassString const& extension = SIG_TO_FPSTR("")
+	FilepathString const& extension = SIG_TO_FPSTR("")
 )
-	->Maybe<std::vector<FilepassString>>
+	->Maybe<std::vector<FilepathString>>
 {
-	using ResultType = std::vector<FilepassString>;
+	using ResultType = std::vector<FilepathString>;
 
 	ResultType result;
 
@@ -142,12 +142,12 @@ inline auto get_file_names(
 	\return フォルダ名の一覧
 */
 inline auto get_folder_names(
-	FilepassString const& directory_path,
+	FilepathString const& directory_path,
 	bool hidden_file
 )
-	->Maybe<std::vector<FilepassString>>
+	->Maybe<std::vector<FilepathString>>
 {
-	using ResultType = std::vector<FilepassString>;
+	using ResultType = std::vector<FilepathString>;
 
 	ResultType result;
 
@@ -201,7 +201,7 @@ inline auto get_folder_names(
 
 \return 存在する場合:true, 存在しない場合:false
 */
-inline bool file_exists(FilepassString const& file_path)
+inline bool file_exists(FilepathString const& file_path)
 {
 #if SIG_MSVC_ENV
 	WIN32_FIND_DATA FindFileData;
@@ -229,7 +229,7 @@ inline bool file_exists(FilepassString const& file_path)
 	clear_file(fpass);
 	\endcode
 */
-inline void clear_file(FilepassString const& file_path)
+inline void clear_file(FilepathString const& file_path)
 {
 	std::ofstream ofs(file_path);
 	ofs << "";
@@ -237,7 +237,7 @@ inline void clear_file(FilepassString const& file_path)
 
 
 /// 指定ファイルを削除
-inline bool remove_file(FilepassString const& file_path)
+inline bool remove_file(FilepathString const& file_path)
 {
 #if SIG_MSVC_ENV
 	if (sig::file_exists(file_path)){
@@ -256,10 +256,10 @@ inline bool remove_file(FilepassString const& file_path)
 /// フォルダを新規作成
 /**
 */
-inline bool make_directory(FilepassString const& directory_path, bool make_intermediate_directories)
+inline bool make_directory(FilepathString const& directory_path, bool make_intermediate_directories)
 {
 #if SIG_MSVC_ENV
-	const auto mkdir = [](FilepassString const& dpath){
+	const auto mkdir = [](FilepathString const& dpath){
 		return CreateDirectory(dpath.c_str(), NULL);
 	};
 
@@ -267,14 +267,14 @@ inline bool make_directory(FilepassString const& directory_path, bool make_inter
 		return GetLastError() == ERROR_PATH_NOT_FOUND;
 	};
 #elif SIG_USE_BOOST
-	const auto mkdir = [](FilepassString const& dpath){
+	const auto mkdir = [](FilepathString const& dpath){
 		return boost::filesystem::create_directory(boost::filesystem::path(dpath)));
 	};
 	const auto ckrcr = [](){
 		return ;
 	}
 #else
-	const auto mkdir = [](FilepassString const& dpath){return false; };
+	const auto mkdir = [](FilepathString const& dpath){return false; };
 	const auto ckrcr = [](){ return false; };
 	std::cout << "This library doesn't support this envirnment which is default. please include boost if any." << std::endl;
 	assert(false);
@@ -297,10 +297,10 @@ inline bool make_directory(FilepassString const& directory_path, bool make_inter
 
 	
 /// 指定フォルダの削除
-inline bool remove_directory(FilepassString const& directory_path)
+inline bool remove_directory(FilepathString const& directory_path)
 {
 #if SIG_MSVC_ENV
-	const auto rmdir = [](FilepassString const& path){
+	const auto rmdir = [](FilepathString const& path){
 		return RemoveDirectory(path.c_str());
 	};
 

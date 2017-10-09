@@ -57,11 +57,11 @@ auto binary_operation(OP&& func, T1&& v1, T2&& v2)
 template <class OP, class C1, class C2,
 	class CR1 = typename impl::remove_const_reference<C1>::type,
 	class CR2 = typename impl::remove_const_reference<C2>::type,
-	class AT1 = typename impl::forward_element<C1>::type,
-	class AT2 = typename impl::forward_element<C2>::type,
 	typename std::enable_if<
 		impl::container_traits<CR1>::exist && impl::container_traits<CR2>::exist
-	>::type*& = enabler
+	>::type*& = enabler,
+	class AT1 = typename impl::forward_element<C1>::type,
+	class AT2 = typename impl::forward_element<C2>::type
 >
 auto binary_operation(OP&& func, C1&& c1, C2&& c2)
 	->typename impl::container_traits<CR1>::template rebind<
@@ -85,10 +85,10 @@ auto binary_operation(OP&& func, C1&& c1, C2&& c2)
 /// 二項演算 (element-wise: container and scalar)
 template <class OP, class C, class T,
 	class CR = typename impl::remove_const_reference<C>::type,
-	class ET = typename impl::forward_element<C>::type,
 	typename std::enable_if<
 		impl::container_traits<CR>::exist && (!impl::container_traits<typename impl::remove_const_reference<T>::type>::exist)
-	>::type*& = enabler
+	>::type*& = enabler,
+	class ET = typename impl::forward_element<C>::type
 >
 auto binary_operation(OP&& func, C&& c, T&& v)
 	->typename impl::container_traits<CR>::template rebind<
@@ -112,11 +112,11 @@ auto binary_operation(OP&& func, C&& c, T&& v)
 
 /// 二項演算 (element-wise: scalar and container)
 template <class OP, class T, class C,
-	class ET = typename impl::forward_element<C>::type,
 	class CR = typename impl::remove_const_reference<C>::type,
 	typename std::enable_if<
 		(!impl::container_traits<typename impl::remove_const_reference<T>::type>::exist) && impl::container_traits<CR>::exist
-	>::type*& = enabler
+	>::type*& = enabler,
+	class ET = typename impl::forward_element<C>::type
 >
 auto binary_operation(OP&& func, T&& v, C&& c)
 	->typename impl::container_traits<CR>::template rebind<

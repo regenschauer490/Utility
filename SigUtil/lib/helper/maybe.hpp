@@ -86,12 +86,12 @@ namespace sig
 
 	/// Justであるか調べる関数．Maybe a -> Bool
 	template <class T> bool isJust(Maybe<T> const& m){ return static_cast<bool>(m); }
-	constexpr bool isJust(boost::none_t m){ return false; }
+	inline bool isJust(boost::none_t m){ return false; }
 	
 
 	/// Nothingであるか調べる関数．Maybe a -> Bool
 	template <class T> bool isNothing(Maybe<T> const& m){ return !static_cast<bool>(m); }
-	constexpr bool isNothing(boost::none_t m){ return true; }
+	inline bool isNothing(boost::none_t m){ return true; }
 
 
 	/// Justから値を取り出す関数．Maybe a -> a

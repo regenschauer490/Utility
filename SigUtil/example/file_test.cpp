@@ -45,7 +45,7 @@ void PathTest()
 		const auto hidden_text_file_names = get_file_names(path, true, SIG_TO_FPSTR(".txt"));
 
 #if SIG_LINUX_ENV
-		const std::set<FilepassString> t_text{
+		const std::set<FilepathString> t_text{
 			"test.txt",
 			"test2.txt",
 			"test3.txt",
@@ -58,9 +58,9 @@ void PathTest()
 			"utf8.txt",
 			"long_text.txt"
 		};
-		const std::set<FilepassString> t_hidden{ ".hidden file linux.txt" };
-		const std::set<FilepassString> t_old_text{ "test.old.txt" };
-		const std::set<FilepassString> t_noextension{ "dummy" };
+		const std::set<FilepathString> t_hidden{ ".hidden file linux.txt" };
+		const std::set<FilepathString> t_old_text{ "test.old.txt" };
+		const std::set<FilepathString> t_noextension{ "dummy" };
 
 #else
 		const std::set<std::wstring> t_text{
@@ -133,8 +133,8 @@ void PathTest()
 		const auto path = modify_dirpath_tail(raw_path, true);
 
 #if SIG_MSVC_ENV
-		const std::set<FilepassString> t_vfs = { SIG_TO_FPSTR("test"), SIG_TO_FPSTR(".hidden linux") };
-		const std::set<FilepassString> t_hfs = {};
+		const std::set<FilepathString> t_vfs = { SIG_TO_FPSTR("test"), SIG_TO_FPSTR(".hidden linux") };
+		const std::set<FilepathString> t_hfs = {};
 #else
 		const auto t_vfs = { SIG_TO_FPSTR("test") };
 		const auto t_hfs = { SIG_TO_FPSTR(".hidden linux") };

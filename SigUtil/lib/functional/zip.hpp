@@ -37,11 +37,17 @@ namespace sig
 */
 template <class... Cs
 #if (SIG_MSVC_ENV && !(SIG_MSVC_VER <= 140)) || (SIG_GCC_ENV) || (SIG_CLANG_ENV)
-	, typename std::enable_if< And(impl::container_traits<typename impl::remove_const_reference<Cs>::type>::exist...) >::type*& = enabler
 #endif
 	>
 auto zip(Cs&&... lists)
 {
+	static_assert(
+		And(impl::container_traits<
+			typename impl::remove_const_reference<Cs>::type
+		>::exist...),
+		"Cs<T>...: unmatch types T."
+	);
+
 	return variadicZipWith(
 #if SIG_ENABLE_MOVEITERATOR
 		[](typename impl::forward_element<Cs>::type... vs){
@@ -165,14 +171,14 @@ namespace impl
 	\endcode
 */
 template <class... Cs>
-auto zip(std::tuple<Cs...> const& t_lists)
+auto tzip(std::tuple<Cs...> const& t_lists)
 {
 	using Indices = std::make_index_sequence<sizeof...(Cs)>;
 	return impl::zipImpl_(t_lists, Indices());
 }
 
 template <class... Cs>
-auto zip(std::tuple<Cs...>&& t_lists)
+auto tzip(std::tuple<Cs...>&& t_lists)
 {
 	using Indices = std::make_index_sequence<sizeof...(Cs)>;
 	return impl::zipImpl_(std::move(t_lists), Indices());

@@ -110,7 +110,7 @@ public:
 
 		\param init 初期化に使用する値リスト（サイズはN以下）
 	*/
-	array(std::initializer_list<T> init) : tail_(0)
+	array(std::initializer_list<T> init) : array_{{T()}}, tail_(0)
 	{
 		assert(init.size() <= N);
 		for(auto it = init.begin(), end = init.end(); it != end; ++it){

@@ -115,12 +115,12 @@ auto remove_duplicates(C& container, F&& get_landmark)
 template <class C>
 bool remove_one(C& container, Sig_Eraser_ParamType1 remove)
 {
-	for (auto it = std::begin(container), end = std::end(container); it != end;){
-		if (*it == remove){
-			container.erase(it);
-			return true;
-		}
-		else ++it;
+	auto iter = std::find(std::begin(container), std::end(container), remove);
+
+	if (iter != std::end(container))
+	{
+		container.erase(iter);
+		return true;
 	}
 
 	return false;
@@ -143,12 +143,12 @@ bool remove_one(C& container, Sig_Eraser_ParamType1 remove)
 template <class Pred, class C>
 bool remove_one_if(C& container, Pred remove_pred)
 {
-	for (auto it = std::begin(container), end = std::end(container); it != end;){
-		if (remove_pred(*it)){
-			container.erase(it);
-			return true;
-		}
-		else ++it;
+	auto iter = std::find_if(std::begin(container), std::end(container), remove_pred);
+
+	if (iter != std::end(container))
+	{
+		container.erase(iter);
+		return true;
 	}
 
 	return false;
